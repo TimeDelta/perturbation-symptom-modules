@@ -18,7 +18,7 @@ Columbia[- ]Suicide|\bC-?SSRS\b.*ideation|suicidal ideation,C-SSRS ideation,suic
 \bADAS-?Cog\b|Alzheimer'?s Disease Assessment Scale,ADAS-Cog,cognitive_impairment,true,
 \bUPDRS\b.*(part )?III|\bMDS-UPDRS\b.*motor|motor examination,UPDRS part III,parkinsonism,true,
 Simpson[- ]Angus|\bSAS\b.*(extrapyramidal|parkinson)|Extrapyramidal Symptom Rating|\bESRS\b,Simpson-Angus or ESRS,parkinsonism,true,
-Barnes Akathisia|\bBARS\b,Barnes Akathisia,restlessness,true,akathisia is motor restlessness (fine construct restlessness)
+Barnes Akathisia|\bBARS\b,Barnes Akathisia,akathisia,true,akathisia is its own fine construct (decision 9.74)
 \bFACIT-?F,FACIT-Fatigue,fatigue,false,"counts well-being, so higher is better; before the fatigue rule because the first match decides"
 Fatigue Severity|\bFSS\b|Brief Fatigue|Multidimensional Fatigue|Chalder,fatigue scale,fatigue,true,"FSS, BFI, MFI, Chalder: higher is worse"
 Aberrant Behavior Checklist.*irritab|\bABC-?I\b|irritability subscale,ABC irritability subscale,irritability,true,

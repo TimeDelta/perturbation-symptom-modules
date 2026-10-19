@@ -16,6 +16,12 @@ lists every assignment so the owner can move any of them by adding an override.
 The IMPC crosswalk is re-keyed the same way: a coarse row's proxy goes to the fine construct its MP term names match,
 else to the namesake; every other fine construct of that coarse row takes a row with validity "none", because a proxy
 stated for a coarse construct was not stated for its parts.
+
+A fine construct can also be split out below a coarse row's roots, from configs/fine_construct_extra_roots.csv: each row
+names a coarse construct and an HPO term under one of its roots, which becomes a root of that row for the fine derivation
+only (with_extra_roots). The coarse crosswalk as registered stays as it is, and so does what the coarse construct
+covers, because the added root is a descendant of a root it already has. Decision 9.74 split Akathisia out of
+Restlessness this way (the owner, 19 October 2026: "I think physiologically, it should be split out").
 """
 from __future__ import annotations
 
@@ -34,6 +40,8 @@ COARSE_CROSSWALK_PATH = Path("docs/symptom_crosswalk.csv")
 FINE_CROSSWALK_PATH = Path("docs/symptom_crosswalk_fine.csv")
 ADDITIONS_PATH = Path("configs/symptom_construct_additions.csv")
 TERM_OVERRIDES_PATH = Path("configs/fine_construct_term_overrides.csv")
+EXTRA_ROOTS_PATH = Path("configs/fine_construct_extra_roots.csv")
+EXTRA_ROOT_REQUIRED_COLUMNS = ("coarse_symptom", "hpo_id", "hpo_name", "decision")
 IMPC_COARSE_PATH = Path("configs/impc_symptom_crosswalk.csv")
 IMPC_FINE_PATH = Path("configs/impc_symptom_crosswalk_fine.csv")
 
@@ -164,6 +172,68 @@ def fine_constructs_of(row: dict[str, str]) -> list[FineConstruct]:
     if len({construct.name for construct in constructs}) != len(constructs):
         raise ValueError(f"{coarse}: two HPO roots slug to one construct name: {names}")
     return constructs
+
+
+def read_extra_roots(path: Path | None) -> list[dict[str, str]]:
+    """The roots added at the fine level (columns coarse_symptom, hpo_id, hpo_name, decision, and optionally rdoc_domain
+    and note); an absent file adds none."""
+    if path is None or not Path(path).exists():
+        return []
+    rows = read_rows(Path(path))
+    for number, row in enumerate(rows, start=2):
+        missing = [column for column in EXTRA_ROOT_REQUIRED_COLUMNS if not (row.get(column) or "").strip()]
+        if missing:
+            raise ValueError(f"{path} line {number}: missing {', '.join(missing)}")
+    return rows
+
+
+def with_extra_roots(coarse_rows: list[dict[str, str]], extra_roots: list[dict[str, str]], vocabulary: HpoVocabulary | None = None) -> list[dict[str, str]]:
+    """The coarse rows with each extra root appended to its row's hpo_ids and hpo_names, for the fine derivation only.
+
+    An extra root must belong to a coarse row and must not be a root of it already. A row with one root cannot take one:
+    its construct would be renamed from the coarse name to its root's HPO name, which this table is not meant to do.
+    With a vocabulary, the root must carry the name hp.obo gives it, must sit under one of the row's roots and must not
+    be excluded from the row, so that the coarse construct's expansion is the same set of terms before and after."""
+    by_name = {row["target_symptom"]: dict(row) for row in coarse_rows}
+    for extra in extra_roots:
+        coarse, hpo_id, hpo_name = (extra["coarse_symptom"].strip(), extra["hpo_id"].strip(), extra["hpo_name"].strip())
+        if coarse not in by_name:
+            raise ValueError(f"extra root {hpo_id} names {coarse!r}, which the coarse crosswalk does not hold")
+        row = by_name[coarse]
+        root_ids, root_names = split_cell(row.get("hpo_ids")), split_cell(row.get("hpo_names"))
+        if hpo_id in root_ids:
+            raise ValueError(f"{hpo_id} is already a root of {coarse}")
+        if len(root_ids) < 2:
+            raise ValueError(f"{coarse} has {len(root_ids)} HPO root(s); an extra root would rename its fine construct")
+        if vocabulary is not None:
+            if vocabulary.names_by_term.get(hpo_id) != hpo_name:
+                raise ValueError(f"{hpo_id} is named {vocabulary.names_by_term.get(hpo_id)!r} in hp.obo, not {hpo_name!r}")
+            ancestors = vocabulary.ancestors_of(hpo_id)
+            if not any(root in ancestors for root in root_ids):
+                raise ValueError(f"{hpo_id} {hpo_name} is under none of {coarse}'s roots, so it would widen the coarse construct")
+            excluded = split_cell(row.get("excluded_hpo_ids"))
+            if any(term == hpo_id or term in ancestors for term in excluded):
+                raise ValueError(f"{hpo_id} {hpo_name} is excluded from {coarse}, so it cannot be one of its fine constructs")
+        row["hpo_ids"] = ";".join(root_ids + [hpo_id])
+        row["hpo_names"] = ";".join(root_names + [hpo_name])
+    return [by_name[row["target_symptom"]] for row in coarse_rows]
+
+
+def annotate_extra_roots(fine_rows: list[dict[str, str]], extra_roots: list[dict[str, str]]) -> list[dict[str, str]]:
+    """The fine rows with each extra root's construct given its own RDoC domain, when the table states one, and a note
+    naming the decision that split it out."""
+    by_construct = {slug(extra["hpo_name"]): extra for extra in extra_roots}
+    annotated = []
+    for row in fine_rows:
+        extra = by_construct.get(row["target_symptom"])
+        if extra is not None:
+            row = dict(row)
+            if (extra.get("rdoc_domain") or "").strip():
+                row["rdoc_domain"] = extra["rdoc_domain"].strip()
+            note = (extra.get("note") or "").strip()
+            row["notes"] = f"{row.get('notes', '')}; split out below {extra['coarse_symptom'].strip()}'s roots (decision {extra['decision'].strip()})" + (f": {note}" if note else "")
+        annotated.append(row)
+    return annotated
 
 
 def read_term_overrides(path: Path | None) -> dict[str, str]:
