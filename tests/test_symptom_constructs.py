@@ -16,13 +16,16 @@ from mechanistic_pathway_learning.evidence.symptom_constructs import (  # noqa: 
     assign_term,
     build_fine_crosswalk,
     coarse_of_fine,
+    annotate_extra_roots,
     fine_constructs_of,
     fine_impc_rows,
     phrase,
+    read_extra_roots,
     read_rows,
     read_term_overrides,
     slug,
     stems,
+    with_extra_roots,
     write_rows,
 )
 
@@ -208,7 +211,8 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     assert result.returncode == 0, result.stdout + result.stderr
     fine = read_rows(root / "docs/symptom_crosswalk_fine.csv")
     coarse = read_rows(root / "docs/symptom_crosswalk.csv")
-    assert len(fine) == sum(max(1, len([part for part in row["hpo_ids"].split(";") if part])) for row in coarse) + 1
+    extra_roots = read_rows(root / "configs/fine_construct_extra_roots.csv")
+    assert len(fine) == sum(max(1, len([part for part in row["hpo_ids"].split(";") if part])) for row in coarse) + 1 + len(extra_roots)
     assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | {"intellectual_disability"}
 
 
@@ -225,3 +229,119 @@ def test_the_literature_table_is_rekeyed_to_the_namesakes_without_a_row_moving()
     assert renamed.report_id[0] == "PubTator3|PMID:1|MESH:D011595|agitation|1" and renamed.report_id[1] == reports.report_id[1]
     with pytest.raises(ValueError, match="no coarse construct"):
         rekey(pd.DataFrame({"symptom": ["unknown"], "report_value": [1]}), namesake)
+
+
+AKATHISIA_STANZA = """
+[Term]
+id: HP:0031943
+name: Akathisia
+is_a: HP:0000711 ! Restlessness
+"""
+
+AKATHISIA_ROOT = {"coarse_symptom": "psychomotor_agitation", "hpo_id": "HP:0031943", "hpo_name": "Akathisia", "rdoc_domain": "sensorimotor",
+                  "decision": "9.74", "note": "split out"}
+
+
+@pytest.fixture
+def vocabulary_with_akathisia(tmp_path):
+    obo = tmp_path / "hp_with_akathisia.obo"
+    obo.write_text(OBO + AKATHISIA_STANZA, encoding="utf-8")
+    return HpoVocabulary.from_obo(obo)
+
+
+def test_an_extra_root_splits_a_construct_out_below_its_parent_root(vocabulary_with_akathisia):
+    coarse = coarse_rows()
+    derivation = with_extra_roots(coarse, [AKATHISIA_ROOT], vocabulary_with_akathisia)
+    assert coarse[1]["hpo_ids"] == "HP:0000713;HP:0000711", "the coarse rows passed in are not changed"
+    assert derivation[1]["hpo_ids"] == "HP:0000713;HP:0000711;HP:0031943" and derivation[1]["hpo_names"] == "Agitation;Restlessness;Akathisia"
+    assert [row["target_symptom"] for row in derivation] == [row["target_symptom"] for row in coarse]
+    rows, assignments = build_fine_crosswalk(derivation, [], {}, vocabulary_with_akathisia)
+    rows = annotate_extra_roots(rows, [AKATHISIA_ROOT])
+    by_name = {row["target_symptom"]: row for row in rows}
+    assert by_name["restlessness"]["excluded_hpo_ids"] == "HP:0031943", "the parent root excludes the root split out below it"
+    assert by_name["restlessness"]["meddra_preferred_terms"] == "Restlessness" and by_name["akathisia"]["meddra_preferred_terms"] == "Akathisia"
+    assert by_name["akathisia"]["coarse_symptom"] == "psychomotor_agitation" and by_name["akathisia"]["hpo_ids"] == "HP:0031943"
+    assert by_name["akathisia"]["rdoc_domain"] == "sensorimotor" and by_name["restlessness"]["rdoc_domain"] == "arousal"
+    assert "decision 9.74" in by_name["akathisia"]["notes"] and "decision 9.74" not in by_name["restlessness"]["notes"]
+    how = {assignment["term"]: (assignment["fine_construct"], assignment["how"]) for assignment in assignments}
+    assert how["Akathisia"] == ("akathisia", "hpo vocabulary"), "the most specific root that names the term holds it"
+    assert by_name["agitation"]["questionnaire_item"] == "PHQ-9 item 8", "the namesake keeps the coarse row's questionnaire item"
+
+
+def test_an_extra_root_that_would_change_the_coarse_construct_is_refused(vocabulary_with_akathisia):
+    def refused(extra, match, vocabulary=vocabulary_with_akathisia, rows=None):
+        with pytest.raises(ValueError, match=match):
+            with_extra_roots(rows if rows is not None else coarse_rows(), [{**AKATHISIA_ROOT, **extra}], vocabulary)
+    refused({"coarse_symptom": "unknown"}, "does not hold")
+    refused({"hpo_id": "HP:0000711", "hpo_name": "Restlessness"}, "already a root")
+    refused({"coarse_symptom": "anxiety"}, "would rename")
+    refused({"hpo_name": "Akathisias"}, "is named 'Akathisia' in hp.obo")
+    refused({"hpo_id": "HP:0000746", "hpo_name": "Delusion"}, "under none of")
+    excluded = coarse_rows()
+    excluded[1]["excluded_hpo_ids"] = "HP:0031943"
+    refused({}, "is excluded from", rows=excluded)
+    assert with_extra_roots(coarse_rows(), [], vocabulary_with_akathisia) == coarse_rows()
+
+
+def test_extra_roots_are_read_with_their_required_columns(tmp_path):
+    assert read_extra_roots(tmp_path / "absent.csv") == []
+    path = tmp_path / "extra.csv"
+    with open(path, "w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["coarse_symptom", "hpo_id", "hpo_name", "rdoc_domain", "decision", "note"])
+        writer.writerow(["psychomotor_agitation", "HP:0031943", "Akathisia", "", "", ""])
+    with pytest.raises(ValueError, match="missing decision"):
+        read_extra_roots(path)
+
+
+def test_the_page_lists_the_constructs_split_out_below_a_root(vocabulary_with_akathisia):
+    derivation = with_extra_roots(coarse_rows(), [AKATHISIA_ROOT], vocabulary_with_akathisia)
+    rows, assignments = build_fine_crosswalk(derivation, [], {}, vocabulary_with_akathisia)
+    page = render("stamp", annotate_extra_roots(rows, [AKATHISIA_ROOT]), assignments, [], [AKATHISIA_ROOT])
+    assert "## Constructs split out below a coarse construct's roots" in page
+    assert "| psychomotor_agitation | HP:0031943 Akathisia | sensorimotor | 9.74 | split out |" in page
+    assert "| psychomotor_agitation | Akathisia | akathisia | hpo vocabulary |" in page
+    assert "## Constructs split out" not in render("stamp", rows, assignments, [])
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_the_committed_crosswalk_holds_akathisia_apart_from_restlessness():
+    """Decision 9.74: akathisia is a fine construct of its own; the coarse crosswalk as registered still files it under
+    psychomotor agitation."""
+    fine = {row["target_symptom"]: row for row in read_rows(ROOT / "docs/symptom_crosswalk_fine.csv")}
+    assert fine["akathisia"]["hpo_ids"] == "HP:0031943" and fine["akathisia"]["meddra_preferred_terms"] == "Akathisia"
+    assert fine["akathisia"]["coarse_symptom"] == "psychomotor_agitation" and fine["akathisia"]["rdoc_domain"] == "sensorimotor"
+    assert "Akathisia" not in fine["restlessness"]["meddra_preferred_terms"].split(";")
+    assert "HP:0031943" in fine["restlessness"]["excluded_hpo_ids"].split(";")
+    coarse = {row["target_symptom"]: row for row in read_rows(ROOT / "docs/symptom_crosswalk.csv")}
+    assert "Akathisia" in coarse["psychomotor_agitation"]["meddra_preferred_terms"].split(";")
+    assert coarse["psychomotor_agitation"]["hpo_ids"] == "HP:0000713;HP:0000711", "the registered coarse row is unchanged"
+
+
+def test_the_coarse_construct_covers_the_same_hpo_terms_with_the_extra_root():
+    obo = ROOT / "data/raw/hpo/hp.obo"
+    if not obo.exists():
+        pytest.skip("hp.obo is not fetched")
+    vocabulary = HpoVocabulary.from_obo(obo)
+    coarse = read_rows(ROOT / "docs/symptom_crosswalk.csv")
+    derivation = with_extra_roots(coarse, read_extra_roots(ROOT / "configs/fine_construct_extra_roots.csv"), vocabulary)
+
+    def covered(row):
+        terms = set()
+        for root in [part for part in row["hpo_ids"].split(";") if part]:
+            terms |= {root} | {term for term, _ in [(t, None) for t in vocabulary.parents_by_term if root in vocabulary.ancestors_of(t)]}
+        for excluded in [part for part in row["excluded_hpo_ids"].split(";") if part]:
+            terms -= {excluded} | {t for t in vocabulary.parents_by_term if excluded in vocabulary.ancestors_of(t)}
+        return terms
+    for before, after in zip(coarse, derivation):
+        assert covered(before) == covered(after), f"{before['target_symptom']} covers other terms with the extra roots"
+
+
+def test_the_barnes_scale_reads_akathisia_and_every_scale_construct_is_a_fine_construct():
+    fine = {row["target_symptom"] for row in read_rows(ROOT / "docs/symptom_crosswalk_fine.csv")}
+    scales = read_rows(ROOT / "configs/trial_outcome_scale_crosswalk.csv")
+    barnes = [row for row in scales if row["scale"] == "Barnes Akathisia"]
+    assert [row["construct"] for row in barnes] == ["akathisia"]
+    assert {row["construct"] for row in scales} <= fine
