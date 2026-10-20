@@ -279,6 +279,15 @@ INPUT_WEIGHT_FORMS: tuple[str, ...] = ("positive", "signed")
 # protons is held just above empty rather than being allowed to produce a NaN.
 PH_SENSITIVITY_TARGET_ARGUMENT = 0.5  # root mean square of (sensitivity * deviation) after calibration
 PH_WEIGHT_EPSILON = 1e-30
+# Store content as a driving force on release (graph/calcium_stores.py has the reasoning; decision 9.75). After the
+# propagation settles, the deviation at each organelle calcium store becomes a multiplier on the reactions that draw
+# on it,
+#     w_store = max(0, 1 + sensitivity * store deviation),
+# linear because release rises with luminal calcium until the store is empty, which is the floor. The pool itself
+# propagates, so the first-order effect of store content is in the fixed point already; this is the interaction of
+# channel opening with store content, which a linear propagation cannot carry. The sensitivity is learned per store
+# and calibrated as the pH one is, for the same reason: deviations in arbitrary units.
+STORE_SENSITIVITY_TARGET_ARGUMENT = 0.5
 DEFAULT_PH_ACTIVITY_WIDTH = 1.0  # pH units; the half-width of a typical enzyme pH-activity curve, and a learned floor
 SMALLEST_PROTON_FRACTION = -0.999999
 BOTTLENECK_CHUNK = 32  # columns of the flattened batch-by-class gather taken at once; see class_bottleneck
@@ -467,6 +476,9 @@ class LinearResponseEncoder(nn.Module):
         ph_proton_node_index: Tensor | None = None,
         ph_compartment_of_node: Tensor | None = None,
         ph_compartment_names: list[str] | None = None,
+        store_pool_node_index: Tensor | None = None,
+        store_of_node: Tensor | None = None,
+        store_names: list[str] | None = None,
         max_propagation_steps: int = DEFAULT_MAX_PROPAGATION_STEPS,
         propagation_channels: int = 4,
         response_scale: str = "linear",
@@ -582,6 +594,25 @@ class LinearResponseEncoder(nn.Module):
                 torch.full((ph_proton_node_index.shape[0],), math.log(DEFAULT_PH_ACTIVITY_WIDTH)))
             self.ph_sensitivity_calibrated = False
             self.compartment_ph_sensitivity_report: dict[str, float] | None = None
+        # the calcium stores (see STORE_SENSITIVITY_TARGET_ARGUMENT). Both tensors or neither; a node whose store index
+        # is -1 (every node but the release reactions of a store) takes no store weight.
+        self.store_names = list(store_names or [])
+        if (store_pool_node_index is None) != (store_of_node is None):
+            raise ValueError("store_pool_node_index and store_of_node are given together or not at all")
+        if store_pool_node_index is None:
+            self.store_pool_node_index = self.store_of_node = self.log_store_sensitivity = None
+        else:
+            if store_of_node.shape[0] != num_graph_nodes:
+                raise ValueError("store_of_node needs one entry per graph node")
+            if int(store_of_node.max()) >= store_pool_node_index.shape[0]:
+                raise ValueError("store_of_node indexes a store with no pool node")
+            if self.store_names and len(self.store_names) != store_pool_node_index.shape[0]:
+                raise ValueError("store_names must name one store per pool node")
+            self.register_buffer("store_pool_node_index", store_pool_node_index.long(), persistent=False)
+            self.register_buffer("store_of_node", store_of_node.long(), persistent=False)
+            self.log_store_sensitivity = nn.Parameter(torch.zeros(store_pool_node_index.shape[0]))
+            self.store_sensitivity_calibrated = False
+            self.calcium_store_sensitivity_report: dict[str, float] | None = None
         self.class_bottleneck_cache: dict[tuple[int, ...], Tensor] = {}  # seeds -> [N, K]; see cached_class_bottleneck
         self.damping = damping
         if cross_relation_aggregator not in CROSS_RELATION_AGGREGATORS:
@@ -962,6 +993,38 @@ class LinearResponseEncoder(nn.Module):
                 for index, name in enumerate(names) if bool(reached[index])}
             return self.compartment_ph_sensitivity_report
 
+    def calcium_store_weight(self, state: Tensor) -> Tensor:
+        """[N, B, C] multiplier from the settled deviation of the store each node draws on, 1 where a node draws on none.
+
+        state is the settled response, node-major. The deviation is read per channel, so each cell class carries its
+        own store content. Linear in the deviation with a floor at 0 (an empty store releases nothing), so unlike the
+        pH weight it can exceed 1: an overfilled store raises release. Applied after the fixed point, so the
+        contraction is untouched; see STORE_SENSITIVITY_TARGET_ARGUMENT."""
+        deviation = state[self.store_pool_node_index]  # [stores, B, C]
+        per_store = torch.clamp(1.0 + torch.exp(self.log_store_sensitivity)[:, None, None] * deviation, min=0.0)
+        ones = torch.ones_like(per_store[:1])
+        with_none = torch.cat([per_store, ones], dim=0)  # the last row is the weight of a node that draws on no store
+        has_none = torch.full_like(self.store_of_node, per_store.shape[0])
+        return with_none[torch.where(self.store_of_node >= 0, self.store_of_node, has_none)]
+
+    def calibrate_calcium_store_sensitivity(self, state: Tensor) -> dict[str, float]:
+        """Set each store's sensitivity so that the root mean square of (sensitivity * deviation) on this settled state
+        is STORE_SENSITIVITY_TARGET_ARGUMENT, then let training move it; the pH calibration's twin, for the same reason.
+        A store the batch does not reach keeps its sensitivity."""
+        if self.store_pool_node_index is None:
+            return {}
+        with torch.no_grad():
+            deviation = state[self.store_pool_node_index]  # [stores, B, C]
+            root_mean_square = deviation.pow(2).mean(dim=(1, 2)).sqrt()
+            reached = root_mean_square > PH_WEIGHT_EPSILON
+            self.log_store_sensitivity[reached] = torch.log(STORE_SENSITIVITY_TARGET_ARGUMENT / root_mean_square[reached])
+            self.store_sensitivity_calibrated = True
+            names = self.store_names or [str(index) for index in range(len(root_mean_square))]
+            self.calcium_store_sensitivity_report = {
+                name: float(torch.exp(self.log_store_sensitivity[index]))
+                for index, name in enumerate(names) if bool(reached[index])}
+            return self.calcium_store_sensitivity_report
+
     def injection_weights(self) -> Tensor:
         """[C]: the scale of the perturbation in each channel, positive under input_weights "positive"."""
         return torch.exp(self.log_input_weight) if self.input_weights == "positive" else self.input_weight
@@ -1197,8 +1260,11 @@ class LinearResponseEncoder(nn.Module):
             else:
                 bottleneck = self.class_bottleneck(perturbation_node_index, rounds=steps_taken)
             state = state * bottleneck.repeat_interleave(self.channels_per_cell_class, dim=2)
-        if self.ph_proton_node_index is not None:  # read from the settled state, so after the loop and after no bottleneck
-            state = state * self.compartment_ph_weight(state)
+        settled = state  # both weights read the settled state, so after the loop, after no bottleneck and before each other
+        if self.ph_proton_node_index is not None:
+            state = state * self.compartment_ph_weight(settled)
+        if self.store_pool_node_index is not None:
+            state = state * self.calcium_store_weight(settled)
         return state.permute(1, 0, 2)
 
     def present_nodes(self, perturbation_node_index: Tensor) -> Tensor | None:

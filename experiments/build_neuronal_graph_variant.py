@@ -6,7 +6,9 @@
 Inputs: the pinned Reactome exports (data/raw/reactome/v97, experiments/fetch_reactome_pathways.py), UniProt for
 accession -> gene symbol, ChEBI for the ChEBI -> Human-GEM bridge of the laboratory labels, Human-GEM's SBML for ion
 charges and transport stoichiometry, GTEx median TPM for the brain-expressed catalysts, and the curated tables
-docs/curated_presynaptic_receptors.csv, docs/curated_oxidant_targets.csv and docs/curated_oxidant_sources.csv.
+docs/curated_presynaptic_receptors.csv, docs/curated_oxidant_targets.csv and docs/curated_oxidant_sources.csv. The
+organelle channel reactions of decision 9.75 rest on UniProt's catalytic activities, pinned by
+experiments/fetch_organelle_channel_annotations.py and checked by tests/test_organelle_channel_annotations.py.
 
 Usage:
   python experiments/build_neuronal_graph_variant.py --base-graph-dir data/processed/graph_manganese --output-dir data/processed/graph_neuronal
@@ -69,6 +71,36 @@ INORGANIC_IONS = {"Na+": "MAM02519", "K+": "MAM02200", "Ca2+": "MAM01413", "Cl-"
 # use the entity as chloride and not a value read from a charge table. MAM01442, BiGG `cl`, is the entity that
 # carries chloride's charge in Human-GEM, and the owner chose to keep the two separate rather than merge them.
 IONS_WITHOUT_A_HUMAN_GEM_CHARGE = {"Cl- (Reactome)": ("MAM02144", -1)}
+# Reactome's chloride shares the neuronal chloride pool (decision 9.75) without being merged into MAM01442: the two
+# entities stay apart, as decision 9.4 ruled, and a Reactome reaction that moves MAM02144 across the plasma membrane
+# gets a changes_ion_pool edge to NEURON_MAM01442c, as a Human-GEM reaction does. Measured on v5 before this: the 23
+# Reactome reactions on MAM02144, the GABA-A and glycine receptor currents among them, told VM_c and none loaded the
+# pool, whose 32 edges all came from Human-GEM.
+ION_POOL_ALIASES = {"MAM02144": "MAM01442"}
+# Gene associations Human-GEM states for a membrane the protein does not sit on (decision 9.75), removed before the
+# electrical pass so the current is not the gene's. MAR07629 "transport of Ca2+ (cytosol to extracellular)" is the
+# plasma-membrane calcium ATPase, PMCA (ATP2B1-4, "Cell membrane", UniProt P20020), and Human-GEM also lists the SR
+# and ER pump SERCA (ATP2A1-3, "Endoplasmic reticulum membrane ... Sarcoplasmic reticulum membrane", UniProt P16615)
+# and the Golgi pump SPCA (ATP2C1-2, "Golgi apparatus, trans-Golgi network membrane", UniProt P98194), each of which
+# Reactome carries at its own membrane (RCT_427910, RCT_936883). MAR09580 "transport
+# of Li+ (cytosol to extracellular)" lists SLC8B1, NCLX, which is the mitochondrial Na+/Ca2+ exchanger ("Mitochondrion
+# inner membrane", UniProt Q6J4K2; Reactome RCT_8949688); the reaction keeps no catalyst, and the plasma-membrane
+# Na+/Ca2+ exchangers NCX1-3 carry Human-GEM's other exchange reactions. The locations were read from the pinned
+# UniProt proteome (data/raw/uniprot/uniprot_human_reviewed.tsv.gz, release 2026_03).
+HUMAN_GEM_CATALYSIS_REMOVED = {
+    **{(gene, "MAR07629"): "SERCA pumps calcium into the SR and ER lumen (RCT_427910), not out of the cell" for gene in ("ATP2A1", "ATP2A2", "ATP2A3")},
+    **{(gene, "MAR07629"): "SPCA pumps calcium into the Golgi lumen (RCT_936883), not out of the cell" for gene in ("ATP2C1", "ATP2C2")},
+    ("SLC8B1", "MAR09580"): "NCLX is the mitochondrial Na+/Ca2+ exchanger (RCT_8949688), not a plasma-membrane one",
+}
+# A member Reactome gives a set whose reaction the protein does not carry at that membrane (decision 9.75). Reactome's
+# DefinedSet "TRPs" (RCTE_3295582, 23 members) catalyses RCT_3295579 "TRPs transport extracellular Ca2+ to cytosol",
+# and lists the mucolipins MCOLN1 to MCOLN3 among 20 plasma-membrane TRP channels; so each mucolipin depolarised the
+# neuron. They are the endolysosomal calcium release channels: "endolysosome-localized mucolipin transient receptor
+# potential (TRPML) channels" are the "Ca(2+) release channels" of the endolysosome (Dong et al. 2010, PMID 20802798),
+# and UniProt places MCOLN1 on the "Late endosome membrane" and "Lysosome membrane" with its Ca2+ transport
+# (RHEA:29671) at experimental evidence (Q9GZU1). Their release reaction is the curated MAR_TRPML_CALCIUM_RELEASE.
+REACTOME_ENTITY_MEMBERS_REMOVED = {(gene, "RCTE_3295582"): "the mucolipins release calcium from the endolysosome (MAR_TRPML_CALCIUM_RELEASE), not from outside the cell"
+                                   for gene in ("MCOLN1", "MCOLN2", "MCOLN3")}
 # The charge guard the owner approved on 14 October 2026 ("good call on prophylactically changing the mapper to
 # ChEBl term Reactome names"). It turned out to be the substantive fix rather than a precaution, because NEITHER
 # Human-GEM entity is chloride by its own annotation: MAM02144 is `InChI=1S/ClH/h1H`, hydrogen chloride, CHEBI:17883
@@ -212,6 +244,50 @@ CURATED_REACTIONS = [
     # cofactors.
     CuratedReaction("MAR_LYSOSOMAL_COBALAMIN_RELEASE", "entry of cobalamin to the cytosol through the lysosome", ("MAM01361e",), ("MAM01361c",),
                     ("LMBRD1", "ABCD4"), "lysosomal release of cobalamin, LMBD1 and ABCD4 (PMID 28572511)"),
+    # The organelle channels of decision 9.75, which no imported Reactome pathway and no Human-GEM reaction carries.
+    # Their conductances are UniProt's curated catalytic activities (Rhea reactions; experiments/
+    # fetch_organelle_channel_annotations.py, data/raw/uniprot/uniprot_organelle_channels.tsv.gz, release 2026_03),
+    # the membrane each crosses is the entry's subcellular location, and the direction is the physiological one, since
+    # Rhea's "(in)" and "(out)" are nominal sides with no direction. The potassium on either side is the currency
+    # metabolite, not the neuronal pool: a counter-ion current is driven by the release it balances, not by the
+    # cytosolic potassium content, and a pool substrate would make cytosolic K+ an activator of store release by mass
+    # action. So these reactions reach the graph through their catalysts and through the release reactions they
+    # activate, and nothing else.
+    #
+    # TRIC-A and TRIC-B (TMEM38A, TMEM38B): "K(+)(in) = K(+)(out)" (RHEA:29463, by similarity, Q9H6F2 and Q9NVV0),
+    # on the "Sarcoplasmic reticulum membrane" and the "Endoplasmic reticulum membrane". Written cytosol to lumen, the
+    # countercurrent that balances Ca2+ release: "Cell signalling requires efficient Ca2+ mobilization from intracellular
+    # stores through Ca2+ release channels, as well as predicted counter-movement of ions across the sarcoplasmic/
+    # endoplasmic reticulum membrane to balance the transient negative potential generated by Ca2+ release" (Yazawa et
+    # al. 2007, PMID 17611541). The release channel carries most of its own countercurrent (Gillespie and Fill 2008,
+    # PMID 18621826), and TRIC "most likely is needed to restore trans-SR K+ balance after RyRs close" (Guo et al.
+    # 2013, PMID 24010658), so the activation below is of repeated release, which a graph without a time axis writes as
+    # +1. The direction of each activation is from a knockout: TRIC-A "functions as an excitatory modulator of RyR1
+    # channels", with "the impaired SR Ca-release observed in skeletal muscle from Tric-a KO mice" (El-Ajouz et al.
+    # 2017, PMID 28387457), and in Tric-b-knockout chondrocytes "ER Ca release was impaired, while cytoplasmic Ca level
+    # was elevated" (Ichimura et al. 2023, PMID 38123563). Both are mouse and neither is neuronal; TRIC-A's activation
+    # is written to the ryanodine receptor reaction it was measured on and TRIC-B's to both ER release reactions.
+    CuratedReaction("MAR_TRIC_A_POTASSIUM", "potassium countercurrent into the sarcoplasmic reticulum through TRIC-A", ("MAM02200c",), ("MAM02200r",),
+                    ("TMEM38A",), "SR K+ counter-ion channel (UniProt Q9H6F2, RHEA:29463; PMID 17611541; direction PMID 28387457)",
+                    activates_reactions=("RCT_2855020",)),
+    CuratedReaction("MAR_TRIC_B_POTASSIUM", "potassium countercurrent into the endoplasmic reticulum through TRIC-B", ("MAM02200c",), ("MAM02200r",),
+                    ("TMEM38B",), "ER K+ counter-ion channel (UniProt Q9NVV0, RHEA:29463; PMID 17611541; direction PMID 38123563)",
+                    activates_reactions=("RCT_2855020", "RCT_169683")),
+    # TMEM175: "K(+)(in) = K(+)(out)" (RHEA:29463) and "H(+)(in) = H(+)(out)" (RHEA:34979), both experimental, on the
+    # "Endosome membrane" and "Lysosome membrane" (Q9BSA9). "Lysosomes lacking TMEM175 exhibit no K+ conductance, have a
+    # markedly depolarized ΔΨ and little sensitivity to changes in [K+], and have compromised luminal
+    # pH stability" (Cang et al. 2015, PMID 26317472). Written cytosol to lumen as the counter-ion direction of
+    # lysosomal calcium release; no paper read states whether the knockout lowers or raises that release, so the
+    # reaction activates nothing and reaches the graph through TMEM175 alone until one does.
+    CuratedReaction("MAR_TMEM175_POTASSIUM", "potassium current across the endolysosomal membrane through TMEM175", ("MAM02200c",), ("MAM02200l",),
+                    ("TMEM175",), "endolysosomal K+ channel (UniProt Q9BSA9, RHEA:29463; PMID 26317472)"),
+    # The mucolipins: "Ca(2+)(in) = Ca(2+)(out)" (RHEA:29671, experimental for all three; Q9GZU1, Q8IZK6, Q8TDD5), on
+    # the late endosome and lysosome membranes; "endolysosome-localized mucolipin transient receptor potential (TRPML)
+    # channels" are the endolysosome's "Ca(2+) release channels" (Dong et al. 2010, PMID 20802798). Lumen to cytosol,
+    # from the endolysosomal store into the neuronal calcium pool, as Reactome writes the two-pore channels
+    # (RCT_2685505). The mucolipins leave Reactome's plasma-membrane TRP set for this (REACTOME_ENTITY_MEMBERS_REMOVED).
+    CuratedReaction("MAR_TRPML_CALCIUM_RELEASE", "calcium release from the endolysosome through the mucolipin channels (TRPML)", ("MAM01413l",), ("NEURON_MAM01413c",),
+                    ("MCOLN1", "MCOLN2", "MCOLN3"), "endolysosomal calcium release channel (UniProt Q9GZU1, RHEA:29671; PMID 20802798)"),
 ]
 # Human-GEM reactions the curated set replaces, deleted with every edge they carry
 REPLACED_HUMAN_GEM_REACTIONS = {"MAR01527": "Sodium Transport (Uniport) lumps the Nav, HCN, NALCN, ENaC and TPCN families, whose voltage dependence differs; "
@@ -285,7 +361,8 @@ def main() -> None:
     new_nodes, new_edges, new_relations, summary = import_reactome_layer(
         sbml_texts, nodes, edges, relation_types, gene_of_uniprot, map_chebi_to_human_gem, ion_bases, ion_charges,
         read_human_gem_participants(human_gem_sbml, set(INORGANIC_IONS.values())), brain_expressed_genes, set(TRANSMITTER_BASES),
-        VESICULAR_TRANSPORTER_GENES, CURATED_REACTIONS, REPLACED_HUMAN_GEM_REACTIONS, arguments.membrane_potential)
+        VESICULAR_TRANSPORTER_GENES, CURATED_REACTIONS, REPLACED_HUMAN_GEM_REACTIONS, arguments.membrane_potential,
+        ion_pool_aliases=ION_POOL_ALIASES, catalysis_removed=HUMAN_GEM_CATALYSIS_REMOVED, entity_members_removed=REACTOME_ENTITY_MEMBERS_REMOVED)
 
     release_reactions_of_transmitter: dict[str, list[str]] = {}
     for reaction, released in summary["release_reactions"].items():
