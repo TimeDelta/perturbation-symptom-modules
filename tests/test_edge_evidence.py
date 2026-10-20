@@ -228,3 +228,41 @@ def test_a_bulk_paper_can_count_once_or_not_at_all_toward_a_label():
     assert curated_edge_labels(evidence, bulk_papers="none")[:3].tolist() == [False, False, True]
     with pytest.raises(ValueError, match="bulk paper mode"):
         records_with_bulk_papers(evidence, "half")
+
+
+# --- Decision 9.76: a factor the adult sources do not detect takes a lowered prior and is never a label ---
+
+def test_a_flagged_transcription_edge_takes_the_lowered_tier_and_is_never_a_label():
+    from mechanistic_pathway_learning.graph.edge_evidence import FACTOR_BELOW_DETECTION_COLUMN, FACTOR_BELOW_DETECTION_KIND, factor_below_detection_flags
+
+    nodes = pd.DataFrame({"node_id": ["GENE:HAND2", "GENE:NPPA", "GENE:THRB", "PROTEIN:HAND2", "MAM00001c"],
+                          "node_type": ["gene", "gene", "gene", "protein", "metabolite"],
+                          "gene_symbol": ["HAND2", "NPPA", "THRB", "HAND2", None],
+                          "expression_below_detection": [True, False, False, False, False]})
+    evidence = pd.DataFrame({"family": ["transcription", "transcription", "transcription", "signalling", "transcription"],
+                             "kind": ["curated", "curated", "text_mined_only", "curated", "unmatched"],
+                             "records": [3, 3, 1, 3, 0], "human_records": [2, 2, 0, 2, 0], "contested": [False] * 5,
+                             "source_id": ["PROTEIN:HAND2", "PROTEIN:THRB", "GENE:HAND2", "PROTEIN:HAND2", "PROTEIN:HAND2"],
+                             "target_id": ["GENE:NPPA", "GENE:NPPA", "GENE:NPPA", "GENE:NPPA", "GENE:THRB"],
+                             "relation_type": ["regulates_transcription_of"] * 3 + ["activates", "regulates_transcription_of"]})
+    flags = factor_below_detection_flags(evidence, nodes)
+    assert flags.tolist() == [True, False, True, False, True], "the split's protein source reads its gene's flag; a signalling edge is never flagged"
+    assert not factor_below_detection_flags(evidence, nodes.drop(columns="expression_below_detection")).any(), "a graph built before the column gives False"
+    evidence[FACTOR_BELOW_DETECTION_COLUMN] = flags
+    tiers = {("transcription", "curated"): EdgeTier("transcription", "curated", 0.85, 1.0),
+             ("transcription", "text_mined_only"): EdgeTier("transcription", "text_mined_only", 0.55, 0.5),
+             ("signalling", "curated"): EdgeTier("signalling", "curated", 0.9, 1.0)}
+    gated, probability, strength = edge_priors(evidence, tiers)
+    assert probability[0] == pytest.approx(0.85), "without the lowered row the kind's tier stands, the behaviour before the decision"
+    tiers[("transcription", FACTOR_BELOW_DETECTION_KIND)] = EdgeTier("transcription", FACTOR_BELOW_DETECTION_KIND, 0.3, 0.5)
+    gated, probability, strength = edge_priors(evidence, tiers)
+    assert gated.tolist() == [True, True, True, True, False], "an unmatched edge stays ungated whatever its factor"
+    assert probability[0] == pytest.approx(0.3) and strength[0] == pytest.approx(0.5 * float(tempered(3))), "the flagged curated edge takes the lowered tier"
+    assert probability[1] == pytest.approx(0.85) and probability[2] == pytest.approx(0.3) and probability[3] == pytest.approx(0.9)
+    labels = curated_edge_labels(evidence)
+    assert labels.tolist() == [False, True, False, True, False], "a flagged edge is never a label, whatever its records"
+    summary = summarise(evidence, gated, probability, strength)
+    assert summary[FACTOR_BELOW_DETECTION_COLUMN] == {"edges": 3, "gated": 2, "mean_prior": pytest.approx(0.3), "factors": 2}
+    committed = read_edge_tiers()
+    lowered = committed[("transcription", FACTOR_BELOW_DETECTION_KIND)]
+    assert lowered.prior_probability < 0.5 < committed[("transcription", "text_mined_only")].prior_probability, "below one half, so a hard gate starts closed"

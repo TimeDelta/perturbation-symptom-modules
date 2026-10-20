@@ -3,7 +3,8 @@ rewired run can recompute its reactions' expression from rewired gene rules (mec
 rewired_expression_features.py; run_main_model.py --recompute-reaction-expression-on-rewired-graph).
 
 The tables are assembled exactly as experiments/build_brain_expression_descriptors.py and experiments/build_cell_class_weights.py
-assemble them (GTEx brain and other maxima, HPA brain regions, HPA single-nucleus classes and the dopaminergic class).
+assemble them (GTEx brain and other maxima, HPA brain regions, HPA single-nucleus classes and the dopaminergic class; the
+class table adds the peripheral endocrine classes of decision 9.76 unless --no-peripheral-classes).
 Before writing, the script recomputes the reaction rows of the descriptor table and of the weights from the graph's real
 rules and refuses to write unless both equal the stored files, so the recomputation in a rewired run starts from the
 inputs the real run read. Writes new files only; no file a running job reads is touched.
@@ -23,6 +24,7 @@ import pandas as pd
 from mechanistic_pathway_learning.graph.brain_expression_descriptors import (
     add_dopaminergic_class, gtex_brain_and_other_maximum, hpa_cell_class_table, hpa_region_table, read_zipped_table)
 from mechanistic_pathway_learning.graph.brain_expression_weights import ALL_CELLS_CLASS
+from mechanistic_pathway_learning.graph.peripheral_cell_classes import DEFAULT_EXPRESSION_ATLAS_PATH, add_peripheral_classes
 from mechanistic_pathway_learning.graph.rewired_expression_features import rewired_reaction_brain_block, rewired_reaction_cell_class_weights
 
 
@@ -33,6 +35,8 @@ def main() -> None:
     parser.add_argument("--hpa-region", type=Path, default=Path("data/raw/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip"))
     parser.add_argument("--hpa-cluster-type", type=Path, default=Path("data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"))
     parser.add_argument("--dopaminergic-expression", type=Path, default=Path("data/processed/brain_expression/dopaminergic_siletti_cluster395.parquet"))
+    parser.add_argument("--expression-atlas-fantom5", type=Path, default=DEFAULT_EXPRESSION_ATLAS_PATH, help="the pineal class's source (decision 9.76)")
+    parser.add_argument("--no-peripheral-classes", action="store_true", help="the class table of the eleven brain classes alone")
     parser.add_argument("--descriptors", type=Path, default=Path("data/processed/node_descriptors/full_neuronal_descriptors_brain_expression.parquet"))
     parser.add_argument("--cell-class-weights", type=Path, default=Path("data/processed/cell_class_weights/full_neuronal_cell_class_weights.parquet"))
     parser.add_argument("--gene-expression-output", type=Path, default=Path("data/processed/brain_expression/gene_expression_for_descriptors.parquet"))
@@ -44,6 +48,8 @@ def main() -> None:
                                               pd.read_parquet(arguments.dopaminergic_expression)["ncpm_aligned"])
     gene_expression = pd.concat([gtex_brain_and_other_maximum(arguments.gtex), hpa_region_table(read_zipped_table(arguments.hpa_region)), cell_class_table], axis=1)
     class_expression = cell_class_table.copy()
+    if not arguments.no_peripheral_classes:
+        class_expression, _ = add_peripheral_classes(class_expression, arguments.gtex, arguments.expression_atlas_fantom5)
     class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
 
     rules = pd.Series(nodes.gene_reaction_rule.fillna("").to_numpy(), index=pd.Index(nodes.node_id, name="node_id"))

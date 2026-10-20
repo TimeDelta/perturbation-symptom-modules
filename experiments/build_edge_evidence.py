@@ -4,7 +4,9 @@ Reads the raw OmniPath and CollecTRI tables (their references and sources, which
 IntAct's curated non-interacting pairs and the graph's edges; writes <graph-dir>/edge_evidence.parquet aligned to
 edges.parquet row for row (family, kind, records, contested, the PubMed ids the record count counts and the resources
 that state the edge, the edge's own source_id, target_id and relation_type, which the trainer checks against the graph
-before it reads a row, and, with the species cache of experiments/fetch_icite_species.py, how many of its records iCite
+before it reads a row, factor_below_detection for a transcription edge whose factor's gene node carries
+expression_below_detection in nodes.parquet (decision 9.76: such an edge takes the lowered tier and is never a label),
+and, with the species cache of experiments/fetch_icite_species.py, how many of its records iCite
 scored, how many are human evidence and how many record animals and no human, and, with the OmniPath evidences
 downloads, the PubMed ids behind each signed edge's sign, how CollecTRI decided a regulation's sign and whether its
 two CollecTRI releases dispute it: graph/sign_evidence.py, decisions 9.70 and 9.72) and edge_evidence_summary.json, which
@@ -27,9 +29,11 @@ import pandas as pd
 
 from mechanistic_pathway_learning.graph.edge_evidence import (
     DEFAULT_TIERS_PATH,
+    FACTOR_BELOW_DETECTION_COLUMN,
     curated_edge_labels,
     edge_evidence_table,
     edge_priors,
+    factor_below_detection_flags,
     read_edge_tiers,
     read_species,
     signalling_references,
@@ -100,6 +104,11 @@ def main() -> int:
     edges = pd.read_parquet(arguments.graph_dir / "edges.parquet")
     evidence = edge_evidence_table(edges, references, negative_pairs)
     evidence = evidence.assign(source_id=edges.source_id.to_numpy(), target_id=edges.target_id.to_numpy(), relation_type=edges.relation_type.to_numpy())
+    nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
+    evidence[FACTOR_BELOW_DETECTION_COLUMN] = factor_below_detection_flags(evidence, nodes)
+    if "expression_below_detection" not in nodes.columns:
+        print(f"{arguments.graph_dir}/nodes.parquet has no expression_below_detection column (built before decision 9.76): no transcription edge takes the lowered tier",
+              file=sys.stderr)
     sign_summary = None
     if arguments.signalling_evidences.is_file() and arguments.transcription_evidences.is_file():
         sign_tables = pd.concat([sign_reference_table(read_evidences(arguments.signalling_evidences), "signalling"),
@@ -131,7 +140,8 @@ def main() -> int:
                "species": species_summary, "curated_edge_labels": labels, "sign_evidence": sign_summary}
     (arguments.graph_dir / "edge_evidence_summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {arguments.graph_dir / 'edge_evidence.parquet'}: {summary['gated']:,} of {summary['edges']:,} edges gated, {summary['contested']} contested"
-          + ("" if labels is None else f"; {labels['labels']:,} curated edges are labels under decision 9.63 (b)"))
+          + ("" if labels is None else f"; {labels['labels']:,} curated edges are labels under decision 9.63 (b)")
+          + f"; {summary[FACTOR_BELOW_DETECTION_COLUMN]['edges']:,} transcription edges of {summary[FACTOR_BELOW_DETECTION_COLUMN]['factors']} factors below detection take the lowered tier")
     for key, value in summary["by_family_and_kind"].items():
         print(f"  {key:34s} {value['edges']:7,} edges, mean prior {value['mean_prior'] if value['mean_prior'] is None else round(value['mean_prior'], 3)}, mean strength {value['mean_strength']:.3f}")
     return 0

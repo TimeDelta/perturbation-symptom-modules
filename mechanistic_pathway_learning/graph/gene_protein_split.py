@@ -44,7 +44,8 @@ PROTEIN_NODE_TYPE = "protein"
 PROTEIN_NODE_PREFIX = "PROTEIN:"
 ENCODES_RELATION = "encodes"
 GENE_TARGET_RELATIONS = frozenset({"regulates_transcription_of"})  # the target end of these relations stays at the gene
-EXPRESSION_NODE_COLUMNS = ("brain_median_tpm_max", "brain_expression_known", "brain_expressed")  # stay on the gene nodes
+EXPRESSION_NODE_COLUMNS = ("brain_median_tpm_max", "body_median_tpm_max", "brain_expression_known", "brain_expressed",
+                           "cell_class_ncpm_max", "cell_class_expression_known", "expression_below_detection")  # stay on the gene nodes
 PROTEIN_DESCRIPTOR_PREFIX = "protein_"
 PROTEIN_DESCRIPTOR_FLAG = "protein_has_protein_descriptors"
 UNIPROT_ENTRY_COLUMN = "Entry"
@@ -226,7 +227,7 @@ def split_graph(nodes: pd.DataFrame, edges: pd.DataFrame, relation_types: list[s
             row["ensembl_gene_id"] = with_ensembl.iloc[0] if len(with_ensembl) else None
         if "in_metabolic_layer" in members.columns:
             row["in_metabolic_layer"] = bool((members.in_metabolic_layer == True).any())  # noqa: E712 - NaN counts as False
-        for flag in ("brain_expression_known", "brain_expressed"):
+        for flag in ("brain_expression_known", "brain_expressed", "cell_class_expression_known", "expression_below_detection"):
             if flag in nodes.columns:
                 row[flag] = False
         protein_rows.append(row)

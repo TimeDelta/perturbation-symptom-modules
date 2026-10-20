@@ -23,11 +23,18 @@ Layers and sources:
 
 Gene and protein nodes share one identifier space, GENE:<symbol>: metabolic genes with a
 symbol in genes.tsv are remapped from their Ensembl identifier, and signaling or
-Brain expression (GTEx median TPM, --brain-expression) annotates gene nodes with
-brain_median_tpm_max, brain_expression_known and brain_expressed, gives reactions the largest
-value over their genes and drops regulon edges of factors known not to be brain expressed.
 transcription participants that are not in Human-GEM become gene nodes with
 in_metabolic_layer false. Metabolic genes without a symbol keep the Ensembl identifier.
+
+Brain expression (GTEx median TPM, --brain-expression) annotates gene nodes with brain_median_tpm_max,
+body_median_tpm_max, brain_expression_known and brain_expressed, and gives reactions the largest brain value over
+their genes. Cell-class expression (--cell-class-expression, the Human Protein Atlas single-nucleus cluster types
+pooled into the brain classes of brain_expression_descriptors, with the peripheral endocrine classes of
+peripheral_cell_classes joined on) annotates gene nodes with cell_class_ncpm_max and cell_class_expression_known.
+The transcription gate (restrict_transcription_edges_to_expressed_factors, decision 9.76) drops a factor's regulon
+only when the factor is at 0 in every cell class and below the TPM threshold in every GTEx tissue of the body;
+a factor below the brain TPM threshold whose largest class value is under the detection threshold keeps its edges
+with expression_below_detection set, which the edge evidence reads to lower their prior.
 
 Hard structural constraints are enforced here, not in the model: no other edge types,
 no symptom-symptom edges, no disease nodes, compartment changes only via transport
@@ -375,14 +382,16 @@ GTEX_BRAIN_TISSUE_PREFIX = "Brain_"
 
 
 def load_brain_expression(gct_path: Path) -> pd.DataFrame:
-    """Per-gene brain expression from a GTEx median-TPM GCT file (design section 4.1, reference [30]).
+    """Per-gene brain and whole-body expression from a GTEx median-TPM GCT file (design section 4.1, reference [30]).
 
     Returns one row per gene with ensembl_gene_id (version suffix removed), gene_symbol,
-    brain_median_tpm_max (the largest median TPM over the brain tissues), brain_median_tpm_mean and
+    brain_median_tpm_max (the largest median TPM over the brain tissues), brain_median_tpm_mean,
+    body_median_tpm_max (the largest median TPM over every tissue of the file, brain included) and
     brain_tissue_count. GTEx v10 has 13 brain tissues; any column whose name starts with Brain_ counts.
     """
     table = pd.read_csv(gct_path, sep="\t", skiprows=2)
-    brain_columns = [column for column in table.columns if column.startswith(GTEX_BRAIN_TISSUE_PREFIX)]
+    tissue_columns = [column for column in table.columns if column not in ("Name", "Description")]
+    brain_columns = [column for column in tissue_columns if column.startswith(GTEX_BRAIN_TISSUE_PREFIX)]
     if not brain_columns:
         raise ValueError(f"{gct_path} has no columns starting with {GTEX_BRAIN_TISSUE_PREFIX}")
     expression = pd.DataFrame({
@@ -390,33 +399,91 @@ def load_brain_expression(gct_path: Path) -> pd.DataFrame:
         "gene_symbol": table["Description"].astype(str),
         "brain_median_tpm_max": table[brain_columns].max(axis=1).astype(float),
         "brain_median_tpm_mean": table[brain_columns].mean(axis=1).astype(float),
+        "body_median_tpm_max": table[tissue_columns].max(axis=1).astype(float),
     })
     expression["brain_tissue_count"] = len(brain_columns)
     # a symbol can map to several Ensembl ids (and vice versa); keep the highest brain expression per key
     return expression.sort_values("brain_median_tpm_max", ascending=False)
 
 
+def gene_node_values(nodes: pd.DataFrame, expression: pd.DataFrame, column: str) -> pd.Series:
+    """expression[column] per gene node, matched by Ensembl id when the node has one and by symbol otherwise, indexed
+    like nodes (missing outside the gene nodes and for a gene the table lacks)."""
+    by_ensembl = expression.drop_duplicates("ensembl_gene_id").set_index("ensembl_gene_id")[column]
+    by_symbol = expression.drop_duplicates("gene_symbol").set_index("gene_symbol")[column]
+    gene_mask = nodes.node_type == "gene"
+    ensembl_values = nodes.loc[gene_mask, "ensembl_gene_id"].map(by_ensembl) if "ensembl_gene_id" in nodes else pd.Series(index=nodes.index[gene_mask], dtype=float)
+    symbol_values = nodes.loc[gene_mask, "gene_symbol"].map(by_symbol)
+    values = pd.Series(pd.NA, index=nodes.index, dtype=object)
+    values.loc[gene_mask] = ensembl_values.where(ensembl_values.notna(), symbol_values).values
+    return pd.to_numeric(values, errors="coerce")
+
+
 def annotate_brain_expression(nodes: pd.DataFrame, expression: pd.DataFrame, minimum_tpm: float) -> pd.DataFrame:
-    """Add brain_median_tpm_max, brain_expression_known and brain_expressed to gene nodes.
+    """Add brain_median_tpm_max, body_median_tpm_max, brain_expression_known and brain_expressed to gene nodes.
 
     A gene node is matched by its Ensembl id when it has one (metabolic genes) and by symbol otherwise
     (signaling and transcription genes). brain_expressed is median TPM >= minimum_tpm in at least one
     brain tissue; it is False when the gene is known and below the threshold and also False when the
-    gene is not in GTEx, with brain_expression_known separating the two cases. Reaction nodes inherit the
-    largest value over the genes that catalyze them, so a reaction's brain weight is available to readers.
+    gene is not in GTEx, with brain_expression_known separating the two cases. body_median_tpm_max is the
+    largest median over every GTEx tissue, which the transcription gate reads (decision 9.76). Reaction nodes
+    inherit the largest brain value over the genes that catalyze them, so a reaction's brain weight is available
+    to readers.
     """
     nodes = nodes.copy()
-    by_ensembl = expression.drop_duplicates("ensembl_gene_id").set_index("ensembl_gene_id")["brain_median_tpm_max"]
-    by_symbol = expression.drop_duplicates("gene_symbol").set_index("gene_symbol")["brain_median_tpm_max"]
-    gene_mask = nodes.node_type == "gene"
-    ensembl_values = nodes.loc[gene_mask, "ensembl_gene_id"].map(by_ensembl) if "ensembl_gene_id" in nodes else pd.Series(index=nodes.index[gene_mask], dtype=float)
-    symbol_values = nodes.loc[gene_mask, "gene_symbol"].map(by_symbol)
-    brain_tpm = ensembl_values.where(ensembl_values.notna(), symbol_values)
-    nodes["brain_median_tpm_max"] = pd.NA
-    nodes.loc[gene_mask, "brain_median_tpm_max"] = brain_tpm.values
-    nodes["brain_median_tpm_max"] = pd.to_numeric(nodes["brain_median_tpm_max"], errors="coerce")
+    nodes["brain_median_tpm_max"] = gene_node_values(nodes, expression, "brain_median_tpm_max")
+    if "body_median_tpm_max" in expression.columns:
+        nodes["body_median_tpm_max"] = gene_node_values(nodes, expression, "body_median_tpm_max")
     nodes["brain_expression_known"] = nodes["brain_median_tpm_max"].notna()
     nodes["brain_expressed"] = nodes["brain_median_tpm_max"].fillna(-1.0) >= minimum_tpm
+    return nodes
+
+
+DETECTION_THRESHOLD_NCPM = 1.0  # the Human Protein Atlas detection threshold, the half-saturation of the cell-class weights
+CELL_CLASS_NODE_COLUMNS = ("cell_class_ncpm_max", "cell_class_expression_known", "expression_below_detection")
+
+
+def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | None = None, expression_atlas_path: Path | None = None) -> tuple[pd.DataFrame, dict]:
+    """(one row per gene with ensembl_gene_id, gene_symbol and cell_class_ncpm_max; a summary) from the Human Protein
+    Atlas single-nucleus cluster types pooled into the brain classes, with the peripheral endocrine classes of
+    peripheral_cell_classes joined on when their sources are given. cell_class_ncpm_max is the largest raw value over
+    the classes with a value, the quantity whose zero the weight builder turns into a weight of 0 in every class.
+
+    The dopaminergic class the weight builder adds (atlas cluster 395) is not read here, since its count files are
+    fetched only for the descriptors stage; cluster 395 belongs to the splatter supercluster, which the other_neuron
+    class pools, so a gene at 0 there is at 0 in the dopaminergic class as well."""
+    from mechanistic_pathway_learning.graph.brain_expression_descriptors import hpa_cell_class_table, read_zipped_table, unambiguous_symbol_to_ensembl
+    from mechanistic_pathway_learning.graph.peripheral_cell_classes import add_peripheral_classes
+
+    cluster_table = read_zipped_table(hpa_cluster_type_path)
+    class_table, summary = add_peripheral_classes(hpa_cell_class_table(cluster_table), gct_path, expression_atlas_path)
+    symbol_to_ensembl = unambiguous_symbol_to_ensembl(cluster_table["Gene name"], cluster_table["Gene"])
+    ensembl_to_symbol = {ensembl: symbol for symbol, ensembl in symbol_to_ensembl.items()}
+    expression = pd.DataFrame({"ensembl_gene_id": class_table.index.astype(str),
+                               "gene_symbol": [ensembl_to_symbol.get(ensembl, "") for ensembl in class_table.index.astype(str)],
+                               "cell_class_ncpm_max": class_table.max(axis=1).to_numpy(dtype=float)})
+    expression = expression[expression.cell_class_ncpm_max.notna()]
+    summary.update({"classes_read": [column.removeprefix("class_") for column in class_table.columns], "genes_with_a_class_value": int(len(expression))})
+    return expression.sort_values("cell_class_ncpm_max", ascending=False), summary
+
+
+def annotate_cell_class_expression(nodes: pd.DataFrame, expression: pd.DataFrame, minimum_tpm: float,
+                                   detection_threshold_ncpm: float = DETECTION_THRESHOLD_NCPM) -> pd.DataFrame:
+    """Add cell_class_ncpm_max, cell_class_expression_known and expression_below_detection to gene nodes.
+
+    expression_below_detection (decision 9.76) is True for a gene known in GTEx and below minimum_tpm in every brain
+    tissue whose largest cell-class value is under detection_threshold_ncpm, or unknown: the sources the model's
+    channels read show no class, brain or peripheral, where it is detected. A transcription edge whose factor carries
+    the flag keeps its place in the graph and takes the lowered prior of configs/edge_prior_tiers.csv
+    (graph/edge_evidence.py), so the data estimates its reliability rather than the build deciding it. The flag needs
+    the brain expression columns, so annotate_brain_expression runs first."""
+    nodes = nodes.copy()
+    nodes["cell_class_ncpm_max"] = gene_node_values(nodes, expression, "cell_class_ncpm_max")
+    nodes["cell_class_expression_known"] = nodes["cell_class_ncpm_max"].notna()
+    brain_known = nodes["brain_expression_known"] if "brain_expression_known" in nodes.columns else pd.Series(False, index=nodes.index)
+    brain_expressed = nodes["brain_expressed"] if "brain_expressed" in nodes.columns else pd.Series(False, index=nodes.index)
+    below_detection_in_every_class = ~nodes["cell_class_expression_known"] | (nodes["cell_class_ncpm_max"].fillna(0.0) < detection_threshold_ncpm)
+    nodes["expression_below_detection"] = brain_known.astype(bool) & ~brain_expressed.astype(bool) & below_detection_in_every_class
     return nodes
 
 
@@ -434,23 +501,52 @@ def propagate_brain_expression_to_reactions(nodes: pd.DataFrame, edges: pd.DataF
     return nodes
 
 
-def restrict_transcription_edges_to_brain_expressed(nodes: pd.DataFrame, edges: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
-    """Drop regulates_transcription_of edges whose transcription factor is known not to be brain expressed
-    (design section 3.3). Factors absent from GTEx keep their edges, because absence from the expression
-    table is a mapping gap rather than evidence of absence; the counts of both cases are returned.
-    """
-    known = nodes.set_index("node_id")["brain_expression_known"]
-    expressed = nodes.set_index("node_id")["brain_expressed"]
+def restrict_transcription_edges_to_expressed_factors(nodes: pd.DataFrame, edges: pd.DataFrame, minimum_tpm: float) -> tuple[pd.DataFrame, dict]:
+    """Drop regulates_transcription_of edges whose factor the expression sources place nowhere (decision 9.76, the
+    owner, 20 October 2026): the factor is known in the cell-class table at 0 in every class, brain and peripheral,
+    **and** known in GTEx below minimum_tpm in every tissue of the body. A factor expressed anywhere keeps its
+    regulon, and the limiting-step rule of the linear-response encoder attenuates it by the class weights; a factor
+    absent from either table keeps it too, because absence from a table is a mapping gap rather than evidence of
+    absence. Until 20 October 2026 the gate dropped every factor known below minimum_tpm in every brain tissue
+    (design section 3.3), which lost 213 edges of 16 factors on the v5 build, among them PHOX2A (locus coeruleus),
+    CRX (pineal) and TBX1, which bulk GTEx cannot see, and FOXE1, whose thyroid hormone reaches the brain; the counts
+    of that rule are returned beside the new ones so a build summary records both.
+
+    Returned counts: the edges before; the edges and factors the gate drops; the edges and factors the brain-TPM gate
+    would have dropped, split into those now kept because a cell class expresses the factor, those kept because a
+    tissue of the body does and those still dropped; the edges whose factor carries expression_below_detection (kept,
+    with the lowered prior); and the edges whose factor is unknown to both tables."""
+    by_id = nodes.set_index("node_id")
     is_transcription = edges.relation_type == "regulates_transcription_of"
-    factor_known = edges.source_id.map(known).fillna(False).astype(bool)
-    factor_expressed = edges.source_id.map(expressed).fillna(False).astype(bool)
-    dropped = is_transcription & factor_known & ~factor_expressed
+    column = lambda name, default: edges.source_id.map(by_id[name]).fillna(default) if name in by_id.columns else pd.Series(default, index=edges.index)  # noqa: E731
+    brain_known = column("brain_expression_known", False).astype(bool)
+    brain_expressed = column("brain_expressed", False).astype(bool)
+    body_known = column("body_median_tpm_max", float("nan")).notna()
+    body_expressed = column("body_median_tpm_max", -1.0).astype(float) >= minimum_tpm
+    class_known = column("cell_class_expression_known", False).astype(bool)
+    class_max = column("cell_class_ncpm_max", float("nan")).astype(float)
+    below_detection = column("expression_below_detection", False).astype(bool)
+    brain_gate_would_drop = is_transcription & brain_known & ~brain_expressed
+    dropped = is_transcription & class_known & (class_max == 0.0) & body_known & ~body_expressed
+    kept_by_class = brain_gate_would_drop & ~dropped & class_known & (class_max > 0.0)
+    kept_by_body = brain_gate_would_drop & ~dropped & ~kept_by_class & body_known & body_expressed
+    kept_unknown_to_both = is_transcription & ~brain_known & ~class_known
+    flagged = is_transcription & ~dropped & below_detection
+    factors = lambda mask: int(edges.loc[mask, "source_id"].nunique())  # noqa: E731
     counts = {
         "transcription_edges_before": int(is_transcription.sum()),
-        "transcription_edges_dropped_factor_not_brain_expressed": int(dropped.sum()),
-        "transcription_edges_kept_factor_expression_unknown": int((is_transcription & ~factor_known).sum()),
-        "transcription_factors_dropped": int(edges.loc[dropped, "source_id"].nunique()),
-        "transcription_factors_expression_unknown": int(edges.loc[is_transcription & ~factor_known, "source_id"].nunique()),
+        "transcription_edges_dropped_factor_unexpressed": int(dropped.sum()),
+        "transcription_factors_dropped": factors(dropped),
+        "transcription_edges_the_brain_tpm_gate_would_have_dropped": int(brain_gate_would_drop.sum()),
+        "transcription_factors_the_brain_tpm_gate_would_have_dropped": factors(brain_gate_would_drop),
+        "transcription_edges_kept_by_cell_class_expression": int(kept_by_class.sum()),
+        "transcription_factors_kept_by_cell_class_expression": factors(kept_by_class),
+        "transcription_edges_kept_by_body_expression": int(kept_by_body.sum()),
+        "transcription_factors_kept_by_body_expression": factors(kept_by_body),
+        "transcription_edges_factor_below_detection": int(flagged.sum()),
+        "transcription_factors_below_detection": factors(flagged),
+        "transcription_edges_kept_factor_expression_unknown": int(kept_unknown_to_both.sum()),
+        "transcription_factors_expression_unknown": factors(kept_unknown_to_both),
     }
     return edges[~dropped].copy(), counts
 
@@ -534,6 +630,9 @@ def build_physiology_graph(
     brain_expression_minimum_tpm: float = 1.0,
     curated_edge_sign_overrides_path: Path | None = DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH,
     admitted_receptor_g_alpha_coupling_path: Path | None = DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH,
+    cell_class_expression_path: Path | None = None,
+    expression_atlas_path: Path | None = None,
+    detection_threshold_ncpm: float = DETECTION_THRESHOLD_NCPM,
 ) -> dict:
     model = load_human_gem(model_path)
     nodes, edges = build_metabolic_layer(model, gene_symbols_from_table(genes_table_path), model_yaml_path)
@@ -556,14 +655,28 @@ def build_physiology_graph(
     brain_expression_counts: dict = {}
     if brain_expression_path is not None and brain_expression_path.exists():
         nodes = annotate_brain_expression(nodes, load_brain_expression(brain_expression_path), brain_expression_minimum_tpm)
-        edges, brain_expression_counts = restrict_transcription_edges_to_brain_expressed(nodes, edges)
+        cell_class_summary = None
+        if cell_class_expression_path is not None and cell_class_expression_path.exists():
+            cell_class_expression, cell_class_summary = load_cell_class_expression(cell_class_expression_path, brain_expression_path, expression_atlas_path)
+            nodes = annotate_cell_class_expression(nodes, cell_class_expression, brain_expression_minimum_tpm, detection_threshold_ncpm)
+        else:
+            print(f"no cell-class expression table at {cell_class_expression_path}: the transcription gate reads GTEx alone, so no factor is dropped "
+                  "(a factor's class expression is unknown) and expression_below_detection follows the brain TPM threshold alone")
+            nodes = annotate_cell_class_expression(nodes, pd.DataFrame(columns=["ensembl_gene_id", "gene_symbol", "cell_class_ncpm_max"]),
+                                                   brain_expression_minimum_tpm, detection_threshold_ncpm)
+        edges, brain_expression_counts = restrict_transcription_edges_to_expressed_factors(nodes, edges, brain_expression_minimum_tpm)
         nodes = propagate_brain_expression_to_reactions(nodes, edges)
         genes = nodes[nodes.node_type == "gene"]
         brain_expression_counts.update({
             "brain_expression_minimum_tpm": brain_expression_minimum_tpm,
+            "cell_class_detection_threshold_ncpm": detection_threshold_ncpm,
             "gene_nodes_with_brain_expression_known": int(genes.brain_expression_known.sum()),
             "gene_nodes_brain_expressed": int(genes.brain_expressed.sum()),
+            "gene_nodes_with_cell_class_expression_known": int(genes.cell_class_expression_known.sum()),
+            "gene_nodes_expression_below_detection": int(genes.expression_below_detection.sum()),
+            "cell_class_expression": cell_class_summary,
         })
+        print(f"transcription gate: {brain_expression_counts}")
     degree = pd.concat([edges.source_id, edges.target_id]).value_counts()
     nodes = nodes.copy()
     nodes["degree"] = nodes.node_id.map(degree).fillna(0).astype(int)
@@ -595,8 +708,15 @@ def main() -> None:
     parser.add_argument("--small-molecule", type=Path, default=Path("data/raw/omnipath/small_molecule_protein.tsv"))
     parser.add_argument("--metabolites-table", type=Path, default=Path("data/raw/Human-GEM/model/metabolites.tsv"))
     parser.add_argument("--model-yaml", type=Path, default=Path("data/raw/Human-GEM/model/Human-GEM.yml"), help="source of reaction subsystems when the SBML has no groups")
-    parser.add_argument("--brain-expression", type=Path, default=Path("data/raw/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz"), help="GTEx median-TPM GCT file; gene nodes get brain expression attributes and transcription factors known not to be brain expressed lose their regulon edges")
-    parser.add_argument("--brain-expression-minimum-tpm", type=float, default=1.0, help="median TPM in at least one brain tissue that counts as brain expression evidence")
+    parser.add_argument("--brain-expression", type=Path, default=Path("data/raw/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz"),
+                        help="GTEx median-TPM GCT file; gene nodes get brain and whole-body expression attributes, and the transcription gate reads the body maximum")
+    parser.add_argument("--brain-expression-minimum-tpm", type=float, default=1.0, help="median TPM in at least one brain tissue that counts as brain expression evidence; the same threshold over every tissue of the body in the transcription gate")
+    parser.add_argument("--cell-class-expression", type=Path, default=Path("data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"),
+                        help="Human Protein Atlas single-nucleus cluster types, pooled into the brain cell classes; with --brain-expression, the transcription gate drops a factor's regulon only when the factor is at 0 in every class and below the TPM threshold in every tissue of the body (decision 9.76)")
+    parser.add_argument("--expression-atlas-fantom5", type=Path, default=Path("data/raw/expression_atlas/E-MTAB-3358/E-MTAB-3358-tpms.tsv"),
+                        help="Expression Atlas E-MTAB-3358 (FANTOM5 CAGE tissues), the source of the pineal class; the thyroid, pancreatic islet and pituitary classes come from the GTEx file. Pass an absent path to build the classes without the pineal")
+    parser.add_argument("--cell-class-detection-threshold-ncpm", type=float, default=DETECTION_THRESHOLD_NCPM,
+                        help="a factor below the brain TPM threshold whose largest cell-class value is under this keeps its regulon with expression_below_detection set, which lowers its edges' prior (configs/edge_prior_tiers.csv)")
     parser.add_argument("--curated-edge-sign-overrides", type=Path, default=DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH,
                         help="signs the source annotates one way and the physiology requires the other way (decision 9.10a); pass an absent path to build without them")
     parser.add_argument("--admitted-receptor-g-alpha-coupling", type=Path, default=DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH,
@@ -606,7 +726,9 @@ def main() -> None:
                                      arguments.signaling, arguments.transcription, arguments.small_molecule, arguments.metabolites_table, arguments.model_yaml,
                                      arguments.brain_expression, arguments.brain_expression_minimum_tpm,
                                      arguments.curated_edge_sign_overrides,
-                                     arguments.admitted_receptor_g_alpha_coupling)
+                                     arguments.admitted_receptor_g_alpha_coupling,
+                                     arguments.cell_class_expression, arguments.expression_atlas_fantom5,
+                                     arguments.cell_class_detection_threshold_ncpm)
     print(json.dumps(summary, indent=1))
 
 
