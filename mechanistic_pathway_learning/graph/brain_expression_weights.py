@@ -46,6 +46,12 @@ each other down in every class, and only 45 percent of complexes keep any class 
 percent under the registered order (docs/complex_limiting_member_weight.md). A complex available nowhere is a
 complex nothing propagates through anywhere.
 
+A member with a curated alternative (decision 9.68 (a): VAMP1 beside VAMP2 as the vesicle SNARE,
+docs/curated_alternative_members.csv) is a disjunction inside the complex: the pair counts as one member whose raw
+expression is the larger of the two, and the minimum is taken over members afterwards. Without that, the alternative
+joining 16 vesicle entities would set their gate to its own level in every class where it is the scarcer paralog,
+which would shut release for the primary's routes too.
+
 Extracellular metabolites (Human-GEM compartment "e") can be marked as one pool shared by every class
 (extracellular_pool_nodes): a transmitter released by one class then reaches the receptors of every other class.
 """
@@ -72,7 +78,8 @@ MEMBER_RELATION = "member_of"
 
 
 def complex_limiting_member_expression(nodes: pd.DataFrame, member_edges: pd.DataFrame, class_expression: pd.DataFrame,
-                                       symbol_to_ensembl: dict[str, str] | None = None) -> pd.DataFrame:
+                                       symbol_to_ensembl: dict[str, str] | None = None,
+                                       alternative_groups: list[frozenset[str]] | None = None) -> pd.DataFrame:
     """Per complex node and class, the minimum raw nCPM over the members that have one. Decision 4.2.
 
     Indexed by complex node_id, one column per class, and a complex no member of which carries expression is absent
@@ -81,7 +88,11 @@ def complex_limiting_member_expression(nodes: pd.DataFrame, member_edges: pd.Dat
 
     The minimum is on the raw expression, not on the members' relative weights: a complex is the "and" of its
     subunits and evaluate_gene_rule already reads "and" that way, so this keeps the two aggregations in the same
-    order. See the module docstring for what the other order costs."""
+    order. See the module docstring for what the other order costs.
+
+    alternative_groups: sets of gene node ids that are alternatives for one member (decision 9.68 (a): VAMP1 beside
+    VAMP2; graph/curated_mechanisms.py). Within a complex the members of one group count as one member whose raw
+    expression is the largest of theirs, the "or" of evaluate_gene_rule, before the minimum over members."""
     classes = list(class_expression.columns)
     is_gene = (nodes.node_type == "gene").to_numpy()
     gene_ensembl = gene_node_ensembl_ids(nodes, symbol_to_ensembl)
@@ -94,20 +105,24 @@ def complex_limiting_member_expression(nodes: pd.DataFrame, member_edges: pd.Dat
     members = edges_into_complexes.join(expression_of_gene_node, on="source_id", how="inner")
     if members.empty:
         return pd.DataFrame(columns=classes, index=pd.Index([], name="node_id"))
-    limiting = members.groupby("target_id")[classes].min()
+    group_of_gene = {gene: "|".join(sorted(group)) for group in (alternative_groups or []) for gene in group}
+    members = members.assign(member_key=members.source_id.map(lambda gene: group_of_gene.get(gene, gene)))
+    # the "or" inside a group first (one value per complex and member, the largest), then the "and" over members
+    limiting = members.groupby(["target_id", "member_key"])[classes].max().groupby(level="target_id").min()
     limiting.index.name = "node_id"
     return limiting.dropna(how="all")
 
 
 def node_cell_class_weights(nodes: pd.DataFrame, class_expression: pd.DataFrame, symbol_to_ensembl: dict[str, str] | None = None,
                             half_saturation: float = DETECTION_THRESHOLD_NCPM, include_all_cells_class: bool = True,
-                            member_edges: pd.DataFrame | None = None) -> pd.DataFrame:
+                            member_edges: pd.DataFrame | None = None,
+                            alternative_groups: list[frozenset[str]] | None = None) -> pd.DataFrame:
     """node_id-indexed weights in [0, 1], one column per class of class_expression (an Ensembl-indexed nCPM table), plus
     ALL_CELLS_CLASS when include_all_cells_class; see the module docstring for which nodes get what.
 
     member_edges: the graph's edge table, used only for its `member_of` rows, which give each protein complex the
     expression of its limiting member (decision 4.2). Omitted, every complex keeps weight 1 in every class, which
-    is the behaviour before that decision."""
+    is the behaviour before that decision. alternative_groups: see complex_limiting_member_expression."""
     classes = list(class_expression.columns)
     weights = pd.DataFrame(1.0, index=pd.Index(nodes.node_id, name="node_id"), columns=classes)
 
@@ -117,7 +132,7 @@ def node_cell_class_weights(nodes: pd.DataFrame, class_expression: pd.DataFrame,
     weights.loc[is_gene, classes] = gene_weights.fillna(1.0).to_numpy()
 
     if member_edges is not None:
-        limiting = complex_limiting_member_expression(nodes, member_edges, class_expression, symbol_to_ensembl)
+        limiting = complex_limiting_member_expression(nodes, member_edges, class_expression, symbol_to_ensembl, alternative_groups)
         if len(limiting):
             complex_weights = relative_expression_weights(limiting, half_saturation)
             weights.loc[complex_weights.index, classes] = complex_weights[classes].to_numpy()

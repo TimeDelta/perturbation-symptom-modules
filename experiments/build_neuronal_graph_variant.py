@@ -35,8 +35,11 @@ from mechanistic_pathway_learning.graph.brenda_enzyme_regulation import (
     load_brenda_regulation,
 )
 from mechanistic_pathway_learning.graph.curated_mechanisms import (
+    DEFAULT_ALTERNATIVE_MEMBERS_PATH,
     DEFAULT_CURATED_MECHANISMS_PATH,
+    add_alternative_members,
     add_curated_mechanisms,
+    read_alternative_members,
     read_curated_mechanisms,
 )
 from mechanistic_pathway_learning.graph.oxidative_regulation import add_oxidative_regulation
@@ -234,6 +237,9 @@ def main() -> None:
                              "unweighted, CC BY 4.0. The graph held four metabolite-to-protein inhibits edges before this")
     parser.add_argument("--curated-mechanisms-table", type=Path, default=DEFAULT_CURATED_MECHANISMS_PATH,
                         help="curated edges for perturbations whose mechanism the imported sources leave without a route (decision 9.68 (a))")
+    parser.add_argument("--alternative-members-table", type=Path, default=DEFAULT_ALTERNATIVE_MEMBERS_PATH,
+                        help="curated alternative members (decision 9.68 (a), VAMP1 beside VAMP2): the alternative joins every protein entity its "
+                             "primary belongs to and the primary's membership weight is split between them by brain expression")
     parser.add_argument("--without-curated-layers", action="store_true",
                         help="leave out the curated receptor and oxidant edges, for the ablation that separates them from the Reactome layer")
     parser.add_argument("--membrane-potential", choices=MEMBRANE_POTENTIAL_BUILDS, default=DEFAULT_MEMBRANE_POTENTIAL_BUILD,
@@ -285,7 +291,8 @@ def main() -> None:
     for reaction, released in summary["release_reactions"].items():
         for base in released:
             release_reactions_of_transmitter.setdefault(base, []).append(reaction)
-    receptor_summary = oxidative_summary = brenda_summary = curated_mechanisms_summary = "left out (--without-curated-layers)"
+    receptor_summary = oxidative_summary = brenda_summary = curated_mechanisms_summary = alternative_members_summary = \
+        "left out (--without-curated-layers)"
     if not arguments.without_curated_layers:
         new_nodes, new_edges, new_relations, receptor_summary = add_release_regulation(
             new_nodes, new_edges, new_relations, pd.read_csv(arguments.receptor_table), release_reactions_of_transmitter)
@@ -298,6 +305,8 @@ def main() -> None:
         # after BRENDA, so a cofactor BRENDA already states is left out of the curated rows rather than doubled
         new_nodes, new_edges, new_relations, curated_mechanisms_summary = add_curated_mechanisms(
             new_nodes, new_edges, new_relations, read_curated_mechanisms(arguments.curated_mechanisms_table))
+        new_nodes, new_edges, new_relations, alternative_members_summary = add_alternative_members(
+            new_nodes, new_edges, new_relations, read_alternative_members(arguments.alternative_members_table), expression)
     new_nodes, new_edges, new_relations, redox_summary = add_redox_pools(new_nodes, new_edges, new_relations)
     for base, compartments in SIGNALLING_METABOLITES.items():
         rows = new_nodes.base_metabolite_id.eq(base) & (new_nodes.compartment.isin(compartments) if compartments else True)
@@ -309,7 +318,7 @@ def main() -> None:
     (arguments.output_dir / "relation_types.json").write_text(json.dumps(new_relations, indent=1) + "\n")
     summary.update(base_graph=str(arguments.base_graph_dir), reactome_pathways=json.loads((arguments.reactome_dir / "pathways.json").read_text()),
                    release_regulation=receptor_summary, oxidative_regulation=oxidative_summary, brenda_enzyme_regulation=brenda_summary,
-                   curated_dead_end_mechanisms=curated_mechanisms_summary,
+                   curated_dead_end_mechanisms=curated_mechanisms_summary, curated_alternative_members=alternative_members_summary,
                    redox_pools=redox_summary, minimum_brain_tpm=arguments.minimum_brain_tpm,
                    nodes_added_in_total=len(new_nodes) - len(nodes), edges_added_in_total=len(new_edges) - len(edges),
                    nodes_by_type=new_nodes.node_type.value_counts().to_dict(), edges_by_relation=new_edges.relation_type.value_counts().to_dict())
