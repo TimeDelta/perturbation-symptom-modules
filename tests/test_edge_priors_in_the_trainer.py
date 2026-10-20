@@ -244,7 +244,10 @@ def run_trainer(paths: dict[str, Path], run_directory: Path, *extra: str) -> dic
     command = [sys.executable, "experiments/run_main_model.py", "--graph-dir", str(paths["graph"]), "--evidence-dir", str(paths["evidence"]), "--run-dir", str(run_directory),
                "--encoder", "message_passing", "--max-epochs", "2", "--num-bootstrap", "3", "--refit-on-validation", "--validation-fraction", "0.3",
                "--no-keep-large-groups-in-training", "--fold", "0", "--seed", "0", "--batch-size", "8", "--placebo-negative-weights-file", "none",
-               "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]), *extra]
+               "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]),
+               # the edge gates' divisor and their flip estimates are written for item 28's total_in_degree; the registered
+               # forward_cone is not built for gates (decision 9.16), so a gated run names the normalisation it is run under
+               "--normalisation", "total_in_degree", *extra]
     completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
     assert completed.returncode == 0, completed.stderr[-3000:]
     split_directory = next(path for path in run_directory.iterdir() if path.is_dir())
@@ -350,7 +353,7 @@ def test_the_timing_mode_runs_with_hard_gates(tmp_path):
     command = [sys.executable, "experiments/run_main_model.py", "--graph-dir", str(paths["graph"]), "--evidence-dir", str(paths["evidence"]),
                "--run-dir", str(tmp_path / "timing"), "--encoder", "linear_response", "--fold", "0", "--seed", "0", "--batch-size", "8",
                "--placebo-negative-weights-file", "none", "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]),
-               "--edge-prior-strength", "1.0", "--timing-batches", "3"]
+               "--edge-prior-strength", "1.0", "--timing-batches", "3", "--normalisation", "total_in_degree"]
     completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
     assert completed.returncode == 0, completed.stderr[-3000:]
     timing = json.loads(next(line for line in completed.stdout.splitlines() if line.startswith("{") and "median_step_seconds" in line))
