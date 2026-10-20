@@ -2,9 +2,12 @@
 channels: mechanistic_pathway_learning/graph/brain_expression_weights.py).
 
 Classes: the 10 Human Protein Atlas single-nucleus classes (brain_expression_descriptors.hpa_cell_class_table), the
-dopaminergic class (experiments/build_dopaminergic_expression.py) and an all_cells class of weight 1. Writes a parquet
+dopaminergic class (experiments/build_dopaminergic_expression.py), the four peripheral endocrine classes of
+graph/peripheral_cell_classes.py (thyroid, pancreatic islet and pituitary from the GTEx tissue medians, pineal from
+FANTOM5 through Expression Atlas E-MTAB-3358, each placed on the nCPM scale as that module states; decision 9.76,
+--no-peripheral-classes restores the eleven brain classes) and an all_cells class of weight 1. Writes a parquet
 indexed by node_id with one column per class, outside the graph directory, and a JSON summary with the weight
-distribution per class and per node type and the weights of a few anchor genes.
+distribution per class and per node type, the weights of a few anchor genes and the peripheral scale factors.
 
 Usage:
   python experiments/build_cell_class_weights.py --graph-dir data/processed/graph_full_neuronal \
@@ -24,8 +27,20 @@ from mechanistic_pathway_learning.graph.brain_expression_weights import (
     DETECTION_THRESHOLD_NCPM, extracellular_pool_nodes, node_cell_class_weights)
 from mechanistic_pathway_learning.graph.curated_mechanisms import (
     DEFAULT_ALTERNATIVE_MEMBERS_PATH, alternative_member_groups, read_alternative_members)
+from mechanistic_pathway_learning.graph.peripheral_cell_classes import DEFAULT_EXPRESSION_ATLAS_PATH, DEFAULT_GTEX_PATH, add_peripheral_classes
 
-ANCHOR_GENES = ["TH", "SLC6A3", "DDC", "GAD1", "SLC17A7", "AQP4", "MBP", "PAH", "OTC", "GCH1", "MAOA", "DRD2"]
+ANCHOR_GENES = ["TH", "SLC6A3", "DDC", "GAD1", "SLC17A7", "AQP4", "MBP", "PAH", "OTC", "GCH1", "MAOA", "DRD2",
+                "FOXE1", "CRX", "ALX3", "ALX1", "PHOX2A", "TBX1", "TPO", "AANAT", "INS", "PRL"]  # the last ten: decision 9.76
+
+
+def assemble_class_expression(hpa_cluster_type: Path, dopaminergic_expression: Path, gtex: Path | None, expression_atlas: Path | None) -> tuple[pd.DataFrame, dict]:
+    """The Ensembl-indexed class expression table the weights are built from, columns named by class without the class_
+    prefix, and the peripheral classes' summary. experiments/write_expression_tables.py assembles the same table."""
+    class_expression = add_dopaminergic_class(hpa_cell_class_table(read_zipped_table(hpa_cluster_type)),
+                                              pd.read_parquet(dopaminergic_expression)["ncpm_aligned"])
+    class_expression, peripheral_summary = add_peripheral_classes(class_expression, gtex, expression_atlas)
+    class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
+    return class_expression, peripheral_summary
 
 
 def main() -> None:
@@ -35,6 +50,10 @@ def main() -> None:
                         help="only its symbol-to-Ensembl table is used, to place gene nodes named by symbol")
     parser.add_argument("--hpa-cluster-type", type=Path, default=Path("data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"))
     parser.add_argument("--dopaminergic-expression", type=Path, default=Path("data/processed/brain_expression/dopaminergic_siletti_cluster395.parquet"))
+    parser.add_argument("--gtex", type=Path, default=DEFAULT_GTEX_PATH, help="GTEx median TPM: the thyroid, pancreatic islet and pituitary classes")
+    parser.add_argument("--expression-atlas-fantom5", type=Path, default=DEFAULT_EXPRESSION_ATLAS_PATH,
+                        help="Expression Atlas E-MTAB-3358 (FANTOM5 CAGE tissues): the pineal class; an absent path builds without it")
+    parser.add_argument("--no-peripheral-classes", action="store_true", help="the eleven brain classes alone, the table before decision 9.76")
     parser.add_argument("--half-saturation", type=float, default=DETECTION_THRESHOLD_NCPM)
     parser.add_argument("--no-all-cells-class", action="store_true")
     parser.add_argument("--no-complex-limiting-member", action="store_true",
@@ -50,9 +69,9 @@ def main() -> None:
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
     region_table = read_zipped_table(arguments.hpa_region)
     symbol_to_ensembl = unambiguous_symbol_to_ensembl(region_table["Gene name"], region_table["Gene"])
-    class_expression = add_dopaminergic_class(hpa_cell_class_table(read_zipped_table(arguments.hpa_cluster_type)),
-                                              pd.read_parquet(arguments.dopaminergic_expression)["ncpm_aligned"])
-    class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
+    class_expression, peripheral_summary = assemble_class_expression(
+        arguments.hpa_cluster_type, arguments.dopaminergic_expression,
+        None if arguments.no_peripheral_classes else arguments.gtex, None if arguments.no_peripheral_classes else arguments.expression_atlas_fantom5)
     member_edges = None if arguments.no_complex_limiting_member else \
         pd.read_parquet(arguments.graph_dir / "edges.parquet", columns=["source_id", "target_id", "relation_type"])
     graph_nodes = set(nodes.node_id)
@@ -74,7 +93,7 @@ def main() -> None:
         anchors[symbol] = None if rows.empty else {column: round(float(value), 3) for column, value in rows.iloc[0].items()}
     summary = {
         "output": str(arguments.output), "graph_dir": str(arguments.graph_dir), "classes": list(weights.columns),
-        "half_saturation_ncpm": arguments.half_saturation,
+        "half_saturation_ncpm": arguments.half_saturation, "peripheral_classes": peripheral_summary,
         "alternative_member_groups": [sorted(group) for group in alternative_groups],
         "gene_nodes": int(is_gene.sum()), "gene_nodes_with_expression": int(gene_ensembl[is_gene].isin(class_expression.index).sum()),
         "extracellular_pool_nodes": int(extracellular_pool_nodes(nodes).sum()),
@@ -87,7 +106,7 @@ def main() -> None:
     arguments.output.with_suffix(".summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps({key: summary[key] for key in ("output", "classes", "gene_nodes", "gene_nodes_with_expression", "extracellular_pool_nodes")}, indent=2))
     print(json.dumps(summary["fraction_below_0.1_by_node_type"], indent=1))
-    print(json.dumps({symbol: summary["anchor_genes"][symbol] for symbol in ("TH", "AQP4", "PAH")}, indent=1))
+    print(json.dumps({symbol: summary["anchor_genes"][symbol] for symbol in ("TH", "AQP4", "PAH", "FOXE1", "CRX", "ALX3", "ALX1")}, indent=1))
 
 
 if __name__ == "__main__":
