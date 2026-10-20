@@ -22,6 +22,8 @@ from mechanistic_pathway_learning.graph.brain_expression_descriptors import (
     add_dopaminergic_class, gene_node_ensembl_ids, hpa_cell_class_table, read_zipped_table, unambiguous_symbol_to_ensembl)
 from mechanistic_pathway_learning.graph.brain_expression_weights import (
     DETECTION_THRESHOLD_NCPM, extracellular_pool_nodes, node_cell_class_weights)
+from mechanistic_pathway_learning.graph.curated_mechanisms import (
+    DEFAULT_ALTERNATIVE_MEMBERS_PATH, alternative_member_groups, read_alternative_members)
 
 ANCHOR_GENES = ["TH", "SLC6A3", "DDC", "GAD1", "SLC17A7", "AQP4", "MBP", "PAH", "OTC", "GCH1", "MAOA", "DRD2"]
 
@@ -37,6 +39,11 @@ def main() -> None:
     parser.add_argument("--no-all-cells-class", action="store_true")
     parser.add_argument("--no-complex-limiting-member", action="store_true",
                         help="leave every protein complex flat at weight 1, the behaviour before decision 4.2")
+    parser.add_argument("--alternative-members-table", type=Path, default=DEFAULT_ALTERNATIVE_MEMBERS_PATH,
+                        help="curated alternative members (decision 9.68 (a)); within a complex each primary and its alternatives count as one "
+                             "member whose expression is the largest of theirs. Rows whose genes the graph lacks are ignored")
+    parser.add_argument("--no-alternative-members", action="store_true",
+                        help="take the complex minimum over every member, alternatives included, the behaviour before decision 9.68 (a)")
     parser.add_argument("--output", type=Path, default=Path("data/processed/cell_class_weights/slice_cell_class_weights.parquet"))
     arguments = parser.parse_args()
 
@@ -48,9 +55,12 @@ def main() -> None:
     class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
     member_edges = None if arguments.no_complex_limiting_member else \
         pd.read_parquet(arguments.graph_dir / "edges.parquet", columns=["source_id", "target_id", "relation_type"])
+    graph_nodes = set(nodes.node_id)
+    alternative_groups = [] if arguments.no_alternative_members or not arguments.alternative_members_table.exists() else \
+        [group for group in alternative_member_groups(read_alternative_members(arguments.alternative_members_table)) if group <= graph_nodes]
     weights = node_cell_class_weights(nodes, class_expression, symbol_to_ensembl, arguments.half_saturation,
                                       include_all_cells_class=not arguments.no_all_cells_class,
-                                      member_edges=member_edges)
+                                      member_edges=member_edges, alternative_groups=alternative_groups)
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     weights.to_parquet(arguments.output)
 
@@ -65,6 +75,7 @@ def main() -> None:
     summary = {
         "output": str(arguments.output), "graph_dir": str(arguments.graph_dir), "classes": list(weights.columns),
         "half_saturation_ncpm": arguments.half_saturation,
+        "alternative_member_groups": [sorted(group) for group in alternative_groups],
         "gene_nodes": int(is_gene.sum()), "gene_nodes_with_expression": int(gene_ensembl[is_gene].isin(class_expression.index).sum()),
         "extracellular_pool_nodes": int(extracellular_pool_nodes(nodes).sum()),
         "mean_weight_by_node_type": {str(name): {column: round(float(value), 3) for column, value in group.mean().items()}
