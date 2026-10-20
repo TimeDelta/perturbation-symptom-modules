@@ -44,5 +44,8 @@
       "mcp__claude-code-remote__delete_trigger",
       "WebFetch"
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "3"
   }
 }
