@@ -443,7 +443,7 @@ DETECTION_THRESHOLD_NCPM = 1.0  # the Human Protein Atlas detection threshold, t
 CELL_CLASS_NODE_COLUMNS = ("cell_class_ncpm_max", "cell_class_expression_known", "expression_below_detection")
 
 
-def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | None = None, expression_atlas_path: Path | None = None) -> tuple[pd.DataFrame, dict]:
+def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | None = None, geo_pineal_directory: Path | None = None) -> tuple[pd.DataFrame, dict]:
     """(one row per gene with ensembl_gene_id, gene_symbol and cell_class_ncpm_max; a summary) from the Human Protein
     Atlas single-nucleus cluster types pooled into the brain classes, with the peripheral endocrine classes of
     peripheral_cell_classes joined on when their sources are given. cell_class_ncpm_max is the largest raw value over
@@ -456,7 +456,7 @@ def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | Non
     from mechanistic_pathway_learning.graph.peripheral_cell_classes import add_peripheral_classes
 
     cluster_table = read_zipped_table(hpa_cluster_type_path)
-    class_table, summary = add_peripheral_classes(hpa_cell_class_table(cluster_table), gct_path, expression_atlas_path)
+    class_table, summary = add_peripheral_classes(hpa_cell_class_table(cluster_table), gct_path, geo_pineal_directory)
     symbol_to_ensembl = unambiguous_symbol_to_ensembl(cluster_table["Gene name"], cluster_table["Gene"])
     ensembl_to_symbol = {ensembl: symbol for symbol, ensembl in symbol_to_ensembl.items()}
     expression = pd.DataFrame({"ensembl_gene_id": class_table.index.astype(str),
@@ -631,7 +631,7 @@ def build_physiology_graph(
     curated_edge_sign_overrides_path: Path | None = DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH,
     admitted_receptor_g_alpha_coupling_path: Path | None = DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH,
     cell_class_expression_path: Path | None = None,
-    expression_atlas_path: Path | None = None,
+    geo_pineal_directory: Path | None = None,
     detection_threshold_ncpm: float = DETECTION_THRESHOLD_NCPM,
 ) -> dict:
     model = load_human_gem(model_path)
@@ -657,7 +657,7 @@ def build_physiology_graph(
         nodes = annotate_brain_expression(nodes, load_brain_expression(brain_expression_path), brain_expression_minimum_tpm)
         cell_class_summary = None
         if cell_class_expression_path is not None and cell_class_expression_path.exists():
-            cell_class_expression, cell_class_summary = load_cell_class_expression(cell_class_expression_path, brain_expression_path, expression_atlas_path)
+            cell_class_expression, cell_class_summary = load_cell_class_expression(cell_class_expression_path, brain_expression_path, geo_pineal_directory)
             nodes = annotate_cell_class_expression(nodes, cell_class_expression, brain_expression_minimum_tpm, detection_threshold_ncpm)
         else:
             print(f"no cell-class expression table at {cell_class_expression_path}: the transcription gate reads GTEx alone, so no factor is dropped "
@@ -713,8 +713,8 @@ def main() -> None:
     parser.add_argument("--brain-expression-minimum-tpm", type=float, default=1.0, help="median TPM in at least one brain tissue that counts as brain expression evidence; the same threshold over every tissue of the body in the transcription gate")
     parser.add_argument("--cell-class-expression", type=Path, default=Path("data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"),
                         help="Human Protein Atlas single-nucleus cluster types, pooled into the brain cell classes; with --brain-expression, the transcription gate drops a factor's regulon only when the factor is at 0 in every class and below the TPM threshold in every tissue of the body (decision 9.76)")
-    parser.add_argument("--expression-atlas-fantom5", type=Path, default=Path("data/raw/expression_atlas/E-MTAB-3358/E-MTAB-3358-tpms.tsv"),
-                        help="Expression Atlas E-MTAB-3358 (FANTOM5 CAGE tissues), the source of the pineal class; the thyroid, pancreatic islet and pituitary classes come from the GTEx file. Pass an absent path to build the classes without the pineal")
+    parser.add_argument("--geo-pineal-dir", type=Path, default=Path("data/raw/geo/GSE100472"),
+                        help="GEO GSE100472 raw counts and NCBI annotation (owner-supplied; GEO refuses automated readers), the source of the pineal class; the thyroid, pancreatic islet and pituitary classes come from the GTEx file. Pass an absent path to build the classes without the pineal")
     parser.add_argument("--cell-class-detection-threshold-ncpm", type=float, default=DETECTION_THRESHOLD_NCPM,
                         help="a factor below the brain TPM threshold whose largest cell-class value is under this keeps its regulon with expression_below_detection set, which lowers its edges' prior (configs/edge_prior_tiers.csv)")
     parser.add_argument("--curated-edge-sign-overrides", type=Path, default=DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH,
@@ -727,7 +727,7 @@ def main() -> None:
                                      arguments.brain_expression, arguments.brain_expression_minimum_tpm,
                                      arguments.curated_edge_sign_overrides,
                                      arguments.admitted_receptor_g_alpha_coupling,
-                                     arguments.cell_class_expression, arguments.expression_atlas_fantom5,
+                                     arguments.cell_class_expression, arguments.geo_pineal_dir,
                                      arguments.cell_class_detection_threshold_ncpm)
     print(json.dumps(summary, indent=1))
 
