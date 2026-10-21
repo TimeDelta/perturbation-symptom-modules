@@ -4,8 +4,9 @@ channels: mechanistic_pathway_learning/graph/brain_expression_weights.py).
 Classes: the 10 Human Protein Atlas single-nucleus classes (brain_expression_descriptors.hpa_cell_class_table), the
 dopaminergic class (experiments/build_dopaminergic_expression.py), the four peripheral endocrine classes of
 graph/peripheral_cell_classes.py (thyroid, pancreatic islet and pituitary from the GTEx tissue medians, pineal from
-the six human pineal glands of GEO GSE100472, each placed on the nCPM scale as that module states; decision 9.76,
---no-peripheral-classes restores the eleven brain classes) and an all_cells class of weight 1. Writes a parquet
+the six human pineal glands of GEO GSE100472, each placed on the nCPM scale as that module states), the noradrenergic
+neuron class of graph/siletti_cluster_classes.py (atlas cluster 398; decision 9.76, --no-peripheral-classes restores the
+eleven brain classes) and an all_cells class of weight 1. Writes a parquet
 indexed by node_id with one column per class, outside the graph directory, and a JSON summary with the weight
 distribution per class and per node type, the weights of a few anchor genes and the peripheral scale factors.
 
@@ -28,17 +29,20 @@ from mechanistic_pathway_learning.graph.brain_expression_weights import (
 from mechanistic_pathway_learning.graph.curated_mechanisms import (
     DEFAULT_ALTERNATIVE_MEMBERS_PATH, alternative_member_groups, read_alternative_members)
 from mechanistic_pathway_learning.graph.peripheral_cell_classes import DEFAULT_GEO_PINEAL_DIRECTORY, DEFAULT_GTEX_PATH, add_peripheral_classes
+from mechanistic_pathway_learning.graph.siletti_cluster_classes import DEFAULT_SILETTI_AGGREGATE_PATH, add_atlas_cluster_classes
 
 ANCHOR_GENES = ["TH", "SLC6A3", "DDC", "GAD1", "SLC17A7", "AQP4", "MBP", "PAH", "OTC", "GCH1", "MAOA", "DRD2",
-                "FOXE1", "CRX", "ALX3", "ALX1", "PHOX2A", "TBX1", "TPO", "AANAT", "INS", "PRL"]  # the last ten: decision 9.76
+                "FOXE1", "CRX", "ALX3", "ALX1", "PHOX2A", "TBX1", "TPO", "AANAT", "INS", "PRL", "DBH", "SLC6A2", "PHOX2B"]  # the last thirteen: decision 9.76
 
 
-def assemble_class_expression(hpa_cluster_type: Path, dopaminergic_expression: Path, gtex: Path | None, geo_pineal_directory: Path | None) -> tuple[pd.DataFrame, dict]:
+def assemble_class_expression(hpa_cluster_type: Path, dopaminergic_expression: Path, gtex: Path | None, geo_pineal_directory: Path | None,
+                              siletti_aggregate: Path | None = None) -> tuple[pd.DataFrame, dict]:
     """The Ensembl-indexed class expression table the weights are built from, columns named by class without the class_
     prefix, and the peripheral classes' summary. experiments/write_expression_tables.py assembles the same table."""
     class_expression = add_dopaminergic_class(hpa_cell_class_table(read_zipped_table(hpa_cluster_type)),
                                               pd.read_parquet(dopaminergic_expression)["ncpm_aligned"])
     class_expression, peripheral_summary = add_peripheral_classes(class_expression, gtex, geo_pineal_directory)
+    class_expression, peripheral_summary["atlas_cluster_classes"] = add_atlas_cluster_classes(class_expression, siletti_aggregate)
     class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
     return class_expression, peripheral_summary
 
@@ -53,7 +57,9 @@ def main() -> None:
     parser.add_argument("--gtex", type=Path, default=DEFAULT_GTEX_PATH, help="GTEx median TPM: the thyroid, pancreatic islet and pituitary classes")
     parser.add_argument("--geo-pineal-dir", type=Path, default=DEFAULT_GEO_PINEAL_DIRECTORY,
                         help="GEO GSE100472 raw counts and NCBI annotation (owner-supplied): the pineal class; an absent path builds without it")
-    parser.add_argument("--no-peripheral-classes", action="store_true", help="the eleven brain classes alone, the table before decision 9.76")
+    parser.add_argument("--siletti-aggregate", type=Path, default=DEFAULT_SILETTI_AGGREGATE_PATH,
+                        help="the adult human brain atlas's genes x clusters aggregate: the noradrenergic_neuron class (cluster 398); an absent path builds without it")
+    parser.add_argument("--no-peripheral-classes", action="store_true", help="the eleven brain classes alone, the table before decision 9.76 (the atlas cluster classes left out too)")
     parser.add_argument("--half-saturation", type=float, default=DETECTION_THRESHOLD_NCPM)
     parser.add_argument("--no-all-cells-class", action="store_true")
     parser.add_argument("--no-complex-limiting-member", action="store_true",
@@ -71,7 +77,8 @@ def main() -> None:
     symbol_to_ensembl = unambiguous_symbol_to_ensembl(region_table["Gene name"], region_table["Gene"])
     class_expression, peripheral_summary = assemble_class_expression(
         arguments.hpa_cluster_type, arguments.dopaminergic_expression,
-        None if arguments.no_peripheral_classes else arguments.gtex, None if arguments.no_peripheral_classes else arguments.geo_pineal_dir)
+        None if arguments.no_peripheral_classes else arguments.gtex, None if arguments.no_peripheral_classes else arguments.geo_pineal_dir,
+        None if arguments.no_peripheral_classes else arguments.siletti_aggregate)
     member_edges = None if arguments.no_complex_limiting_member else \
         pd.read_parquet(arguments.graph_dir / "edges.parquet", columns=["source_id", "target_id", "relation_type"])
     graph_nodes = set(nodes.node_id)
