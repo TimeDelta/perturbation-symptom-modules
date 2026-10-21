@@ -255,3 +255,60 @@ def test_a_tissue_specific_factor_weighs_near_one_in_its_organ_and_zero_in_the_b
     node_weights = node_cell_class_weights(nodes, table)
     assert node_weights.loc["GENE:G12", "pineal"] == 1.0, "unknown to the pineal source: nothing is known, so nothing is blocked"
     assert node_weights.loc["GENE:G1", "thyroid"] > 0.99 and node_weights.loc["GENE:G1", "pineal"] == 0.0
+
+
+# --- Decision 9.76 (21 October 2026): a class from one cluster of the adult human brain atlas ---
+
+def write_cluster_aggregate(path: Path) -> None:
+    """A loom-shaped HDF5 file: mean UMI per nucleus for six genes in three clusters (ids 10, 398 and 399), with the
+    attributes the reader uses; G5 appears twice (two accessions of one gene) and G6 is absent from the HPA table."""
+    import h5py
+
+    genes = ["G1", "G2", "G3", "G4", "G5", "G5", "G6"]
+    accessions = ["ENSG00000000001.5", "ENSG00000000002.1", "ENSG00000000003.2", "ENSG00000000004.9", "ENSG00000000005.1", "ENSG00000000005.2", "ENSG00000000099.1"]
+    matrix = np.array([[10.0, 1.0, 1.0], [20.0, 2.0, 2.0], [30.0, 3.0, 3.0], [0.0, 40.0, 4.0], [1.0, 2.0, 5.0], [0.5, 1.0, 6.0], [1.0, 1.0, 7.0]])
+    with h5py.File(path, "w") as handle:
+        handle.create_dataset("matrix", data=matrix)
+        handle.create_dataset("row_attrs/Gene", data=np.array(genes, dtype="S"))
+        handle.create_dataset("row_attrs/Accession", data=np.array(accessions, dtype="S"))
+        handle.create_dataset("col_attrs/Clusters", data=np.array([10, 398, 399]))
+        handle.create_dataset("col_attrs/NCells", data=np.array([1000, 100, 300]))
+
+
+def test_the_cluster_aggregate_is_read_as_pseudobulk_cpm_per_class(tmp_path: Path):
+    from mechanistic_pathway_learning.graph.siletti_cluster_classes import add_atlas_cluster_classes, cluster_class_profiles, read_cluster_aggregate
+
+    loom = tmp_path / "agg.loom"
+    write_cluster_aggregate(loom)
+    mean_umi, nuclei = read_cluster_aggregate(loom)
+    assert list(mean_umi.columns) == [10, 398, 399] and nuclei.to_dict() == {10: 1000, 398: 100, 399: 300}
+    assert mean_umi.loc["ENSG00000000005", 398] == 2.0, "a gene with two accessions keeps its largest row"
+    profiles, nuclei_of_class = cluster_class_profiles(loom, {"noradrenergic_neuron": (398,), "pooled": (398, 399)})
+    column_sum_398 = 1.0 + 2.0 + 3.0 + 40.0 + 2.0 + 1.0
+    assert profiles.loc["ENSG00000000004", "noradrenergic_neuron"] == pytest.approx(40.0 / column_sum_398 * 1e6)
+    pooled_g4 = (40.0 * 100 + 4.0 * 300) / 400  # the mean per nucleus weighted by nucleus count
+    pooled_sum = sum((mean_umi.loc[gene, 398] * 100 + mean_umi.loc[gene, 399] * 300) / 400 for gene in mean_umi.index)
+    assert profiles.loc["ENSG00000000004", "pooled"] == pytest.approx(pooled_g4 / pooled_sum * 1e6) and nuclei_of_class == {"noradrenergic_neuron": 100, "pooled": 400}
+    with pytest.raises(ValueError, match="cluster 7"):
+        cluster_class_profiles(loom, {"missing": (7,)})
+    brain = pd.DataFrame({"class_neuron": [100.0, 200.0, 300.0, 1.0, 20.0], "class_glia": [100.0, 200.0, 300.0, 1.0, 20.0]},
+                         index=pd.Index([f"ENSG{index:011d}" for index in range(1, 6)], name="ensembl_gene_id"))
+    table, summary = add_atlas_cluster_classes(brain, loom)
+    assert list(table.columns) == ["class_neuron", "class_glia", "class_noradrenergic_neuron"] and len(table) == 5, "joined over the brain table's genes; G6 is not added"
+    assert summary["classes"] == ["noradrenergic_neuron"] and summary["nuclei"] == {"noradrenergic_neuron": 100} and summary["scale_factor_source_units_per_ncpm"]["noradrenergic_neuron"] > 0
+    assert table["class_noradrenergic_neuron"].idxmax() == "ENSG00000000004", "the cluster's marker is the class's top gene"
+    weights = relative_expression_weights(table.rename(columns=lambda column: column.removeprefix("class_")))
+    assert weights.loc["ENSG00000000004", "noradrenergic_neuron"] > 0.95 and weights.loc["ENSG00000000004", "neuron"] < 0.01
+    same, summary_without = add_atlas_cluster_classes(brain, tmp_path / "absent.loom")
+    assert list(same.columns) == ["class_neuron", "class_glia"] and summary_without["siletti_aggregate"] is None and summary_without["classes"] == []
+
+
+def test_the_scale_reference_is_the_brain_classes_whatever_the_table_already_carries(tmp_path: Path):
+    """The reference must not drift as classes are joined on: a table with the peripheral and atlas classes gives the same
+    pseudobulk as the HPA table alone."""
+    gct, geo = write_peripheral_sources(tmp_path)
+    brain = hpa_table()
+    with_peripheral, _ = add_peripheral_classes(brain, gct, geo)
+    with_peripheral["class_noradrenergic_neuron"] = 1e6
+    assert hpa_brain_pseudobulk(with_peripheral, excluded_classes=("noradrenergic_neuron",)).equals(hpa_brain_pseudobulk(brain))
+    assert not hpa_brain_pseudobulk(with_peripheral).equals(hpa_brain_pseudobulk(brain)), "an unnamed extra class would move it"

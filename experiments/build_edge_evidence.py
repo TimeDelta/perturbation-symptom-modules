@@ -29,11 +29,15 @@ import pandas as pd
 
 from mechanistic_pathway_learning.graph.edge_evidence import (
     DEFAULT_TIERS_PATH,
+    DEFAULT_CURATED_EDGE_SPECIES_PATH,
     FACTOR_BELOW_DETECTION_COLUMN,
+    NONHUMAN_ONLY_EVIDENCE_COLUMN,
     curated_edge_labels,
     edge_evidence_table,
     edge_priors,
     factor_below_detection_flags,
+    nonhuman_only_evidence_flags,
+    read_curated_edge_species,
     read_edge_tiers,
     read_species,
     signalling_references,
@@ -93,6 +97,8 @@ def main() -> int:
                         help="OmniPath's interactions with fields=evidences (scripts/fetch_raw_sources.sh); without it and the next the table has no sign columns")
     parser.add_argument("--transcription-evidences", type=Path, default=DEFAULT_TRANSCRIPTION_EVIDENCES,
                         help="the same for the CollecTRI dataset, which carries CollecTRI's sign_decision")
+    parser.add_argument("--curated-edge-species", type=Path, default=DEFAULT_CURATED_EDGE_SPECIES_PATH,
+                        help="the edges whose every cited record is non-human, with the sentence that says so (decision 9.76); such an edge takes the nonhuman_only_evidence tier")
     parser.add_argument("--species", type=Path, default=DEFAULT_SPECIES,
                         help="iCite's species scores per PubMed id (experiments/fetch_icite_species.py); without it the table has no species columns and "
                              "the trainer cannot take curated edges as labels (decision 9.63)")
@@ -106,6 +112,8 @@ def main() -> int:
     evidence = evidence.assign(source_id=edges.source_id.to_numpy(), target_id=edges.target_id.to_numpy(), relation_type=edges.relation_type.to_numpy())
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
     evidence[FACTOR_BELOW_DETECTION_COLUMN] = factor_below_detection_flags(evidence, nodes)
+    curated_species = read_curated_edge_species(arguments.curated_edge_species) if arguments.curated_edge_species.is_file() else {}
+    evidence[NONHUMAN_ONLY_EVIDENCE_COLUMN] = nonhuman_only_evidence_flags(evidence, curated_species)
     if "expression_below_detection" not in nodes.columns:
         print(f"{arguments.graph_dir}/nodes.parquet has no expression_below_detection column (built before decision 9.76): no transcription edge takes the lowered tier",
               file=sys.stderr)
@@ -141,7 +149,8 @@ def main() -> int:
     (arguments.graph_dir / "edge_evidence_summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {arguments.graph_dir / 'edge_evidence.parquet'}: {summary['gated']:,} of {summary['edges']:,} edges gated, {summary['contested']} contested"
           + ("" if labels is None else f"; {labels['labels']:,} curated edges are labels under decision 9.63 (b)")
-          + f"; {summary[FACTOR_BELOW_DETECTION_COLUMN]['edges']:,} transcription edges of {summary[FACTOR_BELOW_DETECTION_COLUMN]['factors']} factors below detection take the lowered tier")
+          + f"; {summary[FACTOR_BELOW_DETECTION_COLUMN]['edges']:,} transcription edges of {summary[FACTOR_BELOW_DETECTION_COLUMN]['factors']} factors below detection take the lowered tier"
+          + f"; {summary[NONHUMAN_ONLY_EVIDENCE_COLUMN]['edges']} edges cite non-human records only (curated), {summary[NONHUMAN_ONLY_EVIDENCE_COLUMN]['edges_every_record_animal_only_by_icite']:,} would under iCite's scores")
     for key, value in summary["by_family_and_kind"].items():
         print(f"  {key:34s} {value['edges']:7,} edges, mean prior {value['mean_prior'] if value['mean_prior'] is None else round(value['mean_prior'], 3)}, mean strength {value['mean_strength']:.3f}")
     return 0

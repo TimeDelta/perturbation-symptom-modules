@@ -25,6 +25,7 @@ from mechanistic_pathway_learning.graph.brain_expression_descriptors import (
     add_dopaminergic_class, gtex_brain_and_other_maximum, hpa_cell_class_table, hpa_region_table, read_zipped_table)
 from mechanistic_pathway_learning.graph.brain_expression_weights import ALL_CELLS_CLASS
 from mechanistic_pathway_learning.graph.peripheral_cell_classes import DEFAULT_GEO_PINEAL_DIRECTORY, add_peripheral_classes
+from mechanistic_pathway_learning.graph.siletti_cluster_classes import DEFAULT_SILETTI_AGGREGATE_PATH, add_atlas_cluster_classes
 from mechanistic_pathway_learning.graph.rewired_expression_features import rewired_reaction_brain_block, rewired_reaction_cell_class_weights
 
 
@@ -36,6 +37,7 @@ def main() -> None:
     parser.add_argument("--hpa-cluster-type", type=Path, default=Path("data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"))
     parser.add_argument("--dopaminergic-expression", type=Path, default=Path("data/processed/brain_expression/dopaminergic_siletti_cluster395.parquet"))
     parser.add_argument("--geo-pineal-dir", type=Path, default=DEFAULT_GEO_PINEAL_DIRECTORY, help="the pineal class's source, GEO GSE100472 (decision 9.76)")
+    parser.add_argument("--siletti-aggregate", type=Path, default=DEFAULT_SILETTI_AGGREGATE_PATH, help="the noradrenergic_neuron class's source (decision 9.76)")
     parser.add_argument("--no-peripheral-classes", action="store_true", help="the class table of the eleven brain classes alone")
     parser.add_argument("--descriptors", type=Path, default=Path("data/processed/node_descriptors/full_neuronal_descriptors_brain_expression.parquet"))
     parser.add_argument("--cell-class-weights", type=Path, default=Path("data/processed/cell_class_weights/full_neuronal_cell_class_weights.parquet"))
@@ -50,6 +52,7 @@ def main() -> None:
     class_expression = cell_class_table.copy()
     if not arguments.no_peripheral_classes:
         class_expression, _ = add_peripheral_classes(class_expression, arguments.gtex, arguments.geo_pineal_dir)
+        class_expression, _ = add_atlas_cluster_classes(class_expression, arguments.siletti_aggregate)
     class_expression.columns = [column.removeprefix("class_") for column in class_expression.columns]
 
     rules = pd.Series(nodes.gene_reaction_rule.fillna("").to_numpy(), index=pd.Index(nodes.node_id, name="node_id"))

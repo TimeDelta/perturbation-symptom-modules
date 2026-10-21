@@ -443,10 +443,11 @@ DETECTION_THRESHOLD_NCPM = 1.0  # the Human Protein Atlas detection threshold, t
 CELL_CLASS_NODE_COLUMNS = ("cell_class_ncpm_max", "cell_class_expression_known", "expression_below_detection")
 
 
-def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | None = None, geo_pineal_directory: Path | None = None) -> tuple[pd.DataFrame, dict]:
+def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | None = None, geo_pineal_directory: Path | None = None,
+                               siletti_aggregate_path: Path | None = None) -> tuple[pd.DataFrame, dict]:
     """(one row per gene with ensembl_gene_id, gene_symbol and cell_class_ncpm_max; a summary) from the Human Protein
     Atlas single-nucleus cluster types pooled into the brain classes, with the peripheral endocrine classes of
-    peripheral_cell_classes joined on when their sources are given. cell_class_ncpm_max is the largest raw value over
+    peripheral_cell_classes and the atlas cluster classes of siletti_cluster_classes joined on when their sources are given. cell_class_ncpm_max is the largest raw value over
     the classes with a value, the quantity whose zero the weight builder turns into a weight of 0 in every class.
 
     The dopaminergic class the weight builder adds (atlas cluster 395) is not read here, since its count files are
@@ -454,9 +455,11 @@ def load_cell_class_expression(hpa_cluster_type_path: Path, gct_path: Path | Non
     class pools, so a gene at 0 there is at 0 in the dopaminergic class as well."""
     from mechanistic_pathway_learning.graph.brain_expression_descriptors import hpa_cell_class_table, read_zipped_table, unambiguous_symbol_to_ensembl
     from mechanistic_pathway_learning.graph.peripheral_cell_classes import add_peripheral_classes
+    from mechanistic_pathway_learning.graph.siletti_cluster_classes import add_atlas_cluster_classes
 
     cluster_table = read_zipped_table(hpa_cluster_type_path)
     class_table, summary = add_peripheral_classes(hpa_cell_class_table(cluster_table), gct_path, geo_pineal_directory)
+    class_table, summary["atlas_cluster_classes"] = add_atlas_cluster_classes(class_table, siletti_aggregate_path)
     symbol_to_ensembl = unambiguous_symbol_to_ensembl(cluster_table["Gene name"], cluster_table["Gene"])
     ensembl_to_symbol = {ensembl: symbol for symbol, ensembl in symbol_to_ensembl.items()}
     expression = pd.DataFrame({"ensembl_gene_id": class_table.index.astype(str),
@@ -632,6 +635,7 @@ def build_physiology_graph(
     admitted_receptor_g_alpha_coupling_path: Path | None = DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH,
     cell_class_expression_path: Path | None = None,
     geo_pineal_directory: Path | None = None,
+    siletti_aggregate_path: Path | None = None,
     detection_threshold_ncpm: float = DETECTION_THRESHOLD_NCPM,
 ) -> dict:
     model = load_human_gem(model_path)
@@ -657,7 +661,7 @@ def build_physiology_graph(
         nodes = annotate_brain_expression(nodes, load_brain_expression(brain_expression_path), brain_expression_minimum_tpm)
         cell_class_summary = None
         if cell_class_expression_path is not None and cell_class_expression_path.exists():
-            cell_class_expression, cell_class_summary = load_cell_class_expression(cell_class_expression_path, brain_expression_path, geo_pineal_directory)
+            cell_class_expression, cell_class_summary = load_cell_class_expression(cell_class_expression_path, brain_expression_path, geo_pineal_directory, siletti_aggregate_path)
             nodes = annotate_cell_class_expression(nodes, cell_class_expression, brain_expression_minimum_tpm, detection_threshold_ncpm)
         else:
             print(f"no cell-class expression table at {cell_class_expression_path}: the transcription gate reads GTEx alone, so no factor is dropped "
@@ -715,6 +719,8 @@ def main() -> None:
                         help="Human Protein Atlas single-nucleus cluster types, pooled into the brain cell classes; with --brain-expression, the transcription gate drops a factor's regulon only when the factor is at 0 in every class and below the TPM threshold in every tissue of the body (decision 9.76)")
     parser.add_argument("--geo-pineal-dir", type=Path, default=Path("data/raw/geo/GSE100472"),
                         help="GEO GSE100472 raw counts and NCBI annotation (owner-supplied; GEO refuses automated readers), the source of the pineal class; the thyroid, pancreatic islet and pituitary classes come from the GTEx file. Pass an absent path to build the classes without the pineal")
+    parser.add_argument("--siletti-aggregate", type=Path, default=Path("data/raw/siletti_cluster_aggregate/adult_human_20221007_Pool_Clean.agg.loom"),
+                        help="the adult human brain atlas's genes x clusters aggregate (Siletti et al. 2023), the source of the noradrenergic_neuron class (cluster 398); pass an absent path to build without it")
     parser.add_argument("--cell-class-detection-threshold-ncpm", type=float, default=DETECTION_THRESHOLD_NCPM,
                         help="a factor below the brain TPM threshold whose largest cell-class value is under this keeps its regulon with expression_below_detection set, which lowers its edges' prior (configs/edge_prior_tiers.csv)")
     parser.add_argument("--curated-edge-sign-overrides", type=Path, default=DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH,
@@ -727,7 +733,7 @@ def main() -> None:
                                      arguments.brain_expression, arguments.brain_expression_minimum_tpm,
                                      arguments.curated_edge_sign_overrides,
                                      arguments.admitted_receptor_g_alpha_coupling,
-                                     arguments.cell_class_expression, arguments.geo_pineal_dir,
+                                     arguments.cell_class_expression, arguments.geo_pineal_dir, arguments.siletti_aggregate,
                                      arguments.cell_class_detection_threshold_ncpm)
     print(json.dumps(summary, indent=1))
 

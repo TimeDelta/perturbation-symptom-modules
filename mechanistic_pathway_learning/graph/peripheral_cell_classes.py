@@ -114,9 +114,13 @@ def geo_pineal_profile(directory: Path) -> pd.DataFrame:
     return profile.rename_axis("ensembl_gene_id")
 
 
-def hpa_brain_pseudobulk(cell_class_table: pd.DataFrame) -> pd.Series:
-    """The mean nCPM over the brain cell classes per gene, the reference the scale factors are estimated against."""
-    columns = [column for column in cell_class_table.columns if column.startswith(CLASS_COLUMN_PREFIX)]
+def hpa_brain_pseudobulk(cell_class_table: pd.DataFrame, excluded_classes: tuple[str, ...] = ()) -> pd.Series:
+    """The mean nCPM over the brain cell classes per gene, the reference the scale factors are estimated against. The
+    peripheral classes of this module and any class named in excluded_classes are left out, so a table that already
+    carries scaled classes gives the same reference as the HPA table alone."""
+    left_out = set(PERIPHERAL_CLASSES) | set(excluded_classes)
+    columns = [column for column in cell_class_table.columns
+               if column.startswith(CLASS_COLUMN_PREFIX) and column[len(CLASS_COLUMN_PREFIX):] not in left_out]
     if not columns:
         raise ValueError("the cell-class table has no class_ columns")
     return cell_class_table[columns].astype(float).mean(axis=1)
