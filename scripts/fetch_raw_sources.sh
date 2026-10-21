@@ -102,12 +102,16 @@ fetch "$raw_directory/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.g
 fetch "$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" 108fb699eccc3f8611b475caa7968ad67f10ee47c4cc88db16d2fcaa0214a0f3
 fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" a287c1abab593c9d6802349a82f118efc0d4aea411be7d897b8feb0b31b02f2a
 
-# Expression Atlas E-MTAB-3358, the FANTOM5 CAGE tissues per gene (protein-coding genes, every column, cutoff 0): the
-# pineal class of decision 9.76 (graph/peripheral_cell_classes.py), which GTEx and the Human Protein Atlas do not sample.
-# The service writes the file on request with a timestamp in its header, so a later fetch reports DRIFT against the
-# recorded hash; the row count (16,365 genes, 76 columns) and the pineal values of CRX (702) and ASMT (132) are the check.
-# CC BY 4.0 (docs/data_sources.md). The FTP copy of the same table is closed to automated readers and is not used.
-fetch "$raw_directory/expression_atlas/E-MTAB-3358/E-MTAB-3358-tpms.tsv" "https://www.ebi.ac.uk/gxa/experiments-content/E-MTAB-3358/download/RNASEQ_MRNA_BASELINE?unit=TPM&cutoff=0&type=RNASEQ_MRNA_BASELINE" 018fdc76e639dfa3199ee0f2c5733072d6922309ba33d13d0e8f7c01325d8aa3
+# GEO GSE100472, six human pineal glands (RNA-seq; Bozinoski, Klein, Mason and Coon, NICHD): the pineal class of
+# decision 9.76 (graph/peripheral_cell_classes.py), which GTEx and the Human Protein Atlas do not sample. NOT fetched
+# here: GEO refuses automated readers (ftp.ncbi.nlm.nih.gov disallows every path, www.ncbi.nlm.nih.gov disallows
+# /geo/download, and the series page answers with a check that the visitor is human). The owner downloaded the four
+# files from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE100472 on 21 October 2026 and they sit in
+# data/raw/geo/GSE100472/ with a .pin.json beside each (bytes, sha256, time; docs/data_sources.md): the NCBI-generated
+# raw counts GSE100472_raw_counts_GRCh38.p13_NCBI.tsv.gz, the annotation Human.GRCh38.p13.annot.tsv.gz, the series
+# matrix and the submitters' FPKM table (a cross-check only). A container without them builds the classes without the
+# pineal, and the build summary says so. The FANTOM5 table of Expression Atlas E-MTAB-3358 that filled the column on
+# 20 October 2026 is no longer fetched (docs/data_sources.md records why).
 
 # Orphadata product 6: gene-disease association types.
 fetch "$raw_directory/orphadata/en_product6.xml" "https://www.orphadata.com/data/xml/en_product6.xml"
