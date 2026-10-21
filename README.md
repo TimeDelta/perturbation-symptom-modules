@@ -143,10 +143,49 @@ The design, code and documents in this repository were developed with Claude (An
 sessions below. The transcripts record the design decisions, the owner's rulings and the reasoning
 behind them.
 
-- https://claude.ai/share/d762a865-1455-4feb-875d-13e94719f70c
-- https://claude.ai/share/3f0e9a27-772b-489e-9eb3-0053cdbd5523
-- https://claude.ai/share/d8d0612d-1c85-4966-8a13-995d8c98ee2d
+- https://claude.ai/share/d762a865-1455-4feb-875d-13e94719f70c — 2 October 2026. The origin of the design,
+  before any code. The owner proposed constrained graph learning over a physiology graph supervised by
+  psychiatric evidence, with no diagnosis labels. Positions reached: hard constraints are chemistry
+  (stoichiometry, compartments), never symptom links; receptor binding (R + L ⇌ RL), receptor conformational
+  states and nucleotide costs are mass-balanced species (the owner's correction), while occupancy and coupling
+  rates are learned through ME-model-style coupling constraints; regions share one stoichiometric matrix with
+  region-specific bounds, a region is a mixture of cell types, and receptor density is low-rank (PET atlas);
+  supervision comes from perturbations with known entry points (inborn errors of metabolism with psychiatric
+  HPO terms, drug side effects); independent routes to one symptom are a noisy-OR over modules, tested
+  against single-route, additive and interaction models; a state-space model belongs as the slow temporal
+  backbone with the graph as transition operator, not as a graph encoder. The owner created the
+  repository at the end of that conversation.
+- https://claude.ai/share/3f0e9a27-772b-489e-9eb3-0053cdbd5523 — 2 October 2026. Experiment design v0.1
+  and v0.2 and the first code scaffold (noisy-OR head with hard-concrete supports, encoder, splits, soft
+  losses; 17 tests). The owner confirmed no hard symptom-level constraints; their 0.99 weighting became a
+  0.99 training target for strong positives and an optional anchor worth 99 pseudo-observations. The old
+  literature knowledge graph was dropped in favour of PubTator3 and CTD (SemMedDB later), and jobs were
+  made resumable for the runtime-limited cluster. On learning the anchor weight: not on the training loss
+  (it collapses to zero); a global scale tuned by grouped cross-validation, and per-source reliability from
+  a Dawid-Skene model with LLM-extracted rubric features validated against a hand-labelled set (the
+  Dawid-Skene framing was later superseded; see the 21 October entry). GitHub writes were refused (403), so
+  the history was delivered as a git bundle. First smoke run: one epoch, macro AUPRC 0.348 against 0.344
+  for the random walk, with every module support empty, which raised the gate-initialization question.
+- https://claude.ai/share/d8d0612d-1c85-4966-8a13-995d8c98ee2d — 7 October 2026. Paced literature review,
+  slots 11 to 19, on Q1 (does a signed or relation-typed propagation beat an unsigned one on the same
+  network). Outcome, recorded in docs/literature_appraisal_staging.md: signs not shown by any source;
+  relation types supported only in the question's literal wording (Huang 2024, TxGNN, strong; Venkatesh
+  2026, weak) and open in the strict form; edge direction one moderate row (Silverbush 2019) against a
+  baseline below chance. The owner restored the original four triage checks, which the session had
+  reconstructed incorrectly. Q2 and Q3 received no slot. Fourteen appraised sources were added to
+  docs/references.bib. Mellina Andreu 2025 was graded from its abstract because a permission request went
+  unanswered, which under the rule of 11 October is not a finding; its full text is still to be read.
 - https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135
+- https://claude.ai/share/96dd13e4-29c2-4078-973f-70a8e11976e5 — 21 October 2026. Two scoping questions
+  raised and left open: whether small extracellular vesicles belong in the graph as a cross-compartment
+  transfer mechanism rather than as a signed node, and whether target engagement needs an exposure term
+  (anchor: Schmitt MV, Reichel A, Liu X, Fricker G, Lienau P. Drug Metab Dispos. 2021;49(1):53-61,
+  [doi:10.1124/dmd.120.000161](https://doi.org/10.1124/dmd.120.000161), lysosomal trapping added to the
+  Rodgers and Rowland distribution model). Neither literature pass ran: both delegated passes and three
+  replies were stopped by a safety classifier on 21 October 2026, so the transcript carries no sourced
+  finding on either question and the Schmitt paper was not read. Two claims made in it are withdrawn —
+  that the graph carries no cell-type axis (inferred from absence, not checked; the owner corrected it),
+  and that prior strength comes from a Dawid-Skene fit (the owner states that framing is superseded).
 
 ## Conventions
 
