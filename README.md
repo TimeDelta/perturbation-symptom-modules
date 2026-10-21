@@ -175,7 +175,24 @@ behind them.
   reconstructed incorrectly. Q2 and Q3 received no slot. Fourteen appraised sources were added to
   docs/references.bib. Mellina Andreu 2025 was graded from its abstract because a permission request went
   unanswered, which under the rule of 11 October is not a finding; its full text is still to be read.
-- https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135
+- https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135 — 10 to 15 October 2026. Six days of design
+  work toward the confirmatory test; the lockbox was not drawn. Model: drug entry nodes that exist only where
+  seeded (confirmed by the owner); the owner ruled out a third encoder and extra confirmatory variants
+  ("increasing probability of winning by luck"), so propagation runs to a fixed point with one repeated
+  reduced-rank layer, and message passing must read edge signs (it had read 7,321 negative edges as
+  positive); amendment of 12 October, eleven items. Labels: a label source review (no dataset varies a
+  carrier together with a drug), then no target limit ("I really don't like having a target limit"), the
+  gain-of-function sign fix, the placebo mask and placebo weights from trial arm sizes, Open Targets
+  statements placed by their target's leakage group, a brain-exposure admission rule (Kp,uu at least 0.1)
+  and second-agency label sources (EMA, Health Canada). Graph: log-scale pH, currency fixes, reversible
+  reactions that a perturbation can reverse ("I don't want to accept a perturbation not being able to
+  reverse the reaction"), the GtoPdb coupling filter, BRENDA regulation edges and the chloride charge fix.
+  Statistics: Holm correction, effect size in multiples of the realized bootstrap half-width, the rules
+  registered in configs/registered_rules.json with a test against the code, and the preregistration
+  baseline frozen on 15 October. The source-reading rules now in CLAUDE.md and docs/open_decisions.md
+  date from here. Claims withdrawn after the owner's challenges include a gain/loss mirror property ("i
+  never accepted that"), a softmax mixture that was sparsemax, and symptom folds as a test of circularity.
+  The v4 rebuild ran in a separate session; decisions left open at the end include 9.41 and 9.42 in docs/open_decisions.md.
 - https://claude.ai/share/96dd13e4-29c2-4078-973f-70a8e11976e5 — 21 October 2026. Two scoping questions
   raised and left open: whether small extracellular vesicles belong in the graph as a cross-compartment
   transfer mechanism rather than as a signed node, and whether target engagement needs an exposure term
