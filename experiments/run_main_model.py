@@ -144,10 +144,13 @@ from mechanistic_pathway_learning.models.linear_response_encoder import (
     DEFAULT_MAX_PROPAGATION_STEPS,
     EDGE_SIGNS,
     INPUT_WEIGHT_FORMS,
+    DEFAULT_MIXTURE_ENTMAX_EXPONENT,
+    MIXTURE_EXPONENT_SPARSEMAX,
     MIXTURE_WEIGHTINGS,
     NORMALISATIONS,
     RELATION_GAINS,
     LinearResponseEncoder,
+    entmax_exponent_for_epoch,
 )
 from mechanistic_pathway_learning.models.noisy_or_pathway_module_model import NoisyOrPathwayModuleHead
 from mechanistic_pathway_learning.models.relational_message_passing_encoder import (
@@ -676,6 +679,7 @@ def build_models(data, arguments, device):
                                         propagation_channels=arguments.propagation_channels, response_scale=arguments.response_scale, damping=arguments.propagation_damping,
                                         normalisation=arguments.normalisation, cross_relation_aggregator=arguments.cross_relation_aggregator,
                                         mixture_weighting=arguments.mixture_weighting, node_type_index=node_type_index,
+                                        mixture_entmax_exponent=arguments.mixture_entmax_exponent,
                                         edge_signs=arguments.edge_signs, relation_gains=arguments.relation_gains,
                                         cell_class_weights=cell_class_weights, channels_per_cell_class=arguments.channels_per_cell_class,
                                         extracellular_pool_nodes=pool_nodes, shared_pool_classes=shared_pool_classes,
@@ -701,6 +705,9 @@ def build_models(data, arguments, device):
                   "for this graph; it needs the v4 rebuild)")
         print(f"linear-response encoder: {arguments.normalisation} normalisation, {arguments.cross_relation_aggregator} across relations"
               + (f" weighted by {arguments.mixture_weighting}" if arguments.cross_relation_aggregator == "softmax_mixture" else "")
+              + (f" (exponent {arguments.mixture_entmax_exponent}"
+                 + (f", annealed to {MIXTURE_EXPONENT_SPARSEMAX} over {arguments.mixture_entmax_anneal_epochs} epochs)" if arguments.mixture_entmax_anneal_epochs else ")")
+                 if arguments.cross_relation_aggregator == "softmax_mixture" and arguments.mixture_weighting == "entmax" else "")
               + f", {len(distinct_node_types)} node types ({', '.join(distinct_node_types)})"
               + {"all_positive": ", every edge sign +1", "permuted": ", edge signs permuted among edges"}.get(arguments.edge_signs, "")
               + (", one gain shared by every relation" if arguments.relation_gains == "shared" else ""))
@@ -1734,7 +1741,14 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cross-relation-aggregator", choices=CROSS_RELATION_AGGREGATORS, default="mean",
                         help="linear-response encoder: how the per-relation messages into a node combine; mean cancels exactly when a positive and a negative relation carry equal weight, softmax_mixture learns a weighting over order statistics instead")
     parser.add_argument("--mixture-weighting", choices=MIXTURE_WEIGHTINGS, default="sparsemax",
-                        help="linear-response encoder: how --cross-relation-aggregator softmax_mixture turns its logits into weights; sparsemax can place exactly zero weight on a statistic, softmax cannot")
+                        help="linear-response encoder: how --cross-relation-aggregator softmax_mixture turns its logits into weights; sparsemax can place exactly zero weight on a statistic, softmax cannot, "
+                             "and entmax interpolates between them with --mixture-entmax-exponent")
+    parser.add_argument("--mixture-entmax-exponent", type=float, default=DEFAULT_MIXTURE_ENTMAX_EXPONENT,
+                        help="linear-response encoder, --mixture-weighting entmax: the exponent alpha in (1, 2]; 2 is sparsemax exactly and the limit at 1 is softmax. "
+                             "With --mixture-entmax-anneal-epochs it is the starting exponent")
+    parser.add_argument("--mixture-entmax-anneal-epochs", type=int, default=0,
+                        help="linear-response encoder, --mixture-weighting entmax: raise the exponent linearly to 2 (sparsemax) over this many epochs, so statistics keep a gradient "
+                             "early and the kept model has sparsemax's exact zeros. Early stopping neither counts nor keeps an epoch before the anneal ends. 0 keeps the exponent fixed")
     parser.add_argument("--propagation-damping", type=float, default=0.5, help="linear-response encoder: weight of the new state per step (sets the transient, not the fixed point)")
     parser.add_argument("--node-state-dim", type=int, default=32)
     parser.add_argument("--num-layers", type=int, default=3, help="message passing: layers; 3 on a graph that splits genes from proteins (registered)")
@@ -1911,10 +1925,42 @@ def refuse_a_negative_loss_weight(arguments) -> None:
                              f"Use a weight of zero or more (zero sets the pairs aside)")
 
 
+def entmax_is_in_use(arguments) -> bool:
+    return (getattr(arguments, "encoder", None) == "linear_response" and arguments.cross_relation_aggregator == "softmax_mixture"
+            and arguments.mixture_weighting == "entmax")
+
+
+def entmax_is_annealing(arguments) -> bool:
+    return entmax_is_in_use(arguments) and arguments.mixture_entmax_anneal_epochs > 0
+
+
+def refuse_an_entmax_setting_that_cannot_act(arguments) -> None:
+    """An entmax exponent or anneal given where no entmax weighting runs would be recorded and do nothing, and an anneal
+    that cannot finish inside --max-epochs would leave early stopping no sparsemax epoch to keep."""
+    entmax_options_given = (arguments.mixture_entmax_anneal_epochs != 0 or arguments.mixture_entmax_exponent != DEFAULT_MIXTURE_ENTMAX_EXPONENT)
+    if entmax_options_given and not entmax_is_in_use(arguments):
+        raise ValueError("--mixture-entmax-exponent and --mixture-entmax-anneal-epochs act only with --encoder linear_response "
+                         "--cross-relation-aggregator softmax_mixture --mixture-weighting entmax")
+    if entmax_is_annealing(arguments) and arguments.mixture_entmax_anneal_epochs >= arguments.max_epochs:
+        raise ValueError(f"--mixture-entmax-anneal-epochs {arguments.mixture_entmax_anneal_epochs} must be below --max-epochs {arguments.max_epochs}, "
+                         "so that some epochs train at sparsemax and early stopping has one to keep")
+
+
+def apply_entmax_schedule(encoder, arguments, epoch: int) -> float | None:
+    """Sets the mixture's entmax exponent for this epoch and returns it; None where no entmax weighting runs."""
+    mixture = getattr(encoder, "cross_relation_mixture", None)
+    if mixture is None or getattr(mixture, "weighting", None) != "entmax":
+        return None
+    exponent = entmax_exponent_for_epoch(arguments.mixture_entmax_exponent, arguments.mixture_entmax_anneal_epochs, epoch)
+    mixture.set_entmax_exponent(exponent)
+    return exponent
+
+
 def main() -> None:
     arguments = build_argument_parser().parse_args()
     resolve_registered_defaults(arguments)
     refuse_a_negative_loss_weight(arguments)
+    refuse_an_entmax_setting_that_cannot_act(arguments)
     signal.signal(signal.SIGUSR1, request_checkpoint)
     torch.manual_seed(arguments.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -2241,6 +2287,7 @@ def main() -> None:
             order = generator.permutation(train_indices)
             first_batch_start = 0
             epoch_loss, epoch_bce, epoch_penalty, epoch_laboratory = 0.0, 0.0, 0.0, 0.0
+        entmax_exponent_this_epoch = apply_entmax_schedule(encoder, arguments, epoch)
         for start in range(first_batch_start, len(order), arguments.batch_size):
             batch = order[start : start + arguments.batch_size]
             loss_value, bce_value, penalty_value, laboratory_value = training_step(encoder, head, laboratory_readout, optimizer, batch)
@@ -2264,6 +2311,13 @@ def main() -> None:
             entry["edge_prior_penalty"] = float(encoder.edge_gates.kl_penalty()) / edge_penalty_denominator
         if laboratory_readout is not None:
             entry["train_laboratory_loss"] = epoch_laboratory / max(1, len(order))
+        if entmax_exponent_this_epoch is not None:
+            entry["mixture_entmax_exponent"] = entmax_exponent_this_epoch
+        # while the entmax exponent is still below sparsemax's, an epoch is scored but neither kept nor counted against
+        # the patience: the kept model is meant to read like sparsemax, with exact zeros
+        still_annealing = entmax_is_annealing(arguments) and entmax_exponent_this_epoch < MIXTURE_EXPONENT_SPARSEMAX
+        if still_annealing:
+            entry["selection_paused_while_annealing"] = True
         if len(validation_indices):
             validation_log_parts = {}
             if arguments.bce_in_log_space:
@@ -2280,7 +2334,9 @@ def main() -> None:
             entry["validation_loss"] = float(evidence_weighted_binary_cross_entropy(torch.as_tensor(validation_predictions, dtype=torch.float32), validation_targets, weights[validation_indices],
                                                                                     positive_target=validation_positive_target, **validation_log_parts))
             improved = (entry["validation_loss"] < state["best_validation_loss"] - 1e-5) if arguments.selection_metric == "loss" else (entry["validation_macro_auprc"] > state["best_validation_auprc"] + 1e-4)
-            if improved:
+            if still_annealing:
+                pass
+            elif improved:
                 state.update(best_validation_auprc=entry["validation_macro_auprc"], best_validation_loss=entry["validation_loss"], best_epoch=epoch, epochs_without_improvement=0,
                              best_encoder=copy.deepcopy(encoder.state_dict()), best_head=copy.deepcopy(head.state_dict()))
                 if laboratory_readout is not None:
@@ -2311,6 +2367,10 @@ def main() -> None:
     if state["best_encoder"] is not None:
         encoder.load_state_dict(state["best_encoder"])
         head.load_state_dict(state["best_head"])
+        apply_entmax_schedule(encoder, arguments, state["best_epoch"])  # the exponent is not in the state dict
+    elif entmax_is_annealing(arguments) and len(validation_indices):
+        print("warning: no epoch after the entmax anneal improved on the validation set, so no model was kept at sparsemax; "
+              "the model of the last epoch trained is scored")
         if laboratory_readout is not None and state.get("best_laboratory_readout") is not None:
             laboratory_readout.load_state_dict(state["best_laboratory_readout"])
 
@@ -2356,6 +2416,7 @@ def main() -> None:
         print(f"refit on {len(refit_indices)} training and validation perturbations for {refit_state['epochs']} epochs (best validation epoch {state['best_epoch']})")
         last_checkpoint = time.time()
         for epoch in range(refit_state["epoch"], refit_state["epochs"]):
+            apply_entmax_schedule(encoder, arguments, epoch)  # the refit repeats the schedule, so its last epoch has the kept epoch's exponent
             order = np.random.default_rng(arguments.seed + 100_000 + epoch).permutation(refit_indices)  # per epoch, so a resume sees the same order
             for start in range(refit_state["next_batch_start"], len(order), arguments.batch_size):
                 batch = order[start : start + arguments.batch_size]

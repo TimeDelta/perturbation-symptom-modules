@@ -148,18 +148,25 @@ RELATION_GAINS = ("per_relation", "shared")
 # receives both signs, which is 36% of destinations (docs/membrane_potential_reach.md): a metabolite
 # both produced and consumed gets product_of at mean +1 and depletes_substrate at mean -1, and their
 # mean is zero. "softmax_mixture" drops that divisor and combines the feeding relations through a
-# softmax over the statistics below, with separate weights per node type, so a destination that the
+# weighted mixture of the statistics below (weighted by sparsemax by default, despite the option's historical
+# name; see MIXTURE_WEIGHTINGS), with separate weights per node type, so a destination that the
 # mean blanks still carries the largest, smallest or most dispersed of its messages. The mixture
 # changes which statistic is read, not the direction at an individual node, since its weights are per
 # node type and so shared by every node of that type; direction is the normalisation's business.
 CROSS_RELATION_AGGREGATORS = ("mean", "softmax_mixture")
-# Every statistic offered here is odd, f(-x) = -f(x), because the response must mirror: a gain of
-# function has to produce the negative of the field a loss of function produces (section 5.2). A plain
-# maximum is not odd and is worse than even, it is sign-biased: over negative messages it returns the
-# least negative, which at the first step is the zero of an untouched neighbour, so it suppresses the
-# whole falling branch of the response and a metabolite that should drop stays at exactly zero. The
-# minimum fails in mirror image, and a standard deviation is even, so it reports the same dispersion
-# whichever way the field moves.
+# Every statistic offered here is odd, f(-x) = -f(x). The reason is the sign bias of the alternatives, not a
+# symmetry requirement on the response. A plain maximum is not odd and is worse than even, it is sign-biased:
+# over negative messages it returns the least negative, which at the first step is the zero of an untouched
+# neighbour, so it suppresses the whole falling branch of the response and a metabolite that should drop stays
+# at exactly zero. The minimum fails in mirror image, and a standard deviation is even, so it reports the same
+# dispersion whichever way the field moves.
+# This comment used to give a second reason, that "the response must mirror: a gain of function has to produce
+# the negative of the field a loss of function produces". That mirror property was never agreed and was withdrawn
+# on 13 October 2026 (the owner: "i never accepted that"), together with item 22a's even pH form, so it is no
+# reason here; the registered pH weight's log form is not even, and the whole response does not mirror.
+# The sign bias needs a set of messages in which an untouched neighbour contributes exactly zero, so it constrains
+# a statistic taken across the messages into a node. It does not by itself rule out a map applied pointwise to a
+# node's own state, which chooses among nothing; f(0) = 0 is what keeps the unperturbed field at zero there.
 #
 # The list is short because the graph is. No destination on data/processed/graph is fed by three or
 # more relations, 73.1% are fed by exactly two and the rest by one; on graph_neuronal three relations
@@ -180,12 +187,21 @@ MIXTURE_STATISTICS = ("mean", "signed_maximum_magnitude", "median", "signed_stan
 # How the mixture weights are formed from the logits. "softmax" spreads weight over every statistic, so
 # a statistic a node type does not need keeps a small share for ever. "sparsemax" (Martins and
 # Astudillo 2016) is the Euclidean projection onto the simplex and returns exact zeros, which makes the
-# learned choice reportable: a node type either uses a statistic or it does not. Both are non-negative
-# and sum to one, so the convex-combination bound that keeps the iteration contracting holds for either.
-# The cost of exact zeros is a zero gradient outside the support, so a statistic dropped early can
-# never return; entmax with the exponent between one and two interpolates, and MIXTURE_EXPONENT_SPARSEMAX
-# names the endpoint rather than hard-coding it.
-MIXTURE_WEIGHTINGS = ("softmax", "sparsemax")
+# learned choice reportable: a node type either uses a statistic or it does not. The cost of exact zeros is a
+# zero gradient outside the support, so a statistic dropped early can never return.
+# "entmax" (alpha-entmax; Peters, Niculae and Martins 2019, "Sparse Sequence-to-Sequence Models", ACL,
+# doi:10.18653/v1/P19-1146) interpolates between the two with an exponent alpha: softmax is the limit
+# alpha -> 1 (MIXTURE_EXPONENT_SOFTMAX) and sparsemax is alpha = 2 (MIXTURE_EXPONENT_SPARSEMAX), exactly. Between
+# them the weights are still sparse but the support is wider, so fewer statistics lose their gradient. Annealing
+# alpha up to 2 during training (--mixture-entmax-anneal-epochs) keeps the statistics trainable early and ends at
+# sparsemax, so the model that is kept has sparsemax's exact zeros and its weights read the same way.
+# Every weighting is non-negative and sums to one, so the convex-combination bound that keeps the iteration
+# contracting holds for all three and for every alpha.
+MIXTURE_WEIGHTINGS = ("softmax", "sparsemax", "entmax")
+MIXTURE_EXPONENT_SOFTMAX = 1.0
+MIXTURE_EXPONENT_SPARSEMAX = 2.0
+DEFAULT_MIXTURE_ENTMAX_EXPONENT = 1.5  # the midpoint; the value Peters et al. 2019 report as their main setting
+ENTMAX_BISECTION_ITERATIONS = 60  # halves an interval no wider than 1 to below 1e-18, under float64 resolution
 # Running to a fixed point (amendment item 7 of 12 October 2026). The tolerance is on the relative change of the state
 # between rounds; 1e-3 is the registered value. The cap exists so the loop terminates even where the update is not a
 # contraction in practice, and 60 is chosen from the measurement rather than for roundness: at the encoder's contraction
@@ -328,6 +344,76 @@ def project_onto_simplex(logit: Tensor, dim: int) -> Tensor:
     return (logit - threshold).clamp_min(0.0)
 
 
+def entmax_exponent_for_epoch(starting_exponent: float, anneal_epochs: int, epoch: int) -> float:
+    """The entmax exponent for an epoch under a linear anneal from starting_exponent to sparsemax's 2.
+
+    anneal_epochs = 0 keeps the starting exponent throughout. Otherwise epoch 0 uses the starting exponent and
+    epoch anneal_epochs and every later one use exactly MIXTURE_EXPONENT_SPARSEMAX, so a run that trains past the
+    anneal ends at sparsemax. Linear in the exponent because nothing measured favours another shape; it is a
+    convention, recorded per epoch in the run history.
+    """
+    if anneal_epochs < 0:
+        raise ValueError(f"anneal_epochs must be 0 or more, not {anneal_epochs}")
+    if anneal_epochs == 0:
+        return float(starting_exponent)
+    progress = min(1.0, epoch / anneal_epochs)
+    return float(starting_exponent + (MIXTURE_EXPONENT_SPARSEMAX - starting_exponent) * progress)
+
+
+class EntmaxBisection(torch.autograd.Function):
+    """alpha-entmax over one axis, by bisection on the threshold, with its exact Jacobian in the backward pass.
+
+    entmax_alpha(z)_i = [(alpha - 1) z_i - threshold]_+ ** (1 / (alpha - 1)), with the threshold chosen so the
+    weights sum to one (Peters, Niculae and Martins 2019; the bisection is Blondel, Martins and Niculae 2019,
+    "Learning Classifiers with Fenchel-Young Losses", arXiv:1901.02324). The threshold lies between
+    max - 1 (the largest weight cannot exceed 1) and max - (1 / n) ** (alpha - 1) (it cannot fall below 1 / n),
+    and the sum is decreasing in it, so bisection converges.
+
+    The Jacobian is diag(s) - s s^T / sum(s), with s_i = p_i ** (2 - alpha) on the support and 0 off it. At
+    alpha = 2, s is the support's indicator and this is sparsemax's Jacobian. It is symmetric, so the backward
+    pass applies it to the incoming gradient directly.
+    """
+
+    @staticmethod
+    def forward(context, logit: Tensor, exponent: float, dim: int) -> Tensor:
+        working_logit = logit.double() * (exponent - 1.0)
+        largest_logit = working_logit.amax(dim=dim, keepdim=True)
+        num_entries = logit.shape[dim]
+        lower_threshold = largest_logit - 1.0
+        upper_threshold = largest_logit - (1.0 / num_entries) ** (exponent - 1.0)
+        inverse_exponent = 1.0 / (exponent - 1.0)
+        for _ in range(ENTMAX_BISECTION_ITERATIONS):
+            middle_threshold = 0.5 * (lower_threshold + upper_threshold)
+            total_weight = (working_logit - middle_threshold).clamp_min(0.0).pow(inverse_exponent).sum(dim=dim, keepdim=True)
+            weight_too_large = total_weight >= 1.0
+            lower_threshold = torch.where(weight_too_large, middle_threshold, lower_threshold)
+            upper_threshold = torch.where(weight_too_large, upper_threshold, middle_threshold)
+        weight = (working_logit - lower_threshold).clamp_min(0.0).pow(inverse_exponent)
+        weight = weight / weight.sum(dim=dim, keepdim=True)  # removes the bisection's last residual
+        weight = weight.to(logit.dtype)
+        context.save_for_backward(weight)
+        context.exponent = exponent
+        context.dim = dim
+        return weight
+
+    @staticmethod
+    def backward(context, weight_gradient: Tensor):
+        (weight,) = context.saved_tensors
+        support_scale = torch.where(weight > 0, weight.clamp_min(1e-30).pow(2.0 - context.exponent), torch.zeros_like(weight))
+        scaled_gradient = support_scale * weight_gradient
+        correction = scaled_gradient.sum(dim=context.dim, keepdim=True) / support_scale.sum(dim=context.dim, keepdim=True)
+        return scaled_gradient - support_scale * correction, None, None
+
+
+def entmax(logit: Tensor, exponent: float, dim: int) -> Tensor:
+    """alpha-entmax along dim, for exponent in (1, 2]; see EntmaxBisection. Softmax is the limit at 1 and is not
+    computed here, because the power 1 / (alpha - 1) overflows as alpha approaches it: use torch.softmax."""
+    if not MIXTURE_EXPONENT_SOFTMAX < exponent <= MIXTURE_EXPONENT_SPARSEMAX:
+        raise ValueError(f"the entmax exponent must lie in ({MIXTURE_EXPONENT_SOFTMAX}, {MIXTURE_EXPONENT_SPARSEMAX}], "
+                         f"not {exponent}; its softmax limit is the 'softmax' weighting")
+    return EntmaxBisection.apply(logit, float(exponent), dim)
+
+
 class CrossRelationAggregator(nn.Module):
     """Combines the gain-weighted messages of the relations feeding each node through a weighted mixture of
     simple statistics, with separate weights per node type and per propagation channel.
@@ -348,15 +434,15 @@ class CrossRelationAggregator(nn.Module):
     in absolute value, so every per-relation message is bounded by maximum_gain * max |h|. The maximum,
     the minimum and the mean over a set of such values are bounded by the same quantity, and so is the
     population standard deviation, since the dispersion of values inside an interval cannot exceed its
-    half-width times two. Both weightings are non-negative and sum to one, so the combination is convex
-    and keeps the bound.
+    half-width times two. Every weighting (softmax, sparsemax, entmax at any exponent) is non-negative and
+    sums to one, so the combination is convex and keeps the bound.
     Zero input still gives exactly zero output, so the unperturbed field stays zero and the response
     stays positively homogeneous of degree one; it loses additivity, which linearity had supplied.
     """
 
     def __init__(self, num_node_types: int, propagation_channels: int,
                  statistics: tuple[str, ...] = MIXTURE_STATISTICS, weighting: str = "sparsemax",
-                 initial_mean_weight: float = 0.9) -> None:
+                 initial_mean_weight: float = 0.9, entmax_exponent: float = DEFAULT_MIXTURE_ENTMAX_EXPONENT) -> None:
         super().__init__()
         unknown = [statistic for statistic in statistics if statistic not in MIXTURE_STATISTICS]
         if unknown:
@@ -365,18 +451,43 @@ class CrossRelationAggregator(nn.Module):
             raise ValueError("at least one mixture statistic is required")
         if weighting not in MIXTURE_WEIGHTINGS:
             raise ValueError(f"weighting must be one of {MIXTURE_WEIGHTINGS}, not {weighting!r}")
+        if weighting == "entmax" and not MIXTURE_EXPONENT_SOFTMAX < entmax_exponent <= MIXTURE_EXPONENT_SPARSEMAX:
+            raise ValueError(f"entmax_exponent must lie in ({MIXTURE_EXPONENT_SOFTMAX}, {MIXTURE_EXPONENT_SPARSEMAX}], "
+                             f"not {entmax_exponent}")
         self.statistics = tuple(statistics)
         self.weighting = weighting
+        # The exponent the entmax weighting uses now. It is not a parameter and not saved in a state dict: under
+        # annealing the trainer sets it per epoch from the schedule (set_entmax_exponent), so a checkpoint written
+        # before entmax existed still loads, and the run record states the exponent of every epoch.
+        self.entmax_exponent = float(entmax_exponent)
         if "power_mean" in self.statistics:
             self.log_power_mean_exponent = nn.Parameter(torch.zeros(num_node_types, propagation_channels))
         # starts near the mean, so an untrained mixture reproduces the original behaviour up to the divisor
         initial_logit = torch.full((num_node_types, len(self.statistics), propagation_channels), 0.0)
         if "mean" in self.statistics:
-            initial_logit[:, self.statistics.index("mean"), :] = self.warm_start_gap(initial_mean_weight, len(self.statistics), weighting)
+            initial_logit[:, self.statistics.index("mean"), :] = self.warm_start_gap(initial_mean_weight, len(self.statistics), weighting,
+                                                                                     entmax_exponent=self.entmax_exponent)
         self.mixture_logit = nn.Parameter(initial_logit)
 
+    def set_entmax_exponent(self, exponent: float) -> None:
+        """Sets the exponent the entmax weighting uses from now on (the annealing schedule's hook)."""
+        if self.weighting != "entmax":
+            raise ValueError(f"only the entmax weighting has an exponent; this mixture is weighted by {self.weighting}")
+        if not MIXTURE_EXPONENT_SOFTMAX < exponent <= MIXTURE_EXPONENT_SPARSEMAX:
+            raise ValueError(f"the entmax exponent must lie in ({MIXTURE_EXPONENT_SOFTMAX}, {MIXTURE_EXPONENT_SPARSEMAX}], not {exponent}")
+        self.entmax_exponent = float(exponent)
+
+    def simplex_weight(self) -> Tensor:
+        """The mixture weights [node types, statistics, channels] under this mixture's weighting."""
+        if self.weighting == "softmax":
+            return torch.softmax(self.mixture_logit, dim=1)
+        if self.weighting == "sparsemax":
+            return project_onto_simplex(self.mixture_logit, dim=1)
+        return entmax(self.mixture_logit, self.entmax_exponent, dim=1)
+
     @staticmethod
-    def warm_start_gap(initial_mean_weight: float, num_statistics: int, weighting: str) -> float:
+    def warm_start_gap(initial_mean_weight: float, num_statistics: int, weighting: str,
+                       entmax_exponent: float = DEFAULT_MIXTURE_ENTMAX_EXPONENT) -> float:
         """Logit gap that puts initial_mean_weight on the mean and spreads the rest evenly, under either weighting.
 
         The gap is solved for rather than chosen so the two weightings start from the same mixture, which a
@@ -391,9 +502,17 @@ class CrossRelationAggregator(nn.Module):
         if not 1.0 / num_statistics < initial_mean_weight < 1.0:
             raise ValueError(f"initial_mean_weight must be in (1/{num_statistics}, 1) so the mean is favoured and "
                              f"every statistic keeps a gradient, not {initial_mean_weight}")
+        other_weight = (1.0 - initial_mean_weight) / (num_statistics - 1)
         if weighting == "sparsemax":
             return (num_statistics * initial_mean_weight - 1.0) / (num_statistics - 1)
-        return math.log(initial_mean_weight * (num_statistics - 1) / (1.0 - initial_mean_weight))
+        if weighting == "entmax":
+            # with logits [a, b, ..., b], entmax gives (alpha - 1) a - threshold = w ** (alpha - 1) and
+            # (alpha - 1) b - threshold = r ** (alpha - 1), so a - b = (w ** (alpha - 1) - r ** (alpha - 1)) / (alpha - 1).
+            # At alpha = 2 this is the sparsemax gap above and as alpha -> 1 it tends to the softmax gap below.
+            # Every r is positive, so every statistic starts inside the support and keeps a gradient.
+            power = entmax_exponent - 1.0
+            return (initial_mean_weight ** power - other_weight ** power) / power
+        return math.log(initial_mean_weight / other_weight)
 
     def forward(self, relation_messages: Tensor, relation_feeds_node: Tensor, node_type_index: Tensor) -> Tensor:
         """relation_messages [R, N, B, C] already multiplied by their gains, relation_feeds_node [R, N]
@@ -439,9 +558,7 @@ class CrossRelationAggregator(nn.Module):
                 computed.append(torch.sign(relation_mean) * dispersion)
 
         stacked = torch.stack(computed, dim=0)  # [S, N, B, C]
-        simplex_weight = (torch.softmax(self.mixture_logit, dim=1) if self.weighting == "softmax"
-                          else project_onto_simplex(self.mixture_logit, dim=1))
-        weight = simplex_weight[node_type_index]  # [N, S, C]
+        weight = self.simplex_weight()[node_type_index]  # [N, S, C]
         return (stacked * weight.permute(1, 0, 2)[:, :, None, :]).sum(dim=0) * node_has_input
 
 
@@ -475,6 +592,7 @@ class LinearResponseEncoder(nn.Module):
         normalisation: str = "total_in_degree",
         cross_relation_aggregator: str = "mean",
         mixture_weighting: str = "sparsemax",
+        mixture_entmax_exponent: float = DEFAULT_MIXTURE_ENTMAX_EXPONENT,
         node_type_index: Tensor | None = None,
         edge_signs: str = "graph",
         relation_gains: str = "per_relation",
@@ -742,7 +860,7 @@ class LinearResponseEncoder(nn.Module):
                 raise ValueError("node_type_index must have one entry per graph node")
             self.register_buffer("node_type_index", given_types, persistent=False)
             self.cross_relation_mixture = CrossRelationAggregator(int(given_types.max()) + 1, propagation_channels,
-                                                                  weighting=mixture_weighting)
+                                                                  weighting=mixture_weighting, entmax_exponent=mixture_entmax_exponent)
         else:
             self.cross_relation_mixture = None
         # created last and only with entry edges, so an encoder without them draws the parameters it always drew
