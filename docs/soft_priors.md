@@ -207,3 +207,31 @@ control stays a control.
 What it is not: Dawid-Skene. There is no latent truth and no conditional-independence assumption; the target is the
 label table, with its own ascertainment, which is why popularity is in the model and why the arm is still read against
 the permuted prior. The calibrated arm joins the grid of section 4 as a third axis (tier against calibrated).
+## 10. Correction, 21 October 2026: 21 of the 34 monogenic negative-report records are labels, not 34
+
+Section 7 above says "The 34 further monogenic records with a negative report are grade A, which makes them labels".
+The count is right and the inference is wrong, and this section is the dated correction rather than an edit to it.
+
+Reproducing the monogenic assembly on the pinned HPO release v2026-09-01, Orphadata products 6 and 1 and the coarse
+`docs/symptom_crosswalk.csv` (24 symptoms) gives 38 monogenic records with `negative_report_count > 0`: 34 at grade A
+and 4 at grade C (MAPT anxiety, CPT1C and RAB32 cognitive impairment, TRPM7 parkinsonism). Both the per-symptom
+negative counts and the all-negative counts match `docs/physiology_audit.md` section 5 exactly, so the 34 is
+reproducible from the pins.
+
+What does not follow is that all 34 are labels. 13 of them carry `positive_report_count == 0`: they reach grade A only
+because `grade_weighting_rows` keeps a 0-of-N row, and the loader then drops them because it keeps only pairs with a
+positive report. That is the rule `docs/experiment_design.md` already states, that rows "whose only annotations report
+0 of N patients" are "no longer positive labels". Their genes are CHCHD2 (twice), COQ7, KIF1C, LAMP2, MME, PNPT1,
+SAMD9L, PPFIA3, PLD4, CAMK2A, PPP2R5C and TENM4. Six become default negatives because the gene carries another label;
+for the other seven the gene leaves the perturbation set.
+
+So **21** of the 34 are pairs carrying both a positive and a negative report, and those 21 are the ones trained as
+positive labels. The registered `better_v2` selection keeps 13 of them and sets aside 8 (DARS2, DNM1L, NKX2-1, PDE10A,
+PRKN, SCARB2, SPTLC1, TYMP) for a frequency below 0.30 or missing.
+
+The pair-by-pair classification, with the disease entries behind each positive and each negative report, is
+`docs/monogenic_negative_report_pairs_2026-10-21.md`, and decision 9.78 records what is open. Three of the negatives
+are curation errors rather than evidence and are recorded in `docs/reconstruction_errata.md`.
+
+This does not change any prior: a prior never touches a label, and the 13 non-label records are eligible cells like any
+other unlabelled pair.
