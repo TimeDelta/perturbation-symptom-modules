@@ -59,6 +59,9 @@ container; the lockbox runs wait for the user's go-ahead.
 - Slice result: no trained configuration beats the random walk (finding 5). The slice is a pilot and does not
   trigger the criterion; the criterion applies to the full-graph test (amendment of 7 October in
   docs/preregistration.md).
+  Ruled 21 October 2026 (decision 9.82): findings 5, 13 and 14 are the record of the slice pilot on the graph and
+  propagation of 6 to 8 October, before the changes of 13 October and later, and are not evidence about the current
+  graph or encoders (the owner: "it's on like v.1 or v.2 graph when it barely matched the physiology").
 - Module diagnosis: done (finding 6). The modules were unused because training stopped while the gates were still
   shrinking. With their own learning rate they carry links, but no module passes the sufficiency test yet.
 - Open question: the graph carries signal the random walk reads (finding 8), so the question is why a signed,

@@ -1,7 +1,34 @@
 # Working rules for sessions in this repository
 
-These are the owner's rulings on how sources are read. Each is dated and quoted. They hold for every session and
-for every research pass a session starts, so a session passes them on to the passes it starts.
+These are the owner's standing rulings for work in this repository: modelling, code, sources, documents, jobs and
+the owner. Each is dated and quoted. They hold for every session and for every research pass or agent a session
+starts, so a session passes them on to the passes and agents it starts.
+
+## Modelling (21 October 2026)
+
+- **The version closest to physiology is used.** "the closest version to physiology is used since that is always the
+  top priority in this project (any decision made on i.e. numerical basis, etc. need justified)". A choice made for a
+  numerical reason (contraction, conditioning, identifiability, compute, convenience) instead of the more
+  physiological version is allowed only with a stated justification of why the physiological version is not used,
+  recorded with the decision in `docs/open_decisions.md`.
+- **Related decisions are decided one by one.** The same message asked that two related decisions (9.68's VAMP1
+  membership and 9.81) "each be evaluated on an individual basis". A ruling on one is not precedent for the other;
+  each is settled by the physiology of its own case, and the relation is recorded so the two can be read together.
+
+## Code (21 October 2026)
+
+- **Code comments and docstrings stay current.** The owner: "we've been burned by stale comments multiple times
+  before" and asked that this file state that "code comments must remain up-to-date". So:
+  - A change to code updates, in the same commit, every comment and docstring that describes the changed behaviour,
+    including comments elsewhere that refer to it by name.
+  - When a decision closes, a claim is withdrawn or corrected, or a registered value changes, search the code for
+    the old version in the same turn (`git grep` the symbol, the flag, the decision id and the withdrawn wording) and
+    correct every comment that still states it. Withdrawn claims are listed in `docs/research_summary.md` and in the
+    README's session summaries.
+  - A comment that names a symbol, flag, file or decision id names one that exists.
+  - History is kept only when it is framed as history, with a date ("what every run before 13 October 2026 did").
+  - A comment found stale and not fixed in the same commit is recorded in the commit message or as a decision row,
+    not left silently.
 
 ## Reading sources (11 October 2026)
 
