@@ -427,8 +427,9 @@ class CrossRelationAggregator(nn.Module):
     mixing are offered beside it and the weights are learned. Only the relations that actually feed a
     node take part, since a relation with no edge into the node would otherwise contribute a zero that
     the median and the signed maximum magnitude would both read as a real message. Every statistic is
-    odd, for the reason given at MIXTURE_STATISTICS, so the combination is odd and the response still
-    mirrors under a change of perturbation sign.
+    odd, for the reason given at MIXTURE_STATISTICS (a non-odd one is sign-biased and silences the falling
+    branch), so the combination is odd too. That is a property of this aggregation, not a claim that the whole
+    response mirrors: the mirror property was withdrawn on 13 October 2026.
 
     The contraction survives. With the per-node divisor dropped, each relation's rows sum to at most one
     in absolute value, so every per-relation message is bounded by maximum_gain * max |h|. The maximum,
