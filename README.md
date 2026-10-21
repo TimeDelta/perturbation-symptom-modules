@@ -147,6 +147,16 @@ behind them.
 - https://claude.ai/share/3f0e9a27-772b-489e-9eb3-0053cdbd5523
 - https://claude.ai/share/d8d0612d-1c85-4966-8a13-995d8c98ee2d
 - https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135
+- https://claude.ai/share/96dd13e4-29c2-4078-973f-70a8e11976e5 — 21 October 2026. Two scoping questions
+  raised and left open: whether small extracellular vesicles belong in the graph as a cross-compartment
+  transfer mechanism rather than as a signed node, and whether target engagement needs an exposure term
+  (anchor: Schmitt MV, Reichel A, Liu X, Fricker G, Lienau P. Drug Metab Dispos. 2021;49(1):53-61,
+  [doi:10.1124/dmd.120.000161](https://doi.org/10.1124/dmd.120.000161), lysosomal trapping added to the
+  Rodgers and Rowland distribution model). Neither literature pass ran: both delegated passes and three
+  replies were stopped by a safety classifier on 21 October 2026, so the transcript carries no sourced
+  finding on either question and the Schmitt paper was not read. Two claims made in it are withdrawn —
+  that the graph carries no cell-type axis (inferred from absence, not checked; the owner corrected it),
+  and that prior strength comes from a Dawid-Skene fit (the owner states that framing is superseded).
 
 ## Conventions
 
