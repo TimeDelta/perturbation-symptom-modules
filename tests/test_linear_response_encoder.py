@@ -488,12 +488,11 @@ def test_every_statistic_keeps_a_gradient_at_the_warm_start(weighting):
 
 @pytest.mark.parametrize("weighting", MIXTURE_WEIGHTINGS)
 def test_the_warm_start_puts_the_requested_weight_on_the_mean_under_either_weighting(weighting):
-    """Both weightings must start from the same mixture, or a comparison between them is confounded."""
+    """Every weighting must start from the same mixture, or a comparison between them is confounded."""
     requested_mean_weight = 0.9
     aggregator = CrossRelationAggregator(num_node_types=2, propagation_channels=3, weighting=weighting,
                                          initial_mean_weight=requested_mean_weight)
-    weight = (torch.softmax(aggregator.mixture_logit, dim=1) if weighting == "softmax"
-              else project_onto_simplex(aggregator.mixture_logit, dim=1))
+    weight = aggregator.simplex_weight()
     mean_position = MIXTURE_STATISTICS.index("mean")
     assert torch.allclose(weight[:, mean_position, :], torch.full_like(weight[:, mean_position, :], requested_mean_weight), atol=1e-6)
     remaining = torch.cat([weight[:, :mean_position, :], weight[:, mean_position + 1:, :]], dim=1)
