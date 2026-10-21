@@ -1,24 +1,27 @@
 """Linear-response encoder: a time-invariant, signed state space over the graph (design section 5.2, route 1).
 
 The message passing encoder (relational_message_passing_encoder.py) emulates time badly for a chronic perturbation:
-each of its L layers has its own weights, so the "dynamics" change from step to step; the perturbation is only the
-initial state, so its signal is a transient rather than a sustained input; the difference field is exactly zero more
-than L edges from the perturbed nodes (two on the default configuration, which on the metabolic layer reaches an
-enzyme's reactions and their direct products and stops); and edges only run substrate -> reaction -> product, so a
-blocked reaction cannot raise its substrate.
+under its original per_layer_dense parameterisation each of its L layers has its own weights, so the "dynamics"
+change from step to step (amendment item 8 has since registered one bounded layer shared by every round); the
+perturbation is only the initial state, so its signal is a transient rather than a sustained input; with a fixed
+number of rounds the difference field is exactly zero more than L edges from the perturbed nodes (two on the default
+configuration of the time, which on the metabolic layer reaches an enzyme's reactions and their direct products and
+stops); and edges only run substrate -> reaction -> product, so a blocked reaction cannot raise its substrate.
 
 This encoder treats the field as the steady-state response of a linear system to a sustained input, the reading that
 metabolic control analysis gives a small enzyme-level change (Kacser and Burns 1973; Heinrich and Rapoport 1974):
 
     h(t + 1) = (1 - damping) * h(t) + damping * (sum_r gain_r * (S_r h(t)) + u)
 
-where u carries the perturbation at its nodes at every step, S_r is the signed, in-degree-normalised adjacency of
-relation r (entry [destination, source] = sign of the edge / in-degree of the destination under r) and gain_r is a
+where u carries the perturbation at its nodes at every step, S_r is the signed, normalised adjacency of relation r
+(under the registered total_in_degree normalisation, amendment item 28, entry [destination, source] = sign of the
+edge / the destination's in-degree summed over every relation; NORMALISATIONS describes the others) and gain_r is a
 learned per-channel gain. The same transition applies at every step, so after num_propagation_steps the field
 approaches the fixed point h = sum_r gain_r * (S_r h) + u (damping sets the transient only). Gains of relations whose
 edges carry a biological sign are positive, so the sign comes from the graph; relations without a sign (binds) get a
-gain of either sign. Each node averages within each relation feeding it and then across those relations (entry =
-sign / (in-degree under r * number of relations feeding the node)), so every row of sum_r |S_r| sums to at most one;
+gain of either sign. Under total_in_degree each unsigned row of sum_r |S_r| sums to one; under the original
+in_degree normalisation each node averages within each relation feeding it and then across those relations (entry =
+sign / (in-degree under r * number of relations feeding the node)). Either way every row of sum_r |S_r| sums to at most one;
 gains are bounded by contraction < 1, so the transition is a contraction in the max norm and the iteration converges.
 (Bounding gains by contraction / R instead shrank the signal by about 0.2 per step, so changes six edges away were
 of order 1e-9.)
@@ -58,7 +61,8 @@ The response decays steeply with distance under in-degree averaging (on the slic
 of the change at the perturbed gene and at dopamine about 1e-8), so a linear readout sees little beyond the first few
 edges. response_scale "signed_log" maps each channel through sign(h) * log(1 + |h| / s_c) with a learned scale s_c
 (starting at 1e-4), which keeps the sign and the order of magnitude and makes distant changes readable; it is odd, so
-a gain of function still mirrors a loss of function. response_scale "linear" leaves the response as it is.
+it changes no channel's sign (a gain-versus-loss mirror is not a property the model is held to: it was withdrawn on
+13 October 2026, preregistration item 22a). response_scale "linear" leaves the response as it is.
 
 Cell classes enter as channels (cell_class_weights, [N, K] in [0, 1], from
 mechanistic_pathway_learning/graph/brain_expression_weights.py): with them the response propagates on K groups of
@@ -924,12 +928,13 @@ class LinearResponseEncoder(nn.Module):
         logarithm (see PH_SENSITIVITY_TARGET_ARGUMENT above). Bounded in (0, 1], so it cannot raise a norm, and applied
         after the fixed point, so the contraction is untouched.
 
-        One property is weaker on the log scale than it was on the linear one, and it is the registered cost. The
-        linear form was even in the deviation, so a gain-of-function was the exact negative of a loss-of-function. A
-        pH shift is not even: acidifying by a given fraction and alkalinising by it move pH by different amounts,
-        which is what the logarithm is for and is the physiology. So a gain and a loss now take different weights at a
-        node whose compartment the perturbation moves, and the two stop being exact negatives there. Positive
-        homogeneity was already broken by the linear form.
+        One property the linear form had, the log form does not. The linear form was even in the deviation, so it gave
+        a gain and a loss of function the same weight. A pH shift is not even: acidifying by a given fraction and
+        alkalinising by it move pH by different amounts, which is what the logarithm is for and is the physiology; the
+        registration calls the asymmetry the chemistry and not a defect (item 22a), and the gain-versus-loss mirror an
+        earlier draft listed as a property of the even form was withdrawn on 13 October 2026. So a gain and a loss now
+        take different weights at a node whose compartment the perturbation moves, and the two stop being exact
+        negatives there. Positive homogeneity was already broken by the linear form.
         """
         deviation = state[self.ph_proton_node_index]  # [compartments, B, C]
         fraction = torch.exp(self.log_ph_sensitivity)[:, None, None] * deviation  # the fractional change in [H+]
@@ -945,9 +950,11 @@ class LinearResponseEncoder(nn.Module):
         state is PH_SENSITIVITY_TARGET_ARGUMENT, then let training move it.
 
         The model's deviations are in arbitrary units set by the input magnitudes and the gains, so there is no scale to
-        derive one from; without this the weight starts at exactly 1 and has no gradient to learn from. Called once, on
-        one batch, before training, and the values it sets are reported in the run record. A compartment whose proton
-        node the batch does not reach keeps its sensitivity, because there is nothing to calibrate against."""
+        derive one from; without this the weight starts at exactly 1 and has no gradient to learn from. Meant to be
+        called once, on one batch, before training, with the values it sets reported in the run record; no trainer code
+        calls it (experiments/run_main_model.py only reads compartment_ph_sensitivity_report, which then stays None),
+        so in a run the sensitivity keeps its starting value and the ceiling is inert. A compartment whose proton node
+        the batch does not reach keeps its sensitivity, because there is nothing to calibrate against."""
         if self.ph_proton_node_index is None:
             return {}
         with torch.no_grad():

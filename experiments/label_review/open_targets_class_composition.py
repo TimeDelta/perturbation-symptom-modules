@@ -1,7 +1,8 @@
 """What the Open Targets target-level class would contribute as training labels, on a named evidence table.
 
-Amendment item 12 fixes the class's loss weight at 0.45 and registers 0.0 as a declared secondary, on the reasoning
-that the class is a small part of training. The counts behind that reasoning were measured on the table of the day
+Amendment item 12 fixed the class's loss weight at 0.45 and registered 0.0 as a declared secondary, on the reasoning
+that the class is a small part of training (item 12d and decision 1.4, 13 October 2026, then put the class into the
+reliability fit, leaving 0.45 as the fixed-grades convention). The counts behind that reasoning were measured on the table of the day
 (docs/label_source_review.md 9.3 and 27.3), and the table is being rebuilt, so this script recomputes them rather
 than repeating them. It reads tables and writes counts: no label, evidence table or configuration is changed.
 
@@ -45,8 +46,8 @@ def rounded_down_to_the_weight_step(value: float) -> float:
 
     `0.45 // 0.05` is 8.0 in exact arithmetic and 8.999999999999998 in binary floating point, so the naive
     expression reports a weight one step too low at every exact multiple: 0.45 printed as 0.40, 0.30 as 0.25,
-    0.15 as 0.10. 0.45 is the registered weight, so the one agreement that would have confirmed the registration
-    was the one the script would have contradicted."""
+    0.15 as 0.10. 0.45 was the weight item 12 registered, so the one agreement that would have confirmed the
+    registration was the one the script would have contradicted."""
     steps = round(value / WEIGHT_SCALE_STEP, 9)
     import math
 

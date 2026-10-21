@@ -1,8 +1,11 @@
 # Evaluation protocol (design sections 6 and 7), as implemented in experiments/run_baselines.py,
 # experiments/run_main_model.py and experiments/aggregate_main_model_runs.py. No code reads this file.
 # The confirmatory test is specified in docs/preregistration.md ("Confirmatory specification, 8 October 2026" and its
-# amendments), which supersedes primary_endpoint, multiple_comparisons and the negative-control list below; the
-# confirmatory entry at the end summarises it.
+# amendments), which supersedes primary_endpoint, multiple_comparisons and the negative-control list below. The
+# confirmatory entry at the end summarises the specification of 8 October 2026 as first written and is superseded in
+# turn: two tested models, not four (configs/head_choice.json), no magnitude floor (the owner, 15 October 2026),
+# H2 and P1 by Holm once H1 is confirmed (amendment item 18), and the scorer's lockbox is configs/lockbox_v2.json.
+# configs/registered_rules.json holds the registered values.
 splits:
   grouped_perturbation_wise:
     num_folds: 5

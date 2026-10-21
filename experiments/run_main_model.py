@@ -1388,8 +1388,11 @@ def initialise_rates_at_weighted_optimum(head, data, fit_indices: np.ndarray, la
 
 
 def early_stopping_validation(data, pool: np.ndarray, arguments) -> tuple[np.ndarray, np.ndarray]:
-    """Split a training pool into (training, validation): fold 0 of a grouped split of the pool into
-    round(1 / --validation-fraction) folds, so no leakage group is on both sides.
+    """Split a training pool into (training, validation): under --validation-draw fold0 (the parser's default), fold 0
+    of a grouped split of the pool into round(1 / --validation-fraction) folds, so no leakage group is on both sides.
+    Under rotated_stratified, the draw of the second confirmatory family (run_main_model_batch.CONFIRMATORY_VALIDATION_V2)
+    and of the registered validation_fold_rule, it returns fold seed mod that number instead
+    (rotated_stratified_validation); everything below describes the fold0 draw.
 
     assign_grouped_folds places the largest group first, in fold 0, so without --keep-large-groups-in-training a group
     larger than the expected validation set becomes the whole of it. On the full development data with the lockbox

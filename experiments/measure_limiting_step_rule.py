@@ -16,7 +16,7 @@ the graph is not free. It reports:
   5. whether it can be computed once: the bottleneck depends on no parameter, so it could be cached per perturbation.
      The script counts the distinct seed sets and seed nodes and gives the memory each cache would take.
 
-Usage, once the v4 graph is rebuilt with a cell-class weight table that covers every node:
+Usage, on a rebuilt graph (v4 or later) with a cell-class weight table that covers every node:
   OMP_NUM_THREADS=4 python experiments/measure_limiting_step_rule.py \
       --graph-dir <the rebuilt v4 graph> --evidence-dir data/processed/evidence_full_v4 \
       --cell-class-weights <its weight table> --markdown-output docs/limiting_step_rule_cost.md
@@ -164,8 +164,9 @@ def quantiles_of(values: torch.Tensor) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    # no defaults: the v1 and v2 graphs are retired and the v4 graph is not yet rebuilt, so the caller names the
-    # graph, the evidence and the weight table that belong together
+    # no defaults: the v1 and v2 graphs are retired and the graph in use changes with each rebuild
+    # (scripts/rebuild_data_layer.sh has built v4 and then v5), so the caller names the graph, the evidence and the
+    # weight table that belong together
     parser.add_argument("--graph-dir", type=Path, required=True)
     parser.add_argument("--evidence-dir", type=Path, required=True)
     parser.add_argument("--cell-class-weights", type=Path, required=True)
