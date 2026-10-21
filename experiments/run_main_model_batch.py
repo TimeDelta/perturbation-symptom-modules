@@ -68,10 +68,13 @@ SLICE_GATE_TIME_SCALES_LINEAR_RESPONSE = [argument for argument in SLICE_MODULE_
 # The registered v4 model as explicit flags (the owner, 13 October 2026: "all of the v4 stuff should be ON by default").
 # The trainer's defaults equal these (tests/test_registered_defaults.py), and a v4 configuration names them anyway, so a
 # later change of a default cannot change a registered model without a configuration saying so (the problem of
-# docs/confirmatory_architecture_review.md, row 8). No data path is here: the v4 graph is not rebuilt yet, and the
-# graph, evidence, label selection, descriptors, cell-class weights and combined perturbations belong to the rebuild.
-# Message passing is not yet at its registered form: amendment item 8 (one repeated layer, rank-factored, run to a fixed
-# point) is not built, so it keeps the registered three layers until it is.
+# docs/confirmatory_architecture_review.md, row 8). No data path is here: the graph, evidence, label selection,
+# descriptors, cell-class weights and combined perturbations are named per run and belong to the rebuild (item 23; the
+# v4 and v5 tables are built, and the rebuild of decision 1.2 is still owed).
+# Message passing (a robustness model since 22 October 2026, decision 9.77) is at its registered form: amendment item 8
+# (one repeated layer, diagonal plus rank 2) is the --relation-parameterisation below, and it runs to a fixed point at
+# the trainer's default --fixed-point-tolerance (amendment item 7), so --num-layers 3 is read only when
+# --fixed-point-tolerance none fixes the number of rounds.
 V4_SHARED_MODEL = ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--group-by", "disease_cluster_and_targets",
                    "--label-grades", "A", "B", "--negative-weight", "0.2", "--placebo-negative-weight", "0.5",
                    "--placebo-negative-weights-file", "configs/placebo_negative_weights.csv", "--label-likelihood", "positive_unlabelled",
@@ -158,12 +161,14 @@ CONFIGURATIONS: dict[str, list[str]] = {
     # 0.0002, so a leak started at the raw base rate can move during training
     "b6_mechanistic_gate_time_scales_fast_leak": [argument if argument != "0.0002" else "0.002" for argument in SLICE_GATE_TIME_SCALES_MESSAGE_PASSING],
     "b6_linear_response_gate_time_scales_cofactors_fast_leak": [argument if argument != "0.0002" else "0.002" for argument in SLICE_GATE_TIME_SCALES_LINEAR_RESPONSE],
-    # the gene and protein split (docs/gene_protein_split.md; not decided for the confirmatory family): each twin with the
+    # the gene and protein split (docs/gene_protein_split.md; undecided for the confirmatory family when these arms were
+    # queued, and decided for it afterwards, the user, 9 October 2026, at FULL_GRAPH_ARGUMENTS_V2): each twin with the
     # slice descriptors on the merged slice graph and on its split copy, where message passing gets one more layer (a
     # knockout reaches the protein layer one hop later). The merged arms read the descriptor copy with the protein
     # descriptors of the genes the split resolves (renamed symbols, genes sharing one entry), so both arms carry the same
     # descriptors. Seed masking on both message-passing arms (the user, 8 October 2026); the linear-response treatment
-    # is the user's to decide, so those arms have none.
+    # was then the user's to decide, so those arms have none (amendment item 23 of 13 October 2026 has since registered
+    # seed_masked for both encoders).
     "b6_mechanistic_gate_time_scales_descriptors_resolved_seed_masked": SLICE_GATE_TIME_SCALES_MESSAGE_PASSING + [
         "--node-descriptors", "data/processed/node_descriptors/slice_descriptors_brain_expression_resolved.parquet", "--descriptor-treatment", "seed_masked"],
     "b6_mechanistic_gate_time_scales_descriptors_split_seed_masked": SLICE_GATE_TIME_SCALES_MESSAGE_PASSING + [

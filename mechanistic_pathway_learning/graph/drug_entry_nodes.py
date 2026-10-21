@@ -59,7 +59,7 @@ CLEARS_RELATION = "clears"
 CLEARANCE_SIGN = -1.0
 # relations whose edges end on a drug's node and say "more of the source, less of the drug". The message-passing encoder
 # sends along them how far the source has moved from its unperturbed state, so they are silent in a perturbation that
-# leaves the carrier or the enzyme at rest (experiments/run_main_model.py, change_carrying_inputs)
+# leaves the carrier or the enzyme at rest (experiments/run_main_model.py, sequestration_inputs)
 CHANGE_CARRYING_RELATIONS: tuple[str, ...] = (SEQUESTERS_RELATION, CLEARS_RELATION)
 # relations whose edges leave an entry node: added without an in-degree divisor, and silent unless their source is seeded
 ENTRY_RELATIONS: tuple[str, ...] = (DRUG_MECHANISM_RELATION,)

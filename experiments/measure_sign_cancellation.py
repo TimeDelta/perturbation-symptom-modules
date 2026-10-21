@@ -1,6 +1,9 @@
 """How much the encoder's two-stage mean cancels at each destination, at equal gains.
 
-The encoder averages within each relation feeding a node, then across those relations. With all
+Under its in_degree normalisation the linear-response encoder averages within each relation feeding a node, then
+across those relations, and that two-stage mean is what this script measures; the registered normalisation is
+forward_cone (amendment item 28 as narrowed by decision 9.16), one divisor over every relation counting only the
+edges the seed can reach, which like total_in_degree keeps the counts the mean discards. With all
 gains equal, the net message at a destination is the mean over relations of the mean sign within
 the relation. The cancellation ratio |net| / (mean over relations of mean |sign|) is 1 when no
 cancellation occurs and 0 when it is total. Equal gains is the honest caveat: learned gains can

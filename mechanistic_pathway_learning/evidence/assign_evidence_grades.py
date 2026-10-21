@@ -52,11 +52,14 @@ DEFAULT_GRADE_WEIGHTS: dict[EvidenceGrade, float] = {
     "E": 0.05,
 }
 
-# The Open Targets target-level statements do not take a grade: amendment item 12 fixes their weight at grade B's 0.6
+# The Open Targets target-level statements do not take a grade: amendment item 12 fixed their weight at grade B's 0.6
 # times the measured agreement of the class with the study's own labels, 0.761, which is 0.457 and rounds to 0.45
 # (docs/label_source_review.md 27.3). The agreement is measured on the triples whose target already has a study drug
 # and the statements that train are by construction the ones no study drug label makes, so the two subsets are
-# disjoint and the extrapolation is disclosed rather than hidden in a grade. OPEN_TARGETS_WEIGHT_WITHOUT_THE_CLASS is
+# disjoint and the extrapolation is disclosed rather than hidden in a grade. Amendment item 12d (decision 1.4, 13 October
+# 2026) found that the agreement does not reproduce and that the product of an ordinal grade and a probability has no
+# interpretation, and put the class into the reliability fit; 0.45 survives as the weight under fixed grades, a
+# convention rather than a derived number. OPEN_TARGETS_WEIGHT_WITHOUT_THE_CLASS is
 # the registered secondary arm, which keeps the class out of training and reports it as a held-out stratum only.
 OPEN_TARGETS_EVIDENCE_CLASS = "open_targets"
 DEFAULT_OPEN_TARGETS_WEIGHT = 0.45

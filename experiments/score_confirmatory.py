@@ -28,7 +28,8 @@ Inference: a paired bootstrap over the lockbox's leakage groups (--bootstrap-uni
 one-sided p = (1 + #{resampled difference <= 0}) / (B + 1). The bootstrap over single perturbations, which understates
 the variance when perturbations of one group co-vary, is reported beside it as a sensitivity reading. Two hypotheses per model:
 - H1 (prediction): the macro, micro and both within-strata readings exceed zero, and the macro and the micro difference
-  each reach their floor. Intersection-union test: p(H1) is the largest of the four p-values.
+  each reach their floor (minus infinity under the registered --floor-rule none, so only the sign conditions remain).
+  Intersection-union test: p(H1) is the largest of the four p-values.
 - H2 (graph content): H1 and both rewiring readings exceed zero; p(H2) = max(p(H1), the two rewiring p-values).
 The two permutation readings are secondary (the user's decision of 8 October 2026): reported with their intervals and
 p-values, outside both hypotheses.
@@ -46,12 +47,15 @@ models x alpha whatever their dependence (1 - (1 - alpha)^models if they were in
 beside the results. From 22 October 2026 one model is tested (registered rule tested_models, decision 9.77), so there
 is no across-model multiplicity left to correct and the familywise level is --alpha itself, which is why --alpha
 returned to 0.05 (decision 9.78).
-Floors (the user's decision of 8 October 2026, --floor-rule half_width_plus_margin): computed in the scoring itself, for
-each model and for the macro and the micro reading, as the half-width of that difference's 95 percent interval under the
-deciding bootstrap plus --floor-margin (0.005). A difference reaching its floor then lies 0.005 above what the lockbox
-resolves for that comparison. --floor-rule fixed uses --minimum-macro-difference and --minimum-micro-difference instead
-(0.032 and 0.043, the half-widths projected from lockbox-like development pseudo-lockboxes plus 0.005, which the head
-choice uses and the output reports beside the realised floors; docs/preregistration.md).
+Floors (--floor-rule): the registered rule is none (the owner, 15 October 2026: "no floor. paired interval";
+configs/registered_rules.json, floor_rule), so no magnitude bar applies and the decision rests on the paired interval.
+The two earlier rules are kept so an earlier reading can be reproduced (model_floors). half_width_plus_margin (the user's
+decision of 8 October 2026, superseded) computes the floor in the scoring itself, for each model and for the macro and
+the micro reading, as the half-width of that difference's 95 percent interval under the deciding bootstrap plus
+--floor-margin (0.005), so a difference reaching its floor lies 0.005 above what the lockbox resolves for that
+comparison. fixed (superseded) uses --minimum-macro-difference and --minimum-micro-difference instead (0.032 and
+0.043, the half-widths projected from lockbox-like development pseudo-lockboxes plus 0.005, which the head choice uses
+and the output reports beside the realised floors; docs/preregistration.md).
 
 The lockbox is scored once. A SCORED marker records when; a second scoring needs --rescore and is listed in the output.
 

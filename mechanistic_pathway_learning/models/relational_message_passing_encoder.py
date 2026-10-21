@@ -112,8 +112,12 @@ RELATION_NORM_EPSILON = 1e-12
 # This needs shared weights, which is why it waited on item 8: with one set per layer the depth IS the parameter
 # count, and a run to convergence would be a different model at every round. With one shared set, bounded by
 # DEFAULT_RELATION_NORM_BOUND, the update is the same contraction each round and the limit is what the encoder means.
-# The perturbation is held on at every round for the same reason as in the linear encoder: given once, a stable
-# shared layer forgets it.
+# Unlike in the linear encoder, the perturbation is NOT held on at every round (until 21 October 2026 this comment said
+# it was, "given once, a stable shared layer forgets it", which is what happens): a seed's input enters
+# only the initial state (initial_node_state_field), and the update is a contraction, so its fixed point does not
+# depend on the initial state and the stable shared layer forgets the perturbation. On the toy graph of
+# tests/test_shared_low_rank_relations.py (21 October 2026) the difference field falls from 0.77 after one round to
+# about 2e-18 at the tolerance of 1e-3. Only a drug's entry edges, which send at every round, act as a sustained input.
 MESSAGE_PASSING_FIXED_POINT_NORM_EPSILON = 1e-12
 # What the bound has to cover for the update to contract, which the first attempt at the fixed point got wrong and the
 # measurement caught: it ran to the cap of 60 rounds without settling. Each relation's adjacency is in-degree

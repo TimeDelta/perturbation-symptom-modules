@@ -292,8 +292,8 @@ def test_the_mixture_carries_more_field_than_the_mean_at_a_mixed_sign_node():
 
 
 def test_mixture_stays_within_the_contraction_bound():
-    """Each statistic is bounded by the largest per-relation message and softmax weights are convex,
-    so the response cannot grow without bound however many steps are taken."""
+    """Each statistic is bounded by the largest per-relation message and the mixture weights (sparsemax, the default
+    here, or softmax) are convex, so the response cannot grow without bound however many steps are taken."""
     for dominant_statistic in MIXTURE_STATISTICS:
         encoder = build_mixed_sign_encoder("softmax_mixture", dominant_statistic=dominant_statistic)
         perturbation_index, perturbation_value = torch.tensor([[3]]), torch.tensor([[[1.0, 1.0]]])
@@ -324,8 +324,11 @@ def test_unknown_cross_relation_aggregator_is_rejected():
 
 
 def test_every_statistic_is_odd_so_the_response_mirrors_under_a_sign_flip():
-    """The property that ruled out the plain maximum, minimum and standard deviation: a gain of
-    function must produce the negative of the field a loss of function produces."""
+    """The property that ruled out the plain maximum, minimum and standard deviation: an odd statistic is not
+    sign-biased, so it does not suppress the falling branch of the response (a plain maximum over negative messages
+    returns the least negative). On this linear toy graph oddness shows as a sign flip of the input flipping the field;
+    that a gain of function must mirror a loss of function is not a registered property (withdrawn 13 October 2026,
+    preregistration item 22a)."""
     for dominant_statistic in MIXTURE_STATISTICS:
         encoder = build_mixed_sign_encoder("softmax_mixture", dominant_statistic=dominant_statistic)
         perturbation_index = torch.tensor([[3]])
