@@ -414,6 +414,10 @@ def sparse_values_product(indices: Tensor, values: Tensor, dense: Tensor, num_ro
 
 
 def penalty_denominator(pair_weights: np.ndarray, fit_rows: np.ndarray) -> float:
-    """W: the total loss weight of the pairs the fit trains on, so a pseudo-count weighs as one unit of label weight."""
+    """W: the total loss weight of the pairs the fit trains on, so a pseudo-count weighs as one unit of label weight.
+
+    Under the positive-unlabelled likelihood of decision 9.90 every counted pair weighs 1 (--equal-drug-shares keeps
+    the sum), so W is the number of counted pairs: the data term is the labels' mean code length and the penalty the
+    edge prior's code length over the same N, both in nats per pair."""
     total = float(np.asarray(pair_weights, dtype=float)[np.asarray(fit_rows, dtype=int)].sum())
     return max(total, 1.0)

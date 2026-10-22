@@ -48,6 +48,7 @@ def experiment_data_with_every_array_filled() -> ExperimentData:
         values[name] = np.ones((NUM_PERTURBATIONS, NUM_SYMPTOMS), dtype=bool)
     values["frequencies"] = np.ones((NUM_PERTURBATIONS, NUM_SYMPTOMS))
     values["placebo_negative_weight_matrix"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.5)
+    values["evidenced_negative_power"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.9)
     unknown = set(PER_PERTURBATION_ARRAYS) - set(values)
     assert not unknown, f"PER_PERTURBATION_ARRAYS names {unknown}, which this fixture does not fill; add them here by name"
     missing = [name for name, field in fields.items()
