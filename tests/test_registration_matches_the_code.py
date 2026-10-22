@@ -71,8 +71,8 @@ def test_the_floor_rule_is_none(registered_rules):
 
 
 def test_alpha_is_one_sided_025(registered_rules):
-    assert registered_rules["alpha_one_sided"]["value"] == 0.025
-    assert argument_parser_default("score_confirmatory", "--alpha") == 0.025
+    assert registered_rules["alpha_one_sided"]["value"] == 0.05
+    assert argument_parser_default("score_confirmatory", "--alpha") == 0.05
 
 
 def test_the_bootstrap_is_a_cluster_bootstrap_over_leakage_groups(registered_rules):

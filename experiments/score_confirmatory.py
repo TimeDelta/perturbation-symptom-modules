@@ -37,13 +37,15 @@ candidate with the full level): H1 first and, only if H1 is confirmed, its secon
 level (amendment item 18). The family is H2 and P1, the pathway test, whose per-model p-value and two gates are read
 from --pathway-test; with no such file the family is H2 alone and H2 faces the full level, which the output states
 because it decides the level. Under Holm the smaller of the two p-values faces alpha / 2 and the larger faces alpha
-once the smaller is rejected, so H2 needs p at or below 0.0125 unless P1 clears 0.0125 first. P1 is claimed only
+once the smaller is rejected, so H2 needs p at or below 0.025 unless P1 clears 0.025 first (0.0125 until the alpha amendment of 22 October 2026). P1 is claimed only
 behind its stability and faithfulness gates G1 and G2 (docs/pathway_test_options.md), which are a conjunction on that
 claim and change no level. With a missing or refused run the scorer stops before writing anything, so the run can be
 resumed; with --allow-incomplete it scores and that model is not confirmed. No correction is made across the models,
-so the chance that at least one of the two models is confirmed by luck is above --alpha: at most 2 x alpha = 0.05
-whatever the dependence between the two tests (1 - (1 - alpha)^2, about 0.049, if they were independent); the output
-states this beside the results.
+so with more than one tested model the chance that at least one is confirmed by luck is above --alpha: at most
+models x alpha whatever their dependence (1 - (1 - alpha)^models if they were independent); the output states this
+beside the results. From 22 October 2026 one model is tested (registered rule tested_models, decision 9.77), so there
+is no across-model multiplicity left to correct and the familywise level is --alpha itself, which is why --alpha
+returned to 0.05 (decision 9.78).
 Floors (the user's decision of 8 October 2026, --floor-rule half_width_plus_margin): computed in the scoring itself, for
 each model and for the macro and the micro reading, as the half-width of that difference's 95 percent interval under the
 deciding bootstrap plus --floor-margin (0.005). A difference reaching its floor then lies 0.005 above what the lockbox
@@ -303,7 +305,7 @@ def main() -> None:
                         help="accept rewired runs without --recompute-reaction-expression-on-rewired-graph (tests on older runs only; the user's decision of 8 October 2026)")
     parser.add_argument("--allow-asymmetric-rewiring", action="store_true",
                         help="accept rewired runs without --keep-reciprocated-relations-symmetric (tests on older runs only; the user adopted it on 8 October 2026)")
-    parser.add_argument("--alpha", type=float, default=0.025,
+    parser.add_argument("--alpha", type=float, default=0.05,
                         help="one-sided level of each model's H1 and then of its Holm family H2 and P1 (a two-sided 95 percent interval excluding zero)")
     parser.add_argument("--pathway-test", type=Path, default=Path("runs/confirmatory/pathway_test.json"),
                         help="the P1 result per model, which joins H2 in the second-stage Holm family of amendment item 18: "
