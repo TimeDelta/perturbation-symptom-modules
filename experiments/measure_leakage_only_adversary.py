@@ -26,7 +26,7 @@ from pathlib import Path
 
 import numpy as np
 
-from mechanistic_pathway_learning.evaluation.experiment_data import load_experiment_data
+from mechanistic_pathway_learning.evaluation.experiment_data import EVIDENCED_NEGATIVE_ARRAYS, load_experiment_data
 from mechanistic_pathway_learning.evaluation.perturbation_wise_and_pathway_wise_splits import assign_grouped_folds
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
     LeakageOnlyAdversary, POOLING_RULES, channel_breakdown, leaked_neighbours, seed_nodes_of_perturbations,
@@ -226,7 +226,7 @@ def _restrict(data, keep: list[int]):
                               "perturbation_seeds", "perturbation_signs", "perturbation_magnitudes")
     changes = {name: [getattr(data, name)[index] for index in keep] for name in per_perturbation_lists}
     for name in ("outcomes", "weights", "label_mask", "frequencies", "evidence_dates", "evidence_date_is_publication",
-                 "evidenced_negative", "placebo_negative_weight_matrix"):
+                 "evidenced_negative", "placebo_negative_weight_matrix", *EVIDENCED_NEGATIVE_ARRAYS):
         value = getattr(data, name, None)
         if value is not None:
             changes[name] = np.asarray(value)[keep]

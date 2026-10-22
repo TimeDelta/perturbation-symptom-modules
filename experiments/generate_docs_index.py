@@ -71,7 +71,7 @@ TOPICS = (
                                        "docs/fine_symptom_constructs.md", "docs/parkinsonism_symptom.md", "docs/hpo_term_audit.md", "docs/onsides_label_slice*.md",
                                        "docs/literature_*.md", "docs/clinical_trial_*.md", "docs/faers_*.md", "docs/impc_*.md", "docs/laboratory_label_coverage.md",
                                        "docs/open_targets_class_composition.md", "docs/combined_perturbations.md", "docs/set_aside_pair_sensitivity.md",
-                                       "docs/ctd_notice_draft.md")),
+                                       "docs/ctd_notice_draft.md", "docs/label_negative_sources_measured.md")),
     ("Splits and leakage", ("docs/leakage_*.md", "docs/rebuild_leakage_cost.md", "docs/gtopdb_leakage_cost.md", "docs/fold_mechanism_sharing.md")),
     ("Models, pilots and results", ("docs/phase*_*.md", "docs/b6_*.md", "docs/module_*.md", "docs/twin_comparisons.md", "docs/descriptor_*.md",
                                     "docs/directed_random_walk.md", "docs/rewiring_null_distribution*.md", "docs/trained_diffusion_readout.md", "docs/score_by_*.md",

@@ -20,6 +20,17 @@ records, one of which may be held out while the other trains. Such an arm is exc
 (`other_study_drugs` in select_arms), and the exclusion is counted. Matching is by the drug's SIDER label name as a
 whole word; a trial that names the drug by a synonym is not found, which under-fetches and never contaminates.
 
+How each term was collected (decision 9.92). The results section states for each event term an assessment type:
+`SYSTEMATIC_ASSESSMENT` or `NON_SYSTEMATIC_ASSESSMENT` in API v2 (`assessmentType` of otherEvents and seriousEvents),
+which the ClinicalTrials.gov results checklist defines as "Systematic Assessment (e.g., solicited by a questionnaire)"
+against "Non-Systematic Assessment (e.g., unsolicited)" (cdn.clinicaltrials.gov/documents/data-prep-checklist-ae.pdf,
+read 22 October 2026). An event nobody asked about and nobody volunteered is not an absence. Every report row and
+comparison carries the term's assessment type and whether any term of its target symptom was systematically assessed
+in the trial. With absence_requires_systematic_assessment (off by default, so the table is the one decision 9.48
+built), a non-excess counts as an absence only where the term, or another term of the same target symptom in that
+trial, was systematically assessed; a positive report needs no such condition, since a volunteered excess is still an
+excess.
+
 What this is not. Not a causal claim per trial: arms are pooled across doses, terms are the sponsor's MedDRA coding,
 the threshold hides rare events, and a terminated or open-label trial is weaker than a completed double-blind one.
 Those facts travel in the limitations text and the rubric features; the tier and the reliability fit decide the
@@ -52,6 +63,11 @@ EVIDENCE_CODE = "trial_arm_comparison"
 EVIDENCE_CLASS = "human_association"
 DEFAULT_MINIMUM_EXPOSURE_FOR_ABSENCE = 100  # drug-arm participants at risk before a non-excess counts as a measured absence
 DEFAULT_FREQUENCY_THRESHOLD = 5.0
+SYSTEMATIC_ASSESSMENT = "SYSTEMATIC_ASSESSMENT"
+NON_SYSTEMATIC_ASSESSMENT = "NON_SYSTEMATIC_ASSESSMENT"
+# the term's own assessment type ("" where the record states none) and whether any term of the same target symptom
+# was systematically assessed in the trial
+ASSESSMENT_COLUMNS = ("assessment_type", "symptom_systematically_assessed")
 
 
 @dataclass(frozen=True)
@@ -79,6 +95,7 @@ class TermComparison:
     placebo_affected: int
     placebo_at_risk: int
     source_vocabulary: str
+    assessment_type: str = ""  # SYSTEMATIC_ASSESSMENT, NON_SYSTEMATIC_ASSESSMENT or "" where the record states none
 
     @property
     def drug_rate(self) -> float | None:
@@ -175,7 +192,7 @@ def term_comparisons(study: dict, selection: ArmSelection) -> list[TermCompariso
             if seen_drug and seen_placebo and drug_at_risk > 0 and placebo_at_risk > 0:
                 comparisons.append(TermComparison(selection.nct_id, str(event.get("term", "")).strip(), str(event.get("organSystem", "")),
                                                   seriousness, drug_affected, drug_at_risk, placebo_affected, placebo_at_risk,
-                                                  str(event.get("sourceVocabulary", ""))))
+                                                  str(event.get("sourceVocabulary", "")), str(event.get("assessmentType") or "")))
     return comparisons
 
 
@@ -208,6 +225,13 @@ def symptom_of_term(term: str, preferred_term_to_symptom: dict[str, str], lowest
     return preferred_term_to_symptom.get(preferred) if preferred else None
 
 
+def systematically_assessed_symptoms(comparisons: Iterable[TermComparison], preferred_term_to_symptom: dict[str, str],
+                                     lowest_to_preferred: dict[str, str]) -> set[str]:
+    """The target symptoms with at least one systematically assessed term among a trial's comparisons."""
+    return {symptom for comparison in comparisons if comparison.assessment_type == SYSTEMATIC_ASSESSMENT
+            for symptom in [symptom_of_term(comparison.term, preferred_term_to_symptom, lowest_to_preferred)] if symptom}
+
+
 def study_descriptors(study: dict) -> dict:
     protocol = study.get("protocolSection", {})
     design = protocol.get("designModule", {}).get("designInfo", {})
@@ -225,7 +249,7 @@ def study_descriptors(study: dict) -> dict:
 
 def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, preferred_term_to_symptom: dict[str, str],
                   lowest_to_preferred: dict[str, str], minimum_exposure_for_absence: int = DEFAULT_MINIMUM_EXPOSURE_FOR_ABSENCE,
-                  other_study_drugs: Iterable[str] = ()) -> tuple[list[dict], dict]:
+                  other_study_drugs: Iterable[str] = (), absence_requires_systematic_assessment: bool = False) -> tuple[list[dict], dict]:
     """Report rows (REPORT_COLUMNS) for one drug across its studies, and counts of what was kept and why not.
 
     `perturbation` carries the identity the assembled table already uses for the drug: perturbation_id (the STITCH
@@ -235,7 +259,9 @@ def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, p
     other_study_drugs = tuple(other_study_drugs)
     rows: list[dict] = []
     counts = {"studies": 0, "studies_with_usable_arms": 0, "arms_excluded_for_another_study_drug": 0, "terms": 0, "terms_on_a_symptom": 0,
-              "reports_positive": 0, "reports_negative": 0, "non_excess_below_exposure_floor": 0}
+              "reports_positive": 0, "reports_negative": 0, "non_excess_below_exposure_floor": 0,
+              "reports_negative_systematic_term": 0, "reports_negative_systematic_symptom_only": 0, "reports_negative_not_systematically_assessed": 0,
+              "absences_left_out_not_systematically_assessed": 0}
     for study in studies:
         counts["studies"] += 1
         selection = select_arms(study, drug_name, other_study_drugs)
@@ -244,7 +270,9 @@ def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, p
             continue
         counts["studies_with_usable_arms"] += 1
         descriptors = study_descriptors(study)
-        for ordinal, comparison in enumerate(term_comparisons(study, selection)):
+        comparisons = term_comparisons(study, selection)
+        systematic_symptoms = systematically_assessed_symptoms(comparisons, preferred_term_to_symptom, lowest_to_preferred)
+        for ordinal, comparison in enumerate(comparisons):
             counts["terms"] += 1
             symptom = symptom_of_term(comparison.term, preferred_term_to_symptom, lowest_to_preferred)
             if symptom is None:
@@ -254,12 +282,20 @@ def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, p
             if not excess and comparison.drug_at_risk < minimum_exposure_for_absence:
                 counts["non_excess_below_exposure_floor"] += 1
                 continue
+            symptom_systematic = symptom in systematic_symptoms
+            if not excess and absence_requires_systematic_assessment and not symptom_systematic:
+                counts["absences_left_out_not_systematically_assessed"] += 1
+                continue
             report_value = 1 if excess else 0
             counts["reports_positive" if excess else "reports_negative"] += 1
+            if not excess:
+                counts["reports_negative_systematic_term" if comparison.assessment_type == SYSTEMATIC_ASSESSMENT else
+                       ("reports_negative_systematic_symptom_only" if symptom_systematic else "reports_negative_not_systematically_assessed")] += 1
             limitations = (f"frequency threshold {descriptors['frequency_threshold']:g} percent, so unlisted terms are below it in every arm; "
                            f"arms pooled across doses: drug {', '.join(selection.drug_group_titles)} against placebo {', '.join(selection.placebo_group_titles)}; "
                            f"allocation {descriptors['allocation'] or 'unstated'}, masking {descriptors['masking'] or 'unstated'}, status {descriptors['overall_status'] or 'unstated'}; "
-                           f"{comparison.seriousness} events; sponsor coding ({comparison.source_vocabulary or 'vocabulary unstated'})")
+                           f"{comparison.seriousness} events; sponsor coding ({comparison.source_vocabulary or 'vocabulary unstated'}); "
+                           f"assessment {comparison.assessment_type.lower().replace('_', ' ') if comparison.assessment_type else 'type unstated'}")
             row = {column: "" for column in REPORT_COLUMNS}
             row.update({
                 "report_id": f"{SOURCE_NAME}|{perturbation['perturbation_id']}|{comparison.nct_id}|{symptom}|{comparison.seriousness}|{ordinal}",
@@ -281,6 +317,7 @@ def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, p
                 # priors) can set its own bar for an excess or an absence instead of taking any excess at its word
                 "drug_affected": comparison.drug_affected, "drug_at_risk": comparison.drug_at_risk,
                 "placebo_affected": comparison.placebo_affected, "placebo_at_risk": comparison.placebo_at_risk,
+                "assessment_type": comparison.assessment_type, "symptom_systematically_assessed": symptom_systematic,
             })
             interval = comparison.risk_difference_interval
             if interval is not None:
@@ -296,32 +333,39 @@ def comparison_statistic(comparison: TermComparison) -> dict:
 
 
 COMPARISON_COLUMNS = ("perturbation_id", "perturbation_type", "perturbation_label", "symptom", "relation", "evidence_class", "source", "source_record_id",
-                      "source_term_label", "seriousness", "drug_affected", "drug_at_risk", "placebo_affected", "placebo_at_risk", "verdict", *STATISTIC_COLUMNS)
+                      "source_term_label", "seriousness", "drug_affected", "drug_at_risk", "placebo_affected", "placebo_at_risk", "verdict", *STATISTIC_COLUMNS,
+                      *ASSESSMENT_COLUMNS)
 
 
 def build_comparisons(studies: Iterable[dict], drug_name: str, perturbation: dict, preferred_term_to_symptom: dict[str, str],
                       lowest_to_preferred: dict[str, str], minimum_exposure_for_absence: int = DEFAULT_MINIMUM_EXPOSURE_FOR_ABSENCE,
-                      other_study_drugs: Iterable[str] = ()) -> list[dict]:
+                      other_study_drugs: Iterable[str] = (), absence_requires_systematic_assessment: bool = False) -> list[dict]:
     """Every arm comparison of one drug on a target symptom (COMPARISON_COLUMNS), the ones build_reports leaves out for
     lack of exposure included: the counts, the verdict of the rule in use (1 an excess, 0 an absence at the exposure
-    floor, None a non-excess below it) and the comparison's own statistic (decision 9.48, option 3)."""
+    floor, None a non-excess below it, and under absence_requires_systematic_assessment also a non-excess whose symptom
+    no term of the trial assessed systematically) and the comparison's own statistic (decision 9.48, option 3)."""
     other_study_drugs = tuple(other_study_drugs)
     rows = []
     for study in studies:
         selection = select_arms(study, drug_name, other_study_drugs)
         if not selection.usable:
             continue
-        for comparison in term_comparisons(study, selection):
+        comparisons = term_comparisons(study, selection)
+        systematic_symptoms = systematically_assessed_symptoms(comparisons, preferred_term_to_symptom, lowest_to_preferred)
+        for comparison in comparisons:
             symptom = symptom_of_term(comparison.term, preferred_term_to_symptom, lowest_to_preferred)
             if symptom is None:
                 continue
             excess = comparison.drug_rate > comparison.placebo_rate
             verdict = 1 if excess else (0 if comparison.drug_at_risk >= minimum_exposure_for_absence else None)
+            if verdict == 0 and absence_requires_systematic_assessment and symptom not in systematic_symptoms:
+                verdict = None
             rows.append({"perturbation_id": perturbation["perturbation_id"], "perturbation_type": "drug", "perturbation_label": perturbation["perturbation_label"],
                          "symptom": symptom, "relation": "induces", "evidence_class": EVIDENCE_CLASS, "source": SOURCE_NAME, "source_record_id": comparison.nct_id,
                          "source_term_label": comparison.term, "seriousness": comparison.seriousness, "drug_affected": comparison.drug_affected,
                          "drug_at_risk": comparison.drug_at_risk, "placebo_affected": comparison.placebo_affected, "placebo_at_risk": comparison.placebo_at_risk,
-                         "verdict": verdict, **comparison_statistic(comparison)})
+                         "verdict": verdict, **comparison_statistic(comparison),
+                         "assessment_type": comparison.assessment_type, "symptom_systematically_assessed": symptom in systematic_symptoms})
     return rows
 
 
@@ -337,6 +381,10 @@ def comparisons_to_dataframe(rows: list[dict], columns: tuple[str, ...]):
             table[column] = table[column].fillna("").astype(str)
         else:
             table[column] = pd.to_numeric(table[column], errors="coerce").astype("float64")
+    if "assessment_type" in table.columns:
+        table["assessment_type"] = table.assessment_type.fillna("").astype(str)
+    if "symptom_systematically_assessed" in table.columns:
+        table["symptom_systematically_assessed"] = table.symptom_systematically_assessed.map(lambda value: value is True).astype(bool)
     return table
 
 
@@ -358,7 +406,7 @@ def rows_to_dataframe(rows: list[dict]):
     """Report rows as a table with the columns of REPORT_COLUMNS and the dtypes of evidence_reports.parquet, empty-safe."""
     import pandas as pd
 
-    table = pd.DataFrame(rows, columns=[*REPORT_COLUMNS, *ARM_COLUMNS, *STATISTIC_COLUMNS])
+    table = pd.DataFrame(rows, columns=[*REPORT_COLUMNS, *ARM_COLUMNS, *STATISTIC_COLUMNS, *ASSESSMENT_COLUMNS])
     table["report_value"] = pd.to_numeric(table.report_value, errors="coerce").fillna(0).astype("int64")
     for column in STATISTIC_COLUMNS:  # each comparison's own statistic (decision 9.48, option 3); empty for a row that states none
         if column in ("statistic_name", "statistic_censored"):
@@ -369,6 +417,8 @@ def rows_to_dataframe(rows: list[dict]):
         table[column] = pd.array([None if value in ("", None) or (isinstance(value, float) and math.isnan(value)) else int(value) for value in table[column]], dtype="Int64")
     for column in ARM_COLUMNS[4:]:
         table[column] = pd.to_numeric(table[column], errors="coerce").astype("float64")
+    table["assessment_type"] = table.assessment_type.fillna("").astype(str)  # empty for a source that states none (FAERS)
+    table["symptom_systematically_assessed"] = table.symptom_systematically_assessed.map(lambda value: value is True).astype(bool)
     table["pubmed_reference_count"] = pd.to_numeric(table.pubmed_reference_count, errors="coerce").fillna(0).astype("int64")
     table["frequency"] = pd.to_numeric(table.frequency, errors="coerce").astype("float64")
     table["frequency_denominator"] = pd.array([None if value in ("", None) or (isinstance(value, float) and math.isnan(value)) else int(value)
