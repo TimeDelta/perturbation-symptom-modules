@@ -27,6 +27,7 @@ from mechanistic_pathway_learning.documentation import (
     dangling_paths,
     decision_ids_dropped_or_renumbered,
     decision_ids_in_log,
+    decision_ids_owing_nothing,
     duplicated_decision_ids,
     item_ids_in_registration,
     last_change_date,
@@ -333,6 +334,14 @@ def test_decision_ids_are_read_struck_or_not_and_through_literal_newlines():
     assert literal_newline_escapes(log) == [2]
     assert duplicated_decision_ids(log + "| 1.2 | again |\n") == ["1.2"]
     assert duplicated_decision_ids(log + "| ~~1.2~~ | a second row under the same id, struck or not |\n") == ["1.2"]
+
+
+def test_rows_owing_nothing_are_read_from_the_last_cell_of_open_rows_only():
+    log = ("| 9.1 | measured | **nothing owed**. recorded for the record |\n"
+           "| 9.2 | measured | the owner's: (a) to (c) |\n"
+           "| ~~9.3~~ | closed | **nothing owed** |\n"
+           "| 9.4 | **nothing owed** appears in the middle cell only | the owner's |\n")
+    assert decision_ids_owing_nothing(log) == {"9.1"}
 
 
 def test_decision_and_item_references_are_matched_by_word():
