@@ -245,8 +245,9 @@ def main() -> int:
         "## What this can and cannot buy",
         "",
         f"The classifier needs a measured pair of fractions for the drug in a population the study uses. "
-        f"**{len(with_a_ratio)} of this study's {len(study_drug_labels)} drug perturbations have one** "
-        f"({len(with_a_ratio_anywhere)} counting the population left out). Those are a subset of the "
+        f"**{len(with_a_ratio)} of this study's {len(study_drug_labels)} drug perturbations have one**"
+        + (f" ({len(with_a_ratio_anywhere)} counting the subgroups left out)" if excluded else "")
+        + ". Those are a subset of the "
         f"{len(with_a_labelled_carrier)} drugs this database labels with a carrier outright, so running the "
         "classifier on them adds nothing: where there is a ratio there is already a labelled carrier, and the "
         "classifier would be predicting a fact the same file states. It would only widen coverage through a second "
