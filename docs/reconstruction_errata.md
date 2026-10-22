@@ -44,7 +44,7 @@ vesicle to become the only exocytosis route (see the VMAT2 handling in docs/expe
 Scope note: the three entries below are curation errors in HPO annotation rows rather than in Human-GEM or Recon3D.
 They are recorded here because this is the committed record of source curation errors and what the build does about
 each. Found while classifying the monogenic negative-report pairs
-(`docs/monogenic_negative_report_pairs_2026-10-21.md`, decision 9.78), on the pinned HPO release v2026-09-01.
+(`docs/monogenic_negative_report_pairs_2026-10-21.md`, decision 9.85), on the pinned HPO release v2026-09-01.
 
 ### POLG's "Dementia 0/35" is a cohort of patients with TYMP mutations
 
@@ -57,7 +57,7 @@ heterozygous mutations were present in all patients tested" in the thymidine pho
 0-of-35 therefore describes TYMP carriers and says nothing about POLG.
 
 Build action: none yet. The pair is a candidate for exclusion from the monogenic negatives; it is listed as an
-erratum here and left in the table until the owner rules on decision 9.78, so that no count changes silently.
+erratum here and left in the table until the owner rules on decision 9.85, so that no count changes silently.
 
 ### CHCHD2's two negative annotations cite an unrelated paper
 
@@ -75,4 +75,4 @@ The negative comes from an Orphanet association typed "Major susceptibility fact
 gene-disease assertion. An absence of a phenotype in a susceptibility cohort is weaker than an absence in a
 monogenic cohort, and the evidence model does not distinguish them.
 
-Build action: none; it bears on decision 9.78 and on how the evidence classes treat Orphanet association types.
+Build action: none; it bears on decision 9.85 and on how the evidence classes treat Orphanet association types.

@@ -230,7 +230,7 @@ positive labels. The registered `better_v2` selection keeps 13 of them and sets 
 PRKN, SCARB2, SPTLC1, TYMP) for a frequency below 0.30 or missing.
 
 The pair-by-pair classification, with the disease entries behind each positive and each negative report, is
-`docs/monogenic_negative_report_pairs_2026-10-21.md`, and decision 9.78 records what is open. Three of the negatives
+`docs/monogenic_negative_report_pairs_2026-10-21.md`, and decision 9.85 records what is open. Three of the negatives
 are curation errors rather than evidence and are recorded in `docs/reconstruction_errata.md`.
 
 This does not change any prior: a prior never touches a label, and the 13 non-label records are eligible cells like any
