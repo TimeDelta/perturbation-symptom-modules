@@ -1,5 +1,5 @@
 """Whether the cAMP response of a receptor coupled to both Gs and Gi/o follows its primary transducer or the number of
-genes in each G-alpha family (decision 9.77).
+genes in each G-alpha family (decision 9.86).
 
 Every admitted coupling (configs/admitted_receptor_g_alpha_coupling.csv, decision 9.23) is expanded from a family to
 its member genes, and each adenylyl cyclase is fed by every member gene that OmniPath links to it. So the two families
@@ -12,7 +12,7 @@ What this measures on a graph:
      cyclases and at cytosolic cAMP to a gain-of-function seed on the receptor's gene, with every relation's gain set
      equal so the structure alone decides, under total_in_degree and forward_cone;
   3. the same with each G-alpha-to-cyclase edge weighted by 1 over the number of its family's members feeding that
-     cyclase, which is suggestion (b) of 9.77: each family reaches the cyclase as one unit.
+     cyclase, which is suggestion (b) of 9.86: each family reaches the cyclase as one unit.
 
 The expected sign is the primary transducer's: up for a receptor whose only primary family is Gs, down for Gi/o, and
 none for a receptor with both as primary.

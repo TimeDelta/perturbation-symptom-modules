@@ -133,7 +133,7 @@ HYPERPOLARISATION_ACTIVATED_PATTERN = re.compile(r"^HCN[1-4]$")
 NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"): 1.0, ("Cl-", "c"): 1.0, ("Ca2+", "c"): 0.0}
 MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools", "computed_beside_the_reactions")
 # Not the build item 13 registers (computed_beside_the_reactions), and scripts/rebuild_data_layer.sh passes no
-# --membrane-potential, so the rebuilt neuronal graphs carry this one (decision 9.78)
+# --membrane-potential, so the rebuilt neuronal graphs carry this one (decision 9.87)
 DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"
 # The pools the computed build needs that the registered build does not: the extracellular side of sodium and of
 # chloride. Potassium already has both sides. No extracellular calcium pool is added, because calcium does not enter
