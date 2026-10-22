@@ -24,10 +24,10 @@ canonical entries is a negative between whole proteins, and only such a record c
 graph. Both textbook cases this module flagged before, BCL2L1 isoform Q07817-2 with BAD and IRAK4 entry F8VVZ1 with
 MYD88, are isoform records of that study.
 
-Licence: IntAct is an EMBL-EBI resource; the EMBL-EBI terms of use (read 15 October 2026) impose no restriction
-beyond the data owner's, and the IntAct data are released under CC BY 4.0 according to the resource's own
-statements, which this session could not read from the script-rendered legal page; the licence is unverified, and
-neither the release directory nor its README states one (read 22 October 2026).
+Licence: CC BY 4.0, verified in the provider's paper: "all data is freely available through the web interface,
+API, and from https://www.ebi.ac.uk/intact/download under the CC BY 4.0 licence" (del Toro et al. 2022, Nucleic
+Acids Res, doi 10.1093/nar/gkab1006; read 22 October 2026 through the Europe PMC REST service). The legal page is
+script-rendered, and neither the release directory nor its README states one (read 22 October 2026).
 """
 from __future__ import annotations
 

@@ -163,8 +163,8 @@ fetch "$raw_directory/uniprot/uniprot_human_manganese_cofactor.tsv.gz" "https://
 
 # --- sources added 15 October 2026 for the evidence tiers, the negatives and the new modalities (docs/data_sources.md) ---
 # IntAct's curated negative interactions (PSI-MITAB; the pairs curators recorded as not interacting). 5,178,956 bytes on
-# 14 January 2026. The licence page is script-rendered; the EMBL-EBI terms of use (read 15 October 2026) impose no
-# restriction beyond the data owner's, and the licence is unverified. The robots file of ftp.ebi.ac.uk disallows every
+# 14 January 2026. CC BY 4.0, verified in the provider's paper (del Toro et al. 2022, doi 10.1093/nar/gkab1006;
+# docs/data_sources.md quotes the sentence). The robots file of ftp.ebi.ac.uk disallows every
 # path for every reader; this fetch and the IMPC ones below are kept on the owner's ruling of 22 October 2026, "don't
 # refuse FTP from EBI" (CLAUDE.md). Most of the file's records are isoform-specific, and
 # mechanistic_pathway_learning/graph/edge_negatives.py keeps the isoform of each (decision 9.88).
