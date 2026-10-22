@@ -80,7 +80,7 @@ def test_an_absent_table_keeps_every_coupling_edge(tmp_path):
     assert not receptor_g_alpha_edge_is_dropped("HTR1A", "GNAS", 1.0, admitted_pairs, annotated_receptors)
 
 
-# --- decision 9.77 (the owner, 21 October 2026: "build the suggested change") ---------------------------------------
+# --- decision 9.86 (the owner, 21 October 2026: "build the suggested change") ---------------------------------------
 
 import pytest  # noqa: E402
 
@@ -100,7 +100,7 @@ HGNC_PATH = Path("data/raw/hgnc/hgnc_complete_set.txt")
 
 
 def test_the_filter_covers_every_g_alpha_gene_of_the_four_families():
-    """GNA14, GNA15 and the transducins were outside the set until 9.77, so no edge into them was filtered."""
+    """GNA14, GNA15 and the transducins were outside the set until 9.86, so no edge into them was filtered."""
     for gene in ("GNA14", "GNA15", "GNAT1", "GNAT2", "GNAT3"):
         assert gene in G_ALPHA_GENE_SYMBOLS
     assert set(G_ALPHA_FAMILY_MEMBERS["Gq/11"]) == {"GNAQ", "GNA11", "GNA14", "GNA15"}
@@ -179,6 +179,6 @@ def test_the_built_layer_types_the_edges_and_counts_them(tmp_path):
     assert counts["receptor_g_alpha_edges_dropped_as_unlisted"] == 1
     assert counts[f"edges_typed_{COUPLES_PRIMARY_RELATION}"] == 1 and counts[f"edges_typed_{COUPLES_SECONDARY_RELATION}"] == 1
     assert counts[f"edges_typed_{G_ALPHA_REGULATES_EFFECTOR_RELATION}"] == 2
-    # off, the same edges keep activates and inhibits: the ablation is the graph before 9.77, the filter fix aside
+    # off, the same edges keep activates and inhibits: the ablation is the graph before 9.86, the filter fix aside
     assert set(untyped_edges.relation_type) <= {"activates", "inhibits"}
     assert len(untyped_edges) == len(typed_edges)

@@ -4,7 +4,7 @@ GtoPdb annotates a receptor's primary and secondary transducers by G-protein fam
 decision 9.23 admits a receptor-to-G-alpha edge when the G alpha gene is a member of an annotated family. The table
 was written once with the families expanded by hand to GNAS and GNAL, GNAI1 to GNAI3 with GNAO1 and GNAZ, GNAQ and
 GNA11, and GNA12 and GNA13. That left out GNA14 and GNA15 from Gq/11 and the transducins GNAT1 to GNAT3 from Gi/o,
-so the filter never saw an edge into them (decision 9.77, measured on v5 on 20 October 2026: 142 signed edges from
+so the filter never saw an edge into them (decision 9.86, measured on v5 on 20 October 2026: 142 signed edges from
 annotated receptors into those four genes, 24 receptors into GNA14 and 2 into GNA15 from receptors annotated for
 another family).
 

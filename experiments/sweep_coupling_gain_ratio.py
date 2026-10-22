@@ -1,4 +1,4 @@
-"""How the cAMP sign of the receptors coupled to both Gs and Gi/o depends on a ratio of relation gains (decision 9.77).
+"""How the cAMP sign of the receptors coupled to both Gs and Gi/o depends on a ratio of relation gains (decision 9.86).
 
 Every signed relation's gain is set to BASE_GAIN, the unsigned binds to 0, except one, which is set to ratio x BASE_GAIN, and the net response of the
 transmembrane adenylyl cyclases to a gain-of-function seed on each receptor's gene is read under the registered

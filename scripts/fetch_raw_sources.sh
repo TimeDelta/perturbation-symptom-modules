@@ -102,6 +102,23 @@ fetch "$raw_directory/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.g
 fetch "$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" 108fb699eccc3f8611b475caa7968ad67f10ee47c4cc88db16d2fcaa0214a0f3
 fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" a287c1abab593c9d6802349a82f118efc0d4aea411be7d897b8feb0b31b02f2a
 
+# GEO GSE100472, six human pineal glands (RNA-seq; Bozinoski, Klein, Mason and Coon, NICHD): the pineal class of
+# decision 9.76 (graph/peripheral_cell_classes.py), which GTEx and the Human Protein Atlas do not sample. NOT fetched
+# here: GEO refuses automated readers (ftp.ncbi.nlm.nih.gov disallows every path, www.ncbi.nlm.nih.gov disallows
+# /geo/download, and the series page answers with a check that the visitor is human). The owner downloaded the four
+# files from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE100472 on 21 October 2026 and they sit in
+# data/raw/geo/GSE100472/ with a .pin.json beside each (bytes, sha256, time; docs/data_sources.md): the NCBI-generated
+# raw counts GSE100472_raw_counts_GRCh38.p13_NCBI.tsv.gz, the annotation Human.GRCh38.p13.annot.tsv.gz, the series
+# matrix and the submitters' FPKM table (a cross-check only). A container without them builds the classes without the
+# pineal, and the build summary says so. The FANTOM5 table of Expression Atlas E-MTAB-3358 that filled the column on
+# 20 October 2026 is no longer fetched (docs/data_sources.md records why).
+
+# The adult human brain atlas's genes x clusters aggregate (Siletti et al. 2023, PMID 37824663; the authors' Dropbox link
+# from the README of github.com/linnarsson-lab/adult-human-brain): mean UMI per nucleus for 59,480 genes in the 461
+# clusters, the source of the noradrenergic_neuron class (cluster 398; graph/siletti_cluster_classes.py, decision 9.76).
+# 307,900,862 bytes. The file states no licence of its own; the same data on CZ CELLxGENE is CC BY 4.0 (docs/data_sources.md).
+fetch "$raw_directory/siletti_cluster_aggregate/adult_human_20221007_Pool_Clean.agg.loom" "https://www.dropbox.com/scl/fi/tptj8x85e2cxqeycfiuv2/adult_human_20221007_Pool_Clean.agg.loom?rlkey=ou88fbu0exgn6okh4h3hrqfub&st=4p0jfd91&dl=1" 98e60952faecbdefd9d3461fef9930b1f158be2c8dc3dd0d8887243d213ae129
+
 # Orphadata product 6: gene-disease association types.
 fetch "$raw_directory/orphadata/en_product6.xml" "https://www.orphadata.com/data/xml/en_product6.xml"
 # Orphadata product 1, the disorders with their OMIM mappings (E, NTBT, BTNT): carries a typed mechanism to the same
