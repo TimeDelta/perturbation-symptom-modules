@@ -228,3 +228,78 @@ def test_a_bulk_paper_can_count_once_or_not_at_all_toward_a_label():
     assert curated_edge_labels(evidence, bulk_papers="none")[:3].tolist() == [False, False, True]
     with pytest.raises(ValueError, match="bulk paper mode"):
         records_with_bulk_papers(evidence, "half")
+
+
+# --- Decision 9.76: a factor the adult sources do not detect takes a lowered prior and is never a label ---
+
+def test_a_flagged_transcription_edge_takes_the_lowered_tier_and_is_never_a_label():
+    from mechanistic_pathway_learning.graph.edge_evidence import FACTOR_BELOW_DETECTION_COLUMN, FACTOR_BELOW_DETECTION_KIND, factor_below_detection_flags
+
+    nodes = pd.DataFrame({"node_id": ["GENE:HAND2", "GENE:NPPA", "GENE:THRB", "PROTEIN:HAND2", "MAM00001c"],
+                          "node_type": ["gene", "gene", "gene", "protein", "metabolite"],
+                          "gene_symbol": ["HAND2", "NPPA", "THRB", "HAND2", None],
+                          "expression_below_detection": [True, False, False, False, False]})
+    evidence = pd.DataFrame({"family": ["transcription", "transcription", "transcription", "signalling", "transcription"],
+                             "kind": ["curated", "curated", "text_mined_only", "curated", "unmatched"],
+                             "records": [3, 3, 1, 3, 0], "human_records": [2, 2, 0, 2, 0], "contested": [False] * 5,
+                             "source_id": ["PROTEIN:HAND2", "PROTEIN:THRB", "GENE:HAND2", "PROTEIN:HAND2", "PROTEIN:HAND2"],
+                             "target_id": ["GENE:NPPA", "GENE:NPPA", "GENE:NPPA", "GENE:NPPA", "GENE:THRB"],
+                             "relation_type": ["regulates_transcription_of"] * 3 + ["activates", "regulates_transcription_of"]})
+    flags = factor_below_detection_flags(evidence, nodes)
+    assert flags.tolist() == [True, False, True, False, True], "the split's protein source reads its gene's flag; a signalling edge is never flagged"
+    assert not factor_below_detection_flags(evidence, nodes.drop(columns="expression_below_detection")).any(), "a graph built before the column gives False"
+    evidence[FACTOR_BELOW_DETECTION_COLUMN] = flags
+    tiers = {("transcription", "curated"): EdgeTier("transcription", "curated", 0.85, 1.0),
+             ("transcription", "text_mined_only"): EdgeTier("transcription", "text_mined_only", 0.55, 0.5),
+             ("signalling", "curated"): EdgeTier("signalling", "curated", 0.9, 1.0)}
+    gated, probability, strength = edge_priors(evidence, tiers)
+    assert probability[0] == pytest.approx(0.85), "without the lowered row the kind's tier stands, the behaviour before the decision"
+    tiers[("transcription", FACTOR_BELOW_DETECTION_KIND)] = EdgeTier("transcription", FACTOR_BELOW_DETECTION_KIND, 0.3, 0.5)
+    gated, probability, strength = edge_priors(evidence, tiers)
+    assert gated.tolist() == [True, True, True, True, False], "an unmatched edge stays ungated whatever its factor"
+    assert probability[0] == pytest.approx(0.3) and strength[0] == pytest.approx(0.5 * float(tempered(3))), "the flagged curated edge takes the lowered tier"
+    assert probability[1] == pytest.approx(0.85) and probability[2] == pytest.approx(0.3) and probability[3] == pytest.approx(0.9)
+    labels = curated_edge_labels(evidence)
+    assert labels.tolist() == [False, True, False, True, False], "a flagged edge is never a label, whatever its records"
+    summary = summarise(evidence, gated, probability, strength)
+    assert summary[FACTOR_BELOW_DETECTION_COLUMN] == {"edges": 3, "gated": 2, "mean_prior": pytest.approx(0.3), "factors": 2}
+    committed = read_edge_tiers()
+    lowered = committed[("transcription", FACTOR_BELOW_DETECTION_KIND)]
+    assert lowered.prior_probability < 0.5 < committed[("transcription", "text_mined_only")].prior_probability, "below one half, so a hard gate starts closed"
+
+
+def test_an_edge_whose_every_record_is_non_human_takes_its_own_tier_and_is_never_a_label(tmp_path):
+    """Decision 9.76 (21 October 2026): ALX3 to INS and SST, whose records are mouse and rat islets."""
+    from mechanistic_pathway_learning.graph.edge_evidence import (NONHUMAN_ONLY_EVIDENCE_COLUMN, NONHUMAN_ONLY_EVIDENCE_KIND, FACTOR_BELOW_DETECTION_COLUMN,
+                                                                  FACTOR_BELOW_DETECTION_KIND, animal_only_evidence_by_icite, nonhuman_only_evidence_flags,
+                                                                  read_curated_edge_species)
+
+    table = tmp_path / "species.csv"
+    table.write_text('source_symbol,target_symbol,relation_type,pubmed_ids,species,quote,read_on,note\n'
+                     'ALX3,INS,regulates_transcription_of,16825292;21104068,mouse,"q",2026-10-21,n\n'
+                     'ALX3,SST,regulates_transcription_of,15226305,rat,"q",2026-10-21,n\n')
+    curated = read_curated_edge_species(table)
+    assert curated == {("ALX3", "INS", "regulates_transcription_of"): {"16825292", "21104068"}, ("ALX3", "SST", "regulates_transcription_of"): {"15226305"}}
+    evidence = pd.DataFrame({"family": ["transcription"] * 4 + ["signalling"], "kind": ["curated", "text_mined_only", "curated", "curated", "curated"],
+                             "records": [2, 1, 3, 2, 2], "contested": [False] * 5, "human_records": [1, 0, 0, 1, 1],
+                             "species_known_records": [2, 1, 3, 2, 2], "animal_only_records": [1, 1, 3, 1, 1],
+                             "source_id": ["PROTEIN:ALX3", "PROTEIN:ALX3", "PROTEIN:ALX3", "PROTEIN:PDX1", "PROTEIN:ALX3"],
+                             "target_id": ["GENE:INS", "GENE:SST", "GENE:INS", "GENE:INS", "PROTEIN:INS"],
+                             "relation_type": ["regulates_transcription_of"] * 4 + ["activates"],
+                             "pubmed_ids": ["16825292;21104068", "15226305", "16825292;21104068;999", "1;2", "16825292;21104068"]})
+    flags = nonhuman_only_evidence_flags(evidence, curated)
+    assert flags.tolist() == [True, True, False, False, False], "a human record added to the edge lifts the flag; a signalling edge is never flagged"
+    assert animal_only_evidence_by_icite(evidence).tolist() == [False, True, True, False, False], "the general rule, reported and not applied"
+    evidence[NONHUMAN_ONLY_EVIDENCE_COLUMN] = flags
+    evidence[FACTOR_BELOW_DETECTION_COLUMN] = [False, True, False, False, False]
+    tiers = read_edge_tiers()
+    gated, probability, strength = edge_priors(evidence, tiers)
+    lowered, nonhuman = tiers[("transcription", FACTOR_BELOW_DETECTION_KIND)], tiers[("transcription", NONHUMAN_ONLY_EVIDENCE_KIND)]
+    assert probability[0] == pytest.approx(nonhuman.prior_probability) and strength[0] == pytest.approx(nonhuman.unit_strength * float(tempered(2)))
+    assert probability[1] == pytest.approx(lowered.prior_probability), "factor_below_detection wins when both hold"
+    assert probability[2] == pytest.approx(tiers[("transcription", "curated")].prior_probability) and probability[4] == pytest.approx(tiers[("signalling", "curated")].prior_probability)
+    assert nonhuman.prior_probability == pytest.approx(0.5) and lowered.prior_probability < nonhuman.prior_probability < tiers[("transcription", "curated")].prior_probability
+    assert curated_edge_labels(evidence).tolist() == [False, False, False, True, True], "the ALX3 to INS edge, two records one scored human, would otherwise be a label"
+    summary = summarise(evidence, gated, probability, strength)
+    assert summary[NONHUMAN_ONLY_EVIDENCE_COLUMN]["edges"] == 2 and summary[NONHUMAN_ONLY_EVIDENCE_COLUMN]["edges_every_record_animal_only_by_icite"] == 2
+    assert read_curated_edge_species()[("ALX3", "INS", "regulates_transcription_of")] == {"16825292", "21104068"}, "the committed table"

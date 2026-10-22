@@ -151,3 +151,164 @@ def test_the_rewired_gate_carries_the_all_cells_column_when_the_stored_table_doe
                                                      include_all_cells_class=True)
     assert ALL_CELLS_CLASS in weights.columns
     assert (weights[ALL_CELLS_CLASS] == 1.0).all()
+
+
+# --- Decision 9.76: peripheral endocrine classes beside the brain classes ---
+
+import gzip  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from mechanistic_pathway_learning.graph.peripheral_cell_classes import (  # noqa: E402
+    GEO_PINEAL_ANNOTATION_FILE, GEO_PINEAL_COUNTS_FILE, GEO_PINEAL_SAMPLES, add_peripheral_classes, geo_pineal_profile, gtex_profiles,
+    hpa_brain_pseudobulk, peripheral_class_table, scaled_to_ncpm)
+
+
+def write_peripheral_sources(directory: Path) -> tuple[Path, Path]:
+    """A GTEx GCT with two brain tissues and the three peripheral tissues, and a GEO directory with raw counts and an
+    annotation table. The GTEx brain columns sit at twice the HPA pseudobulk, so its scale factor is 2; the pineal counts
+    are laid out so that each gene's mean CPM is twice the HPA pseudobulk too, except G4 (pineal-specific) and G1 (silent)."""
+    genes = [f"G{index}" for index in range(1, 13)]
+    gtex_header = ["Name", "Description", "Brain_Cortex", "Brain_Hypothalamus", "Thyroid", "Pancreas_Islets", "Pituitary", "Liver"]
+    gtex_rows = [[f"ENSG{index:011d}.1", gene, str(20.0 * index), str(20.0 * index), "0" if gene != "G1" else "600", "0" if gene != "G2" else "40",
+                  "0" if gene != "G3" else "8", "5"] for index, gene in enumerate(genes, start=1)]
+    gct = directory / "gtex.gct"
+    gct.write_text("#1.2\n12\t6\n" + "\n".join("\t".join(row) for row in [gtex_header, *gtex_rows]) + "\n")
+    geo = directory / "GSE100472"
+    geo.mkdir()
+    # GeneIDs 1..11 map to G1..G11 (G12 has no Ensembl id and is dropped); GeneID 99 shares G4's Ensembl id with smaller counts
+    count_rows = [["GeneID", *GEO_PINEAL_SAMPLES]]
+    for index in range(1, 13):
+        value = 0 if index == 1 else (3000 if index == 4 else 20 * index)
+        count_rows.append([str(index), *[str(value)] * 6])
+    count_rows.append(["99", *["1"] * 6])
+    with gzip.open(geo / GEO_PINEAL_COUNTS_FILE, "wt") as handle:
+        handle.write("\n".join("\t".join(row) for row in count_rows) + "\n")
+    annotation_rows = [["GeneID", "Symbol", "GeneType", "EnsemblGeneID"]]
+    for index in range(1, 13):
+        annotation_rows.append([str(index), genes[index - 1], "protein-coding", f"ENSG{index:011d}" if index != 12 else ""])
+    annotation_rows.append(["99", "G4-copy", "protein-coding", "ENSG00000000004"])
+    with gzip.open(geo / GEO_PINEAL_ANNOTATION_FILE, "wt") as handle:
+        handle.write("\n".join("\t".join(row) for row in annotation_rows) + "\n")
+    return gct, geo
+
+
+def hpa_table() -> pd.DataFrame:
+    index = pd.Index([f"ENSG{index:011d}" for index in range(1, 13)], name="ensembl_gene_id")
+    values = [10.0 * index for index in range(1, 13)]
+    return pd.DataFrame({"class_neuron": values, "class_glia": values}, index=index)
+
+
+def test_the_gtex_tissues_are_read_per_class(tmp_path: Path):
+    gct, _ = write_peripheral_sources(tmp_path)
+    gtex, gtex_brain = gtex_profiles(gct)
+    assert list(gtex.columns) == ["thyroid", "pancreatic_islet", "pituitary"] and gtex.loc["ENSG00000000001", "thyroid"] == 600.0
+    assert gtex_brain.loc["ENSG00000000002"] == 40.0, "the mean over the Brain_ tissues, the liver left out"
+
+
+def test_the_geo_pineal_profile_is_mean_cpm_keyed_by_ensembl_id(tmp_path: Path):
+    _, geo = write_peripheral_sources(tmp_path)
+    profile = geo_pineal_profile(geo)
+    column_sum = sum(20 * index for index in range(2, 13)) - 80 + 3000 + 1  # G1 at 0, G4 at 3000 instead of 80, G12 counted though dropped, GeneID 99 at 1
+    assert list(profile.columns) == ["pineal"] and profile.loc["ENSG00000000004", "pineal"] == pytest.approx(3000 / column_sum * 1e6)
+    assert profile.loc["ENSG00000000001", "pineal"] == 0.0, "a silent gene is 0, not missing"
+    assert "ENSG00000000012" not in profile.index, "a GeneID without an Ensembl id is dropped"
+    assert len(profile) == 11, "two GeneIDs sharing an Ensembl id give one row, the larger"
+    with pytest.raises(ValueError, match="GSM2684714"):
+        with gzip.open(geo / GEO_PINEAL_COUNTS_FILE, "wt") as handle:
+            handle.write("GeneID\tOTHER\n1\t5\n")
+        geo_pineal_profile(geo)
+
+
+def test_a_source_is_placed_on_the_ncpm_scale_by_its_own_brain_samples(tmp_path: Path):
+    gct, _ = write_peripheral_sources(tmp_path)
+    gtex, gtex_brain = gtex_profiles(gct)
+    scaled, factor = scaled_to_ncpm(gtex, gtex_brain, hpa_brain_pseudobulk(hpa_table()))
+    assert np.isclose(factor, 2.0), "the source's brain profile is twice the HPA pseudobulk on every gene"
+    assert np.isclose(scaled.loc["ENSG00000000001", "thyroid"], 300.0)
+
+
+def test_the_peripheral_classes_join_the_brain_table_over_its_own_genes(tmp_path: Path):
+    gct, geo = write_peripheral_sources(tmp_path)
+    table, summary = add_peripheral_classes(hpa_table(), gct, geo)
+    assert list(table.columns) == ["class_neuron", "class_glia", "class_thyroid", "class_pancreatic_islet", "class_pituitary", "class_pineal"]
+    assert len(table) == 12, "a gene the brain table lacks is not added"
+    assert np.isnan(table.loc["ENSG00000000012", "class_pineal"]), "G12 is unknown to the pineal source"
+    assert table.loc["ENSG00000000004", "class_pineal"] > table.loc["ENSG00000000004", "class_neuron"]
+    assert summary["classes"] == ["thyroid", "pancreatic_islet", "pituitary", "pineal"] and np.isclose(summary["scale_factor_source_units_per_ncpm"]["gtex"], 2.0)
+    assert summary["scale_factor_source_units_per_ncpm"]["geo_pineal"] > 0, "estimated from the pineal profile itself: the series has no brain sample"
+    without_pineal, summary_without = add_peripheral_classes(hpa_table(), gct, tmp_path / "absent")
+    assert "class_pineal" not in without_pineal.columns and summary_without["geo_pineal"] is None
+    assert peripheral_class_table(hpa_table(), None, None)[0].empty
+
+
+def test_a_tissue_specific_factor_weighs_near_one_in_its_organ_and_zero_in_the_brain(tmp_path: Path):
+    gct, geo = write_peripheral_sources(tmp_path)
+    brain = hpa_table()
+    brain.loc["ENSG00000000001", ["class_neuron", "class_glia"]] = 0.0  # G1: silent in the brain and the pineal, 600 TPM in the thyroid
+    table, _ = add_peripheral_classes(brain, gct, geo)
+    table.columns = [column.removeprefix("class_") for column in table.columns]
+    weights = relative_expression_weights(table)
+    assert weights.loc["ENSG00000000001", "thyroid"] > 0.99 and weights.loc["ENSG00000000001", "neuron"] == 0.0 and weights.loc["ENSG00000000001", "pineal"] == 0.0
+    assert weights.loc["ENSG00000000004", "pineal"] > 0.9 and weights.loc["ENSG00000000004", "thyroid"] == 0.0
+    nodes = pd.DataFrame({"node_id": ["GENE:G1", "GENE:G12"], "node_type": ["gene", "gene"], "ensembl_gene_id": ["ENSG00000000001", "ENSG00000000012"],
+                          "gene_symbol": ["G1", "G12"], "gene_reaction_rule": [None, None], "compartment": [None, None]})
+    node_weights = node_cell_class_weights(nodes, table)
+    assert node_weights.loc["GENE:G12", "pineal"] == 1.0, "unknown to the pineal source: nothing is known, so nothing is blocked"
+    assert node_weights.loc["GENE:G1", "thyroid"] > 0.99 and node_weights.loc["GENE:G1", "pineal"] == 0.0
+
+
+# --- Decision 9.76 (21 October 2026): a class from one cluster of the adult human brain atlas ---
+
+def write_cluster_aggregate(path: Path) -> None:
+    """A loom-shaped HDF5 file: mean UMI per nucleus for six genes in three clusters (ids 10, 398 and 399), with the
+    attributes the reader uses; G5 appears twice (two accessions of one gene) and G6 is absent from the HPA table."""
+    import h5py
+
+    genes = ["G1", "G2", "G3", "G4", "G5", "G5", "G6"]
+    accessions = ["ENSG00000000001.5", "ENSG00000000002.1", "ENSG00000000003.2", "ENSG00000000004.9", "ENSG00000000005.1", "ENSG00000000005.2", "ENSG00000000099.1"]
+    matrix = np.array([[10.0, 1.0, 1.0], [20.0, 2.0, 2.0], [30.0, 3.0, 3.0], [0.0, 40.0, 4.0], [1.0, 2.0, 5.0], [0.5, 1.0, 6.0], [1.0, 1.0, 7.0]])
+    with h5py.File(path, "w") as handle:
+        handle.create_dataset("matrix", data=matrix)
+        handle.create_dataset("row_attrs/Gene", data=np.array(genes, dtype="S"))
+        handle.create_dataset("row_attrs/Accession", data=np.array(accessions, dtype="S"))
+        handle.create_dataset("col_attrs/Clusters", data=np.array([10, 398, 399]))
+        handle.create_dataset("col_attrs/NCells", data=np.array([1000, 100, 300]))
+
+
+def test_the_cluster_aggregate_is_read_as_pseudobulk_cpm_per_class(tmp_path: Path):
+    from mechanistic_pathway_learning.graph.siletti_cluster_classes import add_atlas_cluster_classes, cluster_class_profiles, read_cluster_aggregate
+
+    loom = tmp_path / "agg.loom"
+    write_cluster_aggregate(loom)
+    mean_umi, nuclei = read_cluster_aggregate(loom)
+    assert list(mean_umi.columns) == [10, 398, 399] and nuclei.to_dict() == {10: 1000, 398: 100, 399: 300}
+    assert mean_umi.loc["ENSG00000000005", 398] == 2.0, "a gene with two accessions keeps its largest row"
+    profiles, nuclei_of_class = cluster_class_profiles(loom, {"noradrenergic_neuron": (398,), "pooled": (398, 399)})
+    column_sum_398 = 1.0 + 2.0 + 3.0 + 40.0 + 2.0 + 1.0
+    assert profiles.loc["ENSG00000000004", "noradrenergic_neuron"] == pytest.approx(40.0 / column_sum_398 * 1e6)
+    pooled_g4 = (40.0 * 100 + 4.0 * 300) / 400  # the mean per nucleus weighted by nucleus count
+    pooled_sum = sum((mean_umi.loc[gene, 398] * 100 + mean_umi.loc[gene, 399] * 300) / 400 for gene in mean_umi.index)
+    assert profiles.loc["ENSG00000000004", "pooled"] == pytest.approx(pooled_g4 / pooled_sum * 1e6) and nuclei_of_class == {"noradrenergic_neuron": 100, "pooled": 400}
+    with pytest.raises(ValueError, match="cluster 7"):
+        cluster_class_profiles(loom, {"missing": (7,)})
+    brain = pd.DataFrame({"class_neuron": [100.0, 200.0, 300.0, 1.0, 20.0], "class_glia": [100.0, 200.0, 300.0, 1.0, 20.0]},
+                         index=pd.Index([f"ENSG{index:011d}" for index in range(1, 6)], name="ensembl_gene_id"))
+    table, summary = add_atlas_cluster_classes(brain, loom)
+    assert list(table.columns) == ["class_neuron", "class_glia", "class_noradrenergic_neuron"] and len(table) == 5, "joined over the brain table's genes; G6 is not added"
+    assert summary["classes"] == ["noradrenergic_neuron"] and summary["nuclei"] == {"noradrenergic_neuron": 100} and summary["scale_factor_source_units_per_ncpm"]["noradrenergic_neuron"] > 0
+    assert table["class_noradrenergic_neuron"].idxmax() == "ENSG00000000004", "the cluster's marker is the class's top gene"
+    weights = relative_expression_weights(table.rename(columns=lambda column: column.removeprefix("class_")))
+    assert weights.loc["ENSG00000000004", "noradrenergic_neuron"] > 0.95 and weights.loc["ENSG00000000004", "neuron"] < 0.01
+    same, summary_without = add_atlas_cluster_classes(brain, tmp_path / "absent.loom")
+    assert list(same.columns) == ["class_neuron", "class_glia"] and summary_without["siletti_aggregate"] is None and summary_without["classes"] == []
+
+
+def test_the_scale_reference_is_the_brain_classes_whatever_the_table_already_carries(tmp_path: Path):
+    """The reference must not drift as classes are joined on: a table with the peripheral and atlas classes gives the same
+    pseudobulk as the HPA table alone."""
+    gct, geo = write_peripheral_sources(tmp_path)
+    brain = hpa_table()
+    with_peripheral, _ = add_peripheral_classes(brain, gct, geo)
+    with_peripheral["class_noradrenergic_neuron"] = 1e6
+    assert hpa_brain_pseudobulk(with_peripheral, excluded_classes=("noradrenergic_neuron",)).equals(hpa_brain_pseudobulk(brain))
+    assert not hpa_brain_pseudobulk(with_peripheral).equals(hpa_brain_pseudobulk(brain)), "an unnamed extra class would move it"
