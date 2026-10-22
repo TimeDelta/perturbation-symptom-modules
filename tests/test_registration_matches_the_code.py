@@ -85,13 +85,24 @@ def test_the_deciding_bootstrap_draws_four_thousand_resamples(registered_rules):
     assert argument_parser_default("score_confirmatory", "--num-bootstrap") == 4000
 
 
-def test_two_models_are_tested_and_the_head_choice_names_them(registered_rules):
-    """Two, not four: the sigmoid head was dropped because only noisy-OR has modules readable as pathways."""
-    registered = registered_rules["tested_models"]["value"]
-    assert len(registered) == 2, "four-model arithmetic was superseded by the head decision"
+def test_one_model_is_tested_and_the_head_choice_names_it(registered_rules):
+    """One tested model from 22 October 2026: the message-passing encoder became a robustness reading (decision 9.77).
+
+    The invariant this guards is that every configuration named in configs/head_choice.json is accounted for as
+    either tested or robustness. A configuration that fell out of both would stop being scored with no trace in
+    the registration, which is the failure the two-model equality assertion used to catch.
+    """
+    tested = registered_rules["tested_models"]["value"]
+    robustness = registered_rules["robustness_models"]["value"]
+    assert len(tested) == 1, "two-model arithmetic was superseded on 22 October 2026 by the robustness decision"
+    assert not set(tested) & set(robustness), "a model cannot be both tested and a robustness reading"
     head_choice = json.loads((REPOSITORY_ROOT / "configs" / "head_choice.json").read_text())
-    assert sorted(head_choice["chosen"].values()) == sorted(registered)
-    assert all("noisy_or" in model for model in registered)
+    assert sorted(head_choice["chosen"].values()) == sorted(tested)
+    assert sorted(head_choice["robustness"].values()) == sorted(robustness)
+    assert all("noisy_or" in model for model in tested + robustness)
+    assert sorted(head_choice["chosen"]) + sorted(head_choice["robustness"]) != [], "both keys must be populated"
+    assert set(head_choice["chosen"]) | set(head_choice["robustness"]) == {"linear_response", "message_passing"}, \
+        "both encoders stay accounted for; one of them is simply no longer tested"
 
 
 def test_the_held_out_fraction_is_one_seventh(registered_rules):

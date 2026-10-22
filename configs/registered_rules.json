@@ -15,9 +15,15 @@
    "code_location": "experiments/score_confirmatory.py --alpha default"
   },
   "tested_models": {
-   "value": ["confirmatory_v2_message_passing_noisy_or", "confirmatory_v2_linear_response_noisy_or"],
-   "means": "Two models, not four: the noisy-OR configurations of the two encoders. The sigmoid head was dropped because only noisy-OR has modules that can be read as pathways. With two tested models the chance that one passes by luck is at most 0.05.",
-   "code_location": "configs/head_choice.json chosen values"
+   "value": ["confirmatory_v2_linear_response_noisy_or"],
+   "means": "One model: the noisy-OR configuration of the linear-response encoder. The sigmoid head was dropped on 15 October 2026 because only noisy-OR has modules that can be read as pathways; the message-passing encoder moved to robustness_models on 22 October 2026 (the owner: \"Defer it to robustness. I don't want it constraining things because this is more about mechanistically identifiably predictive nosology\"). The registered reason is that only the linear-response encoder has a closed-form steady state, so only there can the sensitivity of a label to a sign-disputed edge, and hence whether a disputed sign is identifiable at all, be read without a training run. With one tested model the familywise chance of a lucky pass is the level the model is tested at, so the 0.05 of the two-model arithmetic is no longer claimed and alpha_one_sided is now conservative by a factor of two; raising it is a separate amendment the owner has not taken (decision 9.77).",
+   "code_location": "configs/head_choice.json chosen values",
+   "superseded": ["confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or, each at one-sided 0.025"]
+  },
+  "robustness_models": {
+   "value": ["confirmatory_v2_message_passing_noisy_or"],
+   "means": "Read and reported with their intervals outside the tested family, spending no alpha, as the two permutation readings have since 8 October 2026. The message-passing encoder sits here from 22 October 2026 so a conclusion of the tested model can be checked against a second encoder of a different inductive bias without that check constraining the registered family. A robustness reading that disagrees is reported as a disagreement and cannot withdraw the tested model's result; the corroboration a second tested model would have given is therefore given up, which is the cost the owner accepted.",
+   "code_location": "configs/head_choice.json robustness values, scored by experiments/score_confirmatory.py --models"
   },
   "held_out_fraction": {
    "value": 0.14285714285714285,
