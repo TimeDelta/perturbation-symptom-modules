@@ -20,7 +20,20 @@ the electrical layer:
     a signal on, since through them every transporter would reach every other in two steps. The neuron's own pools are
     separate nodes NEURON_<base><compartment> (cytosolic Na+, K+, chloride and Ca2+; extracellular K+). Reactome ion
     species in those compartments map to the pools; a Human-GEM reaction that moves the ion across the plasma membrane
-    reaches the pool through changes_ion_pool (+1 into the pool, -1 out of it).
+    reaches the pool through changes_ion_pool (+1 into the pool, -1 out of it). Reactome's chloride is a second entity
+    (ion_pool_aliases), kept apart from Human-GEM's as decision 9.4 ruled, and a Reactome reaction that moves it across
+    the plasma membrane reaches the chloride pool through the same changes_ion_pool edge (decision 9.75): before that
+    the GABA-A and glycine receptor reactions told the potential and never loaded the pool.
+  - Calcium stores (decision 9.75). The organelle sides of the intracellular calcium channels are pools of the same
+    kind (ORGANELLE_CALCIUM_STORES): the endoplasmic and sarcoplasmic reticulum lumen, the mitochondrial matrix, the
+    intermembrane space and the endolysosome. Before this each was a currency node, so the ryanodine and IP3 receptors,
+    the two-pore channels and the uniporter drew on a store that received their uptake and sent nothing, and
+    store-operated entry had no store to sense. A store pool has no driving force on VM_c: it is store content, not a
+    charge. The ER and SR potential is clamped near 0 mV by the release channel's own countercurrent (Gillespie and
+    Fill 2008, PMID 18621826) and the mitochondrial and lysosomal potentials are set by the respiratory chain and the
+    V-ATPase rather than by these channels, so no organelle potential node is built. The store that senses depletion
+    feeds its sensor (STORE_SENSORS): a fuller ER store inhibits STIM1 and STIM2 (-1), so depletion activates them
+    and, through their activates edges, the ORAI reaction (Prakriya and Lewis 2015, PMID 26400989).
   - Membrane potential. A node VM_c (the neuronal membrane potential, linearised around rest) receives from every
     reaction that moves net charge across the plasma membrane (changes_membrane_potential), with the sign of the charge
     it brings in: a cation entering or an anion leaving depolarises (+1), a cation leaving or an anion entering
@@ -126,7 +139,19 @@ DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"
 # chloride. Potassium already has both sides. No extracellular calcium pool is added, because calcium does not enter
 # the voltage equation (graph/membrane_potential.py).
 POOLS_ADDED_BY_THE_COMPUTED_BUILD = {("Na+", "e"): 1.0, ("Cl-", "e"): -1.0}
-COMPARTMENT_WORDS = {"c": "cytosol", "e": "extracellular"}
+# The organelle calcium stores (decision 9.75): pools with no driving force on VM_c, built under every membrane
+# potential build. Reactome's luminal calcium species map to them as the cytosolic species map to the cytosolic pool,
+# so the intracellular channels consume and fill a store that propagates instead of a currency sink. The Golgi is left
+# out: the graph holds its uptake pump (ATP2C1/2) and no release from it, so a Golgi pool would be a sink with one edge.
+ORGANELLE_CALCIUM_STORES = {("Ca2+", "r"): 0.0, ("Ca2+", "m"): 0.0, ("Ca2+", "i"): 0.0, ("Ca2+", "l"): 0.0}
+# The store sensors (decision 9.75): (ion, compartment) of the store -> the genes whose product the store's content
+# inhibits, so that depletion activates them. STIM1 and STIM2 sense the ER store: "Depletion of Ca(2+) from the ER
+# causes STIM to accumulate at ER-plasma membrane (PM) junctions where it traps and activates Orai channels" (Prakriya
+# and Lewis 2015, PMID 26400989). The edge is store -> gene, inhibits, -1, and the gene end becomes the protein's at
+# the gene/protein split as every imported edge's does.
+STORE_SENSORS = {("Ca2+", "r"): (("STIM1", "STIM2"), "ER store depletion activates STIM (PMID 26400989)")}
+COMPARTMENT_WORDS = {"c": "cytosol", "e": "extracellular", "r": "endoplasmic reticulum lumen", "m": "mitochondrial matrix",
+                     "i": "mitochondrial intermembrane space", "l": "endolysosome lumen"}
 
 
 @dataclass
@@ -166,7 +191,10 @@ class CuratedReaction:
     activators names genes whose product raises the reaction's rate without catalysing it, each fed to the reaction by an
     activates edge (+1), as Reactome's positive regulators are: an auxiliary channel subunit that increases the number of
     functional channels at the membrane is one. Activators take no part in the voltage gating rule, which reads the
-    catalysts (the pores) alone."""
+    catalysts (the pores) alone.
+    activates_reactions names reaction node ids this reaction raises the rate of, each fed by an activates edge (+1)
+    from this reaction (decision 9.75): a counter-ion current that lets a store's release channel keep releasing. The
+    target must be a reaction node of the graph, imported or curated, so a typo cannot make a silent dead end."""
     reaction_id: str
     display_name: str
     substrates: tuple[str, ...]
@@ -177,14 +205,17 @@ class CuratedReaction:
     membrane_potential_sign: float | None = None
     catalysis_relation: str = "catalyzed_by"
     activators: tuple[str, ...] = ()
+    activates_reactions: tuple[str, ...] = ()
 
 
 def compartment_letter(name: str) -> str:
-    """Human-GEM compartment letter for a Reactome compartment name; vesicle lumens become v."""
+    """Human-GEM compartment letter for a Reactome compartment name; vesicle lumens become v. The platelet dense tubular
+    network is the platelet's endoplasmic reticulum, so it is r: until decision 9.75 it fell through to c, which put
+    the cytosolic calcium pool on both sides of Reactome's IP3R and SERCA reactions written in that compartment."""
     lowered = name.lower()
     if "vesicle" in lowered and "membrane" not in lowered:
         return "v"
-    for words, letter in ((("extracellular",), "e"), (("intermembrane",), "i"), (("mitochondri",), "m"), (("endoplasmic reticulum", "sarcoplasmic"), "r"),
+    for words, letter in ((("extracellular",), "e"), (("intermembrane",), "i"), (("mitochondri",), "m"), (("endoplasmic reticulum", "sarcoplasmic", "dense tubular"), "r"),
                           (("golgi",), "g"), (("lysosom", "endosom"), "l"), (("peroxisom",), "x"), (("nucle",), "n")):
         if any(word in lowered for word in words):
             return letter
@@ -300,9 +331,12 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                           brain_expressed_genes: set[str], transmitter_bases: set[str], vesicular_transporter_genes: set[str] = frozenset(),
                           curated_reactions: list[CuratedReaction] = (),
                           replaced_human_gem_reactions: dict[str, str] = (),
-                          membrane_potential_build: str = DEFAULT_MEMBRANE_POTENTIAL_BUILD) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
-    """The graph with the Reactome entities and reactions, the curated reactions, the neuronal ion pools, the membrane
-    potential node and their edges.
+                          membrane_potential_build: str = DEFAULT_MEMBRANE_POTENTIAL_BUILD,
+                          ion_pool_aliases: dict[str, str] = (),
+                          catalysis_removed: dict[tuple[str, str], str] = (),
+                          entity_members_removed: dict[tuple[str, str], str] = ()) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
+    """The graph with the Reactome entities and reactions, the curated reactions, the neuronal ion pools, the calcium
+    stores, the membrane potential node and their edges.
 
     map_chebi_to_human_gem(chebi_id) -> Human-GEM base metabolite id or None. ion_bases: {'Na+', 'K+', 'Ca2+', 'Cl-',
     'Mg2+': Human-GEM base id}; ion_charges: {base id: charge}. human_gem_participants: read_human_gem_participants for
@@ -311,9 +345,19 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     cytosol-to-extracellular shortcuts lose their catalysis. replaced_human_gem_reactions: {reaction id: why}, the
     Human-GEM reactions the curated set replaces, deleted with every edge they carry (a reaction that lumps channel
     families whose voltage dependence differs). membrane_potential_build is one of MEMBRANE_POTENTIAL_BUILDS and
-    defaults to the registered one."""
+    defaults to the registered one.
+
+    The three tables of decision 9.75, each {key: why}, and each raising on a key the graph does not hold so that a
+    table cannot drift from its source silently. ion_pool_aliases: {base id: base id of the pool it shares}, for an ion
+    entity of Reactome's with no pool of its own (its chloride), whose Reactome reactions then reach the pool through
+    changes_ion_pool as Human-GEM's do. catalysis_removed: {(gene, Human-GEM reaction id): why}, a gene association
+    Human-GEM states for a membrane the protein does not sit on (SERCA on a plasma-membrane calcium efflux), removed
+    before the electrical pass so the reaction's current is not the gene's. entity_members_removed: {(gene, Reactome
+    entity node id): why}, a member Reactome gives a set whose reaction the protein does not carry at that membrane
+    (the lysosomal mucolipins in the plasma-membrane TRP set), which keeps the gene node and its other edges."""
     if membrane_potential_build not in MEMBRANE_POTENTIAL_BUILDS:
         raise ValueError(f"membrane_potential_build must be one of {MEMBRANE_POTENTIAL_BUILDS}, not {membrane_potential_build!r}")
+    ion_pool_aliases, catalysis_removed, entity_members_removed = dict(ion_pool_aliases), dict(catalysis_removed), dict(entity_members_removed)
     potential_is_computed = membrane_potential_build in ("computed_from_the_pools", "computed_beside_the_reactions")
     reactions_tell_the_potential = membrane_potential_build != "computed_from_the_pools"
     species: dict[str, ReactomeSpecies] = {}
@@ -338,7 +382,14 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     driving_force_of_pool = dict(NEURONAL_POOL_DRIVING_FORCE)
     if potential_is_computed:
         driving_force_of_pool.update(POOLS_ADDED_BY_THE_COMPUTED_BUILD)
+    driving_force_of_pool.update(ORGANELLE_CALCIUM_STORES)
     pools = {(ion_bases[name], letter): sign for (name, letter), sign in driving_force_of_pool.items() if name in ion_bases}
+    store_pools = {(ion_bases[name], letter) for name, letter in ORGANELLE_CALCIUM_STORES if name in ion_bases}
+    # the pool an ion entity without a pool of its own shares, on the compartments where that pool exists
+    pool_of_alias = {(base, letter): neuronal_pool_id(alias, letter) for base, alias in ion_pool_aliases.items() for letter in ("c", "e") if (alias, letter) in pools}
+    for base, alias in ion_pool_aliases.items():
+        if base not in ion_set or alias not in ion_set:
+            raise ValueError(f"ion_pool_aliases names {base} -> {alias}, and both must be ion bases")
     # (ion, compartment) -> (sign, weight) of the pool's edge into the potential under the computed build
     computed_edge = driving_force_edge_weights() if potential_is_computed else {}
 
@@ -362,7 +413,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     add_node(MEMBRANE_POTENTIAL_NODE, node_type="membrane_potential", display_name="neuronal membrane potential", compartment="c", is_currency=False)
     for (base, letter), driving_force_sign in pools.items():
         pool = neuronal_pool_id(base, letter)
-        add_node(pool, node_type="metabolite", display_name=f"{ion_names[base]} (neuronal pool, {COMPARTMENT_WORDS[letter]})", compartment=letter,
+        kind = "neuronal store" if (base, letter) in store_pools else "neuronal pool"
+        add_node(pool, node_type="metabolite", display_name=f"{ion_names[base]} ({kind}, {COMPARTMENT_WORDS[letter]})", compartment=letter,
                  base_metabolite_id=base, is_currency=False, in_metabolic_layer=False)
         if not driving_force_sign:
             continue
@@ -375,7 +427,15 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                      "(docs/membrane_potential_constants.md)", weight)
         else:
             add_edge(pool, MEMBRANE_POTENTIAL_NODE, "driving_force", driving_force_sign, "Nernst potential of the ion")
+    sensor_edges = 0
+    for (name, letter), (sensor_genes, evidence) in STORE_SENSORS.items():
+        if (ion_bases.get(name), letter) not in pools:
+            continue
+        for gene in sensor_genes:
+            add_node(f"GENE:{gene}", node_type="gene", display_name=gene, gene_symbol=gene, in_metabolic_layer=False)
+            sensor_edges += add_edge(neuronal_pool_id(ion_bases[name], letter), f"GENE:{gene}", "inhibits", -1.0, evidence)
 
+    members_removed = []
     for species_id, entity in species.items():
         letter = compartment_letter(entity.compartment)
         if entity.kind in SMALL_MOLECULE_KINDS or (entity.chebi_ids and not entity.uniprot_ids):
@@ -393,7 +453,13 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             node_of_species[species_id] = node_id
             for gene in sorted({gene_of_uniprot[accession] for accession in entity.uniprot_ids if accession in gene_of_uniprot}):
                 add_node(f"GENE:{gene}", node_type="gene", display_name=gene, gene_symbol=gene, in_metabolic_layer=False)
+                if (gene, node_id) in entity_members_removed:
+                    members_removed.append(f"{gene} -> {node_id} ({entity.name}): {entity_members_removed[(gene, node_id)]}")
+                    continue
                 add_edge(f"GENE:{gene}", node_id, "member_of", 1.0, "Reactome entity member")
+    missing_members = [f"{gene} -> {entity}" for gene, entity in entity_members_removed if not any(line.startswith(f"{gene} -> {entity} ") for line in members_removed)]
+    if missing_members:
+        raise ValueError(f"entity_members_removed names members Reactome does not give these entities: {missing_members}")
 
     genes_of_node: dict[str, set[str]] = defaultdict(set)
     for edge in new_edges:
@@ -431,13 +497,16 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         Cl-, Ca2+ and extracellular K+, so its other extracellular ions name the generic metabolite. That node is a
         currency metabolite, which receives a signal and does not pass it on, so the extracellular side of a sodium
         current went nowhere. Under the computed build, where extracellular sodium and chloride are pools of their own,
-        the id moves to the pool."""
+        the id moves to the pool; under every build the organelle side of a calcium channel moves to its store. The
+        cytosolic side is left as written: a curated reaction names the cytosolic pool when it means it
+        (NEURON_MAM02519c) and the currency metabolite when it does not, as the counter-ion currents do, whose rate is
+        set by the release they balance and not by the cytosolic potassium content."""
         base, letter = str(node)[:-1], str(node)[-1]
-        return neuronal_pool_id(base, letter) if (base, letter) in pools else node
+        return neuronal_pool_id(base, letter) if letter != "c" and (base, letter) in pools else node
 
     curated_reactions = [dataclasses.replace(curated, substrates=tuple(on_a_pool(node) for node in curated.substrates),
                                              products=tuple(on_a_pool(node) for node in curated.products))
-                         for curated in curated_reactions] if potential_is_computed else list(curated_reactions)
+                         for curated in curated_reactions]
     curated_membrane_signs: dict[str, float] = {}
     for curated in curated_reactions:
         for node in curated.substrates + curated.products:  # a compartment copy of a metabolite the base graph lacks (a transmitter in the vesicle lumen)
@@ -464,13 +533,24 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         reaction_records[curated.reaction_id] = (participants, set(curated.catalysts), list(curated.substrates), list(curated.products), "curated")
         if curated.membrane_potential_sign is not None:
             curated_membrane_signs[curated.reaction_id] = curated.membrane_potential_sign
+    for curated in curated_reactions:  # after every reaction node exists, since a target may be curated further down the list
+        for target in curated.activates_reactions:
+            if target not in reaction_records or target in deleted_nodes:
+                raise ValueError(f"{curated.reaction_id} activates {target}, which is not a reaction node of the graph")
+            add_edge(curated.reaction_id, target, "activates", 1.0, curated.evidence)
 
     # Human-GEM: the vesicular shortcuts go, brain-expressed ion transport joins the electrical layer
     catalysts_of: dict[str, set[str]] = defaultdict(set)
     for source, target, relation in zip(edges.source_id, edges.target_id, edges.relation_type):
         if relation == "catalyzed_by" and str(source).startswith("GENE:"):
             catalysts_of[target].add(source[5:])
-    shortcuts_deleted, shortcut_catalysis_removed = [], []
+    shortcuts_deleted, shortcut_catalysis_removed, misplaced_catalysis_removed = [], [], []
+    for (gene, reaction_node), why in catalysis_removed.items():
+        if gene not in catalysts_of.get(reaction_node, set()):
+            raise ValueError(f"catalysis_removed names {gene} -> {reaction_node}, which the graph does not hold")
+        removed_edges.add((f"GENE:{gene}", reaction_node, "catalyzed_by"))
+        catalysts_of[reaction_node] = catalysts_of[reaction_node] - {gene}
+        misplaced_catalysis_removed.append(f"{gene} -> {reaction_node} ({name_of_node.get(reaction_node)}): {why}")
     for reaction_node, genes in catalysts_of.items():
         if not (genes & set(vesicular_transporter_genes) and {"c", "e"} <= set(str(letter_of_node.get(reaction_node, "")).split(";"))):
             continue
@@ -504,13 +584,18 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                 reaction_node, MEMBRANE_POTENTIAL_NODE, "changes_membrane_potential", sign, evidence):
             membrane_edges[source] += 1
         # Reactome and curated reactions reach the pools through their own substrate and product edges, since their
-        # ion species are the pool nodes; only Human-GEM, whose ions are currency nodes, needs these edges
-        if source == "Human-GEM":
-            for base, amount in moved.items():
-                for letter, direction in (("c", 1.0), ("e", -1.0)):
-                    if (base, letter) in pools and add_edge(reaction_node, neuronal_pool_id(base, letter), "changes_ion_pool",
-                                                            direction * (1.0 if amount > 0 else -1.0), f"ion moved across the plasma membrane ({source})"):
-                        pool_edges += 1
+        # ion species are the pool nodes; only Human-GEM, whose ions are currency nodes, needs these edges, and the
+        # Reactome ion entity that has no pool of its own and shares another's (its chloride, decision 9.75)
+        for base, amount in moved.items():
+            for letter, direction in (("c", 1.0), ("e", -1.0)):
+                if source == "Human-GEM" and (base, letter) in pools:
+                    pool, evidence = neuronal_pool_id(base, letter), f"ion moved across the plasma membrane ({source})"
+                elif source != "Human-GEM" and (base, letter) in pool_of_alias:
+                    pool, evidence = pool_of_alias[(base, letter)], f"ion moved across the plasma membrane ({source}); the entity shares the pool (decision 9.75)"
+                else:
+                    continue
+                if add_edge(reaction_node, pool, "changes_ion_pool", direction * (1.0 if amount > 0 else -1.0), evidence):
+                    pool_edges += 1
         gating = voltage_gating_sign(catalyst_genes) if moves_ions_across_a_membrane(participants, ion_set | {base for base in ion_charges}) else 0.0
         if gating and add_edge(MEMBRANE_POTENTIAL_NODE, reaction_node, "voltage_gates", gating, "voltage-gated pore"):
             gating_edges[source] += 1
@@ -564,6 +649,9 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                "release_reactions": release_reactions, "vesicular_shortcut_reactions_deleted": shortcuts_deleted,
                "human_gem_reactions_replaced_by_curated_ones": {reaction: why for reaction, why in dict(replaced_human_gem_reactions).items() if reaction in deleted_nodes},
                "vesicular_shortcut_catalysis_removed": shortcut_catalysis_removed,
+               "calcium_store_pools": sorted(neuronal_pool_id(base, letter) for base, letter in store_pools),
+               "store_sensor_edges": sensor_edges,
+               "misplaced_catalysis_removed": misplaced_catalysis_removed, "entity_members_removed": members_removed,
                "small_molecules_without_human_gem_metabolite": sorted(unmapped_small_molecules)}
     # Every node this module adds carries is_currency=False as written, which until 13 October 2026 left a species'
     # copies disagreeing: the vacuolar water and oxygen, the mitochondrial and intermembrane sodium and five

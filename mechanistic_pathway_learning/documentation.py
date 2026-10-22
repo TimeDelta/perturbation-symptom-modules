@@ -222,6 +222,25 @@ def closed_decision_ids(text: str) -> set[str]:
     return {match.group("id") for match in re.finditer(r"^\|\s*~~(?P<id>\d+\.\d+[a-z]?)~~\s*\|", text.replace("\\n", "\n"), flags=re.MULTILINE)}
 
 
+# An open row that is kept as a record and asks the owner for nothing starts its last cell with this marker, so the
+# status page can count the decisions waiting on the owner apart from the measurements recorded for the record (the
+# owner, 21 October 2026: the log's header called every open row a decision waiting on them, and several were not).
+NOTHING_OWED_MARKER = "**nothing owed**"
+
+
+def decision_ids_owing_nothing(text: str) -> set[str]:
+    """Ids of open (not struck-through) rows whose last cell starts with NOTHING_OWED_MARKER."""
+    ids = set()
+    for line in text.replace("\\n", "\n").splitlines():
+        match = re.match(r"^\|\s*(?P<id>\d+\.\d+[a-z]?)\s*\|", line)
+        if not match:
+            continue
+        last_cell = line.rstrip().rstrip("|").rsplit(" | ", 1)[-1].strip()
+        if last_cell.lower().startswith(NOTHING_OWED_MARKER):
+            ids.add(match.group("id"))
+    return ids
+
+
 def item_ids_in_registration(text: str) -> set[str]:
     """Items are headed `**14. ...**`, and a sub-item added later may sit in a bullet, `- **23a. ...**`."""
     return {match.group("id") for match in re.finditer(r"^(?:- )?\*\*(?P<id>\d+[a-z]?)\.\s", text, flags=re.MULTILINE)}

@@ -175,7 +175,52 @@ behind them.
   reconstructed incorrectly. Q2 and Q3 received no slot. Fourteen appraised sources were added to
   docs/references.bib. Mellina Andreu 2025 was graded from its abstract because a permission request went
   unanswered, which under the rule of 11 October is not a finding; its full text is still to be read.
-- https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135
+- https://claude.ai/share/de207981-68b8-49cf-826b-c0a201a84135 — 10 to 15 October 2026. Six days of design
+  work toward the confirmatory test; the lockbox was not drawn. Model: drug entry nodes that exist only where
+  seeded (confirmed by the owner); the owner ruled out a third encoder and extra confirmatory variants
+  ("increasing probability of winning by luck"), so propagation runs to a fixed point with one repeated
+  reduced-rank layer, and message passing must read edge signs (it had read 7,321 negative edges as
+  positive); amendment of 12 October, eleven items. Labels: a label source review (no dataset varies a
+  carrier together with a drug), then no target limit ("I really don't like having a target limit"), the
+  gain-of-function sign fix, the placebo mask and placebo weights from trial arm sizes, Open Targets
+  statements placed by their target's leakage group, a brain-exposure admission rule (Kp,uu at least 0.1)
+  and second-agency label sources (EMA, Health Canada). Graph: log-scale pH, currency fixes, reversible
+  reactions that a perturbation can reverse ("I don't want to accept a perturbation not being able to
+  reverse the reaction"), the GtoPdb coupling filter, BRENDA regulation edges and the chloride charge fix.
+  Statistics: Holm correction, effect size in multiples of the realized bootstrap half-width, the rules
+  registered in configs/registered_rules.json with a test against the code, and the preregistration
+  baseline frozen on 15 October. The source-reading rules now in CLAUDE.md and docs/open_decisions.md
+  date from here. Claims withdrawn after the owner's challenges include a gain/loss mirror property ("i
+  never accepted that"), a softmax mixture that was sparsemax, and symptom folds as a test of circularity.
+  The v4 rebuild ran in a separate session; decisions left open at the end include 9.41 and 9.42 in docs/open_decisions.md.
+- https://claude.ai/share/a44b3cb1-b2f5-47b4-a829-5674879deb77 — 20 to 21 October 2026. Two decisions built
+  as draft pull requests, and the rebases that followed a merge. 9.75: the owner asked whether the ryanodine
+  receptor and the other intracellular ligand-gated channels carry compartmental charge; measured on v5, none
+  did, since every luminal calcium node was a currency metabolite and `ions_moved_inward` reads the
+  extracellular and cytosolic sides alone. The ruling was store content rather than charge, because the
+  release channel carries most of its own countercurrent ("clamps the membrane potential near 0 mV within
+  approximately 150 mus", Gillespie and Fill 2008, PMID 18621826) and neuronal ER depolarisations "do not
+  spread beyond the site of receptor activation" (Campbell et al. 2023, PMID 36640310): pull request #7 adds
+  four store pools, the ER store inhibiting STIM1 and STIM2 so depletion activates ORAI, a store
+  driving-force multiplier in the linear-response encoder (off until registered), the counter-ion channels
+  TRIC-A, TRIC-B and TMEM175 from UniProt's catalytic activities, and five mapping fixes. 9.76: the
+  transcription gate deleted a factor's whole regulon below 1 TPM of bulk GTEx brain, costing 6,002 edges
+  from 215 factors, among them PHOX2A (locus coeruleus) and CRX (pineal), which bulk tissue cannot see. The
+  owner ruled that a regulon is dropped only when both sources miss the factor, that the developmental
+  factors keep their regulons under a lowered evidence prior rather than being dropped ("why wouldn't the
+  developmental factors be added to the other soft priors for estimation of their reliability?"), and that
+  peripheral classes be added ("add the thyroid, pineal, pancreatic, etc. cell types"), then the Siletti
+  atlas for the locus coeruleus and a non-human flag for ALX3's islet edges; pull request #9 builds it and
+  the gate now drops 10 edges from 1 factor. The pineal class rests on six human glands the owner downloaded
+  by hand, GEO GSE100472, because NCBI refuses automated readers. Pull request #5 was rebased to clear its
+  documentation conflicts and merged, and #7 and #9 were rebased after it. Recorded and unresolved:
+  `calibrate_ph_sensitivity` is called by no trainer code, so the registered pH ceiling is inert; the Siletti
+  aggregate carries no licence of its own, CC BY 4.0 being inferred from the CELLxGENE copy; and whether the
+  store multiplier earns its parameters is unmeasured, since the store pool already propagates the
+  first-order effect. Four replies were withheld by a safety classifier on 20 October 2026, all on the
+  intracellular channel write-up and across three models; that content was not reproduced, and the work was
+  finished by subagents with fresh context. A handover note is in the project as
+  `claude/session_2026-10-20_to_21.md`.
 - https://claude.ai/share/96dd13e4-29c2-4078-973f-70a8e11976e5 — 21 October 2026. Two scoping questions
   raised and left open: whether small extracellular vesicles belong in the graph as a cross-compartment
   transfer mechanism rather than as a signed node, and whether target engagement needs an exposure term

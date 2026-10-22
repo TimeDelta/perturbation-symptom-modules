@@ -32,7 +32,9 @@ from experiments.generate_docs_index import index_is_current, rendered_index
 from mechanistic_pathway_learning.documentation import (
     REPOSITORY_ROOT,
     STAMP_POLICY_DATE,
+    DECISION_LOG_PATH,
     dangling_paths,
+    decision_ids_owing_nothing,
     git_output,
     head_commit,
     last_change_date,
@@ -106,9 +108,12 @@ def decisions() -> dict:
     history = read_history()
     timelines = sorted(history.timelines.values(), key=lambda timeline: sort_key(timeline.identifier))
     open_ids = [timeline.identifier for timeline in timelines if timeline.status == "open"]
+    owing_nothing = decision_ids_owing_nothing(DECISION_LOG_PATH.read_text(encoding="utf-8")) if DECISION_LOG_PATH.exists() else set()
+    awaiting_owner_ids = [identifier for identifier in open_ids if identifier not in owing_nothing]
+    owing_nothing_ids = [identifier for identifier in open_ids if identifier in owing_nothing]
     closed_ids = [timeline.identifier for timeline in timelines if timeline.status == "closed"]
     latest = sorted(timelines, key=lambda timeline: (timeline.recorded_date, timeline.identifier))[-5:]
-    return {"open": open_ids, "closed": closed_ids, "dropped": [timeline.identifier for timeline in timelines if timeline.status == "dropped"],
+    return {"open": open_ids, "awaiting_owner": awaiting_owner_ids, "owing_nothing": owing_nothing_ids, "closed": closed_ids, "dropped": [timeline.identifier for timeline in timelines if timeline.status == "dropped"],
             "latest": [(timeline.identifier, timeline.recorded_date, timeline.status) for timeline in latest],
             "duplicated": history.duplicated_now, "literal_newlines": history.literal_newlines_now}
 
@@ -196,7 +201,8 @@ def render(stamp: str, summaries: list[dict], rules: dict, decided: dict, docs: 
                   "`docs/amendment_history.md`.", "",
                   "## Decisions", "",
                   f"{len(decided['open'])} open and {len(decided['closed'])} closed in `docs/open_decisions.md` (timeline in `docs/decision_history.md`). "
-                  f"Open: {', '.join(decided['open'])}.", ""])
+                  f"Waiting on the owner ({len(decided['awaiting_owner'])}): {', '.join(decided['awaiting_owner'])}. "
+                  f"Open with nothing owed, kept as a record ({len(decided['owing_nothing'])}): {', '.join(decided['owing_nothing']) or 'none'}.", ""])
     lines.append(LATEST_DECISIONS_PREFIX + "; ".join(f"{identifier} ({recorded}, {status})" for identifier, recorded, status in decided["latest"]) + ".")
     log_defects = []
     if decided["duplicated"]:

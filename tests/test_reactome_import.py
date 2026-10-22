@@ -597,3 +597,160 @@ def test_store_operated_and_atp_gated_entry_depolarise_without_voltage_gating():
     assert set(stim.source_id) == {"GENE:STIM1", "GENE:STIM2"}
     catalysts = edges[(edges.relation_type == "catalyzed_by") & (edges.target_id == "MAR_P2X_CATION_ENTRY")]
     assert len(catalysts) == 7
+
+
+# Decision 9.75: the organelle calcium stores, the store sensors, the shared chloride pool and the three removal tables.
+STORE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+ <model id="stores">
+  <listOfCompartments>
+   <compartment id="compartment_70101" name="cytosol"/>
+   <compartment id="compartment_300" name="extracellular region"/>
+   <compartment id="compartment_8" name="endoplasmic reticulum lumen"/>
+   <compartment id="compartment_9" name="platelet dense tubular network lumen"/>
+  </listOfCompartments>
+  <listOfSpecies>
+   <species id="species_3000" name="Ca2+ [endoplasmic reticulum lumen]" compartment="compartment_8">
+    <notes><p>Derived from a Reactome SimpleEntity</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:is xmlns:bqbiol="y">chebiId=CHEBI:29108</bqbiol:is></rdf:RDF></annotation>
+   </species>
+   <species id="species_3001" name="Ca2+ [cytosol]" compartment="compartment_70101">
+    <notes><p>Derived from a Reactome SimpleEntity</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:is xmlns:bqbiol="y">chebiId=CHEBI:29108</bqbiol:is></rdf:RDF></annotation>
+   </species>
+   <species id="species_3002" name="Ca2+ [platelet dense tubular network lumen]" compartment="compartment_9">
+    <notes><p>Derived from a Reactome SimpleEntity</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:is xmlns:bqbiol="y">chebiId=CHEBI:29108</bqbiol:is></rdf:RDF></annotation>
+   </species>
+   <species id="species_3003" name="Cl- [extracellular region]" compartment="compartment_300">
+    <notes><p>Derived from a Reactome SimpleEntity</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:is xmlns:bqbiol="y">chebiId=CHEBI:17996</bqbiol:is></rdf:RDF></annotation>
+   </species>
+   <species id="species_3004" name="Cl- [cytosol]" compartment="compartment_70101">
+    <notes><p>Derived from a Reactome SimpleEntity</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:is xmlns:bqbiol="y">chebiId=CHEBI:17996</bqbiol:is></rdf:RDF></annotation>
+   </species>
+   <species id="species_4000" name="RYR tetramer [endoplasmic reticulum membrane]" compartment="compartment_8">
+    <notes><p>Derived from a Reactome DefinedSet</p></notes>
+    <annotation><rdf:RDF xmlns:rdf="x"><bqbiol:hasPart xmlns:bqbiol="y">identifiers.org/uniprot:P21817</bqbiol:hasPart><bqbiol:hasPart xmlns:bqbiol="y">identifiers.org/uniprot:Q9GZU1</bqbiol:hasPart></rdf:RDF></annotation>
+   </species>
+  </listOfSpecies>
+  <listOfReactions>
+   <reaction id="reaction_600" name="RYR transports Ca2+ from the ER lumen to the cytosol" reversible="false">
+    <listOfReactants><speciesReference species="species_3000" stoichiometry="1" constant="true"/></listOfReactants>
+    <listOfProducts><speciesReference species="species_3001" stoichiometry="1" constant="true"/></listOfProducts>
+    <listOfModifiers><modifierSpeciesReference species="species_4000" sboTerm="SBO:0000013"/></listOfModifiers>
+   </reaction>
+   <reaction id="reaction_601" name="SERCA transports cytosolic Ca2+ to the dense tubular network lumen" reversible="false">
+    <listOfReactants><speciesReference species="species_3001" stoichiometry="1" constant="true"/></listOfReactants>
+    <listOfProducts><speciesReference species="species_3002" stoichiometry="1" constant="true"/></listOfProducts>
+   </reaction>
+   <reaction id="reaction_602" name="GABA-A receptor transports Cl- from the extracellular region to the cytosol" reversible="false">
+    <listOfReactants><speciesReference species="species_3003" stoichiometry="1" constant="true"/></listOfReactants>
+    <listOfProducts><speciesReference species="species_3004" stoichiometry="1" constant="true"/></listOfProducts>
+   </reaction>
+  </listOfReactions>
+ </model>
+</sbml>
+"""
+REACTOME_CHLORIDE = "MAM02144"
+
+
+def run_store_import(**overrides):
+    arguments = dict(sbml_texts=[STORE_SBML], gene_of_uniprot={"P21817": "RYR1", "Q9GZU1": "MCOLN1"},
+                     map_chebi_to_human_gem={"CHEBI:29108": CALCIUM, "CHEBI:17996": REACTOME_CHLORIDE}.get,
+                     ion_bases={**ION_BASES, "Cl- (Reactome)": REACTOME_CHLORIDE}, ion_charges={**ION_CHARGES, REACTOME_CHLORIDE: -1})
+    arguments.update(overrides)
+    return run_import(**arguments)
+
+
+def test_the_dense_tubular_network_is_the_platelets_endoplasmic_reticulum():
+    assert compartment_letter("platelet dense tubular network lumen") == "r"
+    assert compartment_letter("platelet dense tubular network membrane") == "r"
+
+
+def test_the_organelle_sides_of_the_calcium_channels_are_store_pools_without_a_driving_force():
+    nodes, edges, _, summary = run_store_import()
+    store = neuronal_pool_id(CALCIUM, "r")
+    assert summary["calcium_store_pools"] == [neuronal_pool_id(CALCIUM, letter) for letter in ("i", "l", "m", "r")]
+    node_table = nodes.set_index("node_id")
+    assert node_table.loc[store, "display_name"] == "Ca2+ (neuronal store, endoplasmic reticulum lumen)" and not node_table.loc[store, "is_currency"]
+    # the release draws on the store and fills the cytosolic pool; the pump refills the store, now that the dense tubular network is r
+    assert ((edges.source_id == store) & (edges.target_id == "RCT_600") & (edges.relation_type == "substrate_of")).any()
+    assert ((edges.source_id == "RCT_600") & (edges.target_id == neuronal_pool_id(CALCIUM, "c")) & (edges.relation_type == "product_of")).any()
+    assert ((edges.source_id == "RCT_601") & (edges.target_id == store) & (edges.relation_type == "product_of")).any()
+    assert not ((edges.source_id == "RCT_601") & (edges.target_id == neuronal_pool_id(CALCIUM, "c")) & (edges.relation_type == "product_of")).any()
+    # store content is not a charge: no driving-force edge and no membrane-potential edge for a movement inside the cell
+    assert not ((edges.source_id == store) & (edges.target_id == MEMBRANE_POTENTIAL_NODE)).any()
+    assert not (edges.source_id.isin(["RCT_600", "RCT_601"]) & (edges.relation_type == "changes_membrane_potential")).any()
+
+
+def test_a_fuller_er_store_inhibits_the_stim_sensors():
+    _, edges, _, summary = run_store_import()
+    sensing = edges[(edges.source_id == neuronal_pool_id(CALCIUM, "r")) & (edges.relation_type == "inhibits")]
+    assert sorted(sensing.target_id) == ["GENE:STIM1", "GENE:STIM2"] and set(sensing.sign) == {-1.0}
+    assert summary["store_sensor_edges"] == 2
+
+
+def test_reactomes_chloride_loads_the_chloride_pool_without_being_merged_into_it():
+    nodes, edges, _, _ = run_store_import(ion_pool_aliases={REACTOME_CHLORIDE: CHLORIDE})
+    pool_edge = edges[(edges.source_id == "RCT_602") & (edges.relation_type == "changes_ion_pool")]
+    assert pool_edge.target_id.tolist() == [neuronal_pool_id(CHLORIDE, "c")] and pool_edge.sign.tolist() == [1.0]
+    assert ((edges.source_id == "RCT_602") & (edges.target_id == MEMBRANE_POTENTIAL_NODE) & (edges.sign == -1.0)).any()
+    assert f"{REACTOME_CHLORIDE}c" in set(nodes.node_id), "the Reactome entity keeps its own node (decision 9.4)"
+    # without the alias the current tells the potential and the pool hears nothing, which was the state before 9.75
+    _, edges_before, _, _ = run_store_import()
+    assert not ((edges_before.source_id == "RCT_602") & (edges_before.relation_type == "changes_ion_pool")).any()
+    with pytest.raises(ValueError, match="must be ion bases"):
+        run_store_import(ion_pool_aliases={"MAM00001": CHLORIDE})
+
+
+def test_a_misplaced_human_gem_catalysis_is_removed_before_the_electrical_pass():
+    _, edges, _, summary = run_store_import(catalysis_removed={("ATP1A3", "MAR05429"): "a test reason"})
+    assert not ((edges.source_id == "GENE:ATP1A3") & (edges.target_id == "MAR05429")).any()
+    assert not ((edges.source_id == "MAR05429") & (edges.relation_type == "changes_membrane_potential")).any(), "no brain-expressed catalyst is left"
+    assert summary["misplaced_catalysis_removed"] == ["ATP1A3 -> MAR05429 (MAR05429): a test reason"]
+    with pytest.raises(ValueError, match="does not hold"):
+        run_store_import(catalysis_removed={("ATP1A3", "MAR04956"): "not a catalyst of it"})
+
+
+def test_a_member_removed_from_a_reactome_set_keeps_its_gene_node():
+    nodes, edges, _, summary = run_store_import(entity_members_removed={("MCOLN1", "RCTE_4000"): "lysosomal"})
+    assert ((edges.source_id == "GENE:RYR1") & (edges.target_id == "RCTE_4000") & (edges.relation_type == "member_of")).any()
+    assert not ((edges.source_id == "GENE:MCOLN1") & (edges.target_id == "RCTE_4000")).any()
+    assert "GENE:MCOLN1" in set(nodes.node_id)
+    assert summary["entity_members_removed"] == ["MCOLN1 -> RCTE_4000 (RYR tetramer): lysosomal"]
+    with pytest.raises(ValueError, match="does not give"):
+        run_store_import(entity_members_removed={("SCN1A", "RCTE_4000"): "not a member"})
+
+
+def test_a_curated_counter_ion_current_activates_the_release_it_balances():
+    tric = CuratedReaction("MAR_TRIC_TEST", "potassium countercurrent into the ER", (f"{POTASSIUM}c",), (f"{POTASSIUM}r",), ("TMEM38B",),
+                           "test", activates_reactions=("RCT_600",))
+    nodes, edges, _, _ = run_store_import(curated_reactions=[tric])
+    assert ((edges.source_id == "MAR_TRIC_TEST") & (edges.target_id == "RCT_600") & (edges.relation_type == "activates") & (edges.sign == 1.0)).any()
+    assert ((edges.source_id == "GENE:TMEM38B") & (edges.target_id == "MAR_TRIC_TEST") & (edges.relation_type == "catalyzed_by")).any()
+    node_table = nodes.set_index("node_id")
+    assert node_table.loc[f"{POTASSIUM}r", "is_currency"], "the luminal potassium copy is currency by name, a sink"
+    assert not ((edges.source_id == "MAR_TRIC_TEST") & (edges.relation_type == "changes_membrane_potential")).any()
+    with pytest.raises(ValueError, match="not a reaction node"):
+        run_store_import(curated_reactions=[CuratedReaction("MAR_X", "x", (f"{POTASSIUM}c",), (f"{POTASSIUM}r",), ("TMEM38B",), "test", activates_reactions=("RCT_999",))])
+
+
+def test_the_lysosomal_release_of_the_curated_set_draws_on_the_lysosomal_store():
+    from experiments.build_neuronal_graph_variant import CURATED_REACTIONS, HUMAN_GEM_CATALYSIS_REMOVED, ION_POOL_ALIASES, REACTOME_ENTITY_MEMBERS_REMOVED
+
+    organelle = [curated for curated in CURATED_REACTIONS
+                 if curated.reaction_id in ("MAR_TRPML_CALCIUM_RELEASE", "MAR_TRIC_A_POTASSIUM", "MAR_TRIC_B_POTASSIUM", "MAR_TMEM175_POTASSIUM")]
+    assert len(organelle) == 4
+    assert ION_POOL_ALIASES == {"MAM02144": "MAM01442"}
+    assert {gene for gene, _ in REACTOME_ENTITY_MEMBERS_REMOVED} == {"MCOLN1", "MCOLN2", "MCOLN3"}
+    assert {reaction for _, reaction in HUMAN_GEM_CATALYSIS_REMOVED} == {"MAR07629", "MAR09580"}
+    # the ER release reactions the TRIC currents activate are Reactome's, absent from this small graph, so only the lysosomal one is imported here
+    _, edges, _, _ = run_store_import(curated_reactions=[curated for curated in organelle if curated.reaction_id == "MAR_TRPML_CALCIUM_RELEASE"])
+    assert ((edges.source_id == neuronal_pool_id(CALCIUM, "l")) & (edges.target_id == "MAR_TRPML_CALCIUM_RELEASE") & (edges.relation_type == "substrate_of")).any()
+    assert ((edges.source_id == "MAR_TRPML_CALCIUM_RELEASE") & (edges.target_id == neuronal_pool_id(CALCIUM, "c")) & (edges.relation_type == "product_of")).any()
+    for tric in organelle:
+        if tric.reaction_id.startswith("MAR_TRIC"):
+            assert "RCT_2855020" in tric.activates_reactions
+    assert next(curated for curated in organelle if curated.reaction_id == "MAR_TMEM175_POTASSIUM").activates_reactions == ()

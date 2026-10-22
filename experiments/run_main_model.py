@@ -108,6 +108,7 @@ from mechanistic_pathway_learning.evidence.combined_perturbations import (
 )
 from mechanistic_pathway_learning.graph.brain_expression_weights import ALL_CELLS_CLASS, EXTRACELLULAR_COMPARTMENT, MEMBER_RELATION
 from mechanistic_pathway_learning.graph.cofactor_edges import CARRIER_RULES, cofactor_edge_mask
+from mechanistic_pathway_learning.graph.calcium_stores import calcium_store_inputs
 from mechanistic_pathway_learning.graph.compartment_ph import compartment_ph_inputs
 from mechanistic_pathway_learning.graph.drug_entry_nodes import CHANGE_CARRYING_RELATIONS, ENTRY_RELATIONS, SEQUESTERS_RELATION
 from mechanistic_pathway_learning.graph.edge_evidence import (
@@ -639,6 +640,11 @@ def compartment_ph_encoder_inputs(data) -> dict:
     return {name: torch.as_tensor(value, dtype=torch.long) if isinstance(value, np.ndarray) else value for name, value in compartment_ph_inputs(data).items()}
 
 
+def calcium_store_encoder_inputs(data) -> dict:
+    """calcium_store_inputs as the linear-response encoder takes them, the index arrays as tensors (decision 9.75)."""
+    return {name: torch.as_tensor(value, dtype=torch.long) if isinstance(value, np.ndarray) else value for name, value in calcium_store_inputs(data).items()}
+
+
 def build_models(data, arguments, device):
     """The encoder and the head. With edge priors on the data (build_edge_priors), the linear-response encoder takes its
     edge gates here; the message-passing encoder takes them once its adjacencies exist (attach_edge_gates)."""
@@ -674,6 +680,7 @@ def build_models(data, arguments, device):
                                         max_propagation_steps=arguments.max_propagation_steps,
                                 class_weight_rule=arguments.class_weight_rule, input_weights=arguments.input_weights,
                                         **(compartment_ph_encoder_inputs(data) if arguments.compartment_ph else {}),
+                                        **(calcium_store_encoder_inputs(data) if arguments.calcium_stores else {}),
                                         propagation_channels=arguments.propagation_channels, response_scale=arguments.response_scale, damping=arguments.propagation_damping,
                                         normalisation=arguments.normalisation, cross_relation_aggregator=arguments.cross_relation_aggregator,
                                         mixture_weighting=arguments.mixture_weighting, node_type_index=node_type_index,
@@ -1702,6 +1709,9 @@ def build_argument_parser() -> argparse.ArgumentParser:
                         help="linear-response encoder: the settled proton deviation of each compartment becomes a throughput ceiling on its "
                              "nodes (graph/compartment_ph.py). Left out, on for the linear-response encoder wherever the graph names a proton "
                              "node in a single compartment (registered)")
+    parser.add_argument("--calcium-stores", action=argparse.BooleanOptionalAction, default=False,
+                        help="linear-response encoder: the settled deviation of each organelle calcium store becomes a driving-force multiplier on the "
+                             "reactions that draw on it (graph/calcium_stores.py, decision 9.75). Off until registered; needs a graph built with the store pools")
     parser.add_argument("--class-weight-rule", choices=list(CLASS_WEIGHT_RULES), default="limiting_step",
                         help="linear-response encoder with --cell-class-weights: how a class's node weights attenuate the response. limiting_step (the owner, "
                              "13 October 2026), the weakest weight on the widest route; product, the weights multiplied along the path, every run before")
@@ -2232,6 +2242,16 @@ def main() -> None:
         model_optimizer.step()
         return loss.item(), bce.item(), float(penalty), laboratory_value
 
+    # The calcium-store sensitivities (decision 9.75) are calibrated once, on the first training batch of a fresh run,
+    # so that the store weight starts where it has a gradient; a resumed run keeps the values its checkpoint holds.
+    if getattr(encoder, "store_pool_node_index", None) is not None and state["epoch"] == 0 and state.get("epoch_in_progress") is None \
+            and not getattr(encoder, "store_sensitivity_calibrated", False):
+        first_batch = np.asarray(train_indices[: arguments.batch_size], dtype=int)
+        node_index, sign_and_magnitude = pad_perturbations(data, first_batch)
+        with torch.no_grad():
+            settled = encoder.response(node_index.to(device), sign_and_magnitude.to(device)).permute(1, 0, 2)
+        print(f"calcium-store sensitivities calibrated on {len(first_batch)} perturbations: {encoder.calibrate_calcium_store_sensitivity(settled)}")
+
     started = time.time()
     last_checkpoint = time.time()
     # A resumed run continues the epoch-order generator and the torch generator where the checkpoint left them, and a
@@ -2496,6 +2516,7 @@ def main() -> None:
         "clamped_probabilities": clamped_probabilities,
         "propagation_steps_taken": getattr(encoder, "propagation_steps_taken", None),
         "compartment_ph_sensitivity": getattr(encoder, "compartment_ph_sensitivity_report", None),
+        "calcium_store_sensitivity": getattr(encoder, "calcium_store_sensitivity_report", None),
         "message_passing_rounds_taken": getattr(encoder, "rounds_taken", None),
         "propagation_reached_the_cap": bool(getattr(encoder, "fixed_point_tolerance", None) is not None
                                             and getattr(encoder, "propagation_steps_taken", 0) >= getattr(encoder, "max_propagation_steps", 0)),

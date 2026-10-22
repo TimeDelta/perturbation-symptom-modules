@@ -1112,3 +1112,90 @@ def test_a_drugs_mechanism_edges_are_routes_of_the_limiting_step_bottleneck():
     assert bool((response[1].abs() > 0).any()) and bool((response[2].abs() > 0).any()), "the drug's response reaches past its target"
     demand = encoder.set_bottleneck_edge_demand_from_edges(torch.tensor([0, 1]), torch.tensor([1, 2]), torch.tensor([1, 0]), torch.tensor([1.0, 1.0]))
     assert demand["bottleneck_entries"] == 2 and demand["largest_demand"] == 1.0, "the mechanism edge takes demand 1"
+
+
+# store content as a driving force on release (decision 9.75; the owner, 20 October 2026: "please implement that")
+def build_store_encoder(num_nodes=6, sensitivity=None):
+    """A chain 0 -> 1 -> 2 -> 3 -> 4 with node 5 a calcium store that node 1 fills (product_of) and node 2 draws on
+    (substrate_of): only node 2, the release reaction, takes a store weight."""
+    torch.manual_seed(0)
+    relations = ["activates", "substrate_of", "product_of"]
+    encoder = LinearResponseEncoder(
+        num_nodes, relations, edge_source=torch.tensor([0, 1, 2, 3, 1, 5]), edge_target=torch.tensor([1, 2, 3, 4, 5, 2]),
+        edge_relation=torch.tensor([0, 0, 0, 0, 2, 1]), edge_sign=torch.ones(6),
+        node_features=torch.eye(num_nodes), node_state_dim=4, cell_class_weights=torch.ones(num_nodes, 1),
+        store_pool_node_index=torch.tensor([5]), store_of_node=torch.tensor([-1, -1, 0, -1, -1, -1]), store_names=["NEURON_MAM01413r"])
+    if sensitivity is not None:
+        with torch.no_grad():
+            encoder.log_store_sensitivity.fill_(float(torch.log(torch.tensor(sensitivity))))
+    return encoder
+
+
+def test_the_store_weight_is_one_away_from_the_release_reaction_and_rises_with_the_store():
+    encoder = build_store_encoder(sensitivity=1.0)
+    settled = torch.zeros(6, 1, encoder.propagation_channels)
+    settled[5] = 0.3  # a fuller store
+    weight = encoder.calcium_store_weight(settled)
+    assert torch.allclose(weight[[0, 1, 3, 4, 5]], torch.ones_like(weight[[0, 1, 3, 4, 5]]))  # draws on no store, no weight
+    assert torch.allclose(weight[2], torch.full_like(weight[2], 1.3)), "a fuller store raises the release that draws on it"
+    settled[5] = -0.3  # a depleted one
+    assert torch.allclose(encoder.calcium_store_weight(settled)[2], torch.full_like(weight[2], 0.7))
+    settled[5] = -4.0  # one emptied past zero: the weight clamps at empty rather than inverting the release
+    assert float(encoder.calcium_store_weight(settled)[2].max()) == 0.0
+    # the sensitivity scales the argument, as the pH sensitivity does
+    settled[5] = 0.3
+    assert torch.allclose(build_store_encoder(sensitivity=2.0).calcium_store_weight(settled)[2], torch.full_like(weight[2], 1.6))
+
+
+def test_the_store_weight_reads_the_settled_state_and_scales_the_release_response():
+    encoder = build_store_encoder(sensitivity=1.0)
+    without = build_store_encoder(sensitivity=None)
+    with torch.no_grad():
+        without.log_store_sensitivity.fill_(-60.0)  # a sensitivity of e^-60: the weight is 1 to machine precision
+        scaled = encoder.response(torch.tensor([[0]]), torch.tensor([[[1.0, 1.0]]]))
+        plain = without.response(torch.tensor([[0]]), torch.tensor([[[1.0, 1.0]]]))
+    assert torch.allclose(scaled[0, [0, 1, 3, 4, 5]], plain[0, [0, 1, 3, 4, 5]], atol=1e-6), "nothing but the release reaction is scaled"
+    assert not torch.allclose(scaled[0, 2], plain[0, 2], atol=1e-6)
+    # the weight does not propagate: node 3, downstream of the release, is unchanged by it
+    assert torch.allclose(scaled[0, 3], plain[0, 3], atol=1e-6)
+
+
+def test_the_store_sensitivity_calibrates_to_the_target_argument_and_is_reported_by_store():
+    from mechanistic_pathway_learning.models.linear_response_encoder import STORE_SENSITIVITY_TARGET_ARGUMENT
+
+    encoder = build_store_encoder()
+    with torch.no_grad():
+        settled = encoder.response(torch.tensor([[0], [1]]), torch.tensor([[[1.0, 1.0]], [[-0.5, 1.0]]])).permute(1, 0, 2)
+    report = encoder.calibrate_calcium_store_sensitivity(settled)
+    assert list(report) == ["NEURON_MAM01413r"] and encoder.store_sensitivity_calibrated
+    argument = torch.exp(encoder.log_store_sensitivity)[:, None, None] * settled[encoder.store_pool_node_index]
+    assert float(argument.pow(2).mean().sqrt()) == pytest.approx(STORE_SENSITIVITY_TARGET_ARGUMENT, rel=1e-5)
+    assert encoder.calibrate_calcium_store_sensitivity(torch.zeros(6, 1, encoder.propagation_channels)) == {}, "a store the batch does not reach is not reported"
+    assert LinearResponseEncoder(6, ["activates"], torch.tensor([0]), torch.tensor([1]), torch.zeros(1, dtype=torch.long),
+                                 torch.ones(1), torch.eye(6), 4).calibrate_calcium_store_sensitivity(settled) == {}
+
+
+def test_the_store_inputs_name_the_release_reactions_of_each_store_pool():
+    from types import SimpleNamespace
+
+    import numpy as np
+
+    from mechanistic_pathway_learning.graph.calcium_stores import calcium_store_inputs, release_reactions_of_stores, store_pool_indices
+
+    node_ids = ["NEURON_MAM01413c", "RCT_1", "NEURON_MAM01413r", "RCT_2", "NEURON_MAM01413l", "GENE:STIM1"]
+    names = ["Ca2+ (neuronal pool, cytosol)", "RYR release", "Ca2+ (neuronal store, endoplasmic reticulum lumen)", "SERCA uptake",
+             "Ca2+ (neuronal store, endolysosome lumen)", "STIM1"]
+    assert store_pool_indices(node_ids, names) == [2, 4]
+    relation_types = ["substrate_of", "product_of", "inhibits"]
+    # the store feeds the release (substrate_of), the pump fills it (product_of), the store inhibits STIM: only the release draws on it
+    edges = [(2, 1, 0), (1, 0, 1), (0, 3, 0), (3, 2, 1), (2, 5, 2)]
+    store_of_node = release_reactions_of_stores([2, 4], 6, [e[0] for e in edges], [e[1] for e in edges], [e[2] for e in edges], relation_types)
+    assert store_of_node.tolist() == [-1, 0, -1, -1, -1, -1]
+    data = SimpleNamespace(node_ids=node_ids, node_display_name=np.asarray(names), edge_source=np.asarray([e[0] for e in edges]),
+                           edge_target=np.asarray([e[1] for e in edges]), edge_relation=np.asarray([e[2] for e in edges]), relation_types=relation_types)
+    inputs = calcium_store_inputs(data)
+    assert inputs["store_names"] == ["NEURON_MAM01413r", "NEURON_MAM01413l"] and inputs["store_pool_node_index"].tolist() == [2, 4]
+    assert calcium_store_inputs(SimpleNamespace(node_ids=["a"], node_display_name=np.asarray(["Ca2+"]))) == {}
+    with pytest.raises(ValueError, match="given together"):
+        LinearResponseEncoder(6, ["activates"], torch.tensor([0]), torch.tensor([1]), torch.zeros(1, dtype=torch.long), torch.ones(1), torch.eye(6), 4,
+                              store_pool_node_index=torch.tensor([5]))
