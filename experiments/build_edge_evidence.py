@@ -9,7 +9,9 @@ expression_below_detection in nodes.parquet (decision 9.76: such an edge takes t
 and, with the species cache of experiments/fetch_icite_species.py, how many of its records iCite
 scored, how many are human evidence and how many record animals and no human, and, with the OmniPath evidences
 downloads, the PubMed ids behind each signed edge's sign, how CollecTRI decided a regulation's sign and whether its
-two CollecTRI releases dispute it: graph/sign_evidence.py, decisions 9.70 and 9.72) and edge_evidence_summary.json, which
+two CollecTRI releases dispute it: graph/sign_evidence.py, decisions 9.70 and 9.72, and, for every source of decision 9.91
+whose files are present, its negative and positive edge observations: graph/edge_negative_sources.py) and
+edge_evidence_summary.json, which
 records the SHA-256 of the edges.parquet it was built from and how many curated edges the label rule of decision 9.63
 (b) takes as known. The graph files themselves are not touched, so no graph hash moves. The priors are computed from
 this table by experiments/run_main_model.py under --edge-prior-strength.
@@ -46,6 +48,7 @@ from mechanistic_pathway_learning.graph.edge_evidence import (
     summarise,
     transcription_references,
 )
+from mechanistic_pathway_learning.graph.edge_negative_sources import NegativeEvidencePaths, assemble_negative_evidence
 from mechanistic_pathway_learning.graph.edge_negatives import read_human_negative_pairs
 from mechanistic_pathway_learning.graph.sign_evidence import (
     DEFAULT_SIGNALLING_EVIDENCES,
@@ -102,6 +105,9 @@ def main() -> int:
     parser.add_argument("--species", type=Path, default=DEFAULT_SPECIES,
                         help="iCite's species scores per PubMed id (experiments/fetch_icite_species.py); without it the table has no species columns and "
                              "the trainer cannot take curated edges as labels (decision 9.63)")
+    parser.add_argument("--negative-evidence", action=argparse.BooleanOptionalAction, default=True,
+                        help="add the negative and positive edge observations of decision 9.91 for every source whose files are in data/raw "
+                             "(graph/edge_negative_sources.py); a source whose files are absent writes no columns")
     arguments = parser.parse_args()
     columns = ["source", "target", "source_genesymbol", "target_genesymbol", "sources", "references"]
     references = pd.concat([signalling_references(pd.read_csv(arguments.omnipath, sep="\t", usecols=columns)),
@@ -141,11 +147,20 @@ def main() -> int:
         labels = label_summary(evidence, species)
     else:
         print(f"no species cache at {arguments.species}: run experiments/fetch_icite_species.py first, or no curated edge can be taken as a label", file=sys.stderr)
+    negative_summary = None
+    if arguments.negative_evidence:
+        negative_columns, negative_summary = assemble_negative_evidence(evidence, edges, nodes, NegativeEvidencePaths())
+        evidence = pd.concat([evidence, negative_columns], axis=1)
+        absent = [source for source, record in negative_summary["sources"].items() if "absent" in record]
+        if absent:
+            print(f"negative edge observations (decision 9.91) absent for {', '.join(absent)}: their files are not in data/raw; "
+                  "experiments/build_edge_negative_evidence.py adds them later", file=sys.stderr)
     evidence.to_parquet(arguments.graph_dir / "edge_evidence.parquet", index=False)
     gated, probability, strength = edge_priors(evidence, read_edge_tiers(arguments.tiers))
     edges_sha256 = hashlib.sha256((arguments.graph_dir / "edges.parquet").read_bytes()).hexdigest()
     summary = {"graph_dir": str(arguments.graph_dir), "edges_sha256": edges_sha256, "tiers": str(arguments.tiers), **summarise(evidence, gated, probability, strength),
-               "species": species_summary, "curated_edge_labels": labels, "sign_evidence": sign_summary}
+               "species": species_summary, "curated_edge_labels": labels, "sign_evidence": sign_summary,
+               "negative_evidence": negative_summary}
     (arguments.graph_dir / "edge_evidence_summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {arguments.graph_dir / 'edge_evidence.parquet'}: {summary['gated']:,} of {summary['edges']:,} edges gated, {summary['contested']} contested"
           + ("" if labels is None else f"; {labels['labels']:,} curated edges are labels under decision 9.63 (b)")

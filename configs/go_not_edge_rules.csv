@@ -1,0 +1,7 @@
+go_id,go_name,rule,relation_type,target_filter,note
+GO:0003700,DNA-binding transcription factor activity,out_of_protein,regulates_transcription_of,,"a protein that does not bind DNA as a transcription factor does not regulate a target as one; CollecTRI also lists co-regulators that reach DNA through a factor, which a NOT on this term would rule out wrongly"
+GO:0004930,G protein-coupled receptor activity,out_of_protein,activates;inhibits,g_alpha,a protein without receptor activity does not couple to a G alpha subunit as a receptor (decision 9.23)
+GO:0016301,kinase activity,out_of_protein,phosphorylates,,no relation of the graph states phosphorylation (OmniPath's activates and inhibits do not say how they act); the rule is kept so it is visible and maps nothing
+GO:0005515,protein binding,partner,binds,,only an annotation that names the partner in its With/From column; a narrower binding term with a partner counts too
+GO:0003824,catalytic activity,catalysis,catalyzed_by,non_transport,NOT catalytic activity rules out every catalysis into a non-transport reaction; a narrower NOT rules out the reactions whose every EC number falls under it
+GO:0005215,transporter activity,catalysis,catalyzed_by,transport,NOT transporter activity rules out every catalysis into a transport reaction

@@ -1,0 +1,1515 @@
+{
+ "reference_lit_bm": {
+  "pairs_inside_tested_space": 4270,
+  "detected": 600,
+  "rate": 0.1405152224824356,
+  "rate_95_interval": [
+   0.13041448191996602,
+   0.15126219478025227
+  ]
+ },
+ "random_pairs": {
+  "tested_genes": 8236,
+  "possible_pairs": 33911730,
+  "detected": 51745,
+  "rate": 0.0015258732008069185
+ },
+ "all_graph_binds_pairs": {
+  "pairs_inside_tested_space": 2631,
+  "detected": 34,
+  "rate": 0.012922843025465602,
+  "rate_95_interval": [
+   0.009262434483842539,
+   0.018003516808649467
+  ]
+ },
+ "excluded_resources": [
+  "HuRI",
+  "Lit-BM",
+  "Lit-BM-17"
+ ],
+ "by_resource": {
+  "ACSN": {
+   "pairs_inside_tested_space": 25,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.13319225276039096
+   ],
+   "binds_pairs": 134,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.94731272748672
+   ]
+  },
+  "ACSN_SignaLink3": {
+   "pairs_inside_tested_space": 0,
+   "detected": 0,
+   "rate": NaN,
+   "rate_95_interval": [
+    NaN,
+    NaN
+   ],
+   "binds_pairs": 9,
+   "precision": NaN,
+   "precision_95_interval": [
+    NaN,
+    NaN
+   ]
+  },
+  "ARN": {
+   "pairs_inside_tested_space": 17,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.18431813738065556
+   ],
+   "binds_pairs": 46,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.3151530324058416
+   ]
+  },
+  "Adhesome": {
+   "pairs_inside_tested_space": 22,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.14865487660514556
+   ],
+   "binds_pairs": 91,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.0585631500886943
+   ]
+  },
+  "AlzPathway": {
+   "pairs_inside_tested_space": 1,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.7934506882081973
+   ],
+   "binds_pairs": 6,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    5.697737410099994
+   ]
+  },
+  "BEL-Large-Corpus_ProtMapper": {
+   "pairs_inside_tested_space": 7,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.35433043867586833
+   ],
+   "binds_pairs": 44,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    2.538356840279807
+   ]
+  },
+  "Baccin2019": {
+   "pairs_inside_tested_space": 76,
+   "detected": 1,
+   "rate": 0.013157894736842105,
+   "rate_95_interval": [
+    0.0023264800198638663,
+    0.07083674824705405
+   ],
+   "binds_pairs": 765,
+   "precision": 0.08369002082645682,
+   "precision_95_interval": [
+    0.00576020265721735,
+    0.4986775994310558
+   ]
+  },
+  "BioGRID": {
+   "pairs_inside_tested_space": 56,
+   "detected": 5,
+   "rate": 0.08928571428571429,
+   "rate_95_interval": [
+    0.038742148204398044,
+    0.19256001487876628
+   ],
+   "binds_pairs": 240,
+   "precision": 0.631414144598109,
+   "precision_95_interval": [
+    0.2677635027140191,
+    1.3744516588164923
+   ]
+  },
+  "CA1": {
+   "pairs_inside_tested_space": 16,
+   "detected": 2,
+   "rate": 0.125,
+   "rate_95_interval": [
+    0.03497748742626902,
+    0.36022827482178466
+   ],
+   "binds_pairs": 49,
+   "precision": 0.8883711409354272,
+   "precision_95_interval": [
+    0.2406775367922646,
+    2.5807905675862477
+   ]
+  },
+  "CancerCellMap": {
+   "pairs_inside_tested_space": 7,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.35433043867586833
+   ],
+   "binds_pairs": 46,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    2.538356840279807
+   ]
+  },
+  "CellCall": {
+   "pairs_inside_tested_space": 38,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.09180986954097846
+   ],
+   "binds_pairs": 405,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.6495749264731977
+   ]
+  },
+  "CellChatDB": {
+   "pairs_inside_tested_space": 159,
+   "detected": 1,
+   "rate": 0.006289308176100629,
+   "rate_95_interval": [
+    0.0011110813910467122,
+    0.03476098043784022
+   ],
+   "binds_pairs": 2247,
+   "precision": 0.034271942417988796,
+   "precision_95_interval": [
+    -0.002984342411156482,
+    0.23911981320014894
+   ]
+  },
+  "CellChatDB-cofactors": {
+   "pairs_inside_tested_space": 1,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.7934506882081973
+   ],
+   "binds_pairs": 20,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    5.697737410099994
+   ]
+  },
+  "CellPhoneDB": {
+   "pairs_inside_tested_space": 159,
+   "detected": 1,
+   "rate": 0.006289308176100629,
+   "rate_95_interval": [
+    0.0011110813910467122,
+    0.03476098043784022
+   ],
+   "binds_pairs": 2032,
+   "precision": 0.034271942417988796,
+   "precision_95_interval": [
+    -0.002984342411156482,
+    0.23911981320014894
+   ]
+  },
+  "CellPhoneDB_Cellinker": {
+   "pairs_inside_tested_space": 23,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.14311662038507353
+   ],
+   "binds_pairs": 238,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.0187165269575214
+   ]
+  },
+  "CellTalkDB": {
+   "pairs_inside_tested_space": 324,
+   "detected": 12,
+   "rate": 0.037037037037037035,
+   "rate_95_interval": [
+    0.021311517152118847,
+    0.06361202783300997
+   ],
+   "binds_pairs": 2506,
+   "precision": 0.25549557588240257,
+   "precision_95_interval": [
+    0.1423536699292048,
+    0.44669721063590495
+   ]
+  },
+  "Cellinker": {
+   "pairs_inside_tested_space": 301,
+   "detected": 3,
+   "rate": 0.009966777408637873,
+   "rate_95_interval": [
+    0.0033952817474310545,
+    0.02888857792642066
+   ],
+   "binds_pairs": 3070,
+   "precision": 0.06073058296522765,
+   "precision_95_interval": [
+    0.01345001294189979,
+    0.1968690757028423
+   ]
+  },
+  "ConnectomeDB2025": {
+   "pairs_inside_tested_space": 231,
+   "detected": 1,
+   "rate": 0.004329004329004329,
+   "rate_95_interval": [
+    0.0007645847283797493,
+    0.024109468214072158
+   ],
+   "binds_pairs": 2428,
+   "precision": 0.02016795634115486,
+   "precision_95_interval": [
+    -0.005477315178191101,
+    0.16248435675099815
+   ]
+  },
+  "Cui2007": {
+   "pairs_inside_tested_space": 39,
+   "detected": 3,
+   "rate": 0.07692307692307693,
+   "rate_95_interval": [
+    0.026507395097205205,
+    0.20321071297573554
+   ],
+   "binds_pairs": 177,
+   "precision": 0.5424674920198065,
+   "precision_95_interval": [
+    0.17973695125213665,
+    1.451081257789491
+   ]
+  },
+  "DEPOD": {
+   "pairs_inside_tested_space": 126,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.029585764935127143
+   ],
+   "binds_pairs": 415,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.20188519393283558
+   ]
+  },
+  "DIP": {
+   "pairs_inside_tested_space": 34,
+   "detected": 5,
+   "rate": 0.14705882352941177,
+   "rate_95_interval": [
+    0.06449441403975859,
+    0.3012805663782785
+   ],
+   "binds_pairs": 186,
+   "precision": 1.0470798739673004,
+   "precision_95_interval": [
+    0.45304579929618183,
+    2.156673836713131
+   ]
+  },
+  "DLRP_Cellinker": {
+   "pairs_inside_tested_space": 22,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.14865487660514556
+   ],
+   "binds_pairs": 223,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.0585631500886943
+   ]
+  },
+  "DLRP_talklr": {
+   "pairs_inside_tested_space": 23,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.14311662038507353
+   ],
+   "binds_pairs": 256,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.0187165269575214
+   ]
+  },
+  "DOMINO": {
+   "pairs_inside_tested_space": 22,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.14865487660514556
+   ],
+   "binds_pairs": 84,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.0585631500886943
+   ]
+  },
+  "ELM": {
+   "pairs_inside_tested_space": 12,
+   "detected": 2,
+   "rate": 0.16666666666666666,
+   "rate_95_interval": [
+    0.04696514175692082,
+    0.4480308646118111
+   ],
+   "binds_pairs": 74,
+   "precision": 1.1881543033289654,
+   "precision_95_interval": [
+    0.32692626299042593,
+    3.2125122803925685
+   ]
+  },
+  "EMBRACE": {
+   "pairs_inside_tested_space": 81,
+   "detected": 1,
+   "rate": 0.012345679012345678,
+   "rate_95_interval": [
+    0.0021826500344149236,
+    0.06666881666972253
+   ],
+   "binds_pairs": 845,
+   "precision": 0.07784629446400969,
+   "precision_95_interval": [
+    0.004725375267979735,
+    0.4686901824176399
+   ]
+  },
+  "Fantom5_LRdb": {
+   "pairs_inside_tested_space": 192,
+   "detected": 2,
+   "rate": 0.010416666666666666,
+   "rate_95_interval": [
+    0.0028612893525701497,
+    0.03717854146818006
+   ],
+   "binds_pairs": 1631,
+   "precision": 0.06396744435319775,
+   "precision_95_interval": [
+    0.009608046650087769,
+    0.2565136713830607
+   ]
+  },
+  "Guide2Pharma": {
+   "pairs_inside_tested_space": 26,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.12872892362858793
+   ],
+   "binds_pairs": 244,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.9151999853602771
+   ]
+  },
+  "Guide2Pharma_Cellinker": {
+   "pairs_inside_tested_space": 10,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.2775328030260577
+   ],
+   "binds_pairs": 69,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.98581352637308
+   ]
+  },
+  "Guide2Pharma_LRdb": {
+   "pairs_inside_tested_space": 10,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.2775328030260577
+   ],
+   "binds_pairs": 60,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.98581352637308
+   ]
+  },
+  "Guide2Pharma_talklr": {
+   "pairs_inside_tested_space": 10,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.2775328030260577
+   ],
+   "binds_pairs": 60,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.98581352637308
+   ]
+  },
+  "HINT": {
+   "pairs_inside_tested_space": 158,
+   "detected": 15,
+   "rate": 0.0949367088607595,
+   "rate_95_interval": [
+    0.058378546178411705,
+    0.15072398610979082
+   ],
+   "binds_pairs": 857,
+   "precision": 0.6720718971831278,
+   "precision_95_interval": [
+    0.40904337829804815,
+    1.0734499706640803
+   ]
+  },
+  "HPMR": {
+   "pairs_inside_tested_space": 24,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.13797620655132792
+   ],
+   "binds_pairs": 216,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.9817322985953193
+   ]
+  },
+  "HPMR_Cellinker": {
+   "pairs_inside_tested_space": 32,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.10717919976468034
+   ],
+   "binds_pairs": 372,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.760154120513164
+   ]
+  },
+  "HPMR_LRdb": {
+   "pairs_inside_tested_space": 36,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.09641862996887933
+   ],
+   "binds_pairs": 375,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.6827340170921653
+   ]
+  },
+  "HPMR_talklr": {
+   "pairs_inside_tested_space": 34,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.10151455559221921
+   ],
+   "binds_pairs": 356,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.7193981618606555
+   ]
+  },
+  "HPRD": {
+   "pairs_inside_tested_space": 376,
+   "detected": 10,
+   "rate": 0.026595744680851064,
+   "rate_95_interval": [
+    0.014509199390658794,
+    0.04825766905891368
+   ],
+   "binds_pairs": 2098,
+   "precision": 0.1803726084740928,
+   "precision_95_interval": [
+    0.09341238200593537,
+    0.3362257331201397
+   ]
+  },
+  "HPRD-phos": {
+   "pairs_inside_tested_space": 117,
+   "detected": 1,
+   "rate": 0.008547008547008548,
+   "rate_95_interval": [
+    0.0015103535571081954,
+    0.046829503768134245
+   ],
+   "binds_pairs": 447,
+   "precision": 0.05051563578425695,
+   "precision_95_interval": [
+    -0.00011166066881337969,
+    0.3259503753451666
+   ]
+  },
+  "HPRD_KEA": {
+   "pairs_inside_tested_space": 98,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.037719990694295866
+   ],
+   "binds_pairs": 399,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.26040928805379343
+   ]
+  },
+  "HPRD_LRdb": {
+   "pairs_inside_tested_space": 103,
+   "detected": 2,
+   "rate": 0.019417475728155338,
+   "rate_95_interval": [
+    0.005341225226125672,
+    0.06805218369398364
+   ],
+   "binds_pairs": 826,
+   "precision": 0.12872642846248145,
+   "precision_95_interval": [
+    0.027450679099071503,
+    0.47864322580845425
+   ]
+  },
+  "HPRD_MIMP": {
+   "pairs_inside_tested_space": 202,
+   "detected": 3,
+   "rate": 0.01485148514851485,
+   "rate_95_interval": [
+    0.00506347475833635,
+    0.04274739354187007
+   ],
+   "binds_pairs": 932,
+   "precision": 0.09587505817231194,
+   "precision_95_interval": [
+    0.02545232117290749,
+    0.2965804254363232
+   ]
+  },
+  "HPRD_talklr": {
+   "pairs_inside_tested_space": 90,
+   "detected": 2,
+   "rate": 0.022222222222222223,
+   "rate_95_interval": [
+    0.0061154419312971775,
+    0.07744526753310907
+   ],
+   "binds_pairs": 779,
+   "precision": 0.14890600703136686,
+   "precision_95_interval": [
+    0.03302101027317277,
+    0.54622454687855
+   ]
+  },
+  "ICELLNET": {
+   "pairs_inside_tested_space": 103,
+   "detected": 1,
+   "rate": 0.009708737864077669,
+   "rate_95_interval": [
+    0.001715891460089141,
+    0.052958192387699124
+   ],
+   "binds_pairs": 1357,
+   "precision": 0.05887404110864734,
+   "precision_95_interval": [
+    0.0013671425923233586,
+    0.3700450390819293
+   ]
+  },
+  "InnateDB": {
+   "pairs_inside_tested_space": 73,
+   "detected": 5,
+   "rate": 0.0684931506849315,
+   "rate_95_interval": [
+    0.029609038464428368,
+    0.15052105123985696
+   ],
+   "binds_pairs": 346,
+   "precision": 0.4818158933058346,
+   "precision_95_interval": [
+    0.20205264222597108,
+    1.0719898956944316
+   ]
+  },
+  "InnateDB_SignaLink3": {
+   "pairs_inside_tested_space": 0,
+   "detected": 0,
+   "rate": NaN,
+   "rate_95_interval": [
+    NaN,
+    NaN
+   ],
+   "binds_pairs": 7,
+   "precision": NaN,
+   "precision_95_interval": [
+    NaN,
+    NaN
+   ]
+  },
+  "IntAct": {
+   "pairs_inside_tested_space": 85,
+   "detected": 11,
+   "rate": 0.12941176470588237,
+   "rate_95_interval": [
+    0.07382352765560998,
+    0.21704809024323188
+   ],
+   "binds_pairs": 338,
+   "precision": 0.9201128875418021,
+   "precision_95_interval": [
+    0.5201668676663069,
+    1.550638362985071
+   ]
+  },
+  "KEA": {
+   "pairs_inside_tested_space": 838,
+   "detected": 4,
+   "rate": 0.00477326968973747,
+   "rate_95_interval": [
+    0.0018577501471469873,
+    0.01220838873965938
+   ],
+   "binds_pairs": 4445,
+   "precision": 0.02336435493593455,
+   "precision_95_interval": [
+    0.002387786891984073,
+    0.07685851897332721
+   ]
+  },
+  "KEGG-MEDICUS": {
+   "pairs_inside_tested_space": 32,
+   "detected": 2,
+   "rate": 0.0625,
+   "rate_95_interval": [
+    0.017310566875458913,
+    0.2014712329186364
+   ],
+   "binds_pairs": 187,
+   "precision": 0.4386963973451203,
+   "precision_95_interval": [
+    0.11356764929281084,
+    1.4385660538109868
+   ]
+  },
+  "Kinexus_KEA": {
+   "pairs_inside_tested_space": 47,
+   "detected": 3,
+   "rate": 0.06382978723404255,
+   "rate_95_interval": [
+    0.02194538503450713,
+    0.17162614296341508
+   ],
+   "binds_pairs": 306,
+   "precision": 0.44826394508108425,
+   "precision_95_interval": [
+    0.14691421996893414,
+    1.2238367230422862
+   ]
+  },
+  "Kirouac2010": {
+   "pairs_inside_tested_space": 7,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.35433043867586833
+   ],
+   "binds_pairs": 78,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    2.538356840279807
+   ]
+  },
+  "LMPID": {
+   "pairs_inside_tested_space": 14,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.21531080540298042
+   ],
+   "binds_pairs": 43,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.5381389531437368
+   ]
+  },
+  "LRdb": {
+   "pairs_inside_tested_space": 291,
+   "detected": 1,
+   "rate": 0.003436426116838488,
+   "rate_95_interval": [
+    0.0006068713639464565,
+    0.019205331789097183
+   ],
+   "binds_pairs": 2350,
+   "precision": 0.01374603828211535,
+   "precision_95_interval": [
+    -0.006612030645587991,
+    0.12720009612007802
+   ]
+  },
+  "Li2012": {
+   "pairs_inside_tested_space": 5,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.43448246865939283
+   ],
+   "binds_pairs": 26,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    3.1150343367771502
+   ]
+  },
+  "MIMP": {
+   "pairs_inside_tested_space": 275,
+   "detected": 4,
+   "rate": 0.014545454545454545,
+   "rate_95_interval": [
+    0.005670598267628484,
+    0.03679603825336662
+   ],
+   "binds_pairs": 1261,
+   "precision": 0.09367323044492107,
+   "precision_95_interval": [
+    0.029820450906804893,
+    0.2537616388223615
+   ]
+  },
+  "MPPI": {
+   "pairs_inside_tested_space": 6,
+   "detected": 1,
+   "rate": 0.16666666666666666,
+   "rate_95_interval": [
+    0.030053369411815023,
+    0.5635028250257673
+   ],
+   "binds_pairs": 19,
+   "precision": 1.1881543033289654,
+   "precision_95_interval": [
+    0.2052495127033364,
+    4.043309467448823
+   ]
+  },
+  "Macrophage": {
+   "pairs_inside_tested_space": 25,
+   "detected": 2,
+   "rate": 0.08,
+   "rate_95_interval": [
+    0.022220401084126262,
+    0.24966109123460217
+   ],
+   "binds_pairs": 177,
+   "precision": 0.5646053255504062,
+   "precision_95_interval": [
+    0.14889290431446536,
+    1.785282248721149
+   ]
+  },
+  "NCI-PID_ProtMapper": {
+   "pairs_inside_tested_space": 9,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.299145051727044
+   ],
+   "binds_pairs": 26,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    2.141309244661495
+   ]
+  },
+  "NRF2ome": {
+   "pairs_inside_tested_space": 23,
+   "detected": 2,
+   "rate": 0.08695652173913043,
+   "rate_95_interval": [
+    0.02418000426569175,
+    0.2679598125741516
+   ],
+   "binds_pairs": 46,
+   "precision": 0.6146560796195882,
+   "precision_95_interval": [
+    0.16299184924581275,
+    1.9169378139434265
+   ]
+  },
+  "NetPath": {
+   "pairs_inside_tested_space": 27,
+   "detected": 2,
+   "rate": 0.07407407407407407,
+   "rate_95_interval": [
+    0.020554653875390336,
+    0.23369592848118886
+   ],
+   "binds_pairs": 215,
+   "precision": 0.5219694980099919,
+   "precision_95_interval": [
+    0.13690819313087182,
+    1.6704161612408506
+   ]
+  },
+  "NetworKIN_KEA": {
+   "pairs_inside_tested_space": 567,
+   "detected": 2,
+   "rate": 0.003527336860670194,
+   "rate_95_interval": [
+    0.0009678565510098155,
+    0.012768810187708257
+   ],
+   "binds_pairs": 3376,
+   "precision": 0.014400122528869373,
+   "precision_95_interval": [
+    -0.004014815902666151,
+    0.08089063690858941
+   ]
+  },
+  "PDZBase": {
+   "pairs_inside_tested_space": 24,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.13797620655132792
+   ],
+   "binds_pairs": 92,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.9817322985953193
+   ]
+  },
+  "PhosphoNetworks": {
+   "pairs_inside_tested_space": 19,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.16817922625956366
+   ],
+   "binds_pairs": 103,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.1990368608825817
+   ]
+  },
+  "PhosphoPoint": {
+   "pairs_inside_tested_space": 215,
+   "detected": 3,
+   "rate": 0.013953488372093023,
+   "rate_95_interval": [
+    0.0047565900909207065,
+    0.040214134065301464
+   ],
+   "binds_pairs": 905,
+   "precision": 0.08941415464939342,
+   "precision_95_interval": [
+    0.023244348626796668,
+    0.2783541405471439
+   ]
+  },
+  "PhosphoSite": {
+   "pairs_inside_tested_space": 300,
+   "detected": 6,
+   "rate": 0.02,
+   "rate_95_interval": [
+    0.009197631503835551,
+    0.04293962106078204
+   ],
+   "binds_pairs": 1384,
+   "precision": 0.1329175717037115,
+   "precision_95_interval": [
+    0.05519673516481935,
+    0.29796346320076705
+   ]
+  },
+  "PhosphoSite_KEA": {
+   "pairs_inside_tested_space": 200,
+   "detected": 2,
+   "rate": 0.01,
+   "rate_95_interval": [
+    0.00274665810884896,
+    0.035721762026734716
+   ],
+   "binds_pairs": 771,
+   "precision": 0.06096961272926237,
+   "precision_95_interval": [
+    0.008783298248043546,
+    0.24603244063426766
+   ]
+  },
+  "PhosphoSite_MIMP": {
+   "pairs_inside_tested_space": 244,
+   "detected": 2,
+   "rate": 0.00819672131147541,
+   "rate_95_interval": [
+    0.002250722201968815,
+    0.029388289756283402
+   ],
+   "binds_pairs": 1171,
+   "precision": 0.04799539061911581,
+   "precision_95_interval": [
+    0.005215140619826656,
+    0.20046440032624344
+   ]
+  },
+  "PhosphoSite_ProtMapper": {
+   "pairs_inside_tested_space": 327,
+   "detected": 6,
+   "rate": 0.01834862385321101,
+   "rate_95_interval": [
+    0.008435794437791968,
+    0.03944653244730324
+   ],
+   "binds_pairs": 1567,
+   "precision": 0.12103625737765569,
+   "precision_95_interval": [
+    0.049715472967527506,
+    0.2728314035750983
+   ]
+  },
+  "PhosphoSite_noref": {
+   "pairs_inside_tested_space": 93,
+   "detected": 3,
+   "rate": 0.03225806451612903,
+   "rate_95_interval": [
+    0.011030612730090532,
+    0.09059382575920594
+   ],
+   "binds_pairs": 519,
+   "precision": 0.22111184399497172,
+   "precision_95_interval": [
+    0.06838466097157223,
+    0.6408257396609873
+   ]
+  },
+  "ProtMapper": {
+   "pairs_inside_tested_space": 447,
+   "detected": 7,
+   "rate": 0.015659955257270694,
+   "rate_95_interval": [
+    0.007605935009086328,
+    0.031967752214726766
+   ],
+   "binds_pairs": 2080,
+   "precision": 0.10169183559399532,
+   "precision_95_interval": [
+    0.04374480375442019,
+    0.2190231062398649
+   ]
+  },
+  "REACH_ProtMapper": {
+   "pairs_inside_tested_space": 74,
+   "detected": 1,
+   "rate": 0.013513513513513514,
+   "rate_95_interval": [
+    0.00238946337704473,
+    0.07265356594495076
+   ],
+   "binds_pairs": 464,
+   "precision": 0.08624862534190667,
+   "precision_95_interval": [
+    0.006213355057069537,
+    0.5117492319502883
+   ]
+  },
+  "RLIMS-P_ProtMapper": {
+   "pairs_inside_tested_space": 35,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.0989009937303319
+   ],
+   "binds_pairs": 192,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.7005941176990301
+   ]
+  },
+  "Ramilowski2015": {
+   "pairs_inside_tested_space": 124,
+   "detected": 2,
+   "rate": 0.016129032258064516,
+   "rate_95_interval": [
+    0.004434364420656912,
+    0.056903005708832846
+   ],
+   "binds_pairs": 1163,
+   "precision": 0.10506674887489248,
+   "precision_95_interval": [
+    0.02092600069633128,
+    0.39842716578100823
+   ]
+  },
+  "Ramilowski2015_Baccin2019": {
+   "pairs_inside_tested_space": 63,
+   "detected": 1,
+   "rate": 0.015873015873015872,
+   "rate_95_interval": [
+    0.00280749418283064,
+    0.08458525545283888
+   ],
+   "binds_pairs": 633,
+   "precision": 0.10322476323806581,
+   "precision_95_interval": [
+    0.009221001383543592,
+    0.5975953026712283
+   ]
+  },
+  "Reactome_LRdb": {
+   "pairs_inside_tested_space": 101,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.03664064695671004
+   ],
+   "binds_pairs": 640,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.2526436301586781
+   ]
+  },
+  "Reactome_ProtMapper": {
+   "pairs_inside_tested_space": 9,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.299145051727044
+   ],
+   "binds_pairs": 53,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    2.141309244661495
+   ]
+  },
+  "Reactome_SignaLink3": {
+   "pairs_inside_tested_space": 0,
+   "detected": 0,
+   "rate": NaN,
+   "rate_95_interval": [
+    NaN,
+    NaN
+   ],
+   "binds_pairs": 5,
+   "precision": NaN,
+   "precision_95_interval": [
+    NaN,
+    NaN
+   ]
+  },
+  "SIGNOR": {
+   "pairs_inside_tested_space": 195,
+   "detected": 5,
+   "rate": 0.02564102564102564,
+   "rate_95_interval": [
+    0.011000939818437624,
+    0.05860958788121602
+   ],
+   "binds_pairs": 1088,
+   "precision": 0.17350359984314434,
+   "precision_95_interval": [
+    0.06817117042854665,
+    0.41070567619352333
+   ]
+  },
+  "SIGNOR_ProtMapper": {
+   "pairs_inside_tested_space": 100,
+   "detected": 1,
+   "rate": 0.01,
+   "rate_95_interval": [
+    0.0017674320446096452,
+    0.05448619674900669
+   ],
+   "binds_pairs": 406,
+   "precision": 0.06096961272926237,
+   "precision_95_interval": [
+    0.0017379665783833944,
+    0.38103871859194294
+   ]
+  },
+  "SPIKE": {
+   "pairs_inside_tested_space": 150,
+   "detected": 6,
+   "rate": 0.04,
+   "rate_95_interval": [
+    0.01845916049402265,
+    0.08451346467796861
+   ],
+   "binds_pairs": 706,
+   "precision": 0.27681348965260977,
+   "precision_95_interval": [
+    0.12183154594748463,
+    0.5970787826987173
+   ]
+  },
+  "SPIKE_LC": {
+   "pairs_inside_tested_space": 577,
+   "detected": 9,
+   "rate": 0.01559792027729636,
+   "rate_95_interval": [
+    0.008227407032123067,
+    0.029375726400126714
+   ],
+   "binds_pairs": 2087,
+   "precision": 0.10124550657457791,
+   "precision_95_interval": [
+    0.04821616811614171,
+    0.20037400954290915
+   ]
+  },
+  "STRING_talklr": {
+   "pairs_inside_tested_space": 105,
+   "detected": 1,
+   "rate": 0.009523809523809525,
+   "rate_95_interval": [
+    0.0016831692142570374,
+    0.0519862591573966
+   ],
+   "binds_pairs": 937,
+   "precision": 0.0575435194447648,
+   "precision_95_interval": [
+    0.0011317127122553558,
+    0.3630521778639583
+   ]
+  },
+  "SignaLink3": {
+   "pairs_inside_tested_space": 40,
+   "detected": 1,
+   "rate": 0.025,
+   "rate_95_interval": [
+    0.004426831453704344,
+    0.12881369088183614
+   ],
+   "binds_pairs": 291,
+   "precision": 0.16889155119093607,
+   "precision_95_interval": [
+    0.02087180253660536,
+    0.9158098684461851
+   ]
+  },
+  "Sparser_ProtMapper": {
+   "pairs_inside_tested_space": 72,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.05065117335504446
+   ],
+   "binds_pairs": 438,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.3534465080104582
+   ]
+  },
+  "TCRcuration_SignaLink3": {
+   "pairs_inside_tested_space": 16,
+   "detected": 1,
+   "rate": 0.0625,
+   "rate_95_interval": [
+    0.011119344641247308,
+    0.283287377981482
+   ],
+   "binds_pairs": 93,
+   "precision": 0.4386963973451203,
+   "precision_95_interval": [
+    0.06902306896193545,
+    2.027216518653906
+   ]
+  },
+  "TRIP": {
+   "pairs_inside_tested_space": 0,
+   "detected": 0,
+   "rate": NaN,
+   "rate_95_interval": [
+    NaN,
+    NaN
+   ],
+   "binds_pairs": 4,
+   "precision": NaN,
+   "precision_95_interval": [
+    NaN,
+    NaN
+   ]
+  },
+  "UniProt_LRdb": {
+   "pairs_inside_tested_space": 18,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.17587922593328437
+   ],
+   "binds_pairs": 172,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.2544367869453945
+   ]
+  },
+  "Wang": {
+   "pairs_inside_tested_space": 202,
+   "detected": 7,
+   "rate": 0.034653465346534656,
+   "rate_95_interval": [
+    0.016885669232688215,
+    0.06979006158587714
+   ],
+   "binds_pairs": 1702,
+   "precision": 0.23834626406231024,
+   "precision_95_interval": [
+    0.1105105974757702,
+    0.49114690253530985
+   ]
+  },
+  "Wojtowicz2020": {
+   "pairs_inside_tested_space": 51,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.07004662092616488
+   ],
+   "binds_pairs": 390,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.49299279462426326
+   ]
+  },
+  "connectomeDB2020": {
+   "pairs_inside_tested_space": 150,
+   "detected": 2,
+   "rate": 0.013333333333333334,
+   "rate_95_interval": [
+    0.003664129118275423,
+    0.047306909107164605
+   ],
+   "binds_pairs": 1454,
+   "precision": 0.08495226572074542,
+   "precision_95_interval": [
+    0.015384314902689702,
+    0.3293852093198405
+   ]
+  },
+  "dbPTM": {
+   "pairs_inside_tested_space": 55,
+   "detected": 1,
+   "rate": 0.01818181818181818,
+   "rate_95_interval": [
+    0.0032167804192709745,
+    0.0960577615848674
+   ],
+   "binds_pairs": 233,
+   "precision": 0.11983612461744803,
+   "precision_95_interval": [
+    0.012165732318365178,
+    0.6801376427233586
+   ]
+  },
+  "hprd_ProtMapper": {
+   "pairs_inside_tested_space": 91,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.04050400454197976
+   ],
+   "binds_pairs": 384,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.28043969946353936
+   ]
+  },
+  "iPTMnet": {
+   "pairs_inside_tested_space": 309,
+   "detected": 4,
+   "rate": 0.012944983818770227,
+   "rate_95_interval": [
+    0.005045256062230679,
+    0.03280605342737602
+   ],
+   "binds_pairs": 1448,
+   "precision": 0.08215817022659205,
+   "precision_95_interval": [
+    0.025321241372909607,
+    0.22505451236545684
+   ]
+  },
+  "iTALK": {
+   "pairs_inside_tested_space": 198,
+   "detected": 2,
+   "rate": 0.010101010101010102,
+   "rate_95_interval": [
+    0.0027744461218420224,
+    0.03607514862820189
+   ],
+   "binds_pairs": 1718,
+   "precision": 0.06169635978961035,
+   "precision_95_interval": [
+    0.008983227329924176,
+    0.24857498510471565
+   ]
+  },
+  "phosphoELM": {
+   "pairs_inside_tested_space": 39,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.08966685499529356
+   ],
+   "binds_pairs": 203,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.6341563742117392
+   ]
+  },
+  "phosphoELM_KEA": {
+   "pairs_inside_tested_space": 52,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.06879223713445441
+   ],
+   "binds_pairs": 288,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    0.4839677592658434
+   ]
+  },
+  "phosphoELM_MIMP": {
+   "pairs_inside_tested_space": 189,
+   "detected": 2,
+   "rate": 0.010582010582010581,
+   "rate_95_interval": [
+    0.002906782105300189,
+    0.03775594118452324
+   ],
+   "binds_pairs": 881,
+   "precision": 0.06515706007698163,
+   "precision_95_interval": [
+    0.00993535772079333,
+    0.2606679444933925
+   ]
+  },
+  "scConnect": {
+   "pairs_inside_tested_space": 19,
+   "detected": 0,
+   "rate": 0.0,
+   "rate_95_interval": [
+    0.0,
+    0.16817922625956366
+   ],
+   "binds_pairs": 132,
+   "precision": -0.010978346245186755,
+   "precision_95_interval": [
+    -0.010978346245186755,
+    1.1990368608825817
+   ]
+  },
+  "talklr": {
+   "pairs_inside_tested_space": 172,
+   "detected": 2,
+   "rate": 0.011627906976744186,
+   "rate_95_interval": [
+    0.003194605060599237,
+    0.04139930886154057
+   ],
+   "binds_pairs": 1602,
+   "precision": 0.07268207116696339,
+   "precision_95_interval": [
+    0.012006185138769393,
+    0.28688123130888016
+   ]
+  }
+ },
+ "graph_dir": "data/processed/graph_full_v04",
+ "edges_sha256": "ae59ed71f3f722567dc4e8652c264777dd1e403268aeb118882f8166f2e6f33f",
+ "huri_mapping": {
+  "rows": 52548,
+  "pairs": 52224,
+  "ensembl_ids_without_a_symbol": 35
+ },
+ "lit_bm_mapping": {
+  "rows": 13441,
+  "pairs": 13356,
+  "ensembl_ids_without_a_symbol": 8
+ }
+}

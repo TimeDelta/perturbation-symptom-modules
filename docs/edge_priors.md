@@ -281,3 +281,59 @@ each as before (`count`), all of an edge's together as one (`one`) or not at all
 The "count" rows with no sign minimum and no dispute rule are the rule of section 11; the "none" row matches the
 practices review's count (4,639 labels with fewer than two records without the bulk papers). Bulk papers fall mostly
 on signalling edges; disputed signs fall only on regulations, and most of them already fail a sign minimum of one.
+
+## 14. Addition, 22 October 2026: negative edge observations from five sources (decision 9.91)
+
+The owner asked for sources of negative edge observations beyond IntAct's curated pairs, with each source's reliability
+measured rather than fitted (a fitted low sensitivity is what failed in decisions 9.55 and 9.56), and for that
+reliability to "cover negatives and positives separately per source". What is built:
+
+- **Five source modules**, each mapping its observations onto the graph's edges by relation and family and writing, per
+  edge row, `<source>_negative` and `<source>_positive` (independent observations of each kind) and columns of its own:
+  `graph/negatome_negatives.py` (Negatome 2.0 pairs on any edge between the two proteins; the ratio applies to binds),
+  `graph/huri_tested_space.py` (HuRI's tested space on binds edges: detected, or tested and not detected),
+  `graph/perturbseq_responses.py` (Replogle et al. 2022 in K562 on regulation edges: a confirmed knockdown with the
+  target unchanged, or changed in the direction the sign implies; a change against the sign is recorded and not counted),
+  `graph/chembl_activity_negatives.py` (ChEMBL 37 records on compound-to-protein edges: inactive at a limit of at least
+  10 uM, or active at 10 uM or better) and `graph/go_not_annotations.py` (NOT-qualified molecular functions under the
+  rules of `configs/go_not_edge_rules.csv`). IntAct's absence (`contested`, `graph/edge_negatives.py`) is untouched and
+  keeps its Beta update of section 3.
+- **The columns** are written by `experiments/build_edge_evidence.py` for every source whose files are present and added
+  to an existing table by `experiments/build_edge_negative_evidence.py`, which also writes
+  `edge_negative_evidence_summary.json`. A source whose files are absent writes no columns, so the trainer refuses it
+  rather than reading a source it never saw as one that observed nothing.
+- **The likelihood ratios**, `configs/edge_negative_likelihood_ratios.csv`: per source and kind of report, its probability
+  when the edge is present and when it is absent, from published measurements quoted in the table and in
+  `graph/edge_negative_evidence.py`, where `PUBLISHED` holds the numbers and `derived_likelihood_ratios` the arithmetic,
+  which `tests/test_edge_negative_evidence.py` holds the committed table to:
+
+| source | report | relations | P(report \| present) | P(report \| absent) | ratio | from |
+| --- | --- | --- | --- | --- | --- | --- |
+| Negatome | negative | binds | 0.08 | 0.92 | 0.087 | contradiction rate 8%, read at even odds (Smialowski 2010; Blohm 2014) |
+| HuRI | negative | binds | 0.975 | 0.99993 | 0.975 | sensitivity 0.02 / 0.9^2 (Luck 2020), false reports 9 x 8e-6 (Venkatesan 2009) |
+| HuRI | positive | binds | 0.0247 | 7.2e-5 | 343 | the same |
+| Perturb-seq | negative | regulates_transcription_of | 0.921 | 0.932 | 0.989 | 7.9% of bound genes respond, relative enrichment 1.02 (Cusanovich 2014) |
+| Perturb-seq | positive | regulates_transcription_of | 0.079 | 0.068 | 1.16 | the same |
+| ChEMBL | negative | inhibits, activates, binds, targets | 0.184 | 0.816 | 0.225 | kappa 0.40 between assays at 10 uM (Landrum and Riniker 2024) |
+| ChEMBL | positive | the same | 0.816 | 0.184 | 4.44 | the same |
+| GO NOT | negative | the rules' relations | - | - | 1 | no published measurement found |
+
+- **The prior**: under `--edge-negative-evidence <sources>` (empty by default, and then the run and its fingerprint are
+  as before) a gated edge's prior odds are multiplied by each ratio min(n, cap) times, with n the source's independent
+  observations of that kind and cap the record cap (2), and its pseudo-count is unchanged. An edge label (section 11)
+  takes no prior and is not moved; how many labels carry an observation is in the run's summary. The permutation
+  control of section 5 shuffles the moved priors.
+- **The measurement**: `experiments/measure_binds_resource_precision.py` scores each OmniPath resource supplying binds
+  edges against HuRI by the method of Venkatesan et al. 2009 and writes `docs/binds_resource_precision.md`. It sets no
+  weight.
+
+**Choices made here, each the owner's to change.** (1) A precision is not a likelihood ratio without the base rate of
+the population it was measured on; Negatome's 8% is read at even odds, which no publication states. (2) HuRI's
+sensitivity is the lower end of its published range, which gives the ratios nearest 1 on both sides; HuRI's measured
+recovery of Lit-BM in the same tested space is several times higher (`docs/binds_resource_precision.md`), so the
+negative ratio would be stronger if the graph's edges behave like Lit-BM pairs. (3) A HuRI detection on an edge whose
+own resources include HuRI is not counted again. (4) Space III's gene list could not be read (`docs/data_sources.md`),
+so the tested set is the genes with at least one HuRI interaction, a subset of it. (5) ChEMBL's threshold of 10 uM is
+the one its ratio was measured at, and an endogenous metabolite can act far above it. (6) Perturb-seq is a
+non-neural line; the ratio, measured in another non-neural line, does not correct for the cell type, and the cell line
+is a column of every observation.

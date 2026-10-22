@@ -123,6 +123,13 @@ from mechanistic_pathway_learning.graph.edge_evidence import (
     read_edge_tiers,
     summarise as summarise_edge_priors,
 )
+from mechanistic_pathway_learning.graph.edge_negative_evidence import (
+    DEFAULT_LIKELIHOOD_RATIOS_PATH as DEFAULT_EDGE_NEGATIVE_LIKELIHOOD_RATIOS_PATH,
+    SOURCES as EDGE_NEGATIVE_EVIDENCE_SOURCES,
+    apply_likelihood_ratios,
+    log_likelihood_ratio,
+    read_likelihood_ratios,
+)
 from mechanistic_pathway_learning.graph.gene_protein_split import ENCODES_RELATION
 from mechanistic_pathway_learning.graph.node_descriptors import DESCRIPTOR_BLOCK_PREFIXES, columns_a_seed_still_reads, descriptor_blocks
 from mechanistic_pathway_learning.models.baselines.local_descriptor_encoder import LocalDescriptorEncoder
@@ -500,6 +507,10 @@ EDGE_PRIOR_SETTINGS = {"edge_prior_tiers", "edge_prior_tempering", "edge_prior_c
                        "edge_gate_binary_full_batch", "edge_gate_closure_evidence", "edge_gate_flip_checks", "edge_gate_binary_learning_rate_decay",
                        "curated_edge_labels", "curated_label_minimum_records", "curated_label_minimum_human_records", "curated_label_minimum_sign_records",
                        "curated_label_exclude_disputed_signs", "curated_label_bulk_papers"}
+# the negative edge observations of decision 9.91 mean nothing unless edge priors are on and at least one source is asked
+# for; then the sources and the likelihood ratio table enter the fingerprint, and never otherwise, so every run recorded
+# before the flag existed keeps its fingerprint
+EDGE_NEGATIVE_EVIDENCE_SETTINGS = {"edge_negative_evidence", "edge_negative_likelihood_ratios"}
 EDGE_EVIDENCE_FILE = "edge_evidence.parquet"  # experiments/build_edge_evidence.py writes it beside the graph's edges.parquet
 EDGE_GATED_ENCODERS: tuple[str, ...] = ("linear_response", "message_passing")
 
@@ -599,9 +610,11 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
     other arguments or rebuilt inputs is reported (the split signature covers only the split and the controls)."""
     soft_priors_on = bool(getattr(arguments, "soft_prior_strength", 0.0))
     edge_priors_on = bool(getattr(arguments, "edge_prior_strength", 0.0))
+    negative_evidence_on = edge_priors_on and bool(getattr(arguments, "edge_negative_evidence", None))
     fingerprint = {f"argument:{name}": str(value) for name, value in sorted(vars(arguments).items())
                    if name not in RESUME_CONTROL_ARGUMENTS and not (name in ARGUMENTS_RECORDED_ONLY_WHEN_SET and not value)
-                   and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)}
+                   and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)
+                   and not (name in EDGE_NEGATIVE_EVIDENCE_SETTINGS and not negative_evidence_on)}
     fingerprint.update({
         "input:outcomes": array_sha256(data.outcomes), "input:weights": array_sha256(data.weights),
         "input:label_mask": None if label_mask is None else array_sha256(label_mask),
@@ -619,6 +632,8 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
         fingerprint["file:edge_prior_tiers"] = file_sha256(arguments.edge_prior_tiers)
         evidence_path = Path(arguments.graph_dir) / EDGE_EVIDENCE_FILE
         fingerprint["file:edge_evidence"] = file_sha256(evidence_path) if evidence_path.is_file() else None
+    if negative_evidence_on:
+        fingerprint["file:edge_negative_likelihood_ratios"] = file_sha256(arguments.edge_negative_likelihood_ratios)
     return fingerprint
 
 
@@ -1187,7 +1202,12 @@ def build_edge_priors(data, arguments) -> dict | None:
     records, enough of them human evidence, and no IntAct absence is taken as known: ungated, so always open, as the
     simulation's --ungated-tiers did. The permutation control then shuffles the priors of the edges still gated; the
     labels stay on their edges. data.edge_evidence keeps the table's rows for the loaded edges, which the review list of
-    the closures reads (9.63 (c))."""
+    the closures reads (9.63 (c)).
+
+    With --edge-negative-evidence (decision 9.91, off by default) the observations of the sources named multiply each
+    gated edge's prior odds by their likelihood ratios (graph/edge_negative_evidence.py) before the labels are taken,
+    the pseudo-count unchanged; a label then takes no prior, so its observations move nothing and are counted in the
+    summary. The permutation control shuffles the moved priors."""
     data.edge_prior_gated = data.edge_prior_probability = data.edge_prior_strength = None
     data.edge_evidence = None
     strength = float(getattr(arguments, "edge_prior_strength", 0.0) or 0.0)
@@ -1219,6 +1239,23 @@ def build_edge_priors(data, arguments) -> dict | None:
     evidence = evidence.iloc[rows].reset_index(drop=True)
     gated, probability, pseudo_count = edge_priors(evidence, read_edge_tiers(arguments.edge_prior_tiers), global_strength=strength,
                                                    tempering=arguments.edge_prior_tempering, count_cap=arguments.edge_prior_count_cap)
+    negative_summary, negative_log_ratio = None, None
+    negative_sources = list(getattr(arguments, "edge_negative_evidence", None) or [])  # absent from a run recorded before 22 October 2026
+    if negative_sources:
+        ratios_path = getattr(arguments, "edge_negative_likelihood_ratios", DEFAULT_EDGE_NEGATIVE_LIKELIHOOD_RATIOS_PATH)
+        try:
+            negative_log_ratio, contributions = log_likelihood_ratio(evidence, read_likelihood_ratios(ratios_path), negative_sources,
+                                                                     observation_cap=arguments.edge_prior_count_cap)
+        except ValueError as error:
+            raise ValueError(f"{path}: {error}") from None
+        moved = gated & (negative_log_ratio != 0)
+        before = probability.copy()
+        probability = apply_likelihood_ratios(probability, gated, negative_log_ratio)
+        negative_summary = {"sources": negative_sources, "likelihood_ratios": str(ratios_path), "likelihood_ratios_sha256": file_sha256(ratios_path),
+                            "observation_cap": arguments.edge_prior_count_cap, "contributions": contributions, "gated_edges_moved": int(moved.sum()),
+                            "moved_down": int((moved & (negative_log_ratio < 0)).sum()), "moved_up": int((moved & (negative_log_ratio > 0)).sum()),
+                            "mean_prior_before": float(np.mean(before[moved])) if moved.any() else None,
+                            "mean_prior_after": float(np.mean(probability[moved])) if moved.any() else None}
     labels_summary = None
     if getattr(arguments, "curated_edge_labels", False):
         minimum_records = getattr(arguments, "curated_label_minimum_records", DEFAULT_LABEL_MINIMUM_RECORDS)
@@ -1236,9 +1273,12 @@ def build_edge_priors(data, arguments) -> dict | None:
                           "minimum_human_records": minimum_human_records, "human_evidence": "NIH iCite human score above 0 (experiments/fetch_icite_species.py)",
                           "minimum_sign_records": minimum_sign_records, "exclude_disputed_signs": exclude_disputed_signs, "bulk_papers": bulk_papers}
         gated, probability, pseudo_count = gated & ~labels, np.where(labels, np.nan, probability), np.where(labels, 0.0, pseudo_count)
+        if negative_summary is not None:  # a label is known and takes no prior, so its observations move nothing; how many there are is recorded
+            negative_summary["labels_with_an_observation_not_applied"] = int((labels & (negative_log_ratio != 0)).sum())
     summary = {"path": str(path), "sha256": file_sha256(path), "tiers": str(arguments.edge_prior_tiers), "tiers_sha256": file_sha256(arguments.edge_prior_tiers),
                "strength": strength, "tempering": arguments.edge_prior_tempering, "count_cap": arguments.edge_prior_count_cap,
-               **summarise_edge_priors(evidence, gated, probability, pseudo_count), "curated_edge_labels": labels_summary, "permutation": None}
+               **summarise_edge_priors(evidence, gated, probability, pseudo_count), "curated_edge_labels": labels_summary, "permutation": None,
+               "negative_evidence": negative_summary}
     if getattr(arguments, "permute_edge_priors", False):
         probability, pseudo_count = permute_edge_priors(gated, probability, pseudo_count, np.asarray(data.edge_relation), random_seed=arguments.seed)
         summary["permutation"] = {"seed": arguments.seed, "within": "relation", "priors_sha256": array_sha256(np.nan_to_num(probability, nan=-1.0))}
@@ -1840,6 +1880,13 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--permute-edge-priors", action="store_true",
                         help="negative control: the priors of the gated edges shuffled among the gated edges of each relation (the wiring and each relation's "
                              "distribution of priors kept, which edge holds which lost); the real arm must beat it for the evidence to carry edge-specific information")
+    parser.add_argument("--edge-negative-evidence", nargs="*", choices=EDGE_NEGATIVE_EVIDENCE_SOURCES, default=[],
+                        help="with edge priors: the sources of negative (and positive) edge observations of decision 9.91 whose observations move a gated "
+                             "edge's prior, each by the likelihood ratio --edge-negative-likelihood-ratios gives it, read from published measurements "
+                             "(graph/edge_negative_evidence.py). None, the default, leaves the priors as they were and the fingerprint unchanged. The "
+                             "edge evidence table needs the sources' columns (experiments/build_edge_negative_evidence.py)")
+    parser.add_argument("--edge-negative-likelihood-ratios", type=Path, default=DEFAULT_EDGE_NEGATIVE_LIKELIHOOD_RATIOS_PATH,
+                        help="per source and kind of report, its probability when the edge is present and when it is absent (decision 9.91)")
     parser.add_argument("--edge-gate-learning-rate", type=float, default=None,
                         help="learning rate of the edge gates' logits, which take no weight decay; the main learning rate when unset")
     parser.add_argument("--edge-gate-kind", choices=EDGE_GATE_KINDS, default="hard_concrete",
@@ -2002,7 +2049,10 @@ def main() -> None:
     edge_priors_summary = build_edge_priors(data, arguments)
     if edge_priors_summary is not None:
         print(f"edge priors: {edge_priors_summary['gated']:,} of {edge_priors_summary['edges']:,} edges gated at strength {edge_priors_summary['strength']:g}, "
-              f"{edge_priors_summary['contested']} with a curated absence" + (", priors permuted within each relation" if edge_priors_summary["permutation"] else ""))
+              f"{edge_priors_summary['contested']} with a curated absence" + (", priors permuted within each relation" if edge_priors_summary["permutation"] else "")
+              + ("" if not edge_priors_summary.get("negative_evidence") else
+                 f"; {edge_priors_summary['negative_evidence']['gated_edges_moved']:,} gated priors moved by the observations of "
+                 f"{', '.join(edge_priors_summary['negative_evidence']['sources'])} (decision 9.91)"))
     permutation_source_rows_sha256 = None
     if arguments.permute_labels:  # rows move whole, so a pair keeps its weight, frequency and label-mask entry
         source_row = degree_stratified_row_permutation(data.perturbation_degrees_for_strata, random_seed=arguments.seed, partition=in_lockbox)
