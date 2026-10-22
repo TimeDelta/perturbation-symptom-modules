@@ -1,7 +1,8 @@
 """Build the per-edge evidence table of a graph for the edge priors (decision 9.57).
 
 Reads the raw OmniPath and CollecTRI tables (their references and sources, which the graph build fetches and drops),
-IntAct's curated non-interacting pairs and the graph's edges; writes <graph-dir>/edge_evidence.parquet aligned to
+IntAct's curated non-interacting pairs (classed against UniProt's reviewed human proteome, so that only a record between
+two whole proteins contests an edge: decision 9.88) and the graph's edges; writes <graph-dir>/edge_evidence.parquet aligned to
 edges.parquet row for row (family, kind, records, contested, the PubMed ids the record count counts and the resources
 that state the edge, the edge's own source_id, target_id and relation_type, which the trainer checks against the graph
 before it reads a row, factor_below_detection for a transcription edge whose factor's gene node carries
@@ -46,7 +47,12 @@ from mechanistic_pathway_learning.graph.edge_evidence import (
     summarise,
     transcription_references,
 )
-from mechanistic_pathway_learning.graph.edge_negatives import read_human_negative_pairs
+from mechanistic_pathway_learning.graph.edge_negatives import (
+    DEFAULT_REVIEWED_PROTEOME,
+    gene_pairs_between_whole_proteins,
+    read_human_negative_pairs,
+    read_reviewed_proteome,
+)
 from mechanistic_pathway_learning.graph.sign_evidence import (
     DEFAULT_SIGNALLING_EVIDENCES,
     DEFAULT_TRANSCRIPTION_EVIDENCES,
@@ -92,6 +98,8 @@ def main() -> int:
     parser.add_argument("--omnipath", type=Path, default=Path("data/raw/omnipath/omnipath_interactions.tsv"))
     parser.add_argument("--collectri", type=Path, default=Path("data/raw/omnipath/collectri_interactions.tsv"))
     parser.add_argument("--intact-negative", type=Path, default=Path("data/raw/intact/intact_negative.txt"))
+    parser.add_argument("--uniprot", type=Path, default=DEFAULT_REVIEWED_PROTEOME,
+                        help="UniProt's reviewed human proteome; an IntAct record on an isoform, a chain or an entry outside it contests no edge (decision 9.88)")
     parser.add_argument("--tiers", type=Path, default=DEFAULT_TIERS_PATH)
     parser.add_argument("--signalling-evidences", type=Path, default=DEFAULT_SIGNALLING_EVIDENCES,
                         help="OmniPath's interactions with fields=evidences (scripts/fetch_raw_sources.sh); without it and the next the table has no sign columns")
@@ -106,7 +114,8 @@ def main() -> int:
     columns = ["source", "target", "source_genesymbol", "target_genesymbol", "sources", "references"]
     references = pd.concat([signalling_references(pd.read_csv(arguments.omnipath, sep="\t", usecols=columns)),
                             transcription_references(pd.read_csv(arguments.collectri, sep="\t", usecols=columns))], ignore_index=True)
-    negative_pairs = {frozenset((pair.gene_a, pair.gene_b)) for pair in read_human_negative_pairs(arguments.intact_negative) if pair.gene_a and pair.gene_b}
+    negative_records = read_human_negative_pairs(arguments.intact_negative, read_reviewed_proteome(arguments.uniprot))
+    negative_pairs = gene_pairs_between_whole_proteins(negative_records)
     edges = pd.read_parquet(arguments.graph_dir / "edges.parquet")
     evidence = edge_evidence_table(edges, references, negative_pairs)
     evidence = evidence.assign(source_id=edges.source_id.to_numpy(), target_id=edges.target_id.to_numpy(), relation_type=edges.relation_type.to_numpy())
@@ -145,6 +154,8 @@ def main() -> int:
     gated, probability, strength = edge_priors(evidence, read_edge_tiers(arguments.tiers))
     edges_sha256 = hashlib.sha256((arguments.graph_dir / "edges.parquet").read_bytes()).hexdigest()
     summary = {"graph_dir": str(arguments.graph_dir), "edges_sha256": edges_sha256, "tiers": str(arguments.tiers), **summarise(evidence, gated, probability, strength),
+               "intact_negatives": {"human_records": len(negative_records), "records_between_whole_proteins": sum(pair.between_whole_proteins for pair in negative_records),
+                                    "gene_pairs_between_whole_proteins": len(negative_pairs)},
                "species": species_summary, "curated_edge_labels": labels, "sign_evidence": sign_summary}
     (arguments.graph_dir / "edge_evidence_summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {arguments.graph_dir / 'edge_evidence.parquet'}: {summary['gated']:,} of {summary['edges']:,} edges gated, {summary['contested']} contested"

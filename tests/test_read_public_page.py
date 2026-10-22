@@ -4,6 +4,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
+import pytest
+
 MODULE_PATH = Path(__file__).resolve().parents[1] / "experiments" / "read_public_page.py"
 module_specification = importlib.util.spec_from_file_location("read_public_page", MODULE_PATH)
 read_public_page = importlib.util.module_from_spec(module_specification)
@@ -69,6 +71,52 @@ def test_a_refused_address_makes_no_request(tmp_path):
     record = reader.read("http://example.org/page")
     assert record["read"] is False and "https" in record["reason"]
     assert not any(tmp_path.iterdir())
+
+
+ROBOTS_FILE_THAT_CLOSES_EVERYTHING = "User-agent: *\nDisallow: /\n"  # what ftp.ebi.ac.uk serves (read 22 October 2026)
+
+
+def reader_answered_by(tmp_path, monkeypatch, robots_file_text: str) -> tuple:
+    """A reader whose requests are answered locally: the robots file given and a short page for anything else."""
+    requested = []
+
+    def answer(address):
+        requested.append(address)
+        if address.endswith("/robots.txt"):
+            return 200, "text/plain", robots_file_text.encode()
+        return 200, "text/plain", b"IntAct release notes"
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    return read_public_page.PublicPageReader(tmp_path), requested
+
+
+def test_ebi_ftp_host_is_read_past_its_robots_rule_on_the_owners_ruling(tmp_path, monkeypatch):
+    """The owner, 22 October 2026: "don't refuse FTP from EBI". The robots file is still read and its answer recorded."""
+    reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+    record = reader.read("https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README")
+    assert record["read"] is True, record
+    assert "don't refuse FTP from EBI" in record["robots_file"] and "disallows" in record["robots_file"]
+    assert requested == ["https://ftp.ebi.ac.uk/robots.txt", "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README"]
+
+
+@pytest.mark.parametrize("address", [
+    "https://www.ebi.ac.uk/gene2phenotype/api/panel/all/download",  # another EBI host keeps its own robots rules
+    "https://ftp.ebi.ac.uk.example.org/pub/file.txt",  # a host that only begins with the exempt name
+    "https://ftp.example.org/pub/file.txt",
+])
+def test_the_exemption_is_the_one_host_and_every_other_robots_rule_still_refuses(tmp_path, monkeypatch, address):
+    reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+    record = reader.read(address)
+    assert record["read"] is False and "robots file disallows" in record["reason"], record
+    assert len(requested) == 1 and requested[0].endswith("/robots.txt")
+
+
+def test_the_other_limits_still_hold_on_the_exempt_host(tmp_path, monkeypatch):
+    reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+    assert reader.read("http://ftp.ebi.ac.uk/pub/file.txt")["read"] is False  # only https
+    assert reader.read("https://ftp.ebi.ac.uk/pub/file.txt?mail=someone%40example.org")["read"] is False  # no e-mail address
+    assert requested == []
 
 
 def test_text_of_page_drops_scripts_and_tags():
