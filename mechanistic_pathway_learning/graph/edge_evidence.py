@@ -41,6 +41,29 @@ considered labels unless there's corroborating evidence from humans". The specie
 interaction's: a paper that shows an interaction in mice and names a human cohort is human evidence. A transcription
 edge's ids are CollecTRI's, which attributes most of them to itself rather than to the resource behind them, so they
 can include ids of the ExTRI text-mining layer, as the record count of 9.57 always could.
+
+A factor the adult sources do not detect (decision 9.76, the owner, 20 October 2026: "why wouldn't the developmental
+factors be added to the other soft priors for estimation of their reliability?"). The build no longer drops the regulon
+of a factor below the brain TPM threshold; a factor the cell-class sources place under HPA's detection threshold in
+every class, brain and peripheral, keeps its edges with expression_below_detection set on its gene node
+(graph/build_physiology_graph.py). Here each transcription edge whose factor carries that flag is marked
+factor_below_detection, takes the prior of the (transcription, factor_below_detection) row of the tier table in place
+of its kind's, and is never an edge label, since the sources say nothing about whether the regulation acts in the
+adult: a regulation recorded in the embryo may be there, the data decides. A tier table without that row leaves the
+kind's prior in force, which is the behaviour before the decision.
+
+A regulation whose every record is non-human (decision 9.76, the owner, 21 October 2026, on ALX3: "yes. please check. if it
+passes, add it as the mouse-only version"). docs/curated_edge_species.csv names, per edge, the PubMed ids read and the
+species each reports, with the sentence that says so. A transcription edge whose PubMed ids are all among a row's ids is
+flagged nonhuman_only_evidence, takes the (transcription, nonhuman_only_evidence) tier in place of its kind's (after
+factor_below_detection, which is lower and wins when both hold) and is never an edge label. The table is curated
+rather than derived because the species of a record is not the species of its MeSH terms: the ALX3 to INS paper
+carries "Humans" for the HeLa cells its deletion studies used, and iCite scores it human 0.07, while every experiment
+on the regulation is in mouse islets and MIN6 cells. How it would generalise: the evidence table already carries each
+edge's iCite species counts, and 8,554 of the 47,669 referenced transcription edges of the base graph (785 factors)
+have every record scored animal-only by iCite; applying that rule is a decision for the owner, and the count is in the
+summary the builder writes. Should CollecTRI add a human record to a flagged edge, the flag lapses, since the row's ids
+no longer cover the edge's.
 """
 from __future__ import annotations
 
@@ -77,6 +100,15 @@ BULK_PAPER_FAMILIES = ("signalling", "transcription")
 BULK_PAPER_MODES = ("count", "one", "none")
 DEFAULT_HUMAN_SHARE_ABOVE = 0.0  # a paper is human evidence when iCite's human score is above this
 SPECIES_COLUMNS = ("human", "animal", "molecular_cellular")
+# Decision 9.76: the tier row a transcription edge takes when its factor is below detection in every cell class
+FACTOR_BELOW_DETECTION_KIND = "factor_below_detection"
+FACTOR_BELOW_DETECTION_COLUMN = "factor_below_detection"
+FACTOR_BELOW_DETECTION_FAMILY = "transcription"
+NODE_BELOW_DETECTION_COLUMN = "expression_below_detection"  # the gene-node column graph/build_physiology_graph.py writes
+# Decision 9.76 (21 October 2026): the tier row a transcription edge takes when every record it cites is non-human
+NONHUMAN_ONLY_EVIDENCE_KIND = "nonhuman_only_evidence"
+NONHUMAN_ONLY_EVIDENCE_COLUMN = "nonhuman_only_evidence"
+DEFAULT_CURATED_EDGE_SPECIES_PATH = Path("docs/curated_edge_species.csv")
 
 
 @dataclass(frozen=True)
@@ -335,6 +367,9 @@ def curated_edge_labels(evidence: pd.DataFrame, minimum_records: int = DEFAULT_L
     exclude_disputed_signs (decision 9.72, off by default): a regulation whose two CollecTRI releases state opposite
     signs, or one of which states both, is not a label (graph/sign_evidence.py, sign_disputed).
 
+    A transcription edge flagged factor_below_detection or nonhuman_only_evidence (decision 9.76) is never a label,
+    whatever its records.
+
     bulk_papers (decision 9.70 (3), "count" by default): how an edge's bulk papers count toward minimum_records,
     records_with_bulk_papers."""
     if "human_records" not in evidence.columns:
@@ -343,6 +378,9 @@ def curated_edge_labels(evidence: pd.DataFrame, minimum_records: int = DEFAULT_L
     records = records_with_bulk_papers(evidence, bulk_papers)
     labels = ((evidence["kind"] == "curated") & evidence["family"].isin(LABEL_FAMILIES) & ~evidence["contested"].astype(bool)
               & (evidence["human_records"] >= minimum_human_records)).to_numpy() & (records >= minimum_records)
+    for column in (FACTOR_BELOW_DETECTION_COLUMN, NONHUMAN_ONLY_EVIDENCE_COLUMN):  # decision 9.76: neither is known to act in the human adult
+        if column in evidence.columns:
+            labels &= ~evidence[column].fillna(False).astype(bool).to_numpy()
     if minimum_sign_records is not None:
         from mechanistic_pathway_learning.graph.sign_evidence import sign_is_evidenced
 
@@ -354,16 +392,71 @@ def curated_edge_labels(evidence: pd.DataFrame, minimum_records: int = DEFAULT_L
     return labels
 
 
+def factor_below_detection_flags(evidence: pd.DataFrame, nodes: pd.DataFrame) -> np.ndarray:
+    """Per edge of the evidence table (which carries source_id and family): True for a transcription edge whose factor's
+    gene node carries expression_below_detection. The factor is matched by gene symbol, so the split graph's protein
+    source (PROTEIN:X) reads its gene's flag; a graph built before the column exists gives False everywhere."""
+    if NODE_BELOW_DETECTION_COLUMN not in nodes.columns or "gene_symbol" not in nodes.columns:
+        return np.zeros(len(evidence), dtype=bool)
+    genes = nodes[(nodes.node_type == "gene") & nodes.gene_symbol.notna()]
+    flagged_symbols = set(genes.gene_symbol[genes[NODE_BELOW_DETECTION_COLUMN].fillna(False).astype(bool)].astype(str))
+    is_transcription = (evidence["family"] == FACTOR_BELOW_DETECTION_FAMILY).to_numpy()
+    factor = np.array([symbol_of(source) for source in evidence["source_id"]], dtype=object)
+    return is_transcription & np.array([symbol in flagged_symbols for symbol in factor], dtype=bool)
+
+
+def read_curated_edge_species(path: Path = DEFAULT_CURATED_EDGE_SPECIES_PATH) -> dict[tuple[str, str, str], set[str]]:
+    """docs/curated_edge_species.csv as {(source symbol, target symbol, relation type): the PubMed ids the row covers}."""
+    rows: dict[tuple[str, str, str], set[str]] = {}
+    with open(path, newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            key = (row["source_symbol"].strip(), row["target_symbol"].strip(), row["relation_type"].strip())
+            rows.setdefault(key, set()).update(split_pubmed_ids(row["pubmed_ids"].strip()))
+    return rows
+
+
+def nonhuman_only_evidence_flags(evidence: pd.DataFrame, curated_species: dict[tuple[str, str, str], set[str]]) -> np.ndarray:
+    """Per edge: True for a transcription edge of a curated row whose PubMed ids are all among the row's (an edge with no
+    id is covered too, since the row is the only evidence read for it)."""
+    flags = np.zeros(len(evidence), dtype=bool)
+    if not curated_species or "source_id" not in evidence.columns:
+        return flags
+    for position, (family, source, target, relation, cell) in enumerate(zip(evidence["family"], evidence["source_id"], evidence["target_id"],
+                                                                            evidence["relation_type"], evidence["pubmed_ids"])):
+        if family != FACTOR_BELOW_DETECTION_FAMILY:
+            continue
+        covered = curated_species.get((symbol_of(source), symbol_of(target), str(relation)))
+        if covered is not None and set(split_pubmed_ids(cell)) <= covered:
+            flags[position] = True
+    return flags
+
+
+def tier_of_edge(row, tiers: dict[tuple[str, str], EdgeTier]) -> EdgeTier | None:
+    """The tier an evidence row takes: for a transcription edge with a tier of its own kind, the (transcription,
+    factor_below_detection) row when the edge is flagged so and the table has it, else the (transcription,
+    nonhuman_only_evidence) row under the same conditions (decision 9.76); else the row of the edge's own family and
+    kind; None when there is none (ungated)."""
+    own = tiers.get((row.family, row.kind))
+    if row.family == FACTOR_BELOW_DETECTION_FAMILY and own is not None:
+        for column, kind in ((FACTOR_BELOW_DETECTION_COLUMN, FACTOR_BELOW_DETECTION_KIND), (NONHUMAN_ONLY_EVIDENCE_COLUMN, NONHUMAN_ONLY_EVIDENCE_KIND)):
+            replacement = tiers.get((FACTOR_BELOW_DETECTION_FAMILY, kind))
+            if bool(getattr(row, column, False)) and replacement is not None:
+                return replacement
+    return own
+
+
 def edge_priors(evidence: pd.DataFrame, tiers: dict[tuple[str, str], EdgeTier], global_strength: float = 1.0, tempering: float = DEFAULT_TEMPERING,
                 count_cap: int = DEFAULT_COUNT_CAP, absence_pseudo_count: float = INTACT_ABSENCE_PSEUDO_COUNT) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """(gated, prior probability, pseudo-count) per edge. An edge is gated when its (family, kind) has a tier; an
     ungated edge carries NaN and 0. A record count of 0 still gives the tier's unit strength once (min(n, cap) is read
-    as max(n, 1) so an unreferenced tier is not a zero prior); an IntAct absence is a Beta update on the gated edge."""
+    as max(n, 1) so an unreferenced tier is not a zero prior); an IntAct absence is a Beta update on the gated edge.
+    A transcription edge flagged factor_below_detection takes the (transcription, factor_below_detection) tier in
+    place of its kind's when the table has one (tier_of_edge, decision 9.76)."""
     gated = np.zeros(len(evidence), dtype=bool)
     probability = np.full(len(evidence), np.nan)
     strength = np.zeros(len(evidence))
     for position, row in enumerate(evidence.itertuples(index=False)):
-        tier = tiers.get((row.family, row.kind))
+        tier = tier_of_edge(row, tiers)
         if tier is None:
             continue
         count = global_strength * tier.unit_strength * float(tempered(max(int(row.records), 1), count_cap, tempering))
@@ -390,10 +483,33 @@ def permute_edge_priors(gated: np.ndarray, probability: np.ndarray, strength: np
     return probability, strength
 
 
+def animal_only_evidence_by_icite(evidence: pd.DataFrame) -> np.ndarray:
+    """The general rule that is reported and not applied (decision 9.76): a transcription edge with records, every one of
+    them scored by iCite, none human and all recording animals. False everywhere when the table has no species columns."""
+    needed = ("records", "species_known_records", "human_records", "animal_only_records")
+    if any(column not in evidence.columns for column in needed) or "family" not in evidence.columns:
+        return np.zeros(len(evidence), dtype=bool)
+    records = evidence["records"].to_numpy(dtype=float)
+    return ((evidence["family"] == FACTOR_BELOW_DETECTION_FAMILY).to_numpy() & (records > 0)
+            & (evidence["species_known_records"].to_numpy(dtype=float) == records) & (evidence["human_records"].to_numpy(dtype=float) == 0)
+            & (evidence["animal_only_records"].to_numpy(dtype=float) == records))
+
+
 def summarise(evidence: pd.DataFrame, gated: np.ndarray, probability: np.ndarray, strength: np.ndarray) -> dict:
     by = evidence.assign(gated=gated, probability=probability, strength=strength).groupby(["family", "kind"])
+    flagged = evidence[FACTOR_BELOW_DETECTION_COLUMN].fillna(False).astype(bool).to_numpy() if FACTOR_BELOW_DETECTION_COLUMN in evidence.columns \
+        else np.zeros(len(evidence), dtype=bool)
+    nonhuman = evidence[NONHUMAN_ONLY_EVIDENCE_COLUMN].fillna(False).astype(bool).to_numpy() if NONHUMAN_ONLY_EVIDENCE_COLUMN in evidence.columns \
+        else np.zeros(len(evidence), dtype=bool)
+    animal_only_by_icite = animal_only_evidence_by_icite(evidence)
     return {"edges": int(len(evidence)), "gated": int(gated.sum()), "contested": int(evidence.contested.sum()),
             "by_family_and_kind": {f"{family}:{kind}": {"edges": int(len(group)), "gated": int(group.gated.sum()),
                                                         "mean_prior": None if not group.gated.any() else float(group.probability[group.gated].mean()),
                                                         "mean_strength": float(group.strength.mean())}
-                                   for (family, kind), group in by}}
+                                   for (family, kind), group in by},
+            FACTOR_BELOW_DETECTION_COLUMN: {"edges": int(flagged.sum()), "gated": int((flagged & gated).sum()),
+                                            "mean_prior": None if not (flagged & gated).any() else float(np.nanmean(probability[flagged & gated])),
+                                            "factors": int(evidence.loc[flagged, "source_id"].nunique()) if "source_id" in evidence.columns and flagged.any() else 0},
+            NONHUMAN_ONLY_EVIDENCE_COLUMN: {"edges": int(nonhuman.sum()), "gated": int((nonhuman & gated).sum()),
+                                            "mean_prior": None if not (nonhuman & gated).any() else float(np.nanmean(probability[nonhuman & gated])),
+                                            "edges_every_record_animal_only_by_icite": int(animal_only_by_icite.sum())}}

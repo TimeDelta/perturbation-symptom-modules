@@ -1,4 +1,9 @@
-"""Amendment item 18: H1 first, then H2 and P1 together by Holm at one-sided 0.025 per model."""
+"""Amendment item 18: H1 first, then H2 and P1 together by Holm at one-sided alpha per model.
+
+The level was 0.025 per model while two models were tested. Decision 9.78 of 22 October 2026 returned it to 0.05
+once tested_models held one model, so the Holm level of the smaller of two p-values moved from 0.0125 to 0.025 and
+the scenario p-values below moved with it. The relations they probe are unchanged.
+"""
 from __future__ import annotations
 
 import sys
@@ -9,7 +14,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "experiments"))
 from score_confirmatory import confirmatory_decisions, holm_rejections
 
-REGISTERED_ALPHA = 0.025
+REGISTERED_ALPHA = 0.05
 HOLM_LEVEL_OF_THE_SMALLER_OF_TWO = REGISTERED_ALPHA / 2
 
 
@@ -21,16 +26,18 @@ def test_holm_tests_the_smaller_p_value_at_half_the_level_and_the_larger_at_the_
 
 
 def test_holm_stops_at_the_first_failure_so_a_larger_p_value_below_alpha_is_not_rejected():
-    rejections = holm_rejections({"H2": 0.020, "P1": 0.024}, REGISTERED_ALPHA)
+    rejections = holm_rejections({"H2": 0.040, "P1": 0.048}, REGISTERED_ALPHA)
     assert not rejections["H2"]["rejected"] and not rejections["P1"]["rejected"]
 
 
 def test_h2_needs_half_the_level_unless_p1_clears_it_first():
-    """The sentence item 18 states: 'H2 therefore needs p below 0.0125 unless P1 also passes'."""
-    without_p1_passing = confirmatory_decisions(True, p_h1=0.001, p_h2=0.020, meets_minimum_differences=True,
+    """Item 18 states: 'H2 therefore needs p below 0.0125 unless P1 also passes'. That sentence was written at
+    one-sided 0.025 per model; at the 0.05 of decision 9.78 the same rule puts the threshold at 0.025.
+    """
+    without_p1_passing = confirmatory_decisions(True, p_h1=0.001, p_h2=0.040, meets_minimum_differences=True,
                                                 alpha=REGISTERED_ALPHA, p_p1=0.900, pathway_gates_passed=True)
     assert not without_p1_passing["H2_confirmed"]
-    with_p1_passing = confirmatory_decisions(True, p_h1=0.001, p_h2=0.020, meets_minimum_differences=True,
+    with_p1_passing = confirmatory_decisions(True, p_h1=0.001, p_h2=0.040, meets_minimum_differences=True,
                                              alpha=REGISTERED_ALPHA, p_p1=0.005, pathway_gates_passed=True)
     assert with_p1_passing["H2_confirmed"] and with_p1_passing["P1_confirmed"]
     assert with_p1_passing["second_stage_holm"]["H2"]["level"] == pytest.approx(REGISTERED_ALPHA)
