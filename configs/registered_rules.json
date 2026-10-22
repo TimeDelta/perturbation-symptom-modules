@@ -10,14 +10,21 @@
    "superseded": ["0.05 fixed", "0.041 macro and 0.028 micro fixed", "realised half-width plus 0.005"]
   },
   "alpha_one_sided": {
-   "value": 0.025,
-   "means": "Each tested model is a candidate at one-sided 0.025: H1 first, then its second-stage family by Holm at the same level. Holm over eight hypotheses was withdrawn on 8 October 2026.",
-   "code_location": "experiments/score_confirmatory.py --alpha default"
+   "value": 0.05,
+   "means": "The tested model is a candidate at one-sided 0.05: H1 first, then its second-stage family by Holm at the same level, so the smaller of H2 and P1 faces 0.025 and the larger faces 0.05. Holm over eight hypotheses was withdrawn on 8 October 2026. The level was halved to 0.025 while two models were tested, where the union bound over two uncorrected tests put the familywise chance of a lucky pass at 2 x 0.025 = 0.05. With tested_models holding one model from 22 October 2026 there is no across-model multiplicity left, the familywise level is this level itself, and the halving no longer buys anything, so it was returned to 0.05 (the owner, 22 October 2026: \"Move it back to the .05 alpha please with just one model now\"; decision 9.78). This is the more permissive of the two readings of the same registered familywise 0.05 and it was taken before any lockbox was drawn.",
+   "code_location": "experiments/score_confirmatory.py --alpha default",
+   "superseded": ["0.025, one-sided, per model while two models were tested"]
   },
   "tested_models": {
-   "value": ["confirmatory_v2_message_passing_noisy_or", "confirmatory_v2_linear_response_noisy_or"],
-   "means": "Two models, not four: the noisy-OR configurations of the two encoders. The sigmoid head was dropped because only noisy-OR has modules that can be read as pathways. With two tested models the chance that one passes by luck is at most 0.05.",
-   "code_location": "configs/head_choice.json chosen values"
+   "value": ["confirmatory_v2_linear_response_noisy_or"],
+   "means": "One model: the noisy-OR configuration of the linear-response encoder. The sigmoid head was dropped on 15 October 2026 because only noisy-OR has modules that can be read as pathways; the message-passing encoder moved to robustness_models on 22 October 2026 (the owner: \"Defer it to robustness. I don't want it constraining things because this is more about mechanistically identifiably predictive nosology\"). The registered reason is that only the linear-response encoder has a closed-form steady state, so only there can the sensitivity of a label to a sign-disputed edge, and hence whether a disputed sign is identifiable at all, be read without a training run. With one tested model the familywise chance of a lucky pass is the level the model is tested at, which is why alpha_one_sided returned to 0.05 in the same session (decision 9.78): the registered familywise 0.05 is unchanged and is now carried by one test rather than split across two.",
+   "code_location": "configs/head_choice.json chosen values",
+   "superseded": ["confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or, each at one-sided 0.025"]
+  },
+  "robustness_models": {
+   "value": ["confirmatory_v2_message_passing_noisy_or"],
+   "means": "Read and reported with their intervals outside the tested family, spending no alpha, as the two permutation readings have since 8 October 2026. The message-passing encoder sits here from 22 October 2026 so a conclusion of the tested model can be checked against a second encoder of a different inductive bias without that check constraining the registered family. A robustness reading that disagrees is reported as a disagreement and cannot withdraw the tested model's result; the corroboration a second tested model would have given is therefore given up, which is the cost the owner accepted.",
+   "code_location": "configs/head_choice.json robustness values, scored by experiments/score_confirmatory.py --models"
   },
   "held_out_fraction": {
    "value": 0.14285714285714285,
