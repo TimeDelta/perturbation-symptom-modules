@@ -56,7 +56,7 @@ Classes: A awaiting an owner ruling; A? probably A, see note; B ruled (or regist
 | 9.1 | Occupancy rule should cut on band, not role | C | "Not put to them, because they have not asked for one" - Record; "no longer a live defect" |
 | 9.7 | Eighteen absent psychiatric drugs incl. lithium | D | "Lithium is the conspicuous one" - Superseded by struck 9.7a, 9.7b, 9.7c (closed 15 Oct) |
 | 9.11 | Dead changes_membrane_potential edges | D | "not put to the owner as a decision, because 4.1 already holds the question" - Folded into 4.1 |
-| 9.12 | Promiscuous receptor-to-G-alpha coupling | D | "the question is whether to re-source the coupling from Guide to PHARMACOLOGY" - Superseded by 9.23 (GPCRdb sourcing, filter built 37fbdef); residual measured in PR #8's 9.77 |
+| 9.12 | Promiscuous receptor-to-G-alpha coupling | D | "the question is whether to re-source the coupling from Guide to PHARMACOLOGY" - Superseded by 9.23 (GPCRdb sourcing, filter built 37fbdef); residual measured in PR #8's 9.86 |
 | 9.13 | No multi-gene perturbations; OLIDA as source | D | "not put to the owner as a decision, raised because they asked." - OLIDA dropped by struck 9.18 |
 | 9.14 | Paring the orphan layer, held for BRENDA | B | "held pending the BRENDA download, which is the owner's licence acceptance to make" - Owner ruled "wait"; its condition was met (9.26, BRENDA in) |
 | 9.15 | Sourcing G-alpha coupling from GtoPdb | D | "outstanding, not closed." - Superseded by 9.23 (GPCRdb route, no credentials) |
