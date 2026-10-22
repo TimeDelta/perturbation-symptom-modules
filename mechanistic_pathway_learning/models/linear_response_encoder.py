@@ -314,7 +314,19 @@ FIXED_POINT_NORM_EPSILON = 1e-12
 # whole matrix once. It is removed as a measured negative result: the global rescale cancels the softening
 # wherever in-degrees are uniform, and on the real graph the median field at VM_c fell to 2.9e-15 at an
 # exponent of 0.5 and 1.0e-18 at 0.25, against 3.2e-10 for plain in-degree.
-NORMALISATIONS = ("in_degree", "spectral", "total_in_degree")
+# "forward_cone" (decision 9.16; the owner, 14 October 2026: "shouldn't the normalization be the total in degree for
+# the taken routes on that perturbation?", then "oh ... do the per-seed cone divisor then") is total_in_degree with
+# the divisor read per seed: at each destination it sums the weights of only those entering edges whose source the
+# seed can reach (models/forward_cone_divisor.py). An edge from outside the seed's cone always carries zero for that
+# seed, so under total_in_degree it divides a live message down without ever adding to it. Each seed is propagated as
+# its own column with its own divisor and a perturbation's response is the sum of its seeds' columns, which is exact
+# because everything inside the loop is linear in the input. "forward_cone_union" reads one divisor per perturbation
+# from the union of its seeds' cones and propagates the perturbation as one column: it is not identical to the
+# per-seed version (an edge in one seed's cone still divides another seed's message), measured close on the v4 graph
+# (decision 9.16), and about a seed count cheaper. Both keep the static adjacency at total_in_degree and rescale each
+# row by total / cone divisor during the propagation; see the constructor and response.
+CONE_NORMALISATIONS = ("forward_cone", "forward_cone_union")
+NORMALISATIONS = ("in_degree", "spectral", "total_in_degree", *CONE_NORMALISATIONS)
 CARRIER_INITIAL_GAIN_LOGIT_OFFSET = -3.0
 INITIAL_LOG_RESPONSE_SCALE = -9.2  # log(1e-4)
 
@@ -473,6 +485,7 @@ class LinearResponseEncoder(nn.Module):
         class_weight_rule: str = "limiting_step",
         input_weights: str = "positive",
         cache_class_bottlenecks: bool = True,
+        cache_cone_reach: bool = True,
         ph_proton_node_index: Tensor | None = None,
         ph_compartment_of_node: Tensor | None = None,
         ph_compartment_names: list[str] | None = None,
@@ -511,7 +524,11 @@ class LinearResponseEncoder(nn.Module):
         propagate_edge_weight (decision 4.11, the owner on 13 October 2026: "4.11 yes: make the encoders agree like
         that") sends edge_weight into the propagation adjacency as well as the entry edges. Before this it scaled a
         drug's mechanism edges only, so item 13's six conductance weights were inert in this encoder while the
-        message-passing one read them - the two registered encoders disagreed about the physics. False restores that."""
+        message-passing one read them - the two registered encoders disagreed about the physics. False restores that.
+
+        cache_cone_reach keeps each forward cone a cone normalisation walks, keyed on its seeds and the drug or allele
+        nodes its perturbation seeds, as one byte per graph node; the cone depends on the graph alone, so the cache is
+        never stale. False walks every batch's cones afresh."""
         super().__init__()
         self.register_buffer("seed_mask_partner_index", None if seed_mask_partner_index is None else seed_mask_partner_index.long(), persistent=False)
         num_graph_edges = len(edge_sign)  # the gates index the graph's edges, before the entry edges leave the arrays below
@@ -619,6 +636,18 @@ class LinearResponseEncoder(nn.Module):
             raise ValueError(f"cross_relation_aggregator must be one of {CROSS_RELATION_AGGREGATORS}, not {cross_relation_aggregator!r}")
         self.cross_relation_aggregator = cross_relation_aggregator
         uses_mixture = cross_relation_aggregator == "softmax_mixture"
+        if normalisation not in NORMALISATIONS:
+            raise ValueError(f"normalisation must be one of {NORMALISATIONS}, not {normalisation!r}")
+        if normalisation in CONE_NORMALISATIONS:
+            # the cone rescale multiplies each compressed row's message, which only the mean across relations forms
+            if uses_mixture:
+                raise ValueError(f"{normalisation} rescales the rows of the mean across relations; the softmax_mixture aggregator forms per-relation "
+                                 "messages instead, so use cross_relation_aggregator='mean' or another normalisation")
+            # the gated values carry their own divisor, recomputed from the gated weights each step; a cone divisor
+            # would have to be recomputed from the same gated weights per column, which is not built
+            if edge_gates is not None:
+                raise ValueError(f"{normalisation} is not built for edge gates; use total_in_degree or in_degree with gates")
+        self.normalisation = normalisation
         stacked_adjacency, relation_names = self.signed_stacked_adjacency(num_graph_nodes, relation_types, edge_source, edge_target, edge_relation, edge_sign,
                                                                           non_propagating_nodes, cofactor_edges, normalisation,
                                                                           divide_by_relations_feeding=not uses_mixture, edge_signs=edge_signs,
@@ -703,6 +732,32 @@ class LinearResponseEncoder(nn.Module):
         # how many copies of the source a step consumes, which is that participant's stoichiometry. The graph does not
         # carry it on its edges yet, so this stays None and every demand is 1; see class_bottleneck.
         self.register_buffer("bottleneck_edge_demand", None, persistent=False)
+        # The forward-cone divisor (CONE_NORMALISATIONS). The static adjacency holds total_in_degree values, sign * w /
+        # total[target], and a column's cone divisor at a target is the sum of w over the entering entries whose source
+        # the column reaches, so multiplying a row's message by total / cone gives sign * w / cone exactly. The weight
+        # matrix is those same entries and weights as [target, source], so one product with a column's reached mask is
+        # that column's divisor; the walk matrix is its structure, keeping only entries that can carry (weight > 0).
+        # A mechanism edge carries no divisor (it is added on its own in response), so it enters the walk and not the
+        # divisor, and only where its sign is nonzero, since a sign-0 mechanism edge sends nothing.
+        self.cache_cone_reach = cache_cone_reach
+        self.cone_reach_cache: dict[tuple, Tensor] = {}  # (seeds, seeded entry nodes) -> [N] bool; see cone_reach
+        for name in ("cone_weight_matrix", "cone_walk_matrix", "cone_total_in_degree", "cone_entry_edge_source", "cone_entry_edge_target"):
+            self.register_buffer(name, None, persistent=False)
+        if normalisation in CONE_NORMALISATIONS:
+            cone_entries = self.expanded_adjacency_entries(num_graph_nodes, relation_types, edge_source, edge_target, edge_relation, edge_sign,
+                                                           non_propagating_nodes, cofactor_edges, edge_signs, reversible_reactions,
+                                                           edge_weight if propagate_edge_weight else None)
+            target_and_source = torch.stack([cone_entries["target"], cone_entries["source"]])
+            self.cone_weight_matrix = torch.sparse_coo_tensor(target_and_source, cone_entries["weight"], (num_graph_nodes, num_graph_nodes)).coalesce()
+            # the same sum, in the same order, as the total_in_degree divisor of normalised_adjacency_values
+            self.cone_total_in_degree = torch.zeros(num_graph_nodes, dtype=cone_entries["weight"].dtype).index_add(0, cone_entries["target"], cone_entries["weight"])
+            can_carry = cone_entries["weight"] > 0
+            walk_pattern = torch.sparse_coo_tensor(target_and_source[:, can_carry], torch.ones(int(can_carry.sum())), (num_graph_nodes, num_graph_nodes)).coalesce()
+            self.cone_walk_matrix = torch.sparse_coo_tensor(walk_pattern.indices(), torch.ones_like(walk_pattern.values()), walk_pattern.shape).coalesce()
+            if self.entry_edge_source is not None:
+                sends = self.entry_edge_signed_weight != 0
+                self.cone_entry_edge_source = self.entry_edge_source[sends]
+                self.cone_entry_edge_target = self.entry_edge_target[sends]
         self.register_buffer("node_features", node_features.to(torch.float32), persistent=False)
         self.register_buffer("relation_is_unsigned", torch.tensor([name in UNSIGNED_RELATIONS and edge_signs == "graph" for name in relation_names]),
                              persistent=False)
@@ -920,7 +975,9 @@ class LinearResponseEncoder(nn.Module):
         if normalisation == "spectral":  # one global scale and no per-node divisor; see NORMALISATIONS
             radius = LinearResponseEncoder.spectral_radius_of_unsigned_aggregate(num_graph_nodes, source, target)
             values = sign * weight / max(radius, 1.0)
-        elif normalisation == "total_in_degree":  # one per-node divisor over all relations together; see NORMALISATIONS
+        elif normalisation == "total_in_degree" or normalisation in CONE_NORMALISATIONS:
+            # one per-node divisor over all relations together; see NORMALISATIONS. A cone normalisation stores these
+            # values and rescales each row per seed in response, so its static adjacency is this one
             total_in_degree = torch.zeros(num_graph_nodes, dtype=weight.dtype, device=weight.device).index_add(0, target, weight).clamp_min(torch.finfo(torch.float32).tiny)
             values = sign * weight / total_in_degree[target]
         else:
@@ -946,6 +1003,84 @@ class LinearResponseEncoder(nn.Module):
         field = torch.zeros(batch_size, self.num_graph_nodes, self.propagation_channels, device=injected.device, dtype=injected.dtype)
         index = perturbation_node_index.clamp_min(0)[:, :, None].expand(-1, -1, self.propagation_channels)
         return field.scatter_add(1, index, injected)
+
+    def cone_columns(self, perturbation_node_index: Tensor, perturbation_sign_and_magnitude: Tensor) -> tuple[Tensor, Tensor, Tensor]:
+        """(column input [M, N, C], the perturbation each column belongs to [M], the nodes each column reaches [N, M])
+        under a cone normalisation.
+
+        forward_cone makes one column per seed (a valid slot of perturbation_node_index), holding that seed's input
+        alone; forward_cone_union makes one column per perturbation, holding all its seeds' input as before. A column's
+        cone is walked with the drug and allele nodes its perturbation seeds present and every other entry node absent,
+        which is what present_nodes does to the state, so the walk and the propagation agree about which nodes send."""
+        seeded_entry_nodes = []
+        for seeds in perturbation_node_index.tolist():
+            valid_seeds = [seed for seed in seeds if seed >= 0]
+            seeded_entry_nodes.append(tuple(sorted({seed for seed in valid_seeds if self.entry_node_mask is not None and bool(self.entry_node_mask[seed])})))
+        if self.normalisation == "forward_cone":
+            perturbation_position, slot = (perturbation_node_index >= 0).nonzero(as_tuple=True)
+            column_seed = perturbation_node_index[perturbation_position, slot]
+            column_input = self.sustained_input(column_seed[:, None], perturbation_sign_and_magnitude[perturbation_position, slot][:, None, :])
+            keys = [((int(seed),), seeded_entry_nodes[int(position)]) for seed, position in zip(column_seed.tolist(), perturbation_position.tolist())]
+            column_perturbation = perturbation_position
+        else:
+            column_input = self.sustained_input(perturbation_node_index, perturbation_sign_and_magnitude)
+            keys = [(tuple(sorted({seed for seed in seeds if seed >= 0})), seeded_entry_nodes[position])
+                    for position, seeds in enumerate(perturbation_node_index.tolist())]
+            column_perturbation = torch.arange(perturbation_node_index.shape[0], device=perturbation_node_index.device)
+        return column_input, column_perturbation, self.cone_reach(keys)
+
+    def cone_reach(self, keys: list[tuple[tuple[int, ...], tuple[int, ...]]]) -> Tensor:
+        """[N, len(keys)] bool, the nodes reachable from each key's seeds; keys are (seeds, seeded entry nodes). The
+        cones not yet cached are walked together, one sparse product per step for all of them."""
+        known = self.cone_reach_cache if self.cache_cone_reach else {}
+        missing = [key for key in dict.fromkeys(keys) if key not in known]
+        if missing:
+            walked = self.walk_forward_cones([seeds for seeds, _ in missing], [entry_nodes for _, entry_nodes in missing])
+            for position, key in enumerate(missing):
+                known[key] = walked[:, position]
+        if not keys:
+            return torch.zeros(self.num_graph_nodes, 0, dtype=torch.bool, device=self.cone_total_in_degree.device)
+        return torch.stack([known[key] for key in keys], dim=1)
+
+    def walk_forward_cones(self, seed_sets: list[tuple[int, ...]], seeded_entry_node_sets: list[tuple[int, ...]]) -> Tensor:
+        """[N, M] bool: closure of the walk from each column's seeds over every entry that can carry, plus the mechanism
+        edges, with the entry nodes the column's perturbation does not seed held absent. Walked to closure rather than
+        to the propagation depth, because the fixed point is the limit of the walk; models/forward_cone_divisor.py
+        holds the one-cone version this agrees with."""
+        num_columns = len(seed_sets)
+        device = self.cone_total_in_degree.device
+        reached = torch.zeros(self.num_graph_nodes, num_columns, dtype=torch.bool, device=device)
+        for column, seeds in enumerate(seed_sets):
+            reached[list(seeds), column] = True
+        absent = None
+        if self.entry_node_mask is not None:
+            absent = self.entry_node_mask[:, None].expand(-1, num_columns).clone()
+            for column, entry_nodes in enumerate(seeded_entry_node_sets):
+                absent[list(entry_nodes), column] = False
+        while True:
+            arriving = torch.sparse.mm(self.cone_walk_matrix, reached.to(torch.float32)) > 0
+            if self.cone_entry_edge_source is not None and self.cone_entry_edge_source.numel():
+                by_mechanism = torch.zeros(self.num_graph_nodes, num_columns, device=device).index_add(
+                    0, self.cone_entry_edge_target, reached[self.cone_entry_edge_source].to(torch.float32))
+                arriving = arriving | (by_mechanism > 0)
+            widened = reached | arriving
+            if absent is not None:
+                widened = widened & ~absent
+            if torch.equal(widened, reached):
+                return reached
+            reached = widened
+
+    def cone_row_ratio(self, reached: Tensor) -> Tensor:
+        """[K, M, 1]: total in-degree over each column's cone divisor at every compressed row's target, which turns the
+        static total_in_degree value sign * w / total into sign * w / cone. A target with nothing entering from inside
+        the cone takes 1; nothing arrives there from this column, so the value is never read."""
+        cone_divisor = torch.sparse.mm(self.cone_weight_matrix, reached.to(torch.float32))  # [N, M]
+        total = self.cone_total_in_degree[:, None]
+        ratio = torch.where(cone_divisor > torch.finfo(torch.float32).tiny, total / cone_divisor.clamp_min(torch.finfo(torch.float32).tiny), torch.ones_like(cone_divisor))
+        return ratio[self.row_target_index][:, :, None]
+
+    def clear_cone_reach_cache(self) -> None:
+        self.cone_reach_cache = {}
 
     def compartment_ph_weight(self, state: Tensor) -> Tensor:
         """[N, B, C] multiplier from the settled proton deviation of each node's compartment, 1 where a node has none.
@@ -1182,6 +1317,7 @@ class LinearResponseEncoder(nn.Module):
 
     def _apply(self, fn, *args, **kwargs):
         self.clear_class_bottleneck_cache()  # cached tensors do not move with the buffers
+        self.clear_cone_reach_cache()
         return super()._apply(fn, *args, **kwargs)
 
     def response(self, perturbation_node_index: Tensor, perturbation_sign_and_magnitude: Tensor, num_steps: int | None = None) -> Tensor:
@@ -1197,9 +1333,23 @@ class LinearResponseEncoder(nn.Module):
         number decides for the batch and a perturbation with a large field cannot be declared settled by a neighbour with
         a small one. The update is a contraction by construction (the gains are bounded and the adjacency is normalised),
         without which there is no fixed point to reach; the bound is what makes the stopping rule a statement about the
-        steady state rather than about the arithmetic running out."""
-        sustained = self.sustained_input(perturbation_node_index, perturbation_sign_and_magnitude)
-        batch_size = sustained.shape[0]
+        steady state rather than about the arithmetic running out.
+
+        Under a cone normalisation the loop runs over columns rather than perturbations (cone_columns): one per seed
+        for forward_cone, each with its own divisor, summed into its perturbation after the loop and before the
+        bottleneck and the pH weight, which read the perturbation's settled state as before. The stopping rule then
+        reads the change over every column together. A column's state is zero outside its cone from the first round to
+        the last, since an edge from inside the cone ends inside it. A row's entries from outside the cone, which its
+        rescaled divisor no longer counts, therefore multiply only zeros, and the entries that do carry sum to at most
+        one per row, so the contraction holds on every state the loop visits."""
+        cone_row_ratio = None
+        if self.normalisation in CONE_NORMALISATIONS:
+            sustained, column_perturbation, reached = self.cone_columns(perturbation_node_index, perturbation_sign_and_magnitude)
+            cone_row_ratio = self.cone_row_ratio(reached)  # [K, M, 1]
+        else:
+            sustained = self.sustained_input(perturbation_node_index, perturbation_sign_and_magnitude)
+            column_perturbation = None
+        batch_size = sustained.shape[0]  # perturbations, or columns under a cone normalisation
         gain = self.relation_gain()  # [R, C]
         num_relations = gain.shape[0]
         # the gated values are computed once per call and read by every round (decision 9.57); the registered model reads the buffers
@@ -1218,6 +1368,8 @@ class LinearResponseEncoder(nn.Module):
         state = node_major_input  # h(0) = u, so after k steps the response reaches k edges from the perturbed nodes
         previous_state = state
         presence = self.present_nodes(perturbation_node_index)  # [N, B, 1], or None without entry nodes
+        if presence is not None and column_perturbation is not None:
+            presence = presence[:, column_perturbation]  # a column takes its perturbation's drug and allele nodes
         entry_edge_gain = None
         if self.entry_gain_logit is not None and self.entry_edge_source.numel():
             # sign * weight * gain per entry edge and channel; the gain is positive, so the sign is the mechanism's
@@ -1229,7 +1381,10 @@ class LinearResponseEncoder(nn.Module):
         for _ in range(rounds):
             if row_gain is not None:  # the sum over relations of gain times the relation's messages, over the rows that hold an edge
                 row_messages = self.adjacency_product("compressed", state.reshape(self.num_graph_nodes, batch_size * self.propagation_channels), gated_values)
-                relation_messages = torch.zeros_like(state).index_add(0, self.row_target_index, row_messages.view(-1, batch_size, self.propagation_channels) * row_gain)
+                row_messages = row_messages.view(-1, batch_size, self.propagation_channels) * row_gain
+                if cone_row_ratio is not None:  # each column's own divisor, from its forward cone
+                    row_messages = row_messages * cone_row_ratio
+                relation_messages = torch.zeros_like(state).index_add(0, self.row_target_index, row_messages)
             else:
                 aggregated = self.adjacency_product("stacked", state.reshape(self.num_graph_nodes, batch_size * self.propagation_channels), gated_values)
                 per_relation = aggregated.view(num_relations, self.num_graph_nodes, batch_size, self.propagation_channels) * gain[:, None, None, :]
@@ -1250,6 +1405,9 @@ class LinearResponseEncoder(nn.Module):
                     break
             previous_state = state
         self.propagation_steps_taken = steps_taken
+        if column_perturbation is not None:  # a perturbation's response is the sum of its seeds' columns
+            state = torch.zeros(self.num_graph_nodes, perturbation_node_index.shape[0], self.propagation_channels,
+                                dtype=state.dtype, device=state.device).index_add(1, column_perturbation, state)
         if self.class_weight_rule == "limiting_step" and self.cell_class_node_weight is not None:
             # at the steady state the bottleneck over every route, kept per perturbation; a transient reading (a chosen
             # round, or a fixed step count) takes it over the rounds the propagation took. repeat_interleave puts the

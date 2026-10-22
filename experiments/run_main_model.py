@@ -140,6 +140,7 @@ from mechanistic_pathway_learning.models.edge_gates import EDGE_GATE_KINDS, HARD
 from mechanistic_pathway_learning.models.laboratory_readout import LaboratoryLabelIndex, LaboratoryReadout, laboratory_sign_loss
 from mechanistic_pathway_learning.models.linear_response_encoder import (
     CLASS_WEIGHT_RULES,
+    CONE_NORMALISATIONS,
     CROSS_RELATION_AGGREGATORS,
     DEFAULT_FIXED_POINT_TOLERANCE,
     DEFAULT_MAX_PROPAGATION_STEPS,
@@ -689,7 +690,7 @@ def build_models(data, arguments, device):
                                         **descriptor_treatment_inputs(data, arguments),
                                         **({"entry_relation_names": ENTRY_RELATIONS, "edge_weight": torch.as_tensor(data.edge_weight), **entry_node_inputs(data)}
                                            if entry_node_inputs(data) else {}),
-                                        edge_gates=edge_gates_of(data, arguments)).to(device)
+                                        edge_gates=linear_response_edge_gates(data, arguments)).to(device)
         # Item 20, built 14 October 2026: the stoichiometric demand of the limiting-step pass. Before this
         # bottleneck_edge_demand was None and every demand was 1, so a reaction consuming two molecules counted as one.
         # A graph built before the column existed carries no coefficient and keeps the old behaviour.
@@ -1246,6 +1247,17 @@ def build_edge_priors(data, arguments) -> dict | None:
     return summary
 
 
+def linear_response_edge_gates(data, arguments) -> EdgeGates | HardConcreteEdgeGates | None:
+    """edge_gates_of, refused with the reason when the run asks for a forward-cone normalisation: the gates recompute the
+    adjacency's divisor from the gated weights, and their flip estimates are derived for total_in_degree, while the cone
+    divisor is read per seed from the ungated edges (decision 9.16). A gated run passes --normalisation total_in_degree."""
+    gates = edge_gates_of(data, arguments)
+    if gates is not None and arguments.normalisation in CONE_NORMALISATIONS:
+        raise SystemExit(f"--normalisation {arguments.normalisation} is not built for edge gates, which this run has because its data carry "
+                         "edge priors; pass --normalisation total_in_degree for a gated run (decision 9.16)")
+    return gates
+
+
 def edge_gates_of(data, arguments=None) -> EdgeGates | HardConcreteEdgeGates | None:
     """Fresh edge gates at the data's edge priors, or None without them (the registered model). --edge-gate-kind picks
     the hard gates decided on 16 October 2026 (decision 9.62 (e), the default) or the soft gates of 9.57."""
@@ -1731,11 +1743,15 @@ def build_argument_parser() -> argparse.ArgumentParser:
                         help="linear-response encoder: read the response as it is, or through sign(h) log(1 + |h| / s) with a learned scale, so changes many edges away stay readable")
     parser.add_argument("--no-stoichiometric-demand", dest="stoichiometric_demand", action="store_false",
                         help="leave every bottleneck demand at 1, the behaviour before item 20 was built")
-    parser.add_argument("--normalisation", choices=NORMALISATIONS, default="total_in_degree",
-                        help="linear-response encoder: how the signed adjacency is scaled so the iteration contracts. total_in_degree (registered, amendment item 28) "
-                             "divides by the destination's in-degree summed over every relation, so the unsigned row sums are one and the stoichiometric counts "
-                             "survive; in_degree divides per relation as well, which makes every metabolite a mean against a mean and zeroes 92 percent of them; "
-                             "spectral applies one global scale, which also keeps the counts but shrinks the field nearly everywhere")
+    parser.add_argument("--normalisation", choices=NORMALISATIONS, default="forward_cone",
+                        help="linear-response encoder: how the signed adjacency is scaled so the iteration contracts. forward_cone (registered, decision 9.16) "
+                             "is total_in_degree with the divisor read per seed over the edges whose source that seed can reach, so an edge that can only ever "
+                             "carry zero for the seed no longer divides its live messages; each seed propagates as its own column. forward_cone_union reads "
+                             "one divisor per perturbation over the union of its seeds' cones, close to per seed and cheaper. total_in_degree (amendment item 28, "
+                             "registered until 20 October 2026) divides by the destination's in-degree summed over every relation, so the unsigned row sums are one "
+                             "and the stoichiometric counts survive; in_degree divides per relation as well, which makes every metabolite a mean against a mean "
+                             "and zeroes 92 percent of them; spectral applies one global scale, which also keeps the counts but shrinks the field nearly "
+                             "everywhere. The cone normalisations need the mean across relations and no edge gates")
     parser.add_argument("--edge-signs", choices=EDGE_SIGNS, default="graph",
                         help="linear-response encoder: the graph's signs, every edge +1 with every gain positive (the sign ablation), "
                              "or the signs shuffled among edges with a fixed seed (the sign permutation)")

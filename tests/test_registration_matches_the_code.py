@@ -121,10 +121,12 @@ def test_the_minimum_positives_to_score_agree_between_the_rule_and_the_scorer(re
     assert registered_rules["minimum_positives_to_score"]["value"] == scorer.MINIMUM_POSITIVES_TO_SCORE
 
 
-def test_the_normalisation_is_the_total_in_degree_divisor(registered_rules):
-    assert registered_rules["normalisation"]["value"] == "total_in_degree"
+def test_the_normalisation_is_the_per_seed_forward_cone_divisor(registered_rules):
+    assert registered_rules["normalisation"]["value"] == "forward_cone"
     source = (REPOSITORY_ROOT / "experiments" / "run_main_model.py").read_text()
-    assert '"--normalisation"' in source and 'default="total_in_degree"' in source
+    assert '"--normalisation"' in source and 'default="forward_cone"' in source
+    batch_source = (REPOSITORY_ROOT / "experiments" / "run_main_model_batch.py").read_text()
+    assert '"--normalisation", "forward_cone",' in batch_source, "the v4 linear-response model states the registered normalisation"
 
 
 def test_the_validation_fold_rotates_with_the_seed(registered_rules):

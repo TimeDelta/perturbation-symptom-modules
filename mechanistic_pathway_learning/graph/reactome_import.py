@@ -98,26 +98,43 @@ HYPERPOLARISATION_ACTIVATED_PATTERN = re.compile(r"^HCN[1-4]$")
 # reverse). Cytosolic Ca2+ is a signal (release, Ca2+-activated channels) rather than a driving force here: E_Ca lies so
 # far from rest that its relative change is small.
 #
-# Two builds of this layer exist and the sign of every edge is the same in both; what differs is the weight and what
-# else reaches the potential (membrane_potential_build below):
-#   "learned_from_reactions", the build registered up to 12 October 2026: every pool edge has weight 1 and VM_c also
-#     receives one edge from each of the 405 reactions that move net charge, which the encoder averages, so each
-#     arrives divided by 405 and nothing reaches the node (docs/label_source_review.md 22);
-#   "computed_from_the_pools": the pool edges carry the weights of the linearised parallel-conductance equation
-#     (graph/membrane_potential.py) and the 405 reaction edges are not made, so the potential is a stated law over six
-#     edges instead of a learned mean over 409. The reactions still reach the potential, through the pools they move;
-#   "computed_beside_the_reactions": the same six weighted pool edges, with the 405 reaction edges kept.
-# Measured on the full neuronal graph, deleting the reaction edges LOWERS what reaches the potential rather than
-# raising it, which is the opposite of what docs/label_source_review.md 22.3 expected, and the reason is structural:
-# a reaction edge is a one-hop route to the potential, and through the pools it becomes two hops, each divided by its
-# destination's in-degree. The cytosolic sodium pool has in-degree 364 and the new extracellular one 339, so the
-# divisor becomes about 338 x 6 against 409. Keeping both routes is the arm that raises it: the encoder divides an
-# entry by the in-degree within its relation times the number of relations feeding the node, so with two relations the
-# law arrives at 1/12 instead of 1/409 and the reactions keep a one-hop route at 1/810.
+# Three builds of this layer exist and the sign of every edge is the same in all of them; what differs is the weight
+# and what else reaches the potential (membrane_potential_build below):
+#   "learned_from_reactions", the build registered up to 12 October 2026 and still DEFAULT_MEMBRANE_POTENTIAL_BUILD:
+#     four pool edges of weight 1 (the ion pools with a nonzero driving force), and one edge of weight 1 from each of
+#     the R reactions that move net charge across the plasma membrane;
+#   "computed_from_the_pools": six pool edges carrying the weights of the linearised parallel-conductance equation
+#     (graph/membrane_potential.py: 0.318 for potassium on each side, 0.091 for sodium and for chloride, summing to 1),
+#     and no reaction edges. The reactions still reach the potential, through the pools they move;
+#   "computed_beside_the_reactions", the build amendment item 13 registers: the same six weighted pool edges, with the
+#     R reaction edges kept.
+# R was 405 when item 13 was written and is 412 on the v5 rebuild of 20 October 2026, after the curated CaV1, CaV3,
+# ORAI and P2X reactions.
+#
+# What reaches VM_c under each, with the encoder's divisor as it now stands. The divisor is the sum of the entering
+# edges' weights over every relation together (amendment item 28, total_in_degree, with weights entering as shares by
+# decision 4.11). The registered forward_cone counts only the entering edges whose source the seed can reach; on v5 a
+# seed's cone holds about 80 percent of the graph and the pools, so it lowers the divisor at VM_c without changing
+# its order of magnitude:
+#   learned_from_reactions          divisor 4 + R; every pool and every reaction edge arrives at 1 / (4 + R);
+#   computed_from_the_pools         divisor 1; each pool edge arrives at its own conductance share, the law whole;
+#   computed_beside_the_reactions   divisor 1 + R; the law arrives at 1 / (1 + R) of itself (potassium 0.318 / (1 + R)
+#                                   per side, sodium and chloride 0.091 / (1 + R)) and each reaction at 1 / (1 + R), so
+#                                   every reaction edge outweighs every pool edge.
+# The reasoning item 13 gives for keeping the reaction edges was made under the divisor before item 28: "in_degree",
+# which divides by the in-degree within the edge's relation times the number of relations feeding the node. Under it
+# the two relations at VM_c split the input in half, so the law arrived at 1/2 (1/12 per edge before decision 4.11
+# weighted them) and each reaction at 1 / (2R), and the measurement on the full neuronal graph of 12 October found
+# that deleting the reaction edges lowered the field at VM_c, because a reaction then reaches the potential in two hops
+# divided by the pool's in-degree (364 at cytosolic sodium, 339 at extracellular sodium, then) rather than in one.
+# Neither that arithmetic nor that measurement holds under item 28 or the cone divisor, where keeping the reaction
+# edges divides the law by 1 + R; it is to be measured again (decision 4.1).
 # A pool with a driving force of 0 is still built as a node; it simply gets no edge into the potential.
 NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"): 1.0, ("Cl-", "c"): 1.0, ("Ca2+", "c"): 0.0}
 MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools", "computed_beside_the_reactions")
-DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"  # the registered build; the other is chosen explicitly
+# Not the build item 13 registers (computed_beside_the_reactions), and scripts/rebuild_data_layer.sh passes no
+# --membrane-potential, so the rebuilt neuronal graphs carry this one (decision 9.87)
+DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"
 # The pools the computed build needs that the registered build does not: the extracellular side of sodium and of
 # chloride. Potassium already has both sides. No extracellular calcium pool is added, because calcium does not enter
 # the voltage equation (graph/membrane_potential.py).

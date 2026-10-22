@@ -47,8 +47,8 @@
    "code_location": "experiments/score_confirmatory.MINIMUM_POSITIVES_TO_SCORE"
   },
   "normalisation": {
-   "value": "total_in_degree",
-   "means": "Each edge is divided by the destination's in-degree summed over every relation, so unsigned row sums are one. Amendment item 28.",
+   "value": "forward_cone",
+   "means": "Each edge is divided by the destination's in-degree summed over every relation, counting only the edges whose source the seed can reach, per seed; unsigned row sums over the edges that carry are one. Amendment item 28 as narrowed by decision 9.16.",
    "code_location": "experiments/run_main_model.py --normalisation default"
   },
   "validation_fold_rule": {

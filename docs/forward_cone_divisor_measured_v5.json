@@ -1,0 +1,245 @@
+{
+ "graph": "data/processed/graph_full_neuronal_split_binders_drugs_v5",
+ "evidence": "data/processed/evidence_full_v5",
+ "perturbations": 2447,
+ "nodes": 49809,
+ "edges": 268876,
+ "seeds_per_perturbation": {
+  "count": 2447,
+  "median": 1.0,
+  "p10": 1.0,
+  "p90": 1.0,
+  "maximum": 1.0
+ },
+ "perturbation_types": {
+  "drug": 222,
+  "gene": 2225
+ },
+ "columns_per_batch_under_forward_cone": {
+  "count": 153,
+  "median": 16.0,
+  "p10": 16.0,
+  "p90": 16.0,
+  "maximum": 16.0
+ },
+ "share_of_nodes_in_a_seed_cone": {
+  "count": 2447,
+  "median": 0.806520938873291,
+  "p10": 0.806520938873291,
+  "p90": 0.8065409660339355,
+  "maximum": 0.8073440790176392
+ },
+ "total_over_cone_divisor_at_rows_inside_the_cone": {
+  "count": 3060000,
+  "median": 1.0,
+  "p10": 1.0,
+  "p90": 1.5,
+  "maximum": 2047.0,
+  "sampled": true,
+  "rows_inside_the_cone": 169113173,
+  "share_above_1.01": 0.31226859542159974
+ },
+ "against_total_in_degree": {
+  "forward_cone_union": {
+   "magnitude_ratio_where_total_in_degree_is_nonzero (sampled)": {
+    "count": 3060000,
+    "median": 1.5761412382125854,
+    "p10": 1.0465316772460938,
+    "p90": 5.335295867919923,
+    "maximum": 13426334.0
+   },
+   "sign_agreement": 0.9769544730838972,
+   "node_responses_compared": 79992877,
+   "nonzero_only_under_this_normalisation": 2041306,
+   "response_norm_ratio_per_perturbation": {
+    "count": 2447,
+    "median": 1.0000312328338623,
+    "p10": 1.0000001192092896,
+    "p90": 1.0057258129119873,
+    "maximum": 1.1538660526275635
+   },
+   "magnitude_ratio_by_node_type (sampled)": {
+    "allele": {
+     "count": 1,
+     "median": 1.0,
+     "p10": 1.0,
+     "p90": 1.0,
+     "maximum": 1.0
+    },
+    "drug": {
+     "count": 222,
+     "median": 1.0,
+     "p10": 1.0,
+     "p90": 1.0,
+     "maximum": 1.0000035762786865
+    },
+    "gene": {
+     "count": 765000,
+     "median": 1.2349176406860352,
+     "p10": 1.0273578643798829,
+     "p90": 2.4800620317459106,
+     "maximum": 7576501.0
+    },
+    "membrane_potential": {
+     "count": 2153,
+     "median": 1.6287370920181274,
+     "p10": 1.046792221069336,
+     "p90": 3.8250826358795167,
+     "maximum": 1108.4417724609375
+    },
+    "metabolite": {
+     "count": 765000,
+     "median": 1.8805943727493286,
+     "p10": 1.0528706908226013,
+     "p90": 6.893390941619871,
+     "maximum": 1579046.375
+    },
+    "protein": {
+     "count": 765000,
+     "median": 1.5393670797348022,
+     "p10": 1.0568049669265747,
+     "p90": 3.9348044395446773,
+     "maximum": 3792635.5
+    },
+    "protein_entity": {
+     "count": 765000,
+     "median": 1.5231647491455078,
+     "p10": 1.0472254514694215,
+     "p90": 5.546317625045776,
+     "maximum": 13981064.0
+    },
+    "reaction": {
+     "count": 765000,
+     "median": 1.8127576112747192,
+     "p10": 1.0547467470169067,
+     "p90": 6.899484825134277,
+     "maximum": 2639081.5
+    }
+   },
+   "magnitude_ratio_at_VM_c": {
+    "count": 2153,
+    "median": 1.6287370920181274,
+    "p10": 1.046792221069336,
+    "p90": 3.8250826358795167,
+    "maximum": 1108.4417724609375
+   }
+  },
+  "forward_cone": {
+   "magnitude_ratio_where_total_in_degree_is_nonzero (sampled)": {
+    "count": 3060000,
+    "median": 1.575842261314392,
+    "p10": 1.0464885711669922,
+    "p90": 5.339268589019779,
+    "maximum": 20241868.0
+   },
+   "sign_agreement": 0.9769544730838972,
+   "node_responses_compared": 79992877,
+   "nonzero_only_under_this_normalisation": 2041306,
+   "response_norm_ratio_per_perturbation": {
+    "count": 2447,
+    "median": 1.0000312328338623,
+    "p10": 1.0000001192092896,
+    "p90": 1.0057258129119873,
+    "maximum": 1.1538660526275635
+   },
+   "magnitude_ratio_by_node_type (sampled)": {
+    "allele": {
+     "count": 1,
+     "median": 1.0,
+     "p10": 1.0,
+     "p90": 1.0,
+     "maximum": 1.0
+    },
+    "drug": {
+     "count": 222,
+     "median": 1.0,
+     "p10": 1.0,
+     "p90": 1.0,
+     "maximum": 1.0000035762786865
+    },
+    "gene": {
+     "count": 765000,
+     "median": 1.2344064712524414,
+     "p10": 1.0273965358734132,
+     "p90": 2.4904677867889404,
+     "maximum": 30648084.0
+    },
+    "membrane_potential": {
+     "count": 2153,
+     "median": 1.6287370920181274,
+     "p10": 1.046792221069336,
+     "p90": 3.8250826358795167,
+     "maximum": 1108.4417724609375
+    },
+    "metabolite": {
+     "count": 765000,
+     "median": 1.8786159753799438,
+     "p10": 1.0528300404548645,
+     "p90": 6.898326349258422,
+     "maximum": 155390.390625
+    },
+    "protein": {
+     "count": 765000,
+     "median": 1.5363808870315552,
+     "p10": 1.0571882843971252,
+     "p90": 3.924167346954345,
+     "maximum": 1530260.875
+    },
+    "protein_entity": {
+     "count": 765000,
+     "median": 1.5248898267745972,
+     "p10": 1.047217643260956,
+     "p90": 5.559547901153563,
+     "maximum": 2519525.5
+    },
+    "reaction": {
+     "count": 765000,
+     "median": 1.8147584199905396,
+     "p10": 1.0548972964286805,
+     "p90": 6.91514763832092,
+     "maximum": 137391536.0
+    }
+   },
+   "magnitude_ratio_at_VM_c": {
+    "count": 2153,
+    "median": 1.6287370920181274,
+    "p10": 1.046792221069336,
+    "p90": 3.8250826358795167,
+    "maximum": 1108.4417724609375
+   }
+  }
+ },
+ "per_seed_over_union_magnitude (sampled)": {
+  "count": 3060000,
+  "median": 1.0,
+  "p10": 1.0,
+  "p90": 1.0,
+  "maximum": 1.0
+ },
+ "seconds_per_batch": {
+  "total_in_degree": {
+   "count": 153,
+   "median": 0.273759866000546,
+   "p10": 0.2256680688004053,
+   "p90": 0.3524113693996697,
+   "maximum": 0.4966382220000014
+  },
+  "forward_cone_union": {
+   "count": 153,
+   "median": 0.6342975099996693,
+   "p10": 0.5425121462003517,
+   "p90": 0.7388053994001894,
+   "maximum": 1.025882091999847
+  },
+  "forward_cone": {
+   "count": 153,
+   "median": 0.6092976800000542,
+   "p10": 0.5284610715996678,
+   "p90": 0.748709311800667,
+   "maximum": 0.9130964519999907
+  }
+ },
+ "batch_size": 16,
+ "propagation_channels": 4,
+ "sample_per_batch": 20000
+}
