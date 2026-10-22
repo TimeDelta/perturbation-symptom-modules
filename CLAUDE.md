@@ -102,6 +102,16 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   9.77 and 9.78 were given to different decisions on two open branches). Before taking an id, fetch and read the
   highest id any branch holds:
   `git fetch -q origin && for ref in $(git for-each-ref --format='%(refname)' refs/remotes/origin refs/heads); do git show "$ref:docs/open_decisions.md" 2>/dev/null; done | grep -oE '^\| ~?~?[0-9]+\.[0-9]+[a-z]?' | tr -d '|~ ' | sort -t. -k1,1n -k2,2n -u | tail -1`
+- **When two branches already hold the same id, the branch merging second renumbers its own** (22 October 2026).
+  The check above is read at one moment and two sessions can read it at the same one, so it narrows the window
+  without closing it. Once both branches hold an id, the ids already on `main` stay as they are and the branch
+  merging second moves its own, to the next free ids by the command above, in a commit whose message says which ids
+  moved and to what. This is the only case where "never drop or renumber one" gives way: the collision is already
+  recorded on both sides by then, so the rule as written would otherwise forbid the one available repair. It
+  happened the day after the rule was written. The forward-cone branch had held 9.77 and 9.78 since 21 October; a
+  session recording the message-passing deferral read `docs/status.md`, which names only what `main` holds, took
+  9.77 and 9.78 as well and merged first; the cone branch renumbered its two to 9.86 and 9.87 (commit `feeb444`).
+  The gaps this leaves in the sequence are expected and are not closed up.
 - **The decision log and the pages generated from it go in two commits.** `docs/decision_history.md` records the hash
   of the commit that first holds each row, so it cannot be generated inside that commit, and amending the commit
   changes the hash. Commit the change to `docs/open_decisions.md` first, then run the generators and commit the
