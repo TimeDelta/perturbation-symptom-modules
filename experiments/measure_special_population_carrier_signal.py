@@ -31,24 +31,19 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
+from mechanistic_pathway_learning.documentation import provenance_stamp
+
 SHEET_BINDERS = {"hsa": "albumin", "aag": "orosomucoid", "both": "both"}
 POPULATION_NAMES = {"InflamDisease": "inflammatory disease"}
 OUTPUT_DOCUMENT = Path("docs/special_population_carrier_signal.md")
 CARRIERS = ("albumin", "orosomucoid")
-# The user, 9 October 2026: "this project does not care about newborns as a special population because they aren't
-# diagnosable yet", and on 10 October, correcting a first reading of that which dropped every paediatric row: "I
-# didn't say PEDIATRIC is irrelevant. Only NEWBORN through TODDLER. At the age of five, per much everything should be
-# diagnosable other than I.e. bipolar disorder". So the exclusion is by age band and not by sheet: a subgroup whose
-# band ends before a diagnosis can be made leaves, and an older child stays. Developmental mechanisms are a separate
-# matter and are not touched by this.
-SUBGROUPS_BELOW_THE_DIAGNOSABLE_AGE = ("neonate", "neonatal", "newborn", "preterm", "premature", "infant", "baby",
-                                       "toddler")
-# The band between toddler and adult (preschool, 3 to 5 years) was left to the user, because their remark of 10 October
-# put the line at five while naming toddler as the last band to drop. They closed it on 12 October 2026: "As long as
-# the admitted groups rows exclude only things toddler and earlier, it's fine". So the exclusion is toddler and
-# earlier, and a preschool band stays in. No row of the pinned database carries that band, so no reading changes; the
-# rule is written down for a source that brings one.
-SUBGROUPS_KEPT_BY_THE_DECISION_OF_12_OCTOBER = ("preschool", "preschooler")
+# Every subgroup is read (decision 9.89). From 10 to 22 October 2026 the reading left out newborn through toddler, on
+# the owner's ruling that newborns "aren't diagnosable yet" (9 October) and "Only NEWBORN through TODDLER" (10
+# October). The owner withdrew it on 22 October 2026: "that old decision doesn't apply now that I've included
+# neurodevelopment". The band is kept as a named stratum so that its own reading is reported beside the pooled one.
+NEWBORN_THROUGH_TODDLER_SUBGROUPS = ("neonate", "neonatal", "newborn", "preterm", "premature", "infant", "baby",
+                                     "toddler")
+DEFAULT_EXCLUDED_SUBGROUPS: tuple[str, ...] = ()
 
 
 def measurement_rows(database_path: Path) -> pd.DataFrame:
@@ -122,9 +117,9 @@ def main() -> int:
                         default=Path("data/raw/plasma_protein_binding/fraction_unbound_database.xlsx"))
     parser.add_argument("--study-evidence", type=Path, default=Path("data/processed/evidence_full_v3"),
                         help="to say how many of the study's drugs the classifier could be applied to at all")
-    parser.add_argument("--excluded-subgroups", nargs="*", default=list(SUBGROUPS_BELOW_THE_DIAGNOSABLE_AGE),
-                        help="special-population subgroups the study does not read a carrier from, matched case-insensitively "
-                             "against the database's subgroup column; pass none to read every row")
+    parser.add_argument("--excluded-subgroups", nargs="*", default=list(DEFAULT_EXCLUDED_SUBGROUPS),
+                        help="special-population subgroups to leave out of the reading, matched case-insensitively against "
+                             "the database's subgroup column; none by default (decision 9.89), so every row is read")
     arguments = parser.parse_args()
 
     every_row = measurement_rows(arguments.database)
@@ -133,12 +128,16 @@ def main() -> int:
     rows = every_row[~is_excluded].reset_index(drop=True)
     excluded_rows = every_row[is_excluded]
     excluded = sorted(set(excluded_rows.subgroup.astype(str)))
-    undecided = sorted({str(name) for name in every_row.subgroup.astype(str)
-                        if str(name).strip().lower() in SUBGROUPS_KEPT_BY_THE_DECISION_OF_12_OCTOBER})
     readings = population_readings(rows)
     excluded_readings = population_readings(excluded_rows) if len(excluded_rows) else None
     predictions = leave_one_drug_out_predictions(rows)
     predictions_with_every_population = leave_one_drug_out_predictions(every_row) if len(excluded_rows) else predictions
+    is_newborn_through_toddler = rows.subgroup.astype(str).str.strip().str.lower().isin(set(NEWBORN_THROUGH_TODDLER_SUBGROUPS))
+    newborn_through_toddler_rows = rows[is_newborn_through_toddler]
+    newborn_through_toddler_readings = (population_readings(newborn_through_toddler_rows)
+                                        if len(newborn_through_toddler_rows) else None)
+    predictions_without_newborn_through_toddler = (leave_one_drug_out_predictions(rows[~is_newborn_through_toddler].reset_index(drop=True))
+                                                   if len(newborn_through_toddler_rows) else predictions)
     correct = int((predictions.carrier == predictions.predicted).sum())
     majority = predictions.carrier.value_counts(normalize=True).max() if len(predictions) else float("nan")
     orosomucoid_rows = predictions[predictions.carrier == "orosomucoid"]
@@ -153,7 +152,8 @@ def main() -> int:
     lines = [
         "# Does the fraction unbound in a special population say which protein carries the drug?",
         "",
-        "Generated by `experiments/measure_special_population_carrier_signal.py`. Do not edit by hand.",
+        provenance_stamp("experiments/measure_special_population_carrier_signal.py",
+                         [str(arguments.database), str(arguments.study_evidence / "evidence_records.parquet")]),
         "",
         "Source: the pinned database of Al-Qassabi and colleagues (figshare "
         "[10.48420/25243138.v1](https://doi.org/10.48420/25243138.v1), CC BY 4.0; the paper is PMID 38417790, "
@@ -179,20 +179,30 @@ def main() -> int:
         "cannot be read this way at all.",
         "",
     ]
+    if newborn_through_toddler_readings is not None and len(newborn_through_toddler_readings):
+        lines += [
+            "Every subgroup is read, newborn through toddler included (decision 9.89). From 10 to 22 October 2026 "
+            "this reading left those subgroups out, on the owner's ruling that newborns \"aren't diagnosable yet\" (9 "
+            "October) and \"Only NEWBORN through TODDLER\" (10 October). The owner withdrew it on 22 October 2026: "
+            "\"that old decision doesn't apply now that I've included neurodevelopment\". The band's own reading, "
+            f"from its subgroups present here ({', '.join(sorted(set(newborn_through_toddler_rows.subgroup.astype(str))))}):",
+            "",
+            "| band | measurements | albumin rows | orosomucoid rows | albumin median ratio | orosomucoid median ratio | AUROC for orosomucoid |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for row in newborn_through_toddler_readings.itertuples(index=False):
+            lines.append(f"| {row.population} | {row.measurements} | {row.albumin_rows} | {row.orosomucoid_rows} | "
+                         f"{row.albumin_median_ratio:.3f} | {row.orosomucoid_median_ratio:.3f} | {row.auroc:.3f} |")
+        lines += [
+            "",
+            "A newborn's albumin and orosomucoid are both still rising to adult levels, so this band's ratios describe a "
+            "carrier whose concentration is itself changing; the band is read as one population among the others and "
+            "not pooled into the adult ones.",
+            "",
+        ]
     if excluded_readings is not None and len(excluded_readings):
         lines += [
-            "The user, 9 October 2026: \"this project does not care about newborns as a special population because "
-            "they aren't diagnosable yet (it still matters to include developmental mechanisms just not whether the "
-            "graph treats newborns differently)\", and on 10 October, correcting a first reading of that which "
-            "dropped the whole paediatric sheet: \"I didn't say PEDIATRIC is irrelevant. Only NEWBORN through "
-            "TODDLER. At the age of five, per much everything should be diagnosable other than I.e. bipolar "
-            "disorder\". The exclusion is therefore by age band and not by population: a subgroup whose band ends "
-            "before a diagnosis can be made leaves the table above and the classifier, because a symptom that cannot "
-            "be recorded yet cannot be the label a carriage edge is tested against, and an older child stays. The "
-            f"subgroups it removes here are {' and '.join(excluded)}. This database holds no paediatric subgroup "
-            "above them, so on this source the rule happens to empty the paediatric population, which is why a first "
-            "pass that dropped the population outright reached the same numbers for the wrong reason; a source with "
-            "school-age rows would keep them.",
+            f"Subgroups left out of this run by `--excluded-subgroups`: {' and '.join(excluded)}.",
             "",
             "| subgroups left out | measurements | albumin rows | orosomucoid rows | albumin median ratio | orosomucoid median ratio | AUROC for orosomucoid |",
             "| --- | --- | --- | --- | --- | --- | --- |",
@@ -200,21 +210,7 @@ def main() -> int:
         for row in excluded_readings.itertuples(index=False):
             lines.append(f"| {row.population} | {row.measurements} | {row.albumin_rows} | {row.orosomucoid_rows} | "
                          f"{row.albumin_median_ratio:.3f} | {row.orosomucoid_median_ratio:.3f} | {row.auroc:.3f} |")
-        lines += [
-            "",
-            "It is reported rather than deleted, because it was the strongest single reading and leaving it out costs "
-            "accuracy.",
-            "",
-            "Two limits on the rule. A band between toddler and school age (preschool, 3 to 5 years) is not decided "
-            "here: the user's remark puts the line at five while naming toddler as the last band to drop, and no such "
-            "row exists in this database"
-            + (f" (the undecided subgroups present are {', '.join(undecided)})" if undecided else "")
-            + ". And excluding an age band is not excluding development: a developmental mechanism is a reaction, a "
-            "transporter or an expression pattern, and those stay in the graph on their own evidence. What leaves is "
-            "the claim that a drug's carrier can be read from how its free fraction moves in a newborn, whose albumin "
-            "and orosomucoid are both still rising to adult levels.",
-            "",
-        ]
+        lines.append("")
     lines += [
         "## Pooling the populations a drug has, leave-one-drug-out",
         "",
@@ -227,7 +223,13 @@ def main() -> int:
          f"**{int((predictions_with_every_population.carrier == predictions_with_every_population.predicted).sum())}** "
          f"of {len(predictions_with_every_population)}, "
          f"{(predictions_with_every_population.carrier == predictions_with_every_population.predicted).mean():.0%}")
-        if excluded else "- no population was left out, so there is nothing to compare against",
+        if excluded else "- no population was left out of this run",
+        (f"- for comparison, without the newborn-through-toddler band: "
+         f"**{int((predictions_without_newborn_through_toddler.carrier == predictions_without_newborn_through_toddler.predicted).sum())}** "
+         f"of {len(predictions_without_newborn_through_toddler)}, "
+         f"{(predictions_without_newborn_through_toddler.carrier == predictions_without_newborn_through_toddler.predicted).mean():.0%}")
+        if len(newborn_through_toddler_rows) and len(predictions_without_newborn_through_toddler) else
+        "- the newborn-through-toddler band holds no row in this run",
         "",
         "Accuracy is the wrong single number here, because the trivial rule \"albumin\" already reaches the "
         f"majority-class rate while finding none of the {len(orosomucoid_rows)} orosomucoid carriers. Read both ways: "
@@ -246,8 +248,9 @@ def main() -> int:
         "## What this can and cannot buy",
         "",
         f"The classifier needs a measured pair of fractions for the drug in a population the study uses. "
-        f"**{len(with_a_ratio)} of this study's {len(study_drug_labels)} drug perturbations have one** "
-        f"({len(with_a_ratio_anywhere)} counting the population left out). Those are a subset of the "
+        f"**{len(with_a_ratio)} of this study's {len(study_drug_labels)} drug perturbations have one**"
+        + (f" ({len(with_a_ratio_anywhere)} counting the subgroups left out)" if excluded else "")
+        + ". Those are a subset of the "
         f"{len(with_a_labelled_carrier)} drugs this database labels with a carrier outright, so running the "
         "classifier on them adds nothing: where there is a ratio there is already a labelled carrier, and the "
         "classifier would be predicting a fact the same file states. It would only widen coverage through a second "

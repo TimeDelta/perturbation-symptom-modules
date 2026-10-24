@@ -788,6 +788,18 @@
    "append_only": true,
    "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
   },
+  "docs/open_decision_triage_2026-10-21.md": {
+   "class": "record",
+   "recorded": "2026-10-21",
+   "append_only": true,
+   "what": "every id docs/open_decisions.md left open at 2f21e2b, classified against the git history and the pull requests, with the generator's open/closed rule; the companion to decision 9.85 for the count"
+  },
+  "docs/monogenic_negative_report_pairs_2026-10-21.md": {
+   "class": "record",
+   "recorded": "2026-10-21",
+   "append_only": true,
+   "what": "the monogenic records carrying a negative report, pair by pair: the disease entries behind each positive and each negative annotation, and whether the pair is a contradiction, a different allele direction or a crosswalk artefact; decision 9.85"
+  },
   "docs/nonlinearity_inventory.md": {
    "class": "living",
    "reviewed": "2026-10-21",
