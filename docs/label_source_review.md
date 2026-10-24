@@ -3612,3 +3612,20 @@ vortioxetine trial with results) carries no adverse-event module, so it cannot s
 Clinical Trials Transformation Initiative's database of the same records, was not used: it is a copy of the records
 the robots rule covers, which the working rules do not admit as a route around a refusal. No text on any page read
 was addressed to an AI assistant.
+
+## 35. Sources read for the mouse sources beyond IMPC (24 October 2026, decision 9.93)
+
+Every page below was read with `experiments/read_public_page.py`, which read each site's robots file first; none of
+the sites asked whether the visitor was human.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| MGI copyright and licensing | "MGI data and annotations are licensed under a Creative Commons Attribution 4.0 International License (CC-BY)." and "The Mammalian Phenotype (MP) Ontology, the Mouse Developmental Anatomy (EMAPA) Ontology, and the Mouse Adult Anatomy Ontology (MA) are products of MGI and are licensed under a Creative Commons Attribution 4.0 International" | www.informatics.jax.org/mgihome/other/copyright.shtml; the host served no robots file |
+| MGI reports | `MGI_PhenoGenoMP.rpt`, `MGI_PhenotypicAllele.rpt` and `MPheno_OBO.ontology` from www.informatics.jax.org/downloads/reports/; the allele report's header: "Allele symbols are usually of the form xxx<yy>, where the <> enclose the part of the symbol that is superscripted." and "Transgene insertions, with symbols of the form Tg(aaa)##bbb, are included in this listing, but notably have no corresponding gene marker." | the files themselves; the ontology's header reads "data-version: releases/2026-09-23/mp.obo", and the release asset of tag v2026-09-23 on GitHub has the same SHA-256 |
+| SFARI Gene terms | "All data on SFARI Gene are derived from sources that are in the public domain, and we encourage users to include such data in their publications, with appropriate citation of the primary data source, the SFARI Gene website, and relevant publications describing SFARI Gene." The terms also say "The materials contained in this website are protected by applicable copyright and trademark law" and ask users not to "attempt to circumvent the security features of this website"; nothing in them bans reading or using the data | gene.sfari.org/terms-and-privacy/ ("Version 1 Effective Date: June 22, 2017"); the robots file disallows only `/wp/wp-admin/` |
+| SFARI Gene mouse-model pages | 269 pages, one per gene of the module's gene list (`download-csv.php?api-endpoint=animal-genes`), each naming "Latest Release: 2026 Q2" | gene.sfari.org/database/animal-models/genetic-animal-models/<GENE>/Mus+musculus; pinned in `data/raw/sfari/manifest.tsv` |
+| ChEMBL 37 preferred names | the preferred names of 21 drugs SIDER 4.1 names by a truncation or a code (vortioxetine for "Lu" among them), listed with where each was read in `configs/sider_drug_name_corrections.csv` | the pinned `data/raw/chembl/molecule_parents.json` and the ChEMBL connector |
+
+Alzforum was not used: its terms of service forbid data mining (the owner, 24 October 2026). One refusal: PubChem's
+robots file disallows its `/rest/` path for automated readers, so a compound's PubChem title was not read for the
+drug names; ChEMBL was the second source. No text on any page read was addressed to an AI assistant.

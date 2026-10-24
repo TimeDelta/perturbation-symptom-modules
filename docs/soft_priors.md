@@ -235,3 +235,22 @@ are curation errors rather than evidence and are recorded in `docs/reconstructio
 
 This does not change any prior: a prior never touches a label, and the 13 non-label records are eligible cells like any
 other unlabelled pair.
+
+## 11. Correction, 24 October 2026: what the owner asked about species (decision 9.56), and the species terms of 9.93
+
+Section 9 says "Species is a feature rather than a separate fit, as the owner asked (9.56)". That is the opposite of
+what 9.56 records. The owner wrote, on 16 October 2026: "wouldn't all non-human evidence need to be fit separately so
+species isn't one of the fit features ... Even primate research I would think should have its negative evidence
+weighted differently though". The question asks for a separate fit per non-human species, or at least for a
+non-human source's absences to be weighted apart from its calls; it was not answered before 24 October 2026, and the
+docstring of `evidence/calibrated_reliability.py` repeated the misreading until the same day.
+
+What 9.93 built is the partially pooled answer to its second half, not a choice between the two. With IMPC as the
+only mouse source, species:mouse equalled source:IMPC-knockout (and class:animal), so a species effect could not be
+told from a pipeline effect. Three mouse sources now enter beside IMPC (MGI-literature, MGI-screen,
+SFARI-mouse-models), and when a species has two or more sources the regression has a species main effect shared by
+them, a species x direction term, and for each non-human source a deviation from its species and a source x direction
+deviation, both shrunk toward 0 by an L2 penalty ten times the base one
+(`--soft-prior-calibration-source-deviation-penalty`). A table whose only mouse source is IMPC fits the model it
+fitted before, bit for bit. Whether to fit each species apart instead is still the owner's (9.93). The coefficients on
+v5 are in `docs/mouse_sources_measured_v5.md`.

@@ -30,7 +30,7 @@ apathy,induces,,,,none,no accepted mouse proxy
 abulia,induces,,,,none,no mouse proxy stated at the fine level; the coarse row's proxy went to apathy (decision 9.58)
 suicidal_ideation,induces,,,,none,no mouse proxy
 suicide_behaviors,induces,,,,none,no mouse proxy stated at the fine level; the coarse row's proxy went to suicidal_ideation (decision 9.58)
-self_injury,induces,,,,none,barbering and over-grooming are observed
+self_injury,induces,,,,none,"barbering and over-grooming are observed, not tested; no term is asserted at scale"
 disinhibition_or_impulsivity,induces,,,,none,premature responding and delay discounting are not IMPC core procedures
 emotional_lability,induces,,,,none,no mouse proxy
 abnormal_dreams,induces,,,,none,no mouse proxy

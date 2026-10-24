@@ -12,7 +12,8 @@
 # fetch_node_descriptor_sources.py (UniProt proteome, GO, hp-base.owl, ChEBI), fetch_reactome_pathways.py,
 # fetch_plasma_binder_annotations.py, fetch_onsides_identifier_bridge.py, fetch_fraction_unbound_database.py,
 # fetch_pubtator_relations.py, fetch_ctd_chemical_disease.py and
-# python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC).
+# python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC). The one script this file does call is
+# experiments/fetch_sfari_mouse_models.py (decision 9.93), because SFARI has no file to fetch with curl.
 #
 # Usage: bash scripts/fetch_raw_sources.sh [--with-cellxgene]
 #   --with-cellxgene also fetches the four adult human brain atlas dissections (1.24 GB), which only the dopaminergic
@@ -193,6 +194,24 @@ fetch "$raw_directory/gtopdb_2026/ligand_id_mapping.csv" "https://www.guidetopha
 fetch "$raw_directory/impc/README.md" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/README.md"
 fetch "$raw_directory/impc/genotype-phenotype-assertions-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/genotype-phenotype-assertions-ALL.csv.gz"
 fetch "$raw_directory/impc/statistical-results-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/statistical-results-ALL.csv.gz"
+
+# --- sources added 24 October 2026: mouse report sources beyond IMPC (decision 9.93) ---
+# MGI's genotype-phenotype annotations and allele attributes (evidence/mgi_mouse_phenotypes.py). "MGI data and
+# annotations are licensed under a Creative Commons Attribution 4.0 International License (CC-BY)"
+# (https://www.informatics.jax.org/mgihome/other/copyright.shtml, read 24 October 2026). MGI regenerates these reports
+# with each data load and keeps no dated copy, so the pin is the SHA-256 of the files read on 24 October 2026 (16:26
+# UTC); a later fetch reports DRIFT and the measurement record of 9.93 is then history. The host served no robots file
+# on 24 October 2026.
+fetch "$raw_directory/mgi/MGI_PhenoGenoMP.rpt" "https://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt" 952b04f1ba1bd588837559d7e6c4bac5c5082bbc5cab47e34d7b741191d599cc
+fetch "$raw_directory/mgi/MGI_PhenotypicAllele.rpt" "https://www.informatics.jax.org/downloads/reports/MGI_PhenotypicAllele.rpt" ef322cdf1dab83ea33f7660683b7e60f91c5e4d31abb7595ee438ee038cbdb60
+# The Mammalian Phenotype ontology by its release tag, the same bytes as MGI's MPheno_OBO.ontology of 24 October 2026
+# ("data-version: releases/2026-09-23/mp.obo"); CC BY 4.0 on the same MGI page.
+fetch "$raw_directory/mgi/mp.obo" "https://github.com/mgijax/mammalian-phenotype-ontology/releases/download/v2026-09-23/mp.obo" 93bacc7a9731aec917377cf8d8f95e22b12e61d7665d180ce2d2a17d195728d3
+# SFARI Gene's mouse-model pages have no versioned download, so they are read page by page through
+# experiments/read_public_page.py (robots rules and checks that the visitor is human respected) and pinned by SHA-256
+# in data/raw/sfari/manifest.tsv; the release they name (2026 Q2 on 24 October 2026) is in manifest.json.
+PYTHONPATH=. python experiments/fetch_sfari_mouse_models.py --output-dir "$raw_directory/sfari" \
+  || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/sfari/manifest.tsv" >> "$report_path"
 
 if [ "$with_cellxgene" = "yes" ]; then
   # Adult human brain atlas dissections holding cluster 395 (Siletti et al. 2023; CELLxGENE collection
