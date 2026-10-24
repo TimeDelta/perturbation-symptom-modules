@@ -1961,9 +1961,10 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--placebo-negative-weights-file", type=path_or_none, default=REGISTERED_PLACEBO_NEGATIVE_WEIGHTS,
                         help="per-pair weights for those negatives (amendment item 3): n_effective / (n_effective + 214) where the drug's label states both arm "
                              "sizes, the default above where it does not. 'none' falls back to --placebo-negative-weight for every pair")
-    parser.add_argument("--label-likelihood", choices=LABEL_LIKELIHOODS, default="weighted",
+    parser.add_argument("--label-likelihood", choices=LABEL_LIKELIHOODS, default="positive_unlabelled",
                         help="weighted: the evidence-weighted cross-entropy above, a positive at its evidence weight, an unlabelled pair at --negative-weight and an "
-                             "evidenced negative at its placebo weight (every run before 22 October 2026). positive_unlabelled (decision 9.90): every pair counted once "
+                             "evidenced negative at its placebo weight (every run before 22 October 2026, and the arms with soft priors or frequency targets). "
+                             "positive_unlabelled (decision 9.90, registered as the rule label_likelihood): every pair counted once "
                              "at its code length under a positive-unlabelled likelihood (models/positive_unlabelled_likelihood.py): a labelled positive "
                              "-log(b + (1 - b) pi f), an unlabelled pair -log(1 - b) - log(1 - pi f), an evidenced negative -log(1 - a f), with pi the labelling "
                              "propensity, b the false-report rate and a the assessment's power. Under it --negative-weight, --positive-target and the evidence "

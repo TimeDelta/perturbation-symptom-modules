@@ -259,7 +259,8 @@ def test_the_start_is_the_counted_once_optimum_under_the_likelihood():
 def test_the_flag_and_its_settings_stay_out_of_the_fingerprint_while_it_is_off():
     data = Namespace(outcomes=np.zeros((2, 2)), weights=np.zeros((2, 2)), edge_source=np.array([0]), edge_target=np.array([1]), edge_relation=np.array([0]),
                      perturbation_seeds=[np.array([0]), np.array([1])], perturbation_signs=[np.array([-1.0])] * 2, perturbation_magnitudes=[np.array([1.0])] * 2)
-    off = configuration_fingerprint(build_argument_parser().parse_args(["--graph-dir", "g", "--evidence-dir", "e", "--labelling-propensity", "0.4"]), data, None)
+    off = configuration_fingerprint(build_argument_parser().parse_args(["--graph-dir", "g", "--evidence-dir", "e", "--label-likelihood", "weighted",
+                                                                         "--labelling-propensity", "0.4"]), data, None)
     assert not any(key.split(":", 1)[1] in LABEL_LIKELIHOOD_SETTINGS | {"label_likelihood"} for key in off if key.startswith("argument:"))
     on = configuration_fingerprint(likelihood_arguments(), data, None)
     assert on["argument:label_likelihood"] == "positive_unlabelled" and on["argument:labelling_propensity"] == "derived"
@@ -307,7 +308,7 @@ def toy_with_evidenced_negatives(root: Path) -> dict[str, Path]:
 
 def test_end_to_end_off_is_the_weighted_run_and_on_it_trains_counts_each_pair_once_and_records_its_description_length(tmp_path):
     paths = toy_with_evidenced_negatives(tmp_path)
-    plain = run_trainer(paths, tmp_path / "plain")
+    plain = run_trainer(paths, tmp_path / "plain", "--label-likelihood", "weighted")
     off = run_trainer(paths, tmp_path / "off", "--label-likelihood", "weighted", "--labelling-propensity", "0.4", "--false-report-rate", "gene=0.3",
                       "--propensity-popularity-reports", str(paths["reports"]))
     assert np.array_equal(plain["predictions"], off["predictions"]), "the likelihood's settings do nothing while it is off"
