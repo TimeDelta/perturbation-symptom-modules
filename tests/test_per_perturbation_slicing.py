@@ -49,6 +49,11 @@ def experiment_data_with_every_array_filled() -> ExperimentData:
     values["frequencies"] = np.ones((NUM_PERTURBATIONS, NUM_SYMPTOMS))
     values["placebo_negative_weight_matrix"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.5)
     values["evidenced_negative_power"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.9)
+    # decision 9.92: the source of each evidenced negative and the per-pair strengths a label selection may carry
+    values["evidenced_negative_source"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), "Phenopacket-Store", dtype=object)
+    for name in ("phenopacket_individuals_observed", "phenopacket_individuals_assessed", "meta_analysis_participants", "meta_analysis_rate_ratio",
+                 "meta_analysis_rate_ratio_lower_95", "meta_analysis_rate_ratio_upper_95"):
+        values[name] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 2.0)
     unknown = set(PER_PERTURBATION_ARRAYS) - set(values)
     assert not unknown, f"PER_PERTURBATION_ARRAYS names {unknown}, which this fixture does not fill; add them here by name"
     missing = [name for name, field in fields.items()

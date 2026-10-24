@@ -83,6 +83,11 @@
    "recorded": "2026-10-08",
    "append_only": false
   },
+  "docs/binds_resource_precision.md": {
+   "class": "generated",
+   "generator": "experiments/measure_binds_resource_precision.py",
+   "what": "the precision of each OmniPath resource supplying binds edges against HuRI's tested space, by the method of Venkatesan et al. 2009 (decision 9.91); a report that sets no weight"
+  },
   "docs/brain_exposure_data_feasibility.md": {
    "class": "record",
    "recorded": "2026-10-12",
@@ -371,6 +376,11 @@
    "class": "record",
    "recorded": "2026-10-13",
    "append_only": false
+  },
+  "docs/label_negative_sources_measured.md": {
+   "class": "generated",
+   "generator": "experiments/measure_label_negative_sources.py",
+   "what": "the three label-negative sources of decision 9.92 measured against an evidence table: Phenopacket Store exclusions, trial-arm absences by assessment type, the statin-placebo negatives"
   },
   "docs/label_plasma_binders.md": {
    "class": "generated",
@@ -787,6 +797,18 @@
    "recorded": "2026-10-17",
    "append_only": true,
    "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
+  },
+  "docs/open_decision_triage_2026-10-21.md": {
+   "class": "record",
+   "recorded": "2026-10-21",
+   "append_only": true,
+   "what": "every id docs/open_decisions.md left open at 2f21e2b, classified against the git history and the pull requests, with the generator's open/closed rule; the companion to decision 9.85 for the count"
+  },
+  "docs/monogenic_negative_report_pairs_2026-10-21.md": {
+   "class": "record",
+   "recorded": "2026-10-21",
+   "append_only": true,
+   "what": "the monogenic records carrying a negative report, pair by pair: the disease entries behind each positive and each negative annotation, and whether the pair is a contradiction, a different allele direction or a crosswalk artefact; decision 9.85"
   },
   "docs/nonlinearity_inventory.md": {
    "class": "living",

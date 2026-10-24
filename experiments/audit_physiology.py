@@ -12,7 +12,7 @@ data/processed/audit/physiology_audit.json:
   4. the cited validation set (configs/physiology_validation_set.csv): established chains the evidence should hold
      and established negatives it should not contradict, with the drug's target and sign checked against the table;
   5. evidence coverage per symptom, by class, grade and negatives;
-  6. IntAct's non-interacting pairs against the protein edges (mechanistic_pathway_learning/graph/edge_negatives.py);
+  6. IntAct's non-interacting pairs between whole proteins against the protein edges (mechanistic_pathway_learning/graph/edge_negatives.py);
   7. the rules applied to the sources that could have entered and did not (imaging, mouse proxies without validity).
 
 Usage:
@@ -338,7 +338,8 @@ RULES_APPLIED = [
     ("A combination arm is attributed to no drug.", "A trial arm naming two study drugs would carry one arm's events into two records across the held-out split, "
      "whose groups are built on targets; such arms are left out of both sides."),
     ("A curated negative interaction is a contested pair, not a deleted edge.", "IntAct's non-interacting pairs include textbook interactions reported absent in one "
-     "assay; the audit counts them per source and flags the edges, and nothing is removed on their account."),
+     "assay; the audit counts them per source and flags the edges, and nothing is removed on their account. A record on an isoform, a processed chain or an "
+     "unreviewed entry contests no edge, since the graph's protein nodes are whole proteins (decision 9.88)."),
 ]
 
 
@@ -429,15 +430,24 @@ def render(stamp: str, sections: dict, graph_dir: Path, evidence_dir: Path) -> s
     if negatives.get("skipped"):
         lines.append(f"Skipped: {negatives['skipped']}.")
     else:
-        lines += [f"{negatives['human_negative_pairs']:,} human pairs from IntAct name {negatives['proteins_named']:,} proteins; **{negatives['edges_on_a_negative_pair']:,}** graph edges "
-                  "fall on a pair curators recorded as non-interacting. Per source, against the edges that join two named proteins:", "",
+        set_aside = negatives["records_set_aside_by_entry_kinds"]
+        lines += [f"{negatives['human_negative_records']:,} human records from IntAct name two UniProt entries; **{negatives['records_between_whole_proteins']:,}** of them are "
+                  f"between two whole proteins (canonical entries of UniProt's reviewed proteome), naming {negatives['gene_pairs_between_whole_proteins']:,} gene pairs and "
+                  f"{negatives['proteins_named']:,} proteins, and only those count against a gene pair of the graph (decision 9.88). The other "
+                  f"{sum(set_aside.values()):,} name an isoform, a processed chain or an unreviewed entry at one end or both "
+                  f"({', '.join(f'{kinds} {count:,}' for kinds, count in set_aside.items())}). IntAct accepts an isoform record only where another isoform of "
+                  "the protein does interact, and an unreviewed entry or a chain is not the whole protein a graph node stands for, so none of them says "
+                  "anything against the gene pair. "
+                  f"**{negatives['edges_on_a_negative_pair']:,}** graph edges fall on a pair recorded as non-interacting between whole proteins. Per source, against "
+                  "the edges that join two proteins those records name:", "",
                   "| source | edges on named proteins | on a negative pair | fraction |", "| --- | --- | --- | --- |"]
         for source, counts in negatives["by_source"].items():
             fraction = counts["edges_on_a_negative_pair"] / counts["edges_on_named_proteins"] if counts["edges_on_named_proteins"] else 0.0
             lines.append(f"| {source} | {counts['edges_on_named_proteins']:,} | {counts['edges_on_a_negative_pair']:,} | {fraction:.1%} |")
-        lines += ["", "A curated negative is one assay's null in one context, and several of the flagged pairs are textbook interactions (MYD88-IRAK4, BAD-BCL2L1 on the "
-                  "release graph), so the figure bounds a source's contradiction rate on the pairs the set can speak to and removes nothing; the flagged edges are "
-                  "listed in the JSON beside this document as contested."]
+        lines += ["", "A curated negative is one assay's null in one context, so the figure bounds a source's contradiction rate on the pairs the set can speak to and "
+                  "removes nothing; the flagged edges are listed in the JSON beside this document as contested. The two textbook interactions this section "
+                  "flagged before decision 9.88, MYD88-IRAK4 and BAD-BCL2L1, were isoform records (IRAK4 entry F8VVZ1, BCL2L1 isoform Q07817-2) of one "
+                  "splice-isoform study (Yang et al. 2016, doi 10.1016/j.cell.2016.01.029) and are no longer counted."]
     lines += ["", "## 8. Rules applied to what did not enter", ""]
     for rule, why in RULES_APPLIED:
         lines.append(f"- **{rule}** {why}")
@@ -451,6 +461,8 @@ def main() -> int:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v4"))
     parser.add_argument("--sbml", type=Path, default=Path("data/raw/Human-GEM/model/Human-GEM.xml"))
     parser.add_argument("--intact", type=Path, default=Path("data/raw/intact/intact_negative.txt"))
+    parser.add_argument("--uniprot", type=Path, default=Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz"),
+                        help="UniProt's reviewed human proteome, which tells a whole protein from an isoform in the IntAct records (decision 9.88)")
     parser.add_argument("--validation-set", type=Path, default=DEFAULT_VALIDATION_SET)
     parser.add_argument("--crosswalk", type=Path, default=Path("docs/symptom_crosswalk.csv"))
     parser.add_argument("--sider-indications", type=Path, default=Path("data/raw/sider_4.1/meddra_all_indications.tsv.gz"))
@@ -473,14 +485,15 @@ def main() -> int:
     sections["validation"] = validation_set_checks(read_validation_set(arguments.validation_set), nodes, evidence, expansion, parents)
     sections["coverage"] = coverage(evidence)
     sections["therapeutic_direction"] = therapeutic_direction(evidence, arguments.sider_indications, arguments.crosswalk)
-    if arguments.intact.exists():
-        from mechanistic_pathway_learning.graph.edge_negatives import audit as negatives_audit, read_human_negative_pairs
-        sections["edge_negatives"] = negatives_audit(read_human_negative_pairs(arguments.intact), edges, nodes)
+    if arguments.intact.exists() and arguments.uniprot.exists():
+        from mechanistic_pathway_learning.graph.edge_negatives import audit as negatives_audit, read_human_negative_pairs, read_reviewed_proteome
+        sections["edge_negatives"] = negatives_audit(read_human_negative_pairs(arguments.intact, read_reviewed_proteome(arguments.uniprot)), edges, nodes)
     else:
-        sections["edge_negatives"] = {"skipped": f"{arguments.intact} is not on disk"}
+        sections["edge_negatives"] = {"skipped": f"{arguments.intact if not arguments.intact.exists() else arguments.uniprot} is not on disk"}
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     (arguments.output_dir / "physiology_audit.json").write_text(json.dumps(sections, indent=1, default=str) + "\n", encoding="utf-8")
-    stamp = provenance_stamp("experiments/audit_physiology.py", [str(arguments.graph_dir), str(arguments.evidence_dir), str(arguments.validation_set), str(arguments.intact)])
+    stamp = provenance_stamp("experiments/audit_physiology.py", [str(arguments.graph_dir), str(arguments.evidence_dir), str(arguments.validation_set), str(arguments.intact),
+                                                                 str(arguments.uniprot)])
     arguments.markdown_output.write_text(render(stamp, sections, arguments.graph_dir, arguments.evidence_dir), encoding="utf-8")
     print(f"wrote {arguments.markdown_output} and {arguments.output_dir / 'physiology_audit.json'}")
     return 0

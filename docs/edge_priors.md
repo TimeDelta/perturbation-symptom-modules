@@ -282,7 +282,144 @@ The "count" rows with no sign minimum and no dispute rule are the rule of sectio
 practices review's count (4,639 labels with fewer than two records without the bulk papers). Bulk papers fall mostly
 on signalling edges; disputed signs fall only on regulations, and most of them already fail a sign minimum of one.
 
-## 14. Addition, 22 October 2026: `W` when every pair is counted once (decision 9.90)
+## 14. Addition, 22 October 2026: an isoform's absence no longer contests a gene pair (decision 9.88)
+
+Section 2 marks an edge contested when IntAct curators recorded its two proteins as not interacting. Until this
+addition `graph/edge_negatives.py` dropped the isoform suffix of each accession and keyed the record on the two gene
+names, so the absence of one isoform read as the absence of the gene pair. Most of IntAct's negative records come
+from one splice-isoform study: 763 of the 983 records of the file of 14 January 2026 (Yang et al. 2016, *Cell* 164:805,
+doi 10.1016/j.cell.2016.01.029: "The majority of isoform pairs share less than 50% of their interactions", read in the
+PubMed abstract). IntAct's curation manual (section 4.6.9, as a research pass of the same day quoted it; not reread)
+admits an isoform negative only "provided there is complementary positive interaction data for other isoform/s", so
+such a record says that the gene pair does interact, through another isoform. Both textbook pairs of
+`docs/physiology_audit.md` section 7 are records of that study: BAD with BCL2L1 isoform Q07817-2, and MYD88 with the
+unreviewed IRAK4 entry F8VVZ1.
+
+The reader now keeps each end as IntAct names it and classes it against UniProt's reviewed human proteome
+(`data/raw/uniprot/uniprot_human_reviewed.tsv.gz`): `canonical`, a reviewed accession with no suffix; `isoform`, an
+isoform suffix, -1 included; `chain`, a processed chain; `unreviewed`, an accession outside the reviewed proteome. Only
+a record between two canonical entries counts against a gene pair. `experiments/build_edge_evidence.py` reads the
+proteome (`--uniprot`) and records the counts in `edge_evidence_summary.json` under `intact_negatives`;
+`experiments/audit_physiology.py` reports the records set aside. The Beta update of section 3 is unchanged and applies
+to fewer edges, and an edge no longer contested can become an edge label under section 11.
+
+Measured on that file (SHA-256 beginning 19c9ca88450a6422) and UniProt release 2026_03, against
+`data/releases/v0.4/graph_full` (255,367 edges), the latest graph on the machine that measured it; the v4 and v5 graphs
+were being rebuilt:
+
+| | before | after |
+| --- | --- | --- |
+| human records with a UniProt entry at both ends | 786 | 786 |
+| records that count against a gene pair | 786 | 223 |
+| gene pairs | 549, of which 539 of two genes | 214 |
+| contested edges (OmniPath, CollecTRI) | 54 (49, 5) | 16 (15, 1) |
+
+The 563 records set aside, by the kinds of their two ends: canonical and unreviewed 271, canonical and isoform 174,
+isoform and unreviewed 83, isoform and isoform 21, unreviewed and unreviewed 14. Of the 94 unreviewed accessions, 74
+are the isoform entries the study deposited (A0A0S2Z...); UniProt's search of 22 October 2026 returned the other 20 as
+unreviewed entries, except P62158, the retired accession of calmodulin, now three reviewed entries (CALM1, CALM2,
+CALM3).
+
+One reading is the owner's (decision 9.88). 171 of the 223 records between canonical entries are also from Yang et al.,
+and IntAct annotates 164 of them with "No direct evidence for expression of this isoform is given in the publication":
+there the canonical entry stands for the study's reference isoform, and the manual's rule implies that another isoform
+of one of the two genes did interact with the partner. Setting the study aside entirely would leave 52 records and 51
+gene pairs, and 15 contested edges on the v0.4 graph (NCK1 to WASL rests on the study alone).
+
+## 15. Addition, 22 October 2026: negative edge observations from five sources (decision 9.91)
+
+The owner asked for sources of negative edge observations beyond IntAct's curated pairs, with each source's reliability
+measured rather than fitted (a fitted low sensitivity is what failed in decisions 9.55 and 9.56), and for that
+reliability to "cover negatives and positives separately per source". What is built:
+
+- **Five source modules**, each mapping its observations onto the graph's edges by relation and family and writing, per
+  edge row, `<source>_negative` and `<source>_positive` (independent observations of each kind) and columns of its own:
+  `graph/negatome_negatives.py` (Negatome 2.0 pairs on any edge between the two proteins; the ratio applies to binds),
+  `graph/huri_tested_space.py` (HuRI's tested space on binds edges: detected, or tested and not detected),
+  `graph/perturbseq_responses.py` (Replogle et al. 2022 in K562 on regulation edges: a confirmed knockdown with the
+  target unchanged, or changed in the direction the sign implies; a change against the sign is recorded and not counted),
+  `graph/chembl_activity_negatives.py` (ChEMBL 37 records on compound-to-protein edges: inactive at a limit of at least
+  10 uM, or active at 10 uM or better) and `graph/go_not_annotations.py` (NOT-qualified molecular functions under the
+  rules of `configs/go_not_edge_rules.csv`). IntAct's absence (`contested`, `graph/edge_negatives.py`) is untouched and
+  keeps its Beta update of section 3.
+- **The columns** are written by `experiments/build_edge_evidence.py` for every source whose files are present and added
+  to an existing table by `experiments/build_edge_negative_evidence.py`, which also writes
+  `edge_negative_evidence_summary.json`. A source whose files are absent writes no columns, so the trainer refuses it
+  rather than reading a source it never saw as one that observed nothing.
+- **The likelihood ratios**, `configs/edge_negative_likelihood_ratios.csv`: per source and kind of report, its probability
+  when the edge is present and when it is absent, from published measurements quoted in the table and in
+  `graph/edge_negative_evidence.py`, where `PUBLISHED` holds the numbers and `derived_likelihood_ratios` the arithmetic,
+  which `tests/test_edge_negative_evidence.py` holds the committed table to:
+
+| source | report | relations | P(report \| present) | P(report \| absent) | ratio | from |
+| --- | --- | --- | --- | --- | --- | --- |
+| Negatome | negative | binds | 0.08 | 0.92 | 0.087 | contradiction rate 8%, read at even odds (Smialowski 2010; Blohm 2014) |
+| HuRI | negative | binds | 0.975 | 0.99993 | 0.975 | sensitivity 0.02 / 0.9^2 (Luck 2020), false reports 9 x 8e-6 (Venkatesan 2009) |
+| HuRI | positive | binds | 0.0247 | 7.2e-5 | 343 | the same |
+| Perturb-seq | negative | regulates_transcription_of | 0.921 | 0.932 | 0.989 | 7.9% of bound genes respond, relative enrichment 1.02 (Cusanovich 2014) |
+| Perturb-seq | positive | regulates_transcription_of | 0.079 | 0.068 | 1.16 | the same |
+| ChEMBL | negative | inhibits, activates, binds, targets | 0.184 | 0.816 | 0.225 | kappa 0.40 between assays at 10 uM (Landrum and Riniker 2024) |
+| ChEMBL | positive | the same | 0.816 | 0.184 | 4.44 | the same |
+| GO NOT | negative | the rules' relations | - | - | 1 | no published measurement found |
+
+- **The prior**: under `--edge-negative-evidence <sources>` (empty by default, and then the run and its fingerprint are
+  as before) a gated edge's prior odds are multiplied by each ratio min(n, cap) times, with n the source's independent
+  observations of that kind and cap the record cap (2), and its pseudo-count is unchanged. An edge label (section 11)
+  takes no prior and is not moved; how many labels carry an observation is in the run's summary. The permutation
+  control of section 5 shuffles the moved priors.
+- **The measurement**: `experiments/measure_binds_resource_precision.py` scores each OmniPath resource supplying binds
+  edges against HuRI by the method of Venkatesan et al. 2009 and writes `docs/binds_resource_precision.md`. It sets no
+  weight.
+
+**Choices made here, each the owner's to change.** (1) A precision is not a likelihood ratio without the base rate of
+the population it was measured on; Negatome's 8% is read at even odds, which no publication states. (2) HuRI's
+sensitivity is the lower end of its published range, which gives the ratios nearest 1 on both sides; HuRI's measured
+recovery of Lit-BM in the same tested space is several times higher (`docs/binds_resource_precision.md`), so the
+negative ratio would be stronger if the graph's edges behave like Lit-BM pairs. (3) A HuRI detection on an edge whose
+own resources include HuRI is not counted again. (4) Space III's gene list could not be read (`docs/data_sources.md`),
+so the tested set is the genes with at least one HuRI interaction, a subset of it. (5) ChEMBL's threshold of 10 uM is
+the one its ratio was measured at, and an endogenous metabolite can act far above it. (6) Perturb-seq is a
+non-neural line; the ratio, measured in another non-neural line, does not correct for the cell type, and the cell line
+is a column of every observation.
+
+## 16. Addition, 24 October 2026: the observations of section 15 on v5
+
+Counted on a copy of `graph_full_neuronal_split_binders_drugs_v5` (274,917 edges, edges.parquet sha256 first 16
+831db85e6f5ff956; its own edge_evidence.parquet of the rebuild of 22 October, to which
+`experiments/build_edge_negative_evidence.py` added the columns; `edge_negative_evidence_summary.json` beside it holds
+every count below). Edges are graph rows, so a binds pair counts twice, once per direction. "Moved" is at strength 1
+under the committed tiers with the labels of section 11 taken as known.
+
+| source | in the source | negative observations on edges | positive observations on edges | gated edges moved |
+| --- | --- | --- | --- | --- |
+| Negatome | not obtained (`docs/data_sources.md`) | - | - | - |
+| HuRI | 52,224 pairs over 8,236 tested genes; 33.9 million tested pairs, not enumerated | 5,218 signalling binds edges tested and not detected | 0: the 68 detected binds edges all carry HuRI as one of their own resources, so none is counted again | 3,883 down (1,301 more are labels, 34 ungated) |
+| Perturb-seq | 11,258 perturbations, 8,248 measured genes | 13,900 regulation edges with a confirmed knockdown and no response | 143 responses in the direction of the sign (171 more against it, recorded and not counted) | 9,653 down, 80 up (4,310 more are labels) |
+| ChEMBL | 8,088 records on 2,710 compound-target pairs of the graph's edges: 120 negative, 4,636 positive, 3,142 inconclusive, 190 flagged | 96 edges, 114 documents: 10 enzyme_regulation inhibits, 1 activates, 25 small-molecule binds, 60 drug targets | 400 edges, 3,680 documents: 44 enzyme_regulation, 118 small-molecule binds, 230 drug targets, 5 curated binds, 2 other binds, 1 cofactor_of (not covered by the ratio) | 7 down, 47 up (373 ungated: the small-molecule and drug edges) |
+| GO NOT | 625 NOT molecular-function annotations; 355 under a rule, 124 of them conflicted by a positive annotation | 127 catalyzed_by edges (Human-GEM, ungated) | none by design | 0: no ratio |
+
+The other edges of the three relations: of the regulation edges, 25,400 have a target K562 does not express, 7,228 a
+factor whose knockdown is not confirmed and 781 a factor not perturbed; of the signalling binds edges, 25,891 lie
+outside HuRI's tested set. The positive evidence each family already carries, for balance: signalling 84,599 of
+118,116 edges with records (207,139 records), transcription 47,504 of 47,623 (262,814), enzyme_regulation 4,124 of
+4,134 (34,847 BRENDA references), curated 92 of 111 (133); small-molecule (440) and other (104,493) edges carry no
+records. Three things the counts show. HuRI's detections add nothing the edges did not already hold. The Perturb-seq
+ratios are near 1, so 13,900 negatives lower the moved edges' mean prior from 0.674 to 0.672. All 60 drug mechanism
+edges with an inactive ChEMBL record carry the evidence source "drug mechanism (ChEMBL)", so ChEMBL's activity data
+contradict a mechanism ChEMBL states; the edges are ungated, so the record does not reach the prior, and the documents
+are in the evidence table (`chembl_documents`) for the owner.
+
+The binds precision of `docs/binds_resource_precision.md` on the same graph: Lit-BM is detected at 14.1% (600 of
+4,270 pairs inside the tested set), a random tested pair at 0.153%, and the graph's 2,636 signalling binds pairs
+inside the set at 1.3% (34), a precision of 8.2% for direct binary binding. Of the 62 resources with at least 30 pairs
+inside the set, the interaction databases score highest (DIP 105%, IntAct 92%, HINT 68%, BioGRID 63%, each with an
+interval tens of points wide) and the ligand-receptor and kinase-substrate resources lowest (CellPhoneDB 3%, KEA 2%,
+NetworKIN_KEA 1%; 14 resources detected none). A kinase-substrate or ligand-receptor pair need not bind in a yeast
+two-hybrid assay, so a low reading there is about the claim a binds edge makes, not proof of error. HuRI's recovery of
+Lit-BM, 14.1%, is about six times the sensitivity the ratio uses (0.025); read as the sensitivity for pairs like
+Lit-BM's, the negative ratio would be 0.86 and the positive 1,960.
+
+## 17. Addition, 22 October 2026: `W` when every pair is counted once (decision 9.90)
 
 Section 3 divides the penalty by `W`, the fit's total loss weight, because the weighted cross-entropy is a weighted
 mean. Under `--label-likelihood positive_unlabelled` (`mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py`)

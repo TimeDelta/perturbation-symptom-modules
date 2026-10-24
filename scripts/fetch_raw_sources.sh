@@ -131,6 +131,12 @@ fetch "$raw_directory/orphadata/en_product1.xml" "https://www.orphadata.com/data
 # on the fly, so a later fetch reports DRIFT against the recorded hash. CC BY 4.0, read on G2P's responsible-handover page.
 fetch "$raw_directory/gene2phenotype/G2P_all_panels.csv" "https://www.ebi.ac.uk/gene2phenotype/api/panel/all/download" 6c93384ddec85532a6d0881756d31a45077fe2bda61a9d259a800a5c6125f5d9
 
+# Phenopacket Store, release 0.1.27 (github.com/monarch-initiative/phenopacket-store, tag 0.1.27 at commit 3f36198 of
+# 9 June 2026): the case-level phenotypes of decision 9.92, read in place by experiments/build_phenopacket_counts.py.
+# BSD-3-Clause, read in the LICENSE file at the tag. A release asset is fixed by its tag, so DRIFT here means the asset
+# was replaced.
+fetch "$raw_directory/phenopacket_store/all_phenopackets.zip" "https://github.com/monarch-initiative/phenopacket-store/releases/download/0.1.27/all_phenopackets.zip" d0c70005bb09b87035087516252b6b539fbc0415be7c664b73c9cde7eedf205a
+
 # OnSIDES v3.1.1 release asset (84,862,297 bytes recorded in docs/alternative_sources.md). The builds read parquet
 # tables under data/raw/onsides/v3.1.1/parquet; scripts/convert_onsides_to_parquet.py makes them from this archive.
 fetch "$raw_directory/onsides/v3.1.1/onsides-v3.1.1.zip" "https://github.com/tatonetti-lab/onsides/releases/download/v3.1.1/onsides-v3.1.1.zip"
@@ -163,8 +169,11 @@ fetch "$raw_directory/uniprot/uniprot_human_manganese_cofactor.tsv.gz" "https://
 
 # --- sources added 15 October 2026 for the evidence tiers, the negatives and the new modalities (docs/data_sources.md) ---
 # IntAct's curated negative interactions (PSI-MITAB; the pairs curators recorded as not interacting). 5,178,956 bytes on
-# 14 January 2026. The licence page is script-rendered; the EMBL-EBI terms of use (read 15 October 2026) impose no
-# restriction beyond the data owner's, and the row in docs/data_sources.md names the licence as unverified.
+# 14 January 2026. CC BY 4.0, verified in the provider's paper (del Toro et al. 2022, doi 10.1093/nar/gkab1006;
+# docs/data_sources.md quotes the sentence). The robots file of ftp.ebi.ac.uk disallows every
+# path for every reader; this fetch and the IMPC ones below are kept on the owner's ruling of 22 October 2026, "don't
+# refuse FTP from EBI" (CLAUDE.md). Most of the file's records are isoform-specific, and
+# mechanistic_pathway_learning/graph/edge_negatives.py keeps the isoform of each (decision 9.88).
 fetch "$raw_directory/intact/intact_negative.txt" "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact_negative.txt"
 
 # IUPHAR/BPS Guide to PHARMACOLOGY: the two public CSV exports the drug-target re-derivation reads
@@ -184,6 +193,29 @@ fetch "$raw_directory/gtopdb_2026/ligand_id_mapping.csv" "https://www.guidetopha
 fetch "$raw_directory/impc/README.md" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/README.md"
 fetch "$raw_directory/impc/genotype-phenotype-assertions-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/genotype-phenotype-assertions-ALL.csv.gz"
 fetch "$raw_directory/impc/statistical-results-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/statistical-results-ALL.csv.gz"
+
+# --- sources added 22 October 2026 for the negative edge observations of decision 9.91 (docs/data_sources.md) ---
+# HuRI and Lit-BM (Luck et al. 2020) from interactome-atlas.org, whose download page states "The data and web portal are
+# made available to the public under the CC BY 4.0 license". Files of 9 March 2020; 1,681,536 and 430,112 bytes.
+# graph/huri_tested_space.py; experiments/measure_binds_resource_precision.py.
+fetch "$raw_directory/huri/HuRI.tsv" "https://interactome-atlas.org/data/HuRI.tsv" 4cdf94366ff6e23e71ef9ec81922e85b2b3a1fb08e938f7b00d86c027cf1ecd6
+fetch "$raw_directory/huri/Lit-BM.tsv" "https://interactome-atlas.org/data/Lit-BM.tsv" f39c9c4b8a372286c3eca77d0ff651d837a643d32235eae866daae082663391d
+# Genome-wide Perturb-seq in K562 (Replogle et al. 2022): the gemgroup z-normalised pseudo-bulk table, 374,587,922 bytes
+# (figshare plus 20029387, file 35773217, CC BY 4.0; the provider's md5 a3dfaa94ea8724217f5ecb1e14a5f0c8). The single-cell
+# tables are 10 to 66 GB and are not read. graph/perturbseq_responses.py.
+fetch "$raw_directory/replogle2022/K562_gwps_normalized_bulk_01.h5ad" "https://ndownloader.figshare.com/files/35773217" 37e48c474d8b5dead4151f96ea8f5fe7bbe6beb10eeea48685b740c3f74490a2
+# ChEMBL 37 from the EBI FTP (the owner, 22 October 2026: "don't refuse FTP from EBI"): the licence file, the UniProt to
+# target mapping and UniChem's ChEMBL to ChEBI mapping (src1src7, rolling: a later fetch reports DRIFT). The activity
+# records themselves are fetched per graph by experiments/fetch_chembl_edge_activities.py from ChEMBL's web service.
+fetch "$raw_directory/chembl_37/LICENSE" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/LICENSE" f0c22ca33207ad8a85129a71f1454fcf8f2f71c99e68da5da01538210fa3ffba
+fetch "$raw_directory/chembl_37/chembl_uniprot_mapping.txt" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/chembl_uniprot_mapping.txt" 5b21436984a41e31bfe178d807544c7ece4649303c397d461c14a61f27f6d082
+fetch "$raw_directory/chembl_37/src1src7.txt.gz" "https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id1/src1src7.txt.gz" 7974d208a415188f3190ac7cac5c976e35e4c8c59c4c88f607c4af4f5a3432c2
+# Negatome 2.0 (Blohm et al. 2014) is NOT fetched here: its host, iegext02.helmholtz-munich.de/proj/ppi/negatome/,
+# answered every request of 22 October 2026 with a gateway 502 and the older mips.helmholtz-muenchen.de address with a
+# certificate that does not verify (docs/data_sources.md lists every route tried). graph/negatome_negatives.py reads the
+# pair files (manual.txt, manual_stringent.txt, pdb.txt, pdb_stringent.txt and the like) from data/raw/negatome/ once
+# they are placed there by hand, with a .pin.json beside each. The GO annotation file the NOT rules read
+# (goa_human.gaf.gz) is fetched by experiments/fetch_node_descriptor_sources.py.
 
 if [ "$with_cellxgene" = "yes" ]; then
   # Adult human brain atlas dissections holding cluster 395 (Siletti et al. 2023; CELLxGENE collection
