@@ -1120,7 +1120,7 @@ no run.
 
 **1. The evidence table.** `data/processed/evidence_full_v4` replaces `evidence_full_v2`, carrying four changes.
 (a) **No limit on a drug's mechanism targets.** The dominant-target admission test is removed (user, 12 October: "I
-really don't like having a target limit"; "I meant drop orphenadrine and the target limit"). (b) **A drug whose
+really don't like having a target limit"; "I meant drop orphenadrine and the target limit"). (b) **Withdrawn 24 October 2026 by item 33, so orphenadrine is in; kept as the record of what was registered on 12 October:** **A drug whose
 target set joins two otherwise separate leakage blocks is set aside**, found by removing each drug in turn and
 measuring the largest block. Applied to this table the procedure names orphenadrine and nothing else. Measured: with
 the limit, 222 drugs and 5,732 kept positive pairs in blocks of 114 and 71; without it and without the exclusion, 230
@@ -1591,7 +1591,7 @@ on this input and no claim rests on its absolute scale (docs/brain_exposure_data
 exclusion is kept and now has its own evidence: lumbar CSF runs more than 3-fold high for P-gp substrates and
 buprenorphine's own measured CSF range spans 46-fold.
 
-**16. The bridging rule is applied once, and only orphenadrine is set aside** (user, 12 October 2026: "I don't know
+**16. Withdrawn 24 October 2026 by item 33, with item 1(b), so no drug is set aside; kept as the record:** **The bridging rule is applied once, and only orphenadrine is set aside** (user, 12 October 2026: "I don't know
 about excluding tapentadol. It's got NE effects which are very important. I'm leaning towards leaving only orphenadrine
 out."). The rule registered in item 1 had no stopping condition, which was an omission in my drafting: applied again to
 the rebuilt table it names tapentadol, which seeds `OPRM1` and `SLC6A2` and so joins the 18-drug opioid block to the
@@ -2538,6 +2538,31 @@ as pathways.
 - **The held-out set itself**, which is drawn only on the user's go-ahead ("Don't finalize the lockbox until I've
   given the go ahead").
 
+
+Amendment, 24 October 2026, written before any lockbox run and before the held-out set has been drawn.
+
+**33. No drug is set aside for joining leakage blocks: items 1(b) and 16 are withdrawn and orphenadrine is in** (the
+owner, 24 October 2026, on being told why orphenadrine was set aside: "why are we setting orphenadrine aside?!", then
+"then undo that and include orphenadrine"). Item 1(a), no limit on a drug's mechanism targets, stands and is now built:
+`scripts/rebuild_data_layer.sh` passes `--max-drug-targets 0` to the OnSIDES and evidence steps of v4 and v5.
+
+**Why the rule is withdrawn.** Item 1(b) existed to protect a split. On the table of 12 October, under the grouping in
+force that day (a drug joined to every drug sharing a target node), orphenadrine's targets lay in both large blocks
+and with it in the largest block held 194 of 230 drugs (`docs/label_source_review.md` 26.1). Item 25 replaced that
+grouping on the drug side the next day: the held-out set is a partition of the mechanism targets, and a drug is held
+out whole when any of its targets is in it, so no drug-to-drug chaining forms the blocks the rule was written against.
+Item 25 was registered without revisiting 1(b) or 16, so the exclusion outlived its reason. Removing the drug also
+removes a mechanism, the reason item 16 gave for keeping tapentadol, and the owner's rule of 21 October 2026 is that a
+choice made for a non-physiological reason needs a stated justification; the only one on record was the old grouping.
+
+**What it costs is not measured.** What orphenadrine does to item 25's partition (the solved target fraction, the
+held-out share, the unseen-mechanism stratum of 25c) has not been measured on any table: the 12 October numbers are
+for the chained grouping and are not evidence about item 25. It is read on the rebuilt table, before the draw, with
+the graph version and date it was taken on. Every count of drugs in items 1, 16 and 25 that assumed orphenadrine out
+moves by one drug at the rebuild.
+
+**What this amendment does not change.** Item 25's split and its two readings, the central-action rule of items 14
+and 31, and every model, test and threshold.
 
 To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
