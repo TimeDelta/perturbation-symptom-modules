@@ -55,6 +55,9 @@ CHALLENGE_MARKERS = (
     # 12 October 2026 found PubMed Central's scanned-PDF gate saved as if it were the document: 200, 1,816 bytes,
     # "Preparing to download ...", and the challenge only in POW_CHALLENGE, POW_DIFFICULTY and pow.init.
     "pow_challenge", "pow_difficulty", "pow.init", "preparing to download",
+    # A research pass of 22 October 2026 found nature.com's gate saved as if it were the article: 200, 3,038 bytes,
+    # titled "Client Challenge", with its assets under a /_fs-ch- path and none of the words above.
+    "client challenge", "/_fs-ch-",
 )
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
 # The hosts read past a robots rule, each with the ruling that admits it. The robots file of ftp.ebi.ac.uk reads

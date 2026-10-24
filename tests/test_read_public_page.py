@@ -132,3 +132,15 @@ def test_a_proof_of_work_gate_whose_challenge_is_only_in_its_script_is_a_refusal
                     'window.ncbi.pmc.pow.init(POW_CHALLENGE, POW_DIFFICULTY);</script></body></html>')
     assert read_public_page.looks_like_challenge(200, interstitial)
     assert not read_public_page.looks_like_challenge(200, "<!DOCTYPE html><html><body><p>" + "the article itself. " * 2000 + "</p></body></html>")
+
+
+def test_a_gate_titled_client_challenge_is_a_refusal():
+    """nature.com answered 200 with a 3,038-byte page titled "Client Challenge" whose assets sit under a /_fs-ch- path,
+    and a research pass of 22 October 2026 saved it as read because none of the earlier markers matched."""
+    gate = ('<!DOCTYPE html><html lang="en"><head><title>Client Challenge</title>'
+            '<link href="/_fs-ch-1T1wmsGaOgGaSxcX/assets/styles.css" rel="stylesheet" /></head>'
+            '<body><noscript>JavaScript is disabled in your browser.</noscript></body></html>')
+    assert read_public_page.looks_like_challenge(200, gate)
+    assert read_public_page.looks_like_challenge(200, gate.replace("Client Challenge", "Loading"))
+    assert not read_public_page.looks_like_challenge(200, "<html><body><h1>A client's challenge to the model</h1><p>"
+                                                     + "text " * 5000 + "</p></body></html>")
