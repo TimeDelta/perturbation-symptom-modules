@@ -2907,6 +2907,8 @@ owner's call rather than this script's".
 That open band is settled by the sentence and is now closed: the exclusion is toddler and earlier, so a preschool band
 stays in. Nothing changes in any table, because no row of the pinned database carries that band.
 
+**Added 22 October 2026 (decision 9.89).** The owner withdrew the newborn-through-toddler exclusion: "that old decision doesn't apply now that I've included neurodevelopment". Every subgroup is now read; the constant named above is `NEWBORN_THROUGH_TODDLER_SUBGROUPS` and marks a stratum, not an exclusion.
+
 `configs/admitted_atc_prefixes_draft.csv` is a different thing: ATC groups and six named drugs, each with the sentence
 of its label that states a central action. Its exclusions are the seven groups left off in 9.4 (endocrine cancer
 therapy, insulins, beta blockers, the other first-generation antihistamines, the 5-HT3 antagonists, domperidone, and
