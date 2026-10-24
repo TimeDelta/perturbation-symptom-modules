@@ -83,6 +83,11 @@
    "recorded": "2026-10-08",
    "append_only": false
   },
+  "docs/binds_resource_precision.md": {
+   "class": "generated",
+   "generator": "experiments/measure_binds_resource_precision.py",
+   "what": "the precision of each OmniPath resource supplying binds edges against HuRI's tested space, by the method of Venkatesan et al. 2009 (decision 9.91); a report that sets no weight"
+  },
   "docs/brain_exposure_data_feasibility.md": {
    "class": "record",
    "recorded": "2026-10-12",
