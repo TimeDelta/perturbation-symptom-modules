@@ -17,7 +17,10 @@ variant is served by one table:
   enzyme regulation (BRENDA)   the reference count the build wrote into evidence_source
   curated (this project)       one PubMed id, the one evidence_source names
   IntAct curated absence       a pair of proteins curators recorded as not interacting: an absence observation on
-                               every edge between them, in either direction (graph/edge_negatives.py)
+                               every edge between them, in either direction (graph/edge_negatives.py). Only a record
+                               between two whole proteins, canonical entries of UniProt's reviewed proteome, counts; a
+                               record on an isoform, a processed chain or an unreviewed entry contests no edge, since IntAct
+                               accepts one only where another isoform does interact (decision 9.88)
 
 What does not enter: Human-GEM's metabolic edges (its reaction confidence score is 0 for 12,828 of 12,877 reactions,
 so it discriminates nothing), the definitional and derived edges (encodes, the membrane-potential and ion-pool

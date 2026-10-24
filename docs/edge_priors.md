@@ -282,7 +282,51 @@ The "count" rows with no sign minimum and no dispute rule are the rule of sectio
 practices review's count (4,639 labels with fewer than two records without the bulk papers). Bulk papers fall mostly
 on signalling edges; disputed signs fall only on regulations, and most of them already fail a sign minimum of one.
 
-## 14. Addition, 22 October 2026: negative edge observations from five sources (decision 9.91)
+## 14. Addition, 22 October 2026: an isoform's absence no longer contests a gene pair (decision 9.88)
+
+Section 2 marks an edge contested when IntAct curators recorded its two proteins as not interacting. Until this
+addition `graph/edge_negatives.py` dropped the isoform suffix of each accession and keyed the record on the two gene
+names, so the absence of one isoform read as the absence of the gene pair. Most of IntAct's negative records come
+from one splice-isoform study: 763 of the 983 records of the file of 14 January 2026 (Yang et al. 2016, *Cell* 164:805,
+doi 10.1016/j.cell.2016.01.029: "The majority of isoform pairs share less than 50% of their interactions", read in the
+PubMed abstract). IntAct's curation manual (section 4.6.9, as a research pass of the same day quoted it; not reread)
+admits an isoform negative only "provided there is complementary positive interaction data for other isoform/s", so
+such a record says that the gene pair does interact, through another isoform. Both textbook pairs of
+`docs/physiology_audit.md` section 7 are records of that study: BAD with BCL2L1 isoform Q07817-2, and MYD88 with the
+unreviewed IRAK4 entry F8VVZ1.
+
+The reader now keeps each end as IntAct names it and classes it against UniProt's reviewed human proteome
+(`data/raw/uniprot/uniprot_human_reviewed.tsv.gz`): `canonical`, a reviewed accession with no suffix; `isoform`, an
+isoform suffix, -1 included; `chain`, a processed chain; `unreviewed`, an accession outside the reviewed proteome. Only
+a record between two canonical entries counts against a gene pair. `experiments/build_edge_evidence.py` reads the
+proteome (`--uniprot`) and records the counts in `edge_evidence_summary.json` under `intact_negatives`;
+`experiments/audit_physiology.py` reports the records set aside. The Beta update of section 3 is unchanged and applies
+to fewer edges, and an edge no longer contested can become an edge label under section 11.
+
+Measured on that file (SHA-256 beginning 19c9ca88450a6422) and UniProt release 2026_03, against
+`data/releases/v0.4/graph_full` (255,367 edges), the latest graph on the machine that measured it; the v4 and v5 graphs
+were being rebuilt:
+
+| | before | after |
+| --- | --- | --- |
+| human records with a UniProt entry at both ends | 786 | 786 |
+| records that count against a gene pair | 786 | 223 |
+| gene pairs | 549, of which 539 of two genes | 214 |
+| contested edges (OmniPath, CollecTRI) | 54 (49, 5) | 16 (15, 1) |
+
+The 563 records set aside, by the kinds of their two ends: canonical and unreviewed 271, canonical and isoform 174,
+isoform and unreviewed 83, isoform and isoform 21, unreviewed and unreviewed 14. Of the 94 unreviewed accessions, 74
+are the isoform entries the study deposited (A0A0S2Z...); UniProt's search of 22 October 2026 returned the other 20 as
+unreviewed entries, except P62158, the retired accession of calmodulin, now three reviewed entries (CALM1, CALM2,
+CALM3).
+
+One reading is the owner's (decision 9.88). 171 of the 223 records between canonical entries are also from Yang et al.,
+and IntAct annotates 164 of them with "No direct evidence for expression of this isoform is given in the publication":
+there the canonical entry stands for the study's reference isoform, and the manual's rule implies that another isoform
+of one of the two genes did interact with the partner. Setting the study aside entirely would leave 52 records and 51
+gene pairs, and 15 contested edges on the v0.4 graph (NCK1 to WASL rests on the study alone).
+
+## 15. Addition, 22 October 2026: negative edge observations from five sources (decision 9.91)
 
 The owner asked for sources of negative edge observations beyond IntAct's curated pairs, with each source's reliability
 measured rather than fitted (a fitted low sensitivity is what failed in decisions 9.55 and 9.56), and for that
@@ -338,7 +382,7 @@ the one its ratio was measured at, and an endogenous metabolite can act far abov
 non-neural line; the ratio, measured in another non-neural line, does not correct for the cell type, and the cell line
 is a column of every observation.
 
-## 15. Addition, 24 October 2026: the observations of section 14 on v5
+## 16. Addition, 24 October 2026: the observations of section 15 on v5
 
 Counted on a copy of `graph_full_neuronal_split_binders_drugs_v5` (274,917 edges, edges.parquet sha256 first 16
 831db85e6f5ff956; its own edge_evidence.parquet of the rebuild of 22 October, to which

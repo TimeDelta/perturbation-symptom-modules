@@ -46,6 +46,7 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 
 from mechanistic_pathway_learning.evaluation.experiment_data import (
     DRUG_ENTRY_MODES,
+    EVIDENCED_NEGATIVE_ARRAYS,
     load_experiment_data,
     read_lockbox,
     restrict_to_perturbations,
@@ -2066,6 +2067,9 @@ def main() -> None:
             data.masked_for_soft_evidence = data.masked_for_soft_evidence[source_row]
         if data.evidenced_negative is not None:
             data.evidenced_negative = data.evidenced_negative[source_row]
+        for name in EVIDENCED_NEGATIVE_ARRAYS:  # decision 9.92: each source's per-pair strength moves with its row
+            if getattr(data, name, None) is not None:
+                setattr(data, name, getattr(data, name)[source_row])
         if soft_prior_probability is not None:
             soft_prior_probability, soft_prior_strength = soft_prior_probability[source_row], soft_prior_strength[source_row]
         if calibration_cells is not None:
