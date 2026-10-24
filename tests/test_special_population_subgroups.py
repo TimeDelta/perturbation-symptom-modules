@@ -1,18 +1,18 @@
-"""Which special-population subgroups the carrier reading uses, and which leave on age.
+"""Which special-population subgroups the carrier reading uses.
 
-The user, 10 October 2026: "I didn't say PEDIATRIC is irrelevant. Only NEWBORN through TODDLER. At the age of five,
-per much everything should be diagnosable other than I.e. bipolar disorder". The rule is therefore a band of ages and
-not a population, so these tests pin that an older child survives it, which the pinned database cannot show because
-it holds no row above infant.
+Every subgroup is read (decision 9.89). From 10 to 22 October 2026 the reading left out newborn through toddler on the
+owner's ruling of 10 October ("Only NEWBORN through TODDLER"); the owner withdrew it on 22 October 2026: "that old
+decision doesn't apply now that I've included neurodevelopment". The band stays a named stratum so its own reading is
+reported, and --excluded-subgroups can still leave subgroups out of a run.
 """
 import math
 
 import pandas as pd
 
-from experiments.measure_special_population_carrier_signal import (SUBGROUPS_BELOW_THE_DIAGNOSABLE_AGE, SUBGROUPS_KEPT_BY_THE_DECISION_OF_12_OCTOBER,
+from experiments.measure_special_population_carrier_signal import (DEFAULT_EXCLUDED_SUBGROUPS, NEWBORN_THROUGH_TODDLER_SUBGROUPS,
                                                                    leave_one_drug_out_predictions, population_readings)
 
-EXCLUDED = {name.lower() for name in SUBGROUPS_BELOW_THE_DIAGNOSABLE_AGE}
+NEWBORN_THROUGH_TODDLER = {name.lower() for name in NEWBORN_THROUGH_TODDLER_SUBGROUPS}
 
 
 def rows_with_subgroups(subgroups: list[str]) -> pd.DataFrame:
@@ -26,39 +26,37 @@ def rows_with_subgroups(subgroups: list[str]) -> pd.DataFrame:
     return pd.DataFrame(collected)
 
 
-def kept(rows: pd.DataFrame) -> pd.DataFrame:
-    return rows[~rows.subgroup.str.strip().str.lower().isin(EXCLUDED)]
+def without(rows: pd.DataFrame, excluded_subgroups) -> pd.DataFrame:
+    excluded_names = {name.lower() for name in excluded_subgroups}
+    return rows[~rows.subgroup.str.strip().str.lower().isin(excluded_names)]
 
 
-def test_newborn_through_toddler_leaves():
+def test_no_subgroup_is_left_out_by_default():
+    assert tuple(DEFAULT_EXCLUDED_SUBGROUPS) == ()
+    rows = rows_with_subgroups(["Neonate", "Infant", "Toddler", "School age"])
+    assert len(without(rows, DEFAULT_EXCLUDED_SUBGROUPS)) == len(rows)
+
+
+def test_the_newborn_through_toddler_band_is_named_as_a_stratum():
     for subgroup in ("Neonate", "Newborn", "Preterm", "Infant", "Toddler"):
-        assert subgroup.lower() in EXCLUDED, subgroup
+        assert subgroup.lower() in NEWBORN_THROUGH_TODDLER, subgroup
+    for subgroup in ("Child", "School age", "Adolescent", "Preschool"):
+        assert subgroup.lower() not in NEWBORN_THROUGH_TODDLER, subgroup
 
 
-def test_an_older_child_stays():
-    for subgroup in ("Child", "School age", "Adolescent", "Teenager"):
-        assert subgroup.lower() not in EXCLUDED, subgroup
-
-
-def test_preschool_is_kept_by_the_decision_of_12_october():
-    """The user closed the band the 10 October remark left open ("exclude only things toddler and earlier"), so a 3-to-5
-    band stays in rather than being dropped with the younger ones."""
-    assert "preschool" not in EXCLUDED
-    assert "preschool" in SUBGROUPS_KEPT_BY_THE_DECISION_OF_12_OCTOBER
-
-
-def test_a_school_age_row_survives_the_rule_while_an_infant_row_does_not():
+def test_the_band_gives_a_reading_of_its_own():
     rows = rows_with_subgroups(["Neonate", "Infant", "School age"])
-    assert set(kept(rows).subgroup) == {"School age"}
-
-
-def test_a_reading_is_still_produced_from_the_subgroups_that_stay():
-    rows = rows_with_subgroups(["Neonate", "School age"])
-    readings = population_readings(kept(rows))
+    band_rows = rows[rows.subgroup.str.lower().isin(NEWBORN_THROUGH_TODDLER)]
+    readings = population_readings(band_rows)
     assert len(readings) == 1
-    assert int(readings.iloc[0].measurements) == 2
+    assert int(readings.iloc[0].measurements) == 4
 
 
-def test_dropping_every_subgroup_leaves_no_drug_classified():
+def test_a_run_can_still_leave_subgroups_out():
+    rows = rows_with_subgroups(["Neonate", "Infant", "School age"])
+    assert set(without(rows, NEWBORN_THROUGH_TODDLER_SUBGROUPS).subgroup) == {"School age"}
+
+
+def test_every_subgroup_reaches_the_classifier_by_default():
     rows = rows_with_subgroups(["Neonate", "Infant"])
-    assert len(leave_one_drug_out_predictions(kept(rows))) == 0
+    assert len(leave_one_drug_out_predictions(without(rows, DEFAULT_EXCLUDED_SUBGROUPS).reset_index(drop=True))) > 0

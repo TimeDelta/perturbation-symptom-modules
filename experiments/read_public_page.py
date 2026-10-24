@@ -14,6 +14,11 @@ This script is that fallback with its limits written into code, so that a resear
 
 It does not log in, solve challenges, or use caches and mirrors of a page that refused it.
 
+One host is read past its robots file, on the owner's ruling of 22 October 2026, "don't refuse FTP from EBI":
+EMBL-EBI's FTP host, ftp.ebi.ac.uk, whose robots file disallows every path for every reader. The exception is that
+host alone, over https; the robots file is still read and its answer recorded beside the page, and limits 2 to 4 hold
+there as everywhere else.
+
 Usage:
   python experiments/read_public_page.py https://example.org/page.html
   python experiments/read_public_page.py --output-directory data/raw/public_pages --print-text URL [URL ...]
@@ -50,8 +55,22 @@ CHALLENGE_MARKERS = (
     # 12 October 2026 found PubMed Central's scanned-PDF gate saved as if it were the document: 200, 1,816 bytes,
     # "Preparing to download ...", and the challenge only in POW_CHALLENGE, POW_DIFFICULTY and pow.init.
     "pow_challenge", "pow_difficulty", "pow.init", "preparing to download",
+    # A research pass of 22 October 2026 found nature.com's gate saved as if it were the article: 200, 3,038 bytes,
+    # titled "Client Challenge", with its assets under a /_fs-ch- path and none of the words above.
+    "client challenge", "/_fs-ch-",
 )
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
+# The hosts read past a robots rule, each with the ruling that admits it. The robots file of ftp.ebi.ac.uk reads
+# "User-agent: *" and "Disallow: /" (read 22 October 2026), which closed the releases scripts/fetch_raw_sources.sh
+# already fetches from it (IntAct's negative interactions, IMPC), so the owner ruled on 22 October 2026: "don't refuse
+# FTP from EBI". The match is on the exact host name: www.ebi.ac.uk and every other EBI host keep their own robots rules.
+ROBOTS_RULE_EXEMPT_HOSTS = {"ftp.ebi.ac.uk": "the owner, 22 October 2026: \"don't refuse FTP from EBI\""}
+
+
+def robots_rule_exemption(address: str) -> str | None:
+    """The ruling under which this address is read past its robots rule, or None when the rule applies."""
+    host = (urllib.parse.urlsplit(address).hostname or "").lower()
+    return ROBOTS_RULE_EXEMPT_HOSTS.get(host)
 
 
 def reason_address_is_not_requested(address: str) -> str | None:
@@ -157,7 +176,10 @@ class PublicPageReader:
                 return record | {"reason": "the site did not serve a robots file, and this reader was asked to treat that as a refusal"}
             record |= {"robots_file": "none served, which the protocol treats as no restriction"}
         elif not robots_file_allows(robots_file_text, address):
-            return record | {"reason": "the site's robots file disallows this address for automated readers"}
+            exemption = robots_rule_exemption(address)
+            if exemption is None:
+                return record | {"reason": "the site's robots file disallows this address for automated readers"}
+            record |= {"robots_file": f"disallows this address; read under the ruling of {exemption}"}
         self._wait_for_host(host)
         try:
             status_code, content_type, body = request_bytes(address)
