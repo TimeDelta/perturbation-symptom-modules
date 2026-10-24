@@ -194,6 +194,29 @@ fetch "$raw_directory/impc/README.md" "https://ftp.ebi.ac.uk/pub/databases/impc/
 fetch "$raw_directory/impc/genotype-phenotype-assertions-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/genotype-phenotype-assertions-ALL.csv.gz"
 fetch "$raw_directory/impc/statistical-results-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/statistical-results-ALL.csv.gz"
 
+# --- sources added 22 October 2026 for the negative edge observations of decision 9.91 (docs/data_sources.md) ---
+# HuRI and Lit-BM (Luck et al. 2020) from interactome-atlas.org, whose download page states "The data and web portal are
+# made available to the public under the CC BY 4.0 license". Files of 9 March 2020; 1,681,536 and 430,112 bytes.
+# graph/huri_tested_space.py; experiments/measure_binds_resource_precision.py.
+fetch "$raw_directory/huri/HuRI.tsv" "https://interactome-atlas.org/data/HuRI.tsv" 4cdf94366ff6e23e71ef9ec81922e85b2b3a1fb08e938f7b00d86c027cf1ecd6
+fetch "$raw_directory/huri/Lit-BM.tsv" "https://interactome-atlas.org/data/Lit-BM.tsv" f39c9c4b8a372286c3eca77d0ff651d837a643d32235eae866daae082663391d
+# Genome-wide Perturb-seq in K562 (Replogle et al. 2022): the gemgroup z-normalised pseudo-bulk table, 374,587,922 bytes
+# (figshare plus 20029387, file 35773217, CC BY 4.0; the provider's md5 a3dfaa94ea8724217f5ecb1e14a5f0c8). The single-cell
+# tables are 10 to 66 GB and are not read. graph/perturbseq_responses.py.
+fetch "$raw_directory/replogle2022/K562_gwps_normalized_bulk_01.h5ad" "https://ndownloader.figshare.com/files/35773217" 37e48c474d8b5dead4151f96ea8f5fe7bbe6beb10eeea48685b740c3f74490a2
+# ChEMBL 37 from the EBI FTP (the owner, 22 October 2026: "don't refuse FTP from EBI"): the licence file, the UniProt to
+# target mapping and UniChem's ChEMBL to ChEBI mapping (src1src7, rolling: a later fetch reports DRIFT). The activity
+# records themselves are fetched per graph by experiments/fetch_chembl_edge_activities.py from ChEMBL's web service.
+fetch "$raw_directory/chembl_37/LICENSE" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/LICENSE" f0c22ca33207ad8a85129a71f1454fcf8f2f71c99e68da5da01538210fa3ffba
+fetch "$raw_directory/chembl_37/chembl_uniprot_mapping.txt" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/chembl_uniprot_mapping.txt" 5b21436984a41e31bfe178d807544c7ece4649303c397d461c14a61f27f6d082
+fetch "$raw_directory/chembl_37/src1src7.txt.gz" "https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id1/src1src7.txt.gz" 7974d208a415188f3190ac7cac5c976e35e4c8c59c4c88f607c4af4f5a3432c2
+# Negatome 2.0 (Blohm et al. 2014) is NOT fetched here: its host, iegext02.helmholtz-munich.de/proj/ppi/negatome/,
+# answered every request of 22 October 2026 with a gateway 502 and the older mips.helmholtz-muenchen.de address with a
+# certificate that does not verify (docs/data_sources.md lists every route tried). graph/negatome_negatives.py reads the
+# pair files (manual.txt, manual_stringent.txt, pdb.txt, pdb_stringent.txt and the like) from data/raw/negatome/ once
+# they are placed there by hand, with a .pin.json beside each. The GO annotation file the NOT rules read
+# (goa_human.gaf.gz) is fetched by experiments/fetch_node_descriptor_sources.py.
+
 if [ "$with_cellxgene" = "yes" ]; then
   # Adult human brain atlas dissections holding cluster 395 (Siletti et al. 2023; CELLxGENE collection
   # 283d65eb-dd53-496d-adb7-7570c7caa443). The identifiers docs/data_sources.md lists are dataset version ids, which
