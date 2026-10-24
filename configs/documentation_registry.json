@@ -5,8 +5,8 @@
  "documents": {
   "CLAUDE.md": {
    "class": "living",
-   "reviewed": "2026-10-15",
-   "as_of_commit": "ef8810b"
+   "reviewed": "2026-10-21",
+   "as_of_commit": "65bb3aa"
   },
   "README.md": {
    "class": "living",
@@ -792,6 +792,11 @@
    "recorded": "2026-10-17",
    "append_only": true,
    "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
+  },
+  "docs/nonlinearity_inventory.md": {
+   "class": "living",
+   "reviewed": "2026-10-21",
+   "as_of_commit": "65bb3aa"
   }
  }
 }
