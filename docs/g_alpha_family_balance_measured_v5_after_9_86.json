@@ -1,0 +1,647 @@
+{
+ "graph": "data/processed/graph_full_neuronal_split_binders_drugs_v5",
+ "g_alpha_to_cyclase_edges": {
+  "ADCY1": {
+   "Gs +": 2,
+   "Gi/o -": 5,
+   "Gi/o 0": 1
+  },
+  "ADCY2": {
+   "Gs +": 2,
+   "Gi/o -": 5
+  },
+  "ADCY3": {
+   "Gs +": 2,
+   "Gi/o -": 5
+  },
+  "ADCY4": {
+   "Gi/o -": 5,
+   "Gs +": 2
+  },
+  "ADCY5": {
+   "Gi/o -": 5,
+   "Gs +": 2
+  },
+  "ADCY6": {
+   "Gi/o -": 5,
+   "Gs +": 2
+  },
+  "ADCY7": {
+   "Gi/o -": 5,
+   "Gs +": 2
+  },
+  "ADCY8": {
+   "Gs +": 2,
+   "Gi/o -": 5
+  },
+  "ADCY9": {
+   "Gs +": 2,
+   "Gi/o -": 5
+  }
+ },
+ "receptors_reaching_both_gs_and_gi_o": [
+  "ADORA1",
+  "ADRB2",
+  "EDNRB",
+  "FFAR1",
+  "FZD7",
+  "LPAR4",
+  "LPAR6",
+  "MCHR1",
+  "PTGER4"
+ ],
+ "receptors_seeded": [
+  "ADORA1",
+  "ADRB2",
+  "EDNRB",
+  "FFAR1",
+  "FZD7",
+  "LPAR4",
+  "LPAR6",
+  "MCHR1",
+  "PTGER4"
+ ],
+ "camp_nodes": [
+  "MAM01419c"
+ ],
+ "summary": {
+  "as_built / forward_cone": {
+   "receptors": 9,
+   "with_one_primary_family": 3,
+   "cyclase_sign_matches_primary": 3,
+   "cyclase_sign_opposite_to_primary": 0,
+   "cyclase_response_zero": 0,
+   "gs_primary_receptors_driving_cyclase_down": []
+  },
+  "as_built / total_in_degree": {
+   "receptors": 9,
+   "with_one_primary_family": 3,
+   "cyclase_sign_matches_primary": 3,
+   "cyclase_sign_opposite_to_primary": 0,
+   "cyclase_response_zero": 0,
+   "gs_primary_receptors_driving_cyclase_down": []
+  },
+  "family_as_one_unit / forward_cone": {
+   "receptors": 9,
+   "with_one_primary_family": 3,
+   "cyclase_sign_matches_primary": 2,
+   "cyclase_sign_opposite_to_primary": 1,
+   "cyclase_response_zero": 0,
+   "gs_primary_receptors_driving_cyclase_down": []
+  },
+  "family_as_one_unit / total_in_degree": {
+   "receptors": 9,
+   "with_one_primary_family": 3,
+   "cyclase_sign_matches_primary": 3,
+   "cyclase_sign_opposite_to_primary": 0,
+   "cyclase_response_zero": 0,
+   "gs_primary_receptors_driving_cyclase_down": []
+  }
+ },
+ "rows": [
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "ADORA1",
+   "primary": [
+    "Gi/o"
+   ],
+   "expected": -1,
+   "cyclase_net": -0.00010320820001652464,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -1.1855480863687262e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "ADRB2",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 6.060921350581339e-06,
+   "cyclases_up": 8,
+   "cyclases_down": 1,
+   "camp": 1.842899166604184e-08,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "EDNRB",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -9.234552271664143e-05,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 3.475503973504601e-08,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "FFAR1",
+   "primary": [
+    "Gq/11"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.0002339467901038006,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 6.211782874743221e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "FZD7",
+   "primary": [
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -1.4704265822729212e-06,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 2.8528930329230207e-09,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "LPAR4",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -5.1351315050851554e-05,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 2.578003659436945e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "LPAR6",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -0.001570050255395472,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -1.7115371520048939e-06,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "MCHR1",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00027569261146709323,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 1.018671923702641e-06,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "total_in_degree",
+   "receptor": "PTGER4",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 0.00013664578727912158,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 2.699165406738757e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "ADORA1",
+   "primary": [
+    "Gi/o"
+   ],
+   "expected": -1,
+   "cyclase_net": -0.00011179351713508368,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -1.3572052637300658e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "ADRB2",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 7.70921087678289e-06,
+   "cyclases_up": 8,
+   "cyclases_down": 1,
+   "camp": 2.187086778349112e-08,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "EDNRB",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -9.025710460264236e-05,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 4.43416290352161e-08,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "FFAR1",
+   "primary": [
+    "Gq/11"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00026872381567955017,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 7.091091447364306e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "FZD7",
+   "primary": [
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -1.8271643966727424e-06,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 2.582319691413204e-09,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "LPAR4",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -4.064246968482621e-05,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": 2.9663038958460675e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "LPAR6",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -0.0016899415059015155,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -1.951751073647756e-06,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "MCHR1",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00033125682966783643,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 1.1652144848994794e-06,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "as_built",
+   "normalisation": "forward_cone",
+   "receptor": "PTGER4",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 0.00015464925672858953,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 3.1071692774276016e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "ADORA1",
+   "primary": [
+    "Gi/o"
+   ],
+   "expected": -1,
+   "cyclase_net": -9.319038554167491e-07,
+   "cyclases_up": 1,
+   "cyclases_down": 8,
+   "camp": -3.263712500256588e-08,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "ADRB2",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 1.2178546967334114e-05,
+   "cyclases_up": 8,
+   "cyclases_down": 1,
+   "camp": 2.3352461298031812e-08,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "EDNRB",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 6.739032687619328e-05,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 1.7014968989315093e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "FFAR1",
+   "primary": [
+    "Gq/11"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.000284587440546602,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 6.615093752770917e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "FZD7",
+   "primary": [
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 4.016352249891497e-06,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 7.48259054716982e-09,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "LPAR4",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00019862237968482077,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 4.686936279085785e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "LPAR6",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -0.0002493245410732925,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -5.841762913405546e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "MCHR1",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.0005109341582283378,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 1.214089706991217e-06,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "total_in_degree",
+   "receptor": "PTGER4",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 0.00011910186003660783,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 2.537803425184393e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "ADORA1",
+   "primary": [
+    "Gi/o"
+   ],
+   "expected": -1,
+   "cyclase_net": 1.0162825674342457e-06,
+   "cyclases_up": 1,
+   "cyclases_down": 8,
+   "camp": -3.2656277682008295e-08,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "ADRB2",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 1.4416335034184158e-05,
+   "cyclases_up": 8,
+   "cyclases_down": 1,
+   "camp": 2.7744901487380957e-08,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "EDNRB",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 8.110741327982396e-05,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 2.0225246544214315e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "FFAR1",
+   "primary": [
+    "Gq/11"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00032741166069172323,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 7.602315008625737e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "FZD7",
+   "primary": [
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 4.36109849033528e-06,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 8.265679696251027e-09,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "LPAR4",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.00023232592502608895,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 5.470550377140171e-07,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "LPAR6",
+   "primary": [
+    "G12/13",
+    "Gi/o",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": -0.00027497654082253575,
+   "cyclases_up": 0,
+   "cyclases_down": 9,
+   "camp": -6.386003974512278e-07,
+   "cyclase_sign": -1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "MCHR1",
+   "primary": [
+    "Gi/o",
+    "Gq/11",
+    "Gs"
+   ],
+   "expected": 0,
+   "cyclase_net": 0.0005910884938202798,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 1.4001211638969835e-06,
+   "cyclase_sign": 1
+  },
+  {
+   "arm": "family_as_one_unit",
+   "normalisation": "forward_cone",
+   "receptor": "PTGER4",
+   "primary": [
+    "Gs"
+   ],
+   "expected": 1,
+   "cyclase_net": 0.00013664185826200992,
+   "cyclases_up": 9,
+   "cyclases_down": 0,
+   "camp": 2.9266607270983513e-07,
+   "cyclase_sign": 1
+  }
+ ]
+}
