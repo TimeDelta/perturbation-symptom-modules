@@ -809,6 +809,11 @@
    "class": "living",
    "reviewed": "2026-10-21",
    "as_of_commit": "65bb3aa"
+  },
+  "docs/mouse_sources_measured_v5.md": {
+   "class": "generated",
+   "generator": "experiments/measure_mouse_sources.py",
+   "what": "the mouse report sources of decision 9.93 (IMPC, MGI-literature, MGI-screen, SFARI-mouse-models) measured on the v5 tables: calls, absences, label-positive rates given each, and the calibrated regression's species, source and source x direction terms"
   }
  }
 }
