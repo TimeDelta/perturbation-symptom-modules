@@ -62,7 +62,8 @@ def write_report(path: Path, result: dict, stamp: str, graph_dir: Path) -> None:
              f"| Lit-BM | {reference['pairs_inside_tested_space']:,} | {reference['detected']:,} | {percent(reference['rate'])} "
              f"({percent(reference['rate_95_interval'][0])} to {percent(reference['rate_95_interval'][1])}) |",
              f"| random pair of tested proteins (exact) | {random['possible_pairs']:,} | {random['detected']:,} | {100 * random['rate']:.3f}% |",
-             f"| every binds pair of the graph (signalling family) | {graph_pairs['pairs_inside_tested_space']:,} | {graph_pairs['detected']:,} | {percent(graph_pairs['rate'])} |",
+             f"| every binds pair of the graph (signalling family) | {graph_pairs['pairs_inside_tested_space']:,} | {graph_pairs['detected']:,} | {percent(graph_pairs['rate'])}; "
+             f"precision {percent(huri.precision_from_rates(graph_pairs['rate'], reference['rate'], random['rate']))} |",
              "", f"Resources with at least {MINIMUM_PAIRS_FOR_A_READING} pairs inside the tested space, by precision; the interval is the 95% "
              "Wilson interval of the resource's rate carried through the formula.", "",
              "| resource | binds pairs | inside the tested space | detected | rate | precision | 95% interval |", "| --- | --- | --- | --- | --- | --- | --- |"]

@@ -426,3 +426,17 @@ def test_the_sources_are_the_five_of_the_decision():
     assert SOURCES == ("negatome", "huri", "perturbseq", "chembl", "go_not")
     with open(REPOSITORY_ROOT / DEFAULT_LIKELIHOOD_RATIOS_PATH, newline="") as handle:
         assert {row["source"] for row in csv.DictReader(handle)} == set(SOURCES)
+
+
+def test_the_activity_cache_read_back_with_missing_strings_is_classified(tmp_path):
+    """The fetch writes every field as a string, so missing values read back as pandas' NA, which has no truth value."""
+    rows = pd.DataFrame([{"activity_id": "1", "parent_molecule_chembl_id": "CHEMBL1", "molecule_chembl_id": "CHEMBL1", "target_chembl_id": "CHEMBL201",
+                          "standard_relation": ">", "standard_type": "IC50", "standard_units": "nM", "standard_value": "20000", "document_chembl_id": "D1"},
+                         {"activity_id": "2", "parent_molecule_chembl_id": "CHEMBL1", "molecule_chembl_id": "CHEMBL1", "target_chembl_id": "CHEMBL201",
+                          "activity_comment": "Not Active", "document_chembl_id": "D2"}], columns=list(chembl.ACTIVITY_FIELDS))
+    rows.astype("string").to_parquet(tmp_path / "cache.parquet", index=False)
+    cached = pd.read_parquet(tmp_path / "cache.parquet")
+    assert cached["activity_comment"].isna().iloc[0], "the round trip gives NA, the case the reader has to survive"
+    evidence = pd.DataFrame({"source_id": ["MAM01c"], "target_id": ["PROTEIN:E1"], "relation_type": ["inhibits"]})
+    columns = chembl.chembl_edge_columns(evidence, {"MAM01c": {"CHEMBL1"}}, {"PROTEIN:E1": {"CHEMBL201"}}, cached)
+    assert columns.chembl_negative.tolist() == [2] and columns.chembl_limit_um.tolist() == [20.0]

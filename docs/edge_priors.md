@@ -337,3 +337,40 @@ so the tested set is the genes with at least one HuRI interaction, a subset of i
 the one its ratio was measured at, and an endogenous metabolite can act far above it. (6) Perturb-seq is a
 non-neural line; the ratio, measured in another non-neural line, does not correct for the cell type, and the cell line
 is a column of every observation.
+
+## 15. Addition, 24 October 2026: the observations of section 14 on v5
+
+Counted on a copy of `graph_full_neuronal_split_binders_drugs_v5` (274,917 edges, edges.parquet sha256 first 16
+831db85e6f5ff956; its own edge_evidence.parquet of the rebuild of 22 October, to which
+`experiments/build_edge_negative_evidence.py` added the columns; `edge_negative_evidence_summary.json` beside it holds
+every count below). Edges are graph rows, so a binds pair counts twice, once per direction. "Moved" is at strength 1
+under the committed tiers with the labels of section 11 taken as known.
+
+| source | in the source | negative observations on edges | positive observations on edges | gated edges moved |
+| --- | --- | --- | --- | --- |
+| Negatome | not obtained (`docs/data_sources.md`) | - | - | - |
+| HuRI | 52,224 pairs over 8,236 tested genes; 33.9 million tested pairs, not enumerated | 5,218 signalling binds edges tested and not detected | 0: the 68 detected binds edges all carry HuRI as one of their own resources, so none is counted again | 3,883 down (1,301 more are labels, 34 ungated) |
+| Perturb-seq | 11,258 perturbations, 8,248 measured genes | 13,900 regulation edges with a confirmed knockdown and no response | 143 responses in the direction of the sign (171 more against it, recorded and not counted) | 9,653 down, 80 up (4,310 more are labels) |
+| ChEMBL | 8,088 records on 2,710 compound-target pairs of the graph's edges: 120 negative, 4,636 positive, 3,142 inconclusive, 190 flagged | 96 edges, 114 documents: 10 enzyme_regulation inhibits, 1 activates, 25 small-molecule binds, 60 drug targets | 400 edges, 3,680 documents: 44 enzyme_regulation, 118 small-molecule binds, 230 drug targets, 5 curated binds, 2 other binds, 1 cofactor_of (not covered by the ratio) | 7 down, 47 up (373 ungated: the small-molecule and drug edges) |
+| GO NOT | 625 NOT molecular-function annotations; 355 under a rule, 124 of them conflicted by a positive annotation | 127 catalyzed_by edges (Human-GEM, ungated) | none by design | 0: no ratio |
+
+The other edges of the three relations: of the regulation edges, 25,400 have a target K562 does not express, 7,228 a
+factor whose knockdown is not confirmed and 781 a factor not perturbed; of the signalling binds edges, 25,891 lie
+outside HuRI's tested set. The positive evidence each family already carries, for balance: signalling 84,599 of
+118,116 edges with records (207,139 records), transcription 47,504 of 47,623 (262,814), enzyme_regulation 4,124 of
+4,134 (34,847 BRENDA references), curated 92 of 111 (133); small-molecule (440) and other (104,493) edges carry no
+records. Three things the counts show. HuRI's detections add nothing the edges did not already hold. The Perturb-seq
+ratios are near 1, so 13,900 negatives lower the moved edges' mean prior from 0.674 to 0.672. All 60 drug mechanism
+edges with an inactive ChEMBL record carry the evidence source "drug mechanism (ChEMBL)", so ChEMBL's activity data
+contradict a mechanism ChEMBL states; the edges are ungated, so the record does not reach the prior, and the documents
+are in the evidence table (`chembl_documents`) for the owner.
+
+The binds precision of `docs/binds_resource_precision.md` on the same graph: Lit-BM is detected at 14.1% (600 of
+4,270 pairs inside the tested set), a random tested pair at 0.153%, and the graph's 2,636 signalling binds pairs
+inside the set at 1.3% (34), a precision of 8.2% for direct binary binding. Of the 62 resources with at least 30 pairs
+inside the set, the interaction databases score highest (DIP 105%, IntAct 92%, HINT 68%, BioGRID 63%, each with an
+interval tens of points wide) and the ligand-receptor and kinase-substrate resources lowest (CellPhoneDB 3%, KEA 2%,
+NetworKIN_KEA 1%; 14 resources detected none). A kinase-substrate or ligand-receptor pair need not bind in a yeast
+two-hybrid assay, so a low reading there is about the claim a binds edge makes, not proof of error. HuRI's recovery of
+Lit-BM, 14.1%, is about six times the sensitivity the ratio uses (0.025); read as the sensitivity for pairs like
+Lit-BM's, the negative ratio would be 0.86 and the positive 1,960.

@@ -98,7 +98,7 @@ def assemble_negative_evidence(evidence: pd.DataFrame, edges: pd.DataFrame, node
                 compounds = chembl.compound_ids_of_nodes(nodes, chembl.chebi_of_base(metabolites), chembl.read_chebi_mapping(paths.chembl_chebi_mapping),
                                                          chembl.read_pubchem_mapping(paths.chembl_pubchem_mapping))
                 targets = chembl.target_ids_of_nodes(nodes, chembl.read_target_mapping(paths.chembl_target_mapping), accessions_of_symbol)
-                activities = pd.read_parquet(paths.chembl_activities)
+                activities = chembl.normalised_activities(pd.read_parquet(paths.chembl_activities))
                 columns = chembl.chembl_edge_columns(evidence, compounds, targets, activities)
                 asked = chembl.candidate_pairs(evidence, compounds, targets)
                 record.update({"inputs": [file_record(path) for path in needed if Path(path).is_file()]

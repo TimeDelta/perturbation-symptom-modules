@@ -191,10 +191,18 @@ def candidate_pairs(evidence: pd.DataFrame, compounds: dict[str, set[str]], targ
     return {compound: found for compound, found in pairs.items() if found}
 
 
+def normalised_activities(activities: pd.DataFrame) -> pd.DataFrame:
+    """The activity cache with every missing value as None (the parquet cache stores strings, whose missing values read
+    back as pandas' NA, which has no truth value)."""
+    table = activities.astype(object)
+    return table.where(table.notna(), None)
+
+
 def chembl_edge_columns(evidence: pd.DataFrame, compounds: dict[str, set[str]], targets: dict[str, set[str]], activities: pd.DataFrame) -> pd.DataFrame:
     """Per row of the edge evidence table: chembl_negative and chembl_positive (distinct documents), chembl_limit_um (the
     largest stated limit among the negative '>' records, NaN when every negative is a flag), chembl_inconclusive and
     chembl_documents."""
+    activities = normalised_activities(activities)
     classified = activities.assign(call=[classify_activity(row) for row in activities.to_dict("records")]) if len(activities) else \
         pd.DataFrame(columns=[*ACTIVITY_FIELDS, "call"])
     compound_column = "parent_molecule_chembl_id" if "parent_molecule_chembl_id" in classified.columns else "molecule_chembl_id"
