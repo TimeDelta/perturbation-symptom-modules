@@ -372,6 +372,11 @@
    "recorded": "2026-10-13",
    "append_only": false
   },
+  "docs/label_negative_sources_measured.md": {
+   "class": "generated",
+   "generator": "experiments/measure_label_negative_sources.py",
+   "what": "the three label-negative sources of decision 9.92 measured against an evidence table: Phenopacket Store exclusions, trial-arm absences by assessment type, the statin-placebo negatives"
+  },
   "docs/label_plasma_binders.md": {
    "class": "generated",
    "generator": "experiments/scope_label_plasma_binder_coverage.py"

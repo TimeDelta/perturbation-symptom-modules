@@ -3576,3 +3576,39 @@ reporting; it is not independent evidence of truth.
 
 The AstraZeneca PheWAS portal (its licence and items), the terms of JADER and VigiBase, the copy-number cohort papers
 and the report's remaining references.
+
+
+## 34. Sources read for the label-negative sources (22 October 2026, decision 9.92)
+
+The owner asked for negative labels, which are "as important as positives here for fitting the priors to the truth".
+Three sources were read for them, each for its terms and for the sentences the code and the curated table rest on.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| Phenopacket Store, release 0.1.27 | "BSD 3-Clause License"; "Copyright (c) 2022, Monarch Initiative"; "Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met" | the `LICENSE` file at tag 0.1.27 (commit 3f3619800b2c), fetched with git from github.com/monarch-initiative/phenopacket-store |
+| GA4GH Phenopacket schema 2.0.0, PhenotypicFeature | "This element is a flag to indicate whether the phenotype was observed or not." "Therefore it is only required in cases to indicate that the phenotype was looked for, but found to be absent." | phenopacket-schema.readthedocs.io/en/2.0.0/phenotype.html, a search result, read with the fetch tool |
+| ClinicalTrials.gov results checklist, adverse events | "Method for AE assessment—Systematic Assessment (e.g., solicited by a questionnaire)"; "Non-Systematic Assessment (e.g., unsolicited)"; "Frequency above which OAEs will be reported (0–5%)" | cdn.clinicaltrials.gov/documents/data-prep-checklist-ae.pdf, a search result, read with the fetch tool |
+| ClinicalTrials.gov robots file | "User-agent: *" followed by "Disallow: /api/" (with "Allow: /api/int/" and "Allow: /api/seo/" for the site's own pages) | clinicaltrials.gov/robots.txt, read from the shell |
+| Cholesterol Treatment Trialists' Collaboration, Lancet 2026 (PMID 41655587) | "Adverse event data from blinded randomised trials do not support causal relationships between statin therapy and most of the conditions (including cognitive impairment, depression, sleep disturbance, and peripheral neuropathy) listed in product labels as potential undesirable effects." "Our analyses do not support a causal role of statins for the vast majority of events listed as undesirable effects in statin SmPCs, including sleep disturbance, memory loss, sexual dysfunction, depression, and interstitial lung disease, which were previously listed by at least one regulatory agency as a potential statin class effect." | the abstract and the full text of PMC7619005 through the PubMed service |
+| the same, web appendix | webfigure 1c, statin (n=62028) against placebo (n=61912): "Cognitive or memory impairment 616 (0.2) 639 (0.2) ... 0.96 (0.86 − 1.07)"; "Depression 1910 (0.7) 2016 (0.8) ... 0.95 (0.89 − 1.01)"; "Sleep−related disorders 1728 (0.7) 1731 (0.7) ... 1.00 (0.93 − 1.07)"; the regimen key of Table 1: "S indicates simvastatin, P indicates pravastatin, F indicates fluvastatin, A indicates atorvastatin, R indicates rosuvastatin, and L indicates lovastatin" | Europe PMC's supplementary-files and full-text services for PMC7619005, read with `experiments/read_public_page.py` (appendix archive sha256 2d0b56bd827778f5...) |
+
+Four statements behind the minimum ages of `configs/symptom_minimum_assessment_age.csv` were read the same day: the HPO
+definitions of Global developmental delay ("This term should only be used to describe children younger than five
+years of age.") and of Adult onset ("Onset of disease manifestations in adulthood, defined here as at the age of 16
+years or later."), in hp.obo release 2026-09-01; and through the PubMed service the abstracts of Egger et al. 2006
+(PMID 16601400: "a reasonably reliable standardized measure of DSM-IV psychiatric symptoms and disorders in
+preschoolers for use in both research and clinical service evaluations of preschoolers as young as 2 years old") and
+Kaufman et al. 1997 (PMID 9204677: "Subjects were 55 psychiatric outpatients and 11 normal controls (aged 7 through 17
+years).").
+
+One refusal, recorded as the working rules ask. The ClinicalTrials.gov robots file disallows `/api/` for every
+reader, and a research pass's shell reader was refused there on 22 October. Nothing under `/api/` was read in this
+pass. The existing fetcher sends its requests to `/api/v2/studies` without reading the robots file; whether it may go
+on doing so, since the API is the provider's documented programmatic service while its robots file turns readers away
+from it, is the owner's to rule (decision 9.92). The assessment types were therefore to be measured from the
+fetcher's per-drug cache alone, and no cache was on the machine on 22 October. The second route tried was the
+ClinicalTrials.gov connector: its study record (`get_trial_details` for NCT02389816, a placebo-controlled
+vortioxetine trial with results) carries no adverse-event module, so it cannot say how a term was collected. AACT, the
+Clinical Trials Transformation Initiative's database of the same records, was not used: it is a copy of the records
+the robots rule covers, which the working rules do not admit as a route around a refusal. No text on any page read
+was addressed to an AI assistant.

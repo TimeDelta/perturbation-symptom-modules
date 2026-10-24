@@ -94,6 +94,8 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/clinical_trials"))
     parser.add_argument("--markdown-output", type=Path, default=Path("docs/clinical_trial_arm_evidence.md"))
     parser.add_argument("--minimum-exposure-for-absence", type=int, default=DEFAULT_MINIMUM_EXPOSURE_FOR_ABSENCE)
+    parser.add_argument("--absence-requires-systematic-assessment", action="store_true",
+                        help="decision 9.92: a non-excess is an absence only where the term or another term of its symptom was systematically assessed in the trial")
     parser.add_argument("--pause", type=float, default=0.5)
     parser.add_argument("--limit-drugs", type=int, default=None, help="query only the first N drugs (for a dry run)")
     parser.add_argument("--refresh", action="store_true", help="re-query drugs that have a cached file")
@@ -123,9 +125,11 @@ def main() -> int:
             cache_path.write_text(json.dumps({"drug": label, "requested_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                                               "addresses": addresses, "studies": studies}, indent=1), encoding="utf-8")
         drug_rows, counts = build_reports(studies, label, perturbations[label], preferred_term_to_symptom, lowest_to_preferred,
-                                          arguments.minimum_exposure_for_absence, other_study_drugs=set(perturbations) - {label})
+                                          arguments.minimum_exposure_for_absence, other_study_drugs=set(perturbations) - {label},
+                                          absence_requires_systematic_assessment=arguments.absence_requires_systematic_assessment)
         comparisons.extend(build_comparisons(studies, label, perturbations[label], preferred_term_to_symptom, lowest_to_preferred,
-                                             arguments.minimum_exposure_for_absence, other_study_drugs=set(perturbations) - {label}))
+                                             arguments.minimum_exposure_for_absence, other_study_drugs=set(perturbations) - {label},
+                                             absence_requires_systematic_assessment=arguments.absence_requires_systematic_assessment))
         rows.extend(drug_rows)
         per_drug[label] = counts
         if index % 20 == 0:
