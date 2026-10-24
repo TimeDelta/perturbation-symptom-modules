@@ -231,6 +231,23 @@ behind them.
   finding on either question and the Schmitt paper was not read. Two claims made in it are withdrawn —
   that the graph carries no cell-type axis (inferred from absence, not checked; the owner corrected it),
   and that prior strength comes from a Dawid-Skene fit (the owner states that framing is superseded).
+- https://claude.ai/share/370f7b06-017a-499f-8871-4c16b69ba02f — 21 and 24 October 2026. The decision log
+  checked against the repository, then decision 1.2 built. On 21 October, starting from discrepancies another
+  session had found, `docs/open_decisions.md` was read against GitHub and the code (commit `8764bb4`): 8.11,
+  9.71 and 9.74 still called their pull requests unmerged although #2 to #6 were on main, so they were closed
+  and 9.68 and 9.69 kept only what was still the owner's; 9.14, 9.25 and 9.26 still waited on a BRENDA licence
+  accepted on 14 October; 9.75 had no status column; and 1.2 read as decided while `scripts/rebuild_data_layer.sh`
+  still passed `--max-drug-targets 3` for v4 and v5. The header no longer calls every open row a decision
+  waiting on the owner, and rows marked "nothing owed" are counted apart in `docs/status.md`
+  (`decision_ids_owing_nothing`, with a test). On 24 October, while building 1.2, the owner asked "why are we
+  setting orphenadrine aside?!" The bridging rule (amendment items 1(b) and 16) had been written against the
+  chained drug grouping that item 25 replaced on 13 October and was never revisited. The owner ruled "then
+  undo that and include orphenadrine": amendment item 33 withdraws the rule, and pull request #18 lifts the
+  target limit in the build with orphenadrine in. Owed on the owner's machine: a rebuild from scratch, a
+  measurement of what orphenadrine does to item 25's target partition (not measured on any table) and then
+  the draw (1.1). One claim made on 21 October is withdrawn: that the rebuild sets never-above-placebo pairs
+  aside against amendment 1(d). The script builds both selections, one masking those pairs and one counting
+  them as negatives; which one the trainer reads was not checked.
 
 ## Conventions
 
