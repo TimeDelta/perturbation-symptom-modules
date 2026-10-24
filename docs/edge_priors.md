@@ -418,3 +418,31 @@ NetworKIN_KEA 1%; 14 resources detected none). A kinase-substrate or ligand-rece
 two-hybrid assay, so a low reading there is about the claim a binds edge makes, not proof of error. HuRI's recovery of
 Lit-BM, 14.1%, is about six times the sensitivity the ratio uses (0.025); read as the sensitivity for pairs like
 Lit-BM's, the negative ratio would be 0.86 and the positive 1,960.
+
+## 17. Addition, 22 October 2026: `W` when every pair is counted once (decision 9.90)
+
+Section 3 divides the penalty by `W`, the fit's total loss weight, because the weighted cross-entropy is a weighted
+mean. Under `--label-likelihood positive_unlabelled` (`mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py`)
+every counted pair weighs 1, so `W` is the number of counted pairs `N` on the rows the phase fits, and the data term
+is the mean code length of the labels. Then
+
+    N * (data term + penalty) = sum over pairs of L + sum_e n_e * KL(...)
+
+is the labels' code length plus the edge prior's, both in nats, and dividing both by the same `N` leaves the minimiser
+of their sum where it is. Nothing in `penalty_denominator` changes: the same sum of the fit's pair weights gives `N`
+under unit weights. `--equal-drug-shares` moves weight between drugs and keeps the fitted drugs' summed count of
+positives and of other pairs exactly, so `W` stays `N` with the shares on. The closure evidence of decision 9.62
+(`models/edge_gate_passes.py`), the rise in the data loss times `W` when a closed edge alone is reopened, becomes the
+rise in the labels' code length in nats, which is the log-likelihood ratio the reading `P(false) = sigmoid(E - logit
+pi)` assumes; under the weighted loss it was measured in units of label weight.
+
+What changes is the size of `W`, and the balance only as far as the propensity differs from 0.2. On the v5 tables
+(2,447 perturbations, 39 symptoms, `better_v2_full_v5_placebo_negative`) `W` is 21,385 under the weighted loss and
+91,558 counted once, because a silent pair counts 1 rather than 0.2. A silent pair's code length is
+`-log(1 - pi f)`, close to `pi f` at small `f`, where the weighted negative contributed `0.2 * (-log(1 - f))`, close
+to `0.2 f`. The derived propensity of decision 9.90 is 0.2 where labels are rare and higher where a cell's labelled
+share is high (0.75 for intellectual disability among the genes, 0.89 for somnolence among the drugs); over the silent
+pairs it averages 0.226, so to first order the summed data term is 13 percent above the weighted loss's and one
+pseudo-count weighs correspondingly less against it. The prior moves against the data where the two losses differ in shape:
+a silent pair whose link the fit holds likely costs at most `-log(1 - pi)`, and a drug label counts 1 where its
+evidence weight was 0.15 to 0.6.

@@ -77,6 +77,12 @@ class ExperimentData:
     evidenced_negative: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where a negative rests on a controlled comparison, not on silence (a label selection's counts_as_negative rows)
     is_reversible_reaction: np.ndarray | None = None  # [num_nodes] the reaction node's reversible flag, from which the linear-response encoder derives product_opposes (item 27)
     placebo_negative_weight_matrix: np.ndarray | None = None  # [num_perturbations, num_symptoms] per-pair loss weight of those negatives, NaN where none is stated (amendment item 3; set by run_main_model.py, not by the loader)
+    # [num_perturbations, num_symptoms] the power of the assessment behind each evidenced negative, the probability that it
+    # would have found a real link (decision 9.90; models/positive_unlabelled_likelihood.py), NaN where the source states
+    # none. A loader of a source that states k observed of n assessed, or a meta-analysis's participant counts, writes it
+    # beside evidenced_negative; under --label-likelihood positive_unlabelled the trainer falls back to the placebo weight
+    # file and then to --placebo-negative-weight where it is NaN or None.
+    evidenced_negative_power: np.ndarray | None = None
     label_mask: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where a pair is labelled; False for a positive pair a label selection set aside (neither positive nor negative); None when no selection was given
     masked_for_soft_evidence: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where label_mask is False only because the pair's evidence is below the label grade (a selection's masks_a_negative rows); a soft prior may apply there (evidence/soft_priors.py)
     label_selection_summary: dict | None = None
@@ -220,7 +226,8 @@ EVIDENCED_NEGATIVE_ARRAYS = ("evidenced_negative_source", "phenopacket_individua
 # 13 October 2026, which broke every development run that used a placebo-negative label selection.
 PER_PERTURBATION_ARRAYS = ("outcomes", "weights", "in_metabolic_layer", "frequencies", "evidence_dates",
                            "evidence_date_is_publication", "label_mask", "evidenced_negative",
-                           "placebo_negative_weight_matrix", "masked_for_soft_evidence", *EVIDENCED_NEGATIVE_ARRAYS)
+                           "placebo_negative_weight_matrix", "masked_for_soft_evidence", "evidenced_negative_power",
+                           *EVIDENCED_NEGATIVE_ARRAYS)
 
 
 def restrict_to_perturbations(data: "ExperimentData", keep: np.ndarray) -> "ExperimentData":

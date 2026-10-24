@@ -23,12 +23,15 @@ how a module reads its gated support.
 
 Objective per batch: evidence-weighted BCE (positives smoothed to --positive-target; unobserved pairs
 are weak negatives at --negative-weight) + --description-length-coefficient * model cost (expected
-active support nodes and nonzero links; zero for the sigmoid head).
+active support nodes and nonzero links; zero for the sigmoid head). Under --label-likelihood positive_unlabelled
+(decision 9.90) the BCE is replaced by the mean code length of the labels under a positive-unlabelled likelihood, every
+pair counted once (models/positive_unlabelled_likelihood.py).
 """
 from __future__ import annotations
 
 import argparse
 import copy
+import dataclasses
 import hashlib
 import json
 import os
@@ -159,7 +162,22 @@ from mechanistic_pathway_learning.models.linear_response_encoder import (
     RELATION_GAINS,
     LinearResponseEncoder,
 )
+from mechanistic_pathway_learning.models.minimum_description_length_selection import candidate_description_length
 from mechanistic_pathway_learning.models.noisy_or_pathway_module_model import NoisyOrPathwayModuleHead
+from mechanistic_pathway_learning.models.positive_unlabelled_likelihood import (
+    DERIVED_PROPENSITY,
+    DERIVED_PROPENSITY_BY_TYPE,
+    LABEL_LIKELIHOODS,
+    LabellingPropensity,
+    PositiveUnlabelledLabels,
+    assessment_power_matrix,
+    constant_optimum,
+    derived_propensity,
+    false_report_rates,
+    labelled_shares_by_type,
+    group_weights,
+    popularity_of_perturbations,
+)
 from mechanistic_pathway_learning.models.relational_message_passing_encoder import (
     DEFAULT_RELATION_FACTOR_RANK,
     RELATION_PARAMETERISATIONS,
@@ -450,7 +468,7 @@ VALUES_BEFORE_THE_V4_DEFAULTS = {
     "placebo_negative_weight": None, "placebo_negative_weights_file": None, "equal_drug_shares": False, "normalisation": "in_degree", "message_passing_edge_signs": "unsigned", "combined_perturbations": None,
     "compartment_ph": False, "relation_parameterisation": "per_layer_dense", "reversible_reactions": False,
     "soft_prior_strength": 0.0, "soft_prior_reports": [], "permute_soft_priors": False, "soft_prior_probability": "tier",
-    "edge_prior_strength": 0.0, "permute_edge_priors": False,
+    "edge_prior_strength": 0.0, "permute_edge_priors": False, "label_likelihood": "weighted",
 }
 
 
@@ -508,6 +526,10 @@ EDGE_PRIOR_SETTINGS = {"edge_prior_tiers", "edge_prior_tempering", "edge_prior_c
                        "edge_gate_binary_full_batch", "edge_gate_closure_evidence", "edge_gate_flip_checks", "edge_gate_binary_learning_rate_decay",
                        "curated_edge_labels", "curated_label_minimum_records", "curated_label_minimum_human_records", "curated_label_minimum_sign_records",
                        "curated_label_exclude_disputed_signs", "curated_label_bulk_papers"}
+# the likelihood's settings mean nothing under the weighted loss (decision 9.90), and the likelihood itself is recorded
+# only when it is not the weighted loss every earlier run trained under, so a resumed run reports no change
+LABEL_LIKELIHOOD_SETTINGS = {"labelling_propensity", "propensity_popularity_reports", "false_report_rate"}
+POSITIVE_UNLABELLED = "positive_unlabelled"
 # the negative edge observations of decision 9.91 mean nothing unless edge priors are on and at least one source is asked
 # for; then the sources and the likelihood ratio table enter the fingerprint, and never otherwise, so every run recorded
 # before the flag existed keeps its fingerprint
@@ -611,10 +633,12 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
     other arguments or rebuilt inputs is reported (the split signature covers only the split and the controls)."""
     soft_priors_on = bool(getattr(arguments, "soft_prior_strength", 0.0))
     edge_priors_on = bool(getattr(arguments, "edge_prior_strength", 0.0))
+    positive_unlabelled = getattr(arguments, "label_likelihood", "weighted") == POSITIVE_UNLABELLED
     negative_evidence_on = edge_priors_on and bool(getattr(arguments, "edge_negative_evidence", None))
     fingerprint = {f"argument:{name}": str(value) for name, value in sorted(vars(arguments).items())
                    if name not in RESUME_CONTROL_ARGUMENTS and not (name in ARGUMENTS_RECORDED_ONLY_WHEN_SET and not value)
                    and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)
+                   and not ((name in LABEL_LIKELIHOOD_SETTINGS or name == "label_likelihood") and not positive_unlabelled)
                    and not (name in EDGE_NEGATIVE_EVIDENCE_SETTINGS and not negative_evidence_on)}
     fingerprint.update({
         "input:outcomes": array_sha256(data.outcomes), "input:weights": array_sha256(data.weights),
@@ -629,6 +653,8 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
         fingerprint["file:soft_prior_tiers"] = file_sha256(arguments.soft_prior_tiers)
         for path in getattr(arguments, "soft_prior_reports", None) or []:
             fingerprint[f"file:soft_prior_reports:{Path(path).name}"] = file_sha256(path) if Path(path).is_file() else None
+    if positive_unlabelled and getattr(arguments, "propensity_popularity_reports", None):
+        fingerprint["file:propensity_popularity_reports"] = file_sha256(arguments.propensity_popularity_reports)
     if edge_priors_on:
         fingerprint["file:edge_prior_tiers"] = file_sha256(arguments.edge_prior_tiers)
         evidence_path = Path(arguments.graph_dir) / EDGE_EVIDENCE_FILE
@@ -799,12 +825,13 @@ def git_provenance() -> dict:
 
 
 def run_edge_gate_binary_pass(encoder, head, gates: HardConcreteEdgeGates, fit_rows: np.ndarray, fitted: dict, data, adjacencies, arguments, device,
-                              edge_penalty_denominator: float) -> dict:
+                              edge_penalty_denominator: float, label_likelihood: PositiveUnlabelledLabels | None = None) -> dict:
     """The binary pass over hard edge gates (decision 9.62; models/edge_gate_passes.py), after the fit and before the
     test is scored: the gates alone, every other parameter frozen, the encoder and head in evaluation mode so every
     forward reads the binary read-out, and the data loss the fit minimised (the weighted BCE of the final fit's targets,
-    without the head's description-length penalty, which no gate moves). Then, with --edge-gate-flip-checks, the exact
-    checks of the most promising flips."""
+    or under --label-likelihood positive_unlabelled the mean code length at the fitted propensity, without the head's
+    description-length penalty, which no gate moves). Then, with --edge-gate-flip-checks, the exact checks of the most
+    promising flips."""
     batches = [fit_rows[start : start + arguments.batch_size] for start in range(0, len(fit_rows), arguments.batch_size)]
 
     def data_loss(batch) -> torch.Tensor:
@@ -812,6 +839,8 @@ def run_edge_gate_binary_pass(encoder, head, gates: HardConcreteEdgeGates, fit_r
         field = encode(encoder, node_index.to(device), sign_and_magnitude.to(device), adjacencies, arguments.field)
         output = head(field, relation_index=0, perturbation_covariate=covariate_of(data, batch, arguments, device))
         log_parts = ({"log_probability": output.symptom_log_probability, "log_complement": output.symptom_log_complement} if arguments.bce_in_log_space else {})
+        if label_likelihood is not None:
+            return label_likelihood.loss(output.symptom_probability, batch, fitted["weights"][batch].to(device), detach_propensity=True, **log_parts)
         if fitted["positive_targets"] is not None:
             return evidence_weighted_binary_cross_entropy(output.symptom_probability, fitted["positive_targets"][batch].to(device), fitted["weights"][batch].to(device),
                                                           positive_target=1.0, **log_parts)
@@ -1124,8 +1153,20 @@ def loss_pair_weights(data, label_mask, arguments, fit_indices: np.ndarray, freq
     Amendment item 3 makes that weight per pair where the drug's label states the two arm sizes: the pair takes
     n_effective / (n_effective + 214) rather than the default, read from --placebo-negative-weights-file into
     data.placebo_negative_weight_matrix (NaN where the file has no row for the pair, which then keeps the default).
+
+    Under --label-likelihood positive_unlabelled (decision 9.90) every counted pair takes 1, whatever its kind and
+    grade: the likelihood counts each label once and carries the grade, the silence and the placebo comparison in its
+    code lengths (models/positive_unlabelled_likelihood.py), not in a weight. The label selection's set-aside pairs keep
+    0 and --equal-drug-shares rescales as before; on unit weights it keeps the summed count of the fitted drugs'
+    positives and of their other pairs exactly.
     """
     positive = data.outcomes > 0
+    if getattr(arguments, "label_likelihood", "weighted") == POSITIVE_UNLABELLED:
+        counted = np.ones_like(data.outcomes, dtype=float) if label_mask is None else np.asarray(label_mask, dtype=float)
+        if getattr(arguments, "equal_drug_shares", False):
+            counted = equal_drug_loss_shares(counted, positive, np.array([kind in DRUG_ROW_KINDS for kind in data.perturbation_types]), fit_indices,
+                                             drug_loss_slots(data))
+        return counted
     weights = np.where(positive, 1.0 if frequency_targets else np.maximum(data.weights, 1e-3), arguments.negative_weight)
     evidenced_negative = getattr(data, "evidenced_negative", None)
     if evidenced_negative is not None and getattr(arguments, "placebo_negative_weight", None) is not None:
@@ -1141,6 +1182,103 @@ def loss_pair_weights(data, label_mask, arguments, fit_indices: np.ndarray, freq
         weights = equal_drug_loss_shares(weights, positive, np.array([kind in DRUG_ROW_KINDS for kind in data.perturbation_types]), fit_indices,
                                          drug_loss_slots(data))
     return weights
+
+
+def parse_false_report_rates(values) -> dict[str, float]:
+    """--false-report-rate TYPE=RATE ...: the false-report rate b of each named perturbation type (0 for the rest)."""
+    rates: dict[str, float] = {}
+    for value in values or []:
+        kind, separator, rate = str(value).partition("=")
+        if not separator or not kind:
+            raise ValueError(f"--false-report-rate takes TYPE=RATE (for example drug=0.02), not {value!r}")
+        rates[kind] = float(rate)
+    return rates
+
+
+def propensity_or_derived(value: str) -> str | float:
+    """--labelling-propensity: 'derived' (pi_0 per perturbation type and symptom from the labelled shares, decision 9.90),
+    'derived_by_type' (one per type) or one probability in (0, 1) for every cell."""
+    if value.strip().lower() in (DERIVED_PROPENSITY, DERIVED_PROPENSITY_BY_TYPE):
+        return value.strip().lower()
+    propensity = float(value)
+    if not 0.0 < propensity < 1.0:
+        raise argparse.ArgumentTypeError("a labelling propensity lies in (0, 1); use 'derived' for the propensity read from the labelled shares")
+    return propensity
+
+
+def labelling_propensity(data, label_mask, arguments, log_popularity: np.ndarray | None, fit_rows: np.ndarray) -> tuple[LabellingPropensity, dict]:
+    """A fresh propensity for a fit on fit_rows, with its popularity slope at 0, and pi_0 per perturbation type and
+    symptom: under --labelling-propensity derived, w + (1 - w) r(t, s) with r(t, s) the cell's labelled share on those
+    rows and w the negative weight; under derived_by_type, w + (1 - w) max_s r(t, s); else the given value for every
+    cell. A given value at or below a cell's labelled share is run as asked, with a warning, since no f can then produce
+    that share and the cell's f is driven to 1."""
+    fit_rows = np.asarray(fit_rows, dtype=int)
+    shares = labelled_shares_by_type(data.outcomes, label_mask, list(data.perturbation_types), fit_rows)
+    if arguments.labelling_propensity in (DERIVED_PROPENSITY, DERIVED_PROPENSITY_BY_TYPE):
+        anchors = derived_propensity(shares, arguments.negative_weight, by_symptom=arguments.labelling_propensity == DERIVED_PROPENSITY)
+    else:
+        anchors = {kind: np.full(len(data.symptoms), float(arguments.labelling_propensity)) for kind in shares}
+        below = {kind: [symptom for symptom, share in zip(data.symptoms, shares[kind]) if share >= anchors[kind][0]] for kind in shares}
+        below = {kind: symptoms for kind, symptoms in below.items() if symptoms}
+        if below:
+            print(f"warning: --labelling-propensity {arguments.labelling_propensity} is at or below the labelled share of {below}; "
+                  "no f can produce that share, so those cells' f is driven to 1 (decision 9.90)")
+    anchor = np.stack([anchors[kind] for kind in data.perturbation_types])
+    record = {"rule": {DERIVED_PROPENSITY: "derived: w + (1 - w) r(t, s)", DERIVED_PROPENSITY_BY_TYPE: "derived by type: w + (1 - w) max_s r(t, s)"}
+                      .get(arguments.labelling_propensity, "given"),
+              "at_the_median_popularity_by_type": {kind: {"min": round(float(values.min()), 4), "median": round(float(np.median(values)), 4),
+                                                          "max": round(float(values.max()), 4)} for kind, values in anchors.items()},
+              "largest_labelled_share_by_type": {kind: {"share": round(float(values.max()), 4), "symptom": data.symptoms[int(values.argmax())]}
+                                                 for kind, values in shares.items()}}
+    if log_popularity is None:
+        return LabellingPropensity(anchor), record
+    return LabellingPropensity(anchor, log_popularity, float(np.median(np.asarray(log_popularity)[fit_rows]))), record
+
+
+def label_likelihood_labels(data, label_mask, arguments, fit_rows: np.ndarray, placebo_weights: np.ndarray | None = None
+                            ) -> tuple[PositiveUnlabelledLabels | None, np.ndarray | None, dict | None]:
+    """What --label-likelihood positive_unlabelled reads (decision 9.90): the labelled positives, the evidenced
+    negatives with the power of each one's assessment, each row's false-report rate and a fresh propensity for a fit on
+    fit_rows; with the log popularity the refit's propensity is centred on, and the run record's summary. None three
+    times under the weighted loss.
+
+    The power of an evidenced negative is ExperimentData.evidenced_negative_power where a source states it, else the
+    pair's n_effective / (n_effective + 214.39) from the placebo weight file (placebo_weights, amendment item 3), else
+    --placebo-negative-weight. The file's value is not a power: it is a shrinkage weight that is 0 at no participants,
+    rises to 1 and is 0.5 at the median drug's effective size, which was chosen so that a typical drug weighs the
+    registered 0.5. It is used as the power because it has a power's limits and is the only per-pair number the
+    registration holds; a power proper needs an effect size and a level (decision 9.90)."""
+    if getattr(arguments, "label_likelihood", "weighted") != POSITIVE_UNLABELLED:
+        return None, None, None
+    positive = np.asarray(data.outcomes) > 0
+    evidenced = (np.zeros_like(positive) if getattr(data, "evidenced_negative", None) is None
+                 else np.asarray(data.evidenced_negative, dtype=bool) & ~positive)
+    power, power_sources = assessment_power_matrix(evidenced, getattr(data, "evidenced_negative_power", None), placebo_weights,
+                                                   arguments.placebo_negative_weight)
+    rates = parse_false_report_rates(getattr(arguments, "false_report_rate", []))
+    log_popularity, popularity_record = None, None
+    if getattr(arguments, "propensity_popularity_reports", None) is not None:
+        reports = pd.read_parquet(arguments.propensity_popularity_reports)
+        popularity = popularity_of_perturbations(list(data.perturbation_ids), reports, drug_loss_slots(data))
+        log_popularity = np.log1p(popularity)
+        popularity_record = {"reports": str(arguments.propensity_popularity_reports), "sha256": file_sha256(arguments.propensity_popularity_reports),
+                             "perturbations_with_a_paper": int((popularity > 0).sum()), "perturbations": int(len(popularity))}
+    propensity, anchor_record = labelling_propensity(data, label_mask, arguments, log_popularity, fit_rows)
+    labels = PositiveUnlabelledLabels(labelled_positive=torch.as_tensor(positive, dtype=torch.float32),
+                                      evidenced_negative=torch.as_tensor(evidenced, dtype=torch.float32),
+                                      assessment_power=torch.as_tensor(power, dtype=torch.float32),
+                                      false_report_rate=torch.as_tensor(false_report_rates(list(data.perturbation_types), rates)),
+                                      propensity=propensity)
+    weighted = loss_pair_weights(data, label_mask, argparse.Namespace(**{**vars(arguments), "label_likelihood": "weighted"}), fit_rows)
+    counted = loss_pair_weights(data, label_mask, arguments, fit_rows)
+    on_negatives = power[evidenced]
+    summary = {"likelihood": POSITIVE_UNLABELLED, "false_report_rate_by_type": rates, "propensity_anchor": anchor_record,
+               "evidenced_negative_power": {**power_sources, "mean": float(on_negatives.mean()) if len(on_negatives) else None,
+                                            "range": [float(on_negatives.min()), float(on_negatives.max())] if len(on_negatives) else None},
+               "popularity": popularity_record,
+               "groups_on_the_fit_rows": group_weights(data.outcomes, label_mask, evidenced, weighted, counted, fit_rows,
+                                                       torch.sigmoid(propensity.anchor_logit).numpy())}
+    return labels, log_popularity, summary
 
 
 def clamped_probability_report(predictions: np.ndarray, data, indices: np.ndarray, label_mask) -> dict:
@@ -1413,12 +1551,21 @@ def drug_input_normalised(perturbation_types: list[str], perturbation_magnitudes
     return normalised
 
 
-def weighted_constant_optimum(data, fit_indices: np.ndarray, label_mask, arguments) -> np.ndarray:
+def weighted_constant_optimum(data, fit_indices: np.ndarray, label_mask, arguments, label_likelihood: PositiveUnlabelledLabels | None = None) -> np.ndarray:
     """Per symptom, the constant probability that minimises the training loss over fit_indices: the weighted mean of the
     loss's targets, sum(w t) / sum(w), with the loss's weights (a positive at its evidence weight, a negative at
     --negative-weight, a pair set aside by the selection at zero) and targets (--positive-target, or the frequency under
     --positive-target-from-frequency). With negatives at 0.2 it is about three times the raw base rate (0.204 against
-    0.064 on the full-graph development pool, docs/best_epoch_zero.md)."""
+    0.064 on the full-graph development pool, docs/best_epoch_zero.md). Under the positive-unlabelled likelihood it is
+    the constant f that minimises the summed code length at the propensity's starting value (constant_optimum); under the
+    derived propensity it is the weighted optimum for each type's most-labelled symptom and below it for the others."""
+    if label_likelihood is not None:
+        rows = np.asarray(fit_indices, dtype=int)
+        weights = loss_pair_weights(data, label_mask, arguments, fit_indices)[rows]
+        with torch.no_grad():
+            propensity = label_likelihood.propensity(rows).cpu().numpy()
+        return constant_optimum(label_likelihood.labelled_positive[rows].numpy(), label_likelihood.evidenced_negative[rows].numpy(), weights, propensity,
+                                label_likelihood.false_report_rate[rows].numpy(), label_likelihood.assessment_power[rows].numpy())
     outcomes = data.outcomes[fit_indices]
     positive = outcomes > 0
     if arguments.positive_target_from_frequency:
@@ -1430,7 +1577,8 @@ def weighted_constant_optimum(data, fit_indices: np.ndarray, label_mask, argumen
     return (weights * targets).sum(axis=0) / np.maximum(weights.sum(axis=0), 1e-12)
 
 
-def initialise_rates_at_weighted_optimum(head, data, fit_indices: np.ndarray, label_mask, arguments, device) -> None:
+def initialise_rates_at_weighted_optimum(head, data, fit_indices: np.ndarray, label_mask, arguments, device,
+                                        label_likelihood: PositiveUnlabelledLabels | None = None) -> None:
     """--start-at-weighted-optimum: start each symptom's noisy-OR leak (in place of the raw base rate of
     --init-leak-from-base-rate) or the sigmoid head's output bias at the loss-optimal constant of weighted_constant_optimum,
     so that the first epochs are not spent on calibration. Measured on the full-graph pilots (docs/best_epoch_zero.md): a
@@ -1438,7 +1586,7 @@ def initialise_rates_at_weighted_optimum(head, data, fit_indices: np.ndarray, la
     optimum; a sigmoid head starts at P = 0.5 and reaches the optimum within the first epoch, which is then the best one."""
     if not getattr(arguments, "start_at_weighted_optimum", False):
         return
-    optimum = torch.as_tensor(weighted_constant_optimum(data, fit_indices, label_mask, arguments), dtype=torch.float32, device=device)
+    optimum = torch.as_tensor(weighted_constant_optimum(data, fit_indices, label_mask, arguments, label_likelihood), dtype=torch.float32, device=device)
     if arguments.head == "noisy_or":
         head.initialize_leak_from_base_rates(optimum)
         return
@@ -1605,7 +1753,8 @@ def split_indices(data, arguments, in_lockbox: np.ndarray | None = None) -> tupl
     return train_pool, validation, all_indices[test_mask], split_name
 
 
-def time_training_steps(data, encoder, head, optimizer, train_indices, validation_indices, adjacencies, label_mask, arguments, device) -> None:
+def time_training_steps(data, encoder, head, optimizer, train_indices, validation_indices, adjacencies, label_mask, arguments, device,
+                        label_likelihood: PositiveUnlabelledLabels | None = None) -> None:
     """Seconds per training step (forward, backward, optimizer step) and per prediction batch; nothing is scored."""
     outcomes = torch.as_tensor(data.outcomes, dtype=torch.float32)
     weights = torch.as_tensor(loss_pair_weights(data, label_mask, arguments, train_indices), dtype=torch.float32)
@@ -1620,7 +1769,10 @@ def time_training_steps(data, encoder, head, optimizer, train_indices, validatio
         node_index, sign_and_magnitude = pad_perturbations(data, batch)
         field = encode(encoder, node_index.to(device), sign_and_magnitude.to(device), adjacencies, arguments.field)
         output = head(field, relation_index=0, perturbation_covariate=covariate_of(data, batch, arguments, device))
-        loss = evidence_weighted_binary_cross_entropy(output.symptom_probability, outcomes[batch].to(device), weights[batch].to(device), positive_target=arguments.positive_target)
+        if label_likelihood is not None:
+            loss = label_likelihood.loss(output.symptom_probability, batch, weights[batch].to(device))
+        else:
+            loss = evidence_weighted_binary_cross_entropy(output.symptom_probability, outcomes[batch].to(device), weights[batch].to(device), positive_target=arguments.positive_target)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -1850,6 +2002,27 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--placebo-negative-weights-file", type=path_or_none, default=REGISTERED_PLACEBO_NEGATIVE_WEIGHTS,
                         help="per-pair weights for those negatives (amendment item 3): n_effective / (n_effective + 214) where the drug's label states both arm "
                              "sizes, the default above where it does not. 'none' falls back to --placebo-negative-weight for every pair")
+    parser.add_argument("--label-likelihood", choices=LABEL_LIKELIHOODS, default="positive_unlabelled",
+                        help="weighted: the evidence-weighted cross-entropy above, a positive at its evidence weight, an unlabelled pair at --negative-weight and an "
+                             "evidenced negative at its placebo weight (every run before 22 October 2026, and the arms with soft priors or frequency targets). "
+                             "positive_unlabelled (decision 9.90, registered as the rule label_likelihood): every pair counted once "
+                             "at its code length under a positive-unlabelled likelihood (models/positive_unlabelled_likelihood.py): a labelled positive "
+                             "-log(b + (1 - b) pi f), an unlabelled pair -log(1 - b) - log(1 - pi f), an evidenced negative -log(1 - a f), with pi the labelling "
+                             "propensity, b the false-report rate and a the assessment's power. Under it --negative-weight, --positive-target and the evidence "
+                             "weights are not read, and --placebo-negative-weight and its file give a rather than a weight")
+    parser.add_argument("--labelling-propensity", type=propensity_or_derived, default=DERIVED_PROPENSITY,
+                        help="positive_unlabelled: pi_0, the probability that a real link is labelled at the median literature popularity, fixed "
+                             "because a propensity's intercept is not identified against the head's scale above a cell's labelled share r, below which it "
+                             "cannot produce the labels. 'derived' (the default) takes w + (1 - w) r per perturbation type and symptom, w the "
+                             "--negative-weight, which keeps every cell's registered constant optimum and is w where labels are rare; 'derived_by_type' "
+                             "takes w + (1 - w) max_s r per type; a number sets one value for every cell")
+    parser.add_argument("--propensity-popularity-reports", type=path_or_none, default=None,
+                        help="positive_unlabelled: a report table whose literature rows give each perturbation's popularity (distinct PubMed ids; the feature "
+                             "of decision 9.59), on which the propensity takes one learned slope, sigmoid(logit pi_0 + c (log(1 + popularity) - median)). "
+                             "Without it the propensity is the constant pi_0 of the row's type (selected completely at random within a type)")
+    parser.add_argument("--false-report-rate", nargs="*", default=[], metavar="TYPE=RATE",
+                        help="positive_unlabelled: b, the probability that a pair whose link is not real is labelled, per perturbation type (for example "
+                             "drug=0.02); 0 for a type not named, which is the default for every type (decision 9.90)")
     parser.add_argument("--soft-prior-strength", type=float, default=0.0,
                         help="global multiplier on the soft priors of evidence/soft_priors.py (the power-prior exponent): a grade-C record or a report of the "
                              "trial-arm, FAERS, IMPC or literature tables becomes a target and a weight on an unlabelled pair of a fitted row. 0 (the default, and "
@@ -1985,10 +2158,55 @@ def refuse_a_negative_loss_weight(arguments) -> None:
                              f"Use a weight of zero or more (zero sets the pairs aside)")
 
 
+def description_length_record(encoder, head, data, label_likelihood: PositiveUnlabelledLabels, fitted: dict, adjacencies, arguments, device,
+                              fit_rows: np.ndarray, node_cost: float) -> dict | None:
+    """The module-size criterion of design section 5.5 for the scored model, with the labels counted once (decision 9.90):
+    the model cost the head's description-length penalty states (node_cost per expected active support node, 1 nat per
+    expected link) and the data cost, the summed code length of the fit rows' counted pairs under the
+    positive-unlabelled likelihood at the fitted propensity (models/minimum_description_length_selection.py). Candidate
+    module counts are compared on the total. None for a head without modules."""
+    if arguments.head != "noisy_or":
+        return None
+    if arguments.bce_in_log_space:
+        probabilities, log_probabilities, log_complements = predict(encoder, head, data, fit_rows, adjacencies, arguments, device, with_log_parts=True)
+        log_parts = {"log_probability": torch.as_tensor(log_probabilities, dtype=torch.float32), "log_complement": torch.as_tensor(log_complements, dtype=torch.float32)}
+    else:
+        probabilities, log_parts = predict(encoder, head, data, fit_rows, adjacencies, arguments, device), {}
+    with torch.no_grad():
+        lengths = label_likelihood.code_lengths(torch.as_tensor(probabilities, dtype=torch.float32), fit_rows, **log_parts).cpu().numpy()
+        model_cost = float(head.description_length_penalty(node_cost=node_cost))
+    pair_weights = fitted["weights"][torch.as_tensor(fit_rows, dtype=torch.long)].numpy()
+    candidate = candidate_description_length(arguments.num_modules, model_cost, lengths, pair_weights)
+    return {"num_pathway_modules": candidate.num_pathway_modules, "model_cost_nats": round(candidate.model_cost_nats, 3),
+            "data_cost_nats": round(candidate.data_cost_nats, 3), "total_nats": round(candidate.total_nats, 3), "fit_rows": int(len(fit_rows)),
+            "counted_pairs": int((pair_weights > 0).sum()), "summed_pair_weight": round(float(pair_weights.sum()), 3), "node_cost_nats": node_cost}
+
+
+def refuse_what_the_likelihood_does_not_define(arguments) -> None:
+    """--label-likelihood positive_unlabelled is defined for the labels and the evidenced negatives. A soft prior writes a
+    target and a weight into an unlabelled cell, and a frequency target replaces a positive's target: neither has a
+    place in a likelihood that counts each label once, so both are refused rather than mixed in until the owner says
+    how a pseudo-observation enters it (decision 9.90)."""
+    if getattr(arguments, "label_likelihood", "weighted") != POSITIVE_UNLABELLED:
+        return
+    if getattr(arguments, "soft_prior_strength", 0.0):
+        raise ValueError("--label-likelihood positive_unlabelled does not define how a soft prior enters it; run it with --soft-prior-strength 0")
+    if getattr(arguments, "positive_target_from_frequency", False):
+        raise ValueError("--label-likelihood positive_unlabelled counts a label once and has no target to replace; drop --positive-target-from-frequency")
+    derived = arguments.labelling_propensity in (DERIVED_PROPENSITY, DERIVED_PROPENSITY_BY_TYPE)
+    if derived and not 0.0 < arguments.negative_weight < 1.0:
+        raise ValueError(f"--labelling-propensity {arguments.labelling_propensity} reads --negative-weight as the propensity of rare labels, which lies in (0, 1), "
+                         f"not {arguments.negative_weight}")
+    if not derived and not 0.0 < float(arguments.labelling_propensity) < 1.0:
+        raise ValueError(f"--labelling-propensity is {arguments.labelling_propensity}; a probability of labelling a real link lies in (0, 1)")
+    false_report_rates(["any"], parse_false_report_rates(arguments.false_report_rate))  # refuses a rate outside [0, 1)
+
+
 def main() -> None:
     arguments = build_argument_parser().parse_args()
     resolve_registered_defaults(arguments)
     refuse_a_negative_loss_weight(arguments)
+    refuse_what_the_likelihood_does_not_define(arguments)
     signal.signal(signal.SIGUSR1, request_checkpoint)
     torch.manual_seed(arguments.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -2055,6 +2273,7 @@ def main() -> None:
                  f"; {edge_priors_summary['negative_evidence']['gated_edges_moved']:,} gated priors moved by the observations of "
                  f"{', '.join(edge_priors_summary['negative_evidence']['sources'])} (decision 9.91)"))
     permutation_source_rows_sha256 = None
+    placebo_weights_of_the_rows = getattr(data, "placebo_negative_weight_matrix", None)  # what the likelihood reads as a power (decision 9.90)
     if arguments.permute_labels:  # rows move whole, so a pair keeps its weight, frequency and label-mask entry
         source_row = degree_stratified_row_permutation(data.perturbation_degrees_for_strata, random_seed=arguments.seed, partition=in_lockbox)
         permutation_source_rows_sha256 = array_sha256(source_row)  # experiments/score_confirmatory.py checks it against its own draw
@@ -2067,6 +2286,10 @@ def main() -> None:
             data.masked_for_soft_evidence = data.masked_for_soft_evidence[source_row]
         if data.evidenced_negative is not None:
             data.evidenced_negative = data.evidenced_negative[source_row]
+        if getattr(data, "evidenced_negative_power", None) is not None:
+            data.evidenced_negative_power = data.evidenced_negative_power[source_row]
+        if placebo_weights_of_the_rows is not None:  # the likelihood's copy moves with its rows; the weighted loss reads the matrix as it always has
+            placebo_weights_of_the_rows = placebo_weights_of_the_rows[source_row]
         for name in EVIDENCED_NEGATIVE_ARRAYS:  # decision 9.92: each source's per-pair strength moves with its row
             if getattr(data, name, None) is not None:
                 setattr(data, name, getattr(data, name)[source_row])
@@ -2138,9 +2361,16 @@ def main() -> None:
         split_name += "_permuted"
     if arguments.rewire_swaps_per_edge > 0:
         split_name += "_rewired"
+    # decision 9.90: the labels of the positive-unlabelled likelihood and a propensity for a fit on the training rows
+    label_likelihood, log_popularity, label_likelihood_summary = label_likelihood_labels(data, label_mask, arguments, train_indices,
+                                                                                         placebo_weights_of_the_rows)
+    if label_likelihood is not None:
+        label_likelihood.propensity.to(device)
+        print(f"label likelihood: positive-unlabelled, every pair counted once; {json.dumps(label_likelihood_summary['groups_on_the_fit_rows'])}; "
+              f"propensity {label_likelihood.propensity.summary()}; evidenced-negative power {label_likelihood_summary['evidenced_negative_power']}")
     encoder, head = build_models(data, arguments, device)
     initialise_leaks_from_base_rates(head, data, train_indices, label_mask, arguments, device)
-    initialise_rates_at_weighted_optimum(head, data, train_indices, label_mask, arguments, device)
+    initialise_rates_at_weighted_optimum(head, data, train_indices, label_mask, arguments, device, label_likelihood)
     adjacencies = None  # the linear-response encoder builds its signed adjacency from the edges at construction
     if arguments.encoder == "message_passing":
         adjacencies = [adjacency.to(device) if adjacency is not None else None
@@ -2153,10 +2383,13 @@ def main() -> None:
         laboratory_index = LaboratoryLabelIndex(pd.read_parquet(arguments.laboratory_labels), data.perturbation_ids, data.node_base_metabolite_id)
         laboratory_readout = LaboratoryReadout(arguments.node_state_dim).to(device)
         print(f"laboratory labels: {laboratory_index.count(train_indices)} on training perturbations, {laboratory_index.count(test_indices)} held out")
-    optimizer = torch.optim.AdamW(optimizer_parameter_groups(encoder, head, arguments, list(laboratory_readout.parameters()) if laboratory_readout is not None else ()),
+    extra_parameters = list(laboratory_readout.parameters()) if laboratory_readout is not None else []
+    if label_likelihood is not None:  # the propensity's popularity slope, when it has one, trains with the model
+        extra_parameters += list(label_likelihood.propensity.parameters())
+    optimizer = torch.optim.AdamW(optimizer_parameter_groups(encoder, head, arguments, extra_parameters if extra_parameters else ()),
                                   lr=arguments.learning_rate, weight_decay=arguments.weight_decay)
     if arguments.timing_batches > 0:
-        time_training_steps(data, encoder, head, optimizer, train_indices, validation_indices, adjacencies, label_mask, arguments, device)
+        time_training_steps(data, encoder, head, optimizer, train_indices, validation_indices, adjacencies, label_mask, arguments, device, label_likelihood)
         return
     split_directory = arguments.run_dir / split_name
     split_signature = {"test_perturbation_ids_sha256": hashlib.sha256("\n".join(data.perturbation_ids[i] for i in test_indices).encode()).hexdigest(),
@@ -2194,6 +2427,8 @@ def main() -> None:
         head.load_state_dict(checkpoint["head"])
         if laboratory_readout is not None and "laboratory_readout" in checkpoint:
             laboratory_readout.load_state_dict(checkpoint["laboratory_readout"])
+        if label_likelihood is not None and "label_propensity" in checkpoint:
+            label_likelihood.propensity.load_state_dict(checkpoint["label_propensity"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         state = checkpoint["state"]
         checkpoint_torch_rng_state = checkpoint.get("torch_rng_state")  # absent in checkpoints written before 8 October 2026
@@ -2219,7 +2454,8 @@ def main() -> None:
     def save_checkpoint() -> None:
         atomic_torch_save({"encoder": encoder.state_dict(), "head": head.state_dict(), "optimizer": optimizer.state_dict(), "state": state,
                            "torch_rng_state": torch.get_rng_state(),  # the noisy-OR gate noise draws from it
-                           **({"laboratory_readout": laboratory_readout.state_dict()} if laboratory_readout is not None else {})}, checkpoint_path)
+                           **({"laboratory_readout": laboratory_readout.state_dict()} if laboratory_readout is not None else {}),
+                           **({"label_propensity": label_likelihood.propensity.state_dict()} if label_likelihood is not None else {})}, checkpoint_path)
 
     outcomes = torch.as_tensor(data.outcomes, dtype=torch.float32)
     # a pair set aside by the selection is neither positive nor negative; under --positive-target-from-frequency the frequency is the target, not the weight
@@ -2261,7 +2497,10 @@ def main() -> None:
     if soft_priors_applied_in_fit is not None:
         print(f"soft priors in the fit: {soft_priors_applied_in_fit}")
     # the edge priors' penalty is divided by the total loss weight of the pairs the fit trains on, because the BCE is a
-    # weighted mean: then one pseudo-count of an edge prior weighs as one unit of label weight (models/edge_gates.py)
+    # weighted mean: then one pseudo-count of an edge prior weighs as one unit of label weight (models/edge_gates.py).
+    # Under the positive-unlabelled likelihood every counted pair weighs 1, so W is the number of counted pairs N: the
+    # data term times N is the labels' code length in nats, the penalty times N is the edge prior's, and dividing both
+    # by N leaves the minimiser of their sum where it is (decision 9.90)
     edge_penalty_denominators: dict[str, float] = {}
     edge_penalty_denominator = 1.0
     if edge_priors_summary is not None:
@@ -2277,7 +2516,9 @@ def main() -> None:
         output = model_head(field, relation_index=0, perturbation_covariate=covariate_of(data, batch, arguments, device))
         log_parts = ({"log_probability": output.symptom_log_probability, "log_complement": output.symptom_log_complement}
                      if arguments.bce_in_log_space else {})
-        if fitted["positive_targets"] is not None:
+        if label_likelihood is not None:  # decision 9.90: the mean code length of the batch's counted pairs
+            bce = label_likelihood.loss(output.symptom_probability, batch, fitted["weights"][batch].to(device), **log_parts)
+        elif fitted["positive_targets"] is not None:
             bce = evidence_weighted_binary_cross_entropy(output.symptom_probability, fitted["positive_targets"][batch].to(device), fitted["weights"][batch].to(device), positive_target=1.0, **log_parts)
         else:
             bce = evidence_weighted_binary_cross_entropy(output.symptom_probability, fitted["outcomes"][batch].to(device), fitted["weights"][batch].to(device), positive_target=arguments.positive_target, **log_parts)
@@ -2367,14 +2608,21 @@ def main() -> None:
             # target is its frequency (it took 0.99 for every positive before 8 October, with the frequency mode's weights)
             validation_targets, validation_positive_target = ((positive_targets[validation_indices], 1.0) if positive_targets is not None
                                                               else (outcomes[validation_indices], arguments.positive_target))
-            entry["validation_loss"] = float(evidence_weighted_binary_cross_entropy(torch.as_tensor(validation_predictions, dtype=torch.float32), validation_targets, weights[validation_indices],
-                                                                                    positive_target=validation_positive_target, **validation_log_parts))
+            if label_likelihood is not None:  # the validation rows' mean code length at the propensity the fit has reached
+                with torch.no_grad():
+                    entry["validation_loss"] = float(label_likelihood.loss(torch.as_tensor(validation_predictions, dtype=torch.float32), validation_indices,
+                                                                           weights[validation_indices], detach_propensity=True, **validation_log_parts))
+            else:
+                entry["validation_loss"] = float(evidence_weighted_binary_cross_entropy(torch.as_tensor(validation_predictions, dtype=torch.float32), validation_targets, weights[validation_indices],
+                                                                                        positive_target=validation_positive_target, **validation_log_parts))
             improved = (entry["validation_loss"] < state["best_validation_loss"] - 1e-5) if arguments.selection_metric == "loss" else (entry["validation_macro_auprc"] > state["best_validation_auprc"] + 1e-4)
             if improved:
                 state.update(best_validation_auprc=entry["validation_macro_auprc"], best_validation_loss=entry["validation_loss"], best_epoch=epoch, epochs_without_improvement=0,
                              best_encoder=copy.deepcopy(encoder.state_dict()), best_head=copy.deepcopy(head.state_dict()))
                 if laboratory_readout is not None:
                     state["best_laboratory_readout"] = copy.deepcopy(laboratory_readout.state_dict())
+                if label_likelihood is not None:
+                    state["best_label_propensity"] = copy.deepcopy(label_likelihood.propensity.state_dict())
             else:
                 state["epochs_without_improvement"] += 1
         state["history"].append(entry)
@@ -2403,6 +2651,8 @@ def main() -> None:
         head.load_state_dict(state["best_head"])
         if laboratory_readout is not None and state.get("best_laboratory_readout") is not None:
             laboratory_readout.load_state_dict(state["best_laboratory_readout"])
+        if label_likelihood is not None and state.get("best_label_propensity") is not None:
+            label_likelihood.propensity.load_state_dict(state["best_label_propensity"])
 
     refit_summary = None
     soft_priors_applied_in_refit = None
@@ -2424,15 +2674,23 @@ def main() -> None:
         torch.manual_seed(arguments.seed)
         encoder, head = build_models(data, arguments, device)
         attach_edge_gates(encoder, data, adjacencies, arguments)  # fresh gates at the priors, as every other parameter starts again
+        if label_likelihood is not None:  # and a fresh propensity, centred on the refit's rows
+            refit_propensity, label_likelihood_summary["propensity_anchor_in_the_refit"] = labelling_propensity(data, label_mask, arguments, log_popularity,
+                                                                                                               refit_indices)
+            label_likelihood = dataclasses.replace(label_likelihood, propensity=refit_propensity.to(device))
         initialise_leaks_from_base_rates(head, data, refit_indices, label_mask, arguments, device)
-        initialise_rates_at_weighted_optimum(head, data, refit_indices, label_mask, arguments, device)
-        optimizer = torch.optim.AdamW(optimizer_parameter_groups(encoder, head, arguments), lr=arguments.learning_rate, weight_decay=arguments.weight_decay)
+        initialise_rates_at_weighted_optimum(head, data, refit_indices, label_mask, arguments, device, label_likelihood)
+        refit_extra_parameters = list(label_likelihood.propensity.parameters()) if label_likelihood is not None else []
+        optimizer = torch.optim.AdamW(optimizer_parameter_groups(encoder, head, arguments, *([refit_extra_parameters] if refit_extra_parameters else [])),
+                                      lr=arguments.learning_rate, weight_decay=arguments.weight_decay)
         refit_state = {"epoch": 0, "next_batch_start": 0, "epoch_sums": [0.0, 0.0, 0.0], "history": [], "epochs": state["best_epoch"] + 1,
                        "num_perturbations": len(refit_indices), "code_provenance": []}
         if arguments.resume and refit_checkpoint_path.exists():
             refit_checkpoint = torch.load(refit_checkpoint_path, map_location=device, weights_only=False)
             encoder.load_state_dict(refit_checkpoint["encoder"])
             head.load_state_dict(refit_checkpoint["head"])
+            if label_likelihood is not None and "label_propensity" in refit_checkpoint:
+                label_likelihood.propensity.load_state_dict(refit_checkpoint["label_propensity"])
             optimizer.load_state_dict(refit_checkpoint["optimizer"])
             refit_state = refit_checkpoint["refit_state"]
             torch.set_rng_state(refit_checkpoint["torch_rng_state"])
@@ -2441,7 +2699,8 @@ def main() -> None:
 
         def save_refit_checkpoint() -> None:
             atomic_torch_save({"encoder": encoder.state_dict(), "head": head.state_dict(), "optimizer": optimizer.state_dict(), "refit_state": refit_state,
-                               "torch_rng_state": torch.get_rng_state()}, refit_checkpoint_path)
+                               "torch_rng_state": torch.get_rng_state(),
+                               **({"label_propensity": label_likelihood.propensity.state_dict()} if label_likelihood is not None else {})}, refit_checkpoint_path)
 
         print(f"refit on {len(refit_indices)} training and validation perturbations for {refit_state['epochs']} epochs (best validation epoch {state['best_epoch']})")
         last_checkpoint = time.time()
@@ -2477,7 +2736,8 @@ def main() -> None:
     if isinstance(final_gates, HardConcreteEdgeGates) and (arguments.edge_gate_binary_epochs > 0 or arguments.edge_gate_flip_checks > 0
                                                            or arguments.edge_gate_closure_evidence != 0):
         final_fit_rows = np.sort(refit_indices) if arguments.refit_on_validation else np.sort(train_indices)
-        edge_gate_binary_pass = run_edge_gate_binary_pass(encoder, head, final_gates, final_fit_rows, fitted, data, adjacencies, arguments, device, edge_penalty_denominator)
+        edge_gate_binary_pass = run_edge_gate_binary_pass(encoder, head, final_gates, final_fit_rows, fitted, data, adjacencies, arguments, device, edge_penalty_denominator,
+                                                          label_likelihood)
         print(f"edge gates after the binary pass: {final_gates.summary()}")
         # every closure, with its evidence, goes beside the read-out for review (decision 9.63 (c)); results.json keeps the summary
         edge_gate_binary_pass["closure_evidence"] = write_closure_review(edge_gate_binary_pass, data, split_directory)
@@ -2624,6 +2884,12 @@ def main() -> None:
         np.save(split_directory / "module_support.npy", support)
         np.save(split_directory / "test_module_activations.npy", np.concatenate(test_field_activations, axis=0) if test_field_activations else np.zeros((0, support.shape[0])))
         print("module support sizes:", results["module_support_sizes"])
+    if label_likelihood is not None:
+        results["label_likelihood"] = {**label_likelihood_summary, "propensity": label_likelihood.propensity.summary(),
+                                       "description_length": description_length_record(encoder, head, data, label_likelihood, fitted, adjacencies, arguments, device,
+                                                                                       np.sort(refit_indices) if arguments.refit_on_validation else np.sort(train_indices),
+                                                                                       node_cost)}
+        print(f"label likelihood after the fit: {results['label_likelihood']['propensity']}; description length {results['label_likelihood']['description_length']}")
     (split_directory / "results.json").write_text(json.dumps(results, indent=1))
     if arguments.score_lockbox:  # the lockbox is read once, by experiments/score_confirmatory.py; logs read by check-ins must not show it
         print(f"{split_name}: lockbox predictions written to {split_directory} (scores not printed)")
