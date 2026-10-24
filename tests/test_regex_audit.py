@@ -54,6 +54,92 @@ def test_the_partial_flag_is_independent_of_the_sign():
     assert action_sign("Agonist") == (1, False)
 
 
+# Decision 9.88: BRENDA's inhibitor notes. A note of no inhibition read as an inhibition puts an `inhibits` edge where
+# the paper found none, so these decide a sign. The phrases marked "EC 2.7.1.1" are BRENDA's own notes on that page
+# (read 22 October 2026; BRENDA is CC BY 4.0).
+
+from experiments.extract_brenda_enzyme_regulation import (
+    CLAUSE_BOUNDARY as BRENDA_CLAUSE_BOUNDARY,
+    NO_INHIBITION_OR_EFFECT as BRENDA_NO_INHIBITION_OR_EFFECT,
+    NUMBERED_FORM as BRENDA_NUMBERED_FORM,
+    POINT_MUTATION as BRENDA_POINT_MUTATION,
+    clauses_of as brenda_clauses_of,
+    classify_clause as classify_brenda_clause,
+)
+
+
+@pytest.mark.parametrize("note", [
+    "not inhibited by D-glucose 6-phosphate",  # EC 2.7.1.1
+    "no product inhibition by D-glucose 6-phosphate",  # EC 2.7.1.1
+    "D-glucose 6-phosphate has no effect",  # EC 2.7.1.1
+    "TcHK is not affected by D-glucose 6-phosphate",  # EC 2.7.1.1
+    "no inhibition by D-glucose 6-phosphate and D-trehalose 6-phosphate",  # EC 2.7.1.1
+    "no significant inhibition up to 10 mM", "no inhibitory effect", "does not inhibit the enzyme", "doesn't inhibit",
+    "fails to inhibit", "non-inhibitory", "the enzyme is insensitive to ATP", "not significantly inhibited",
+])
+def test_the_brenda_absence_pattern_catches_each_wording_of_no_inhibition(note):
+    assert BRENDA_NO_INHIBITION_OR_EFFECT.search(note), note
+
+
+@pytest.mark.parametrize("note", [
+    "hexokinase I inhibition is relieved by inorganic phosphate, but not the inhibition of hexokinase II",  # EC 2.7.1.1
+    "competitive inhibition, no effect on Vmax", "noncompetitive, no effect on the Km value", "no effect on kcat",
+    "no further inhibition above 5 mM", "not further inhibited by higher concentrations",
+    "inhibition is not reversed by dialysis", "the inhibition is not affected by phosphate",
+    "not selective for isoforms hexokinase 1 or hexokinase 2",  # EC 2.7.1.1
+    "50% inhibition at 1 mM", "potent inhibitor of hexokinase I",  # EC 2.7.1.1
+])
+def test_the_brenda_absence_pattern_does_not_read_inhibition_or_a_kinetic_note_as_absence(note):
+    kind, _ = classify_brenda_clause(note)
+    assert kind != "absence" and kind != "absence_elsewhere", (note, kind)
+
+
+@pytest.mark.parametrize("clause, expected", [
+    ("no inhibition of V62L, V62M, V62Q, V62F, V62K", ("absence_elsewhere", "mutant")),  # EC 2.7.1.1
+    ("no inhibition of the cytosolic enzyme from root", ("absence_elsewhere", "isozyme or another form")),  # EC 2.7.1.1
+    ("enzymes from rat brain and bovine heart are not inhibited by palmitoyl-CoA", ("absence_elsewhere", "another organism")),  # EC 2.7.1.1
+    ("no inhibition of hexokinase 2", ("absence_elsewhere", "isozyme or another form")),  # EC 2.7.1.1
+    ("mutant D209A is not inhibited", ("absence_elsewhere", "mutant")),
+    ("no inhibition of the wild-type enzyme, mutant D209A is inhibited", ("absence", None)),  # the wild type is named
+    ("not inhibited by 1 mM phosphatidylethanolamine", ("absence", None)),  # EC 2.7.1.1; a concentration names no other compound
+    ("not inhibited by the compound", ("absence", None)),
+])
+def test_the_brenda_scope_sends_an_absence_elsewhere_only_when_the_note_names_another_enzyme(clause, expected):
+    assert classify_brenda_clause(clause, "phosphatidylethanolamine" if "phosphatidyl" in clause else "palmitoyl-CoA") == expected
+
+
+def test_an_absence_naming_another_compound_says_nothing_about_this_one():
+    assert classify_brenda_clause("not inhibited by AMP", "ADP") == ("absence_elsewhere", "another compound")
+    assert classify_brenda_clause("not inhibited by ADP", "ADP") == ("absence", None)
+
+
+@pytest.mark.parametrize("text, is_a_point_mutation", [
+    ("V62L", True), ("D209A", True), ("mutant E157K", True),
+    ("H2O", False), ("Mg2+", False), ("NAD+", False), ("CO2", False), ("pH 7", False), ("ATP", False), ("C12", False), ("V0A", False),
+])
+def test_the_brenda_point_mutation_pattern_does_not_read_a_formula_as_a_mutant(text, is_a_point_mutation):
+    assert bool(BRENDA_POINT_MUTATION.search(text)) == is_a_point_mutation, text
+
+
+@pytest.mark.parametrize("text, is_a_numbered_form", [
+    ("hexokinase II", True), ("hexokinase 2", True), ("type III", True), ("HK2", True), ("protein phosphatase 2A", True),
+    ("activity increase 2-fold", False), ("decrease 5-fold", False), ("release 1", False), ("phase 2", False), ("in case 1", False),
+    ("hexokinase", False), ("type of inhibition", False),
+])
+def test_the_brenda_numbered_form_pattern_needs_an_enzyme_word_and_a_number(text, is_a_numbered_form):
+    assert bool(BRENDA_NUMBERED_FORM.search(text)) == is_a_numbered_form, text
+
+
+def test_the_brenda_clause_boundary_splits_before_a_negation_and_at_a_sentence_but_not_in_a_genus_or_a_decimal():
+    assert brenda_clauses_of("50% inhibition at 10 mM, no inhibition at 1 mM") == ["50% inhibition at 10 mM", "no inhibition at 1 mM"]
+    assert brenda_clauses_of("no inhibition at 1 mM, 50% inhibition at 10 mM") == ["no inhibition at 1 mM", "50% inhibition at 10 mM"]
+    assert brenda_clauses_of("1 mM, 45% inhibition, enzyme from kernel. Inhibits non-cytosolic enzyme from root") == [
+        "1 mM", "45% inhibition, enzyme from kernel", "Inhibits non-cytosolic enzyme from root"]  # EC 2.7.1.1
+    assert brenda_clauses_of("the enzyme expressed in E. coli is not inhibited") == ["the enzyme expressed in E. coli is not inhibited"]
+    assert brenda_clauses_of("30% inhibition at 0.5 mM and 37.5 °C") == ["30% inhibition at 0.5 mM and 37.5 °C"]
+    assert not BRENDA_CLAUSE_BOUNDARY.search("no inhibition, note that the assay")  # "note" is not "not"
+
+
 # --- admission patterns --------------------------------------------------------------------------------------
 
 from experiments.build_drug_exposure_table import BRAIN_NOT_CEREBROSPINAL_FLUID, FLUID_OR_REGIONAL_VALUE
@@ -275,6 +361,47 @@ def test_the_brenda_accession_pattern_reads_the_accession_forms_uniprot_issues(t
 @pytest.mark.parametrize("not_an_accession", ["ATP", "NADPH", "GABA", "CHEBI"])
 def test_the_brenda_accession_pattern_does_not_read_a_metabolite_abbreviation_as_an_accession(not_an_accession):
     assert not UNIPROT_ACCESSION_PATTERN.search(not_an_accession), not_an_accession
+
+
+from mechanistic_pathway_learning.graph.edge_negatives import (
+    CANONICAL as INTACT_CANONICAL,
+    CHAIN as INTACT_CHAIN,
+    ISOFORM as INTACT_ISOFORM,
+    UNIPROTKB_IDENTIFIER as INTACT_UNIPROTKB_IDENTIFIER,
+    UNREVIEWED as INTACT_UNREVIEWED,
+    classify_identifier as classify_intact_identifier,
+)
+
+# Decision 9.88: an IntAct record counts against a gene pair only between two canonical entries, so the pattern that
+# separates an accession from its isoform or chain suffix decides which absences contest a graph edge.
+INTACT_REVIEWED = {"Q07817": "BCL2L1", "Q92934": "BAD"}
+
+
+@pytest.mark.parametrize("identifier, expected", [
+    ("uniprotkb:Q07817", ("Q07817", INTACT_CANONICAL, "BCL2L1")),
+    ("uniprotkb:Q07817-2", ("Q07817-2", INTACT_ISOFORM, "")),
+    ("uniprotkb:Q07817-1", ("Q07817-1", INTACT_ISOFORM, "")),  # a curator who names isoform 1 is contrasting it with another
+    ("uniprotkb:P01189-PRO_0000024969", ("P01189-PRO_0000024969", INTACT_CHAIN, "")),
+    ("uniprotkb:F8VVZ1", ("F8VVZ1", INTACT_UNREVIEWED, "")),
+    ("uniprotkb:A0A0S2Z3D2", ("A0A0S2Z3D2", INTACT_UNREVIEWED, "")),
+    ("intact:EBI-7424890|uniprotkb:Q07817", ("Q07817", INTACT_CANONICAL, "BCL2L1")),
+])
+def test_the_intact_identifier_pattern_classes_each_form_of_a_uniprotkb_identifier(identifier, expected):
+    assert classify_intact_identifier(identifier, INTACT_REVIEWED) == expected
+
+
+@pytest.mark.parametrize("not_an_entry", [
+    "intact:EBI-7424890",  # an IntAct-only molecule
+    'chebi:"CHEBI:15422"',
+    "uniprotkb:Q07817-",  # a dangling suffix
+    "uniprotkb:Q07817-2a",  # an isoform number with a trailing letter
+    "uniprotkb:Q07817X",  # a longer token that begins with an accession
+    "uniprotkb:BCL2L1",  # a gene name in the identifier column
+    "uniprotkb:q07817",  # lower case is not UniProt's format
+])
+def test_the_intact_identifier_pattern_does_not_read_a_near_miss_as_an_entry(not_an_entry):
+    assert not INTACT_UNIPROTKB_IDENTIFIER.match(not_an_entry), not_an_entry
+    assert classify_intact_identifier(not_an_entry, INTACT_REVIEWED) is None
 
 
 # --- mechanical patterns -------------------------------------------------------------------------------------

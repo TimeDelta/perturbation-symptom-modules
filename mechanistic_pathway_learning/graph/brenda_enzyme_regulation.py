@@ -17,7 +17,10 @@ that a fit would score as disagreement. Above all, **no edge source ever asserts
 does not inhibit an enzyme, so specificity is unestimable for every source and sensitivity alone rewards volume, which
 `evidence_reliability_model` already states for the label sources ("the estimate becomes a decreasing function of how
 much the source reports rather than a measurement of anything"). So every pair enters at sign alone and the evidence
-quantity travels as recorded provenance instead of as a weight.
+quantity travels as recorded provenance instead of as a weight. Decision 9.88 (22 October 2026) keeps BRENDA's own
+notes of no inhibition on a human enzyme as negative observations, written apart to
+`configs/brenda_metabolite_enzyme_no_inhibition.csv` when the derived table is regenerated; this module does not read
+them, and the table of edges it reads carries the three relations only.
 
 One edge per (metabolite, enzyme) pair, from one representative compartment copy. Protein nodes carry no compartment
 in this graph while metabolites do, so emitting from every compartment copy of a base would multiply an

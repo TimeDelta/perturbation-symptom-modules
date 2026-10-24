@@ -87,6 +87,12 @@ against them before it is acted on.
 - **A refusal by the site is respected.** A page behind a robots rule or a check that the visitor is human is not
   read through a cache, a mirror or a solved challenge. Record the refusal and use the provider's other
   publications.
+- **EBI's FTP host is the one exception to the robots rule.** "don't refuse FTP from EBI" (the owner, 22 October
+  2026). The robots file of `ftp.ebi.ac.uk` reads "User-agent: *" and "Disallow: /" (read 22 October 2026), which
+  would close the releases the project fetches from that host (IntAct's negative interactions, IMPC).
+  `experiments/read_public_page.py` reads that host alone past its robots file, over https, and records the robots
+  answer beside the page; `scripts/fetch_raw_sources.sh` keeps its fetches from it. Every other EBI host, such as
+  `www.ebi.ac.uk`, keeps its own robots rules, and the reader's other limits hold on the FTP host as everywhere else.
 
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.
