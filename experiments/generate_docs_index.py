@@ -78,7 +78,7 @@ TOPICS = (
                                     "docs/directed_random_walk.md", "docs/rewiring_null_distribution*.md", "docs/trained_diffusion_readout.md", "docs/score_by_*.md",
                                     "docs/graph_content_null_results.md", "docs/sign_and_typing_ablations.md", "docs/best_epoch_zero.md",
                                     "docs/message_passing_depth_probe.md", "docs/neuronal_variant_comparison.md", "docs/perturbation_type_offset.md",
-                                    "docs/gene_protein_split_results.md", "docs/mechanism_cards/*/*.md")),
+                                    "docs/gene_protein_split_results.md", "docs/nonlinearity_inventory.md", "docs/mechanism_cards/*/*.md")),
 )
 OTHER_TOPIC = "Other documents"
 CARD_FAMILY = re.compile(r"^docs/mechanism_cards/([^/]+)/[^/]+\.md$")

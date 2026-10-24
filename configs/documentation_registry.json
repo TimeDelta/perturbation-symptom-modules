@@ -5,8 +5,8 @@
  "documents": {
   "CLAUDE.md": {
    "class": "living",
-   "reviewed": "2026-10-15",
-   "as_of_commit": "ef8810b"
+   "reviewed": "2026-10-21",
+   "as_of_commit": "65bb3aa"
   },
   "README.md": {
    "class": "living",
@@ -799,6 +799,11 @@
    "recorded": "2026-10-21",
    "append_only": true,
    "what": "the monogenic records carrying a negative report, pair by pair: the disease entries behind each positive and each negative annotation, and whether the pair is a contradiction, a different allele direction or a crosswalk artefact; decision 9.85"
+  },
+  "docs/nonlinearity_inventory.md": {
+   "class": "living",
+   "reviewed": "2026-10-21",
+   "as_of_commit": "65bb3aa"
   }
  }
 }
