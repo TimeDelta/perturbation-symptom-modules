@@ -9,8 +9,10 @@ For each mouse source (IMPC-knockout and the three of 9.93: MGI-literature, MGI-
   3. the gene-symptom pairs and the genes each source adds that IMPC does not, and how often IMPC reproduced an
      MGI-literature call on a gene it tested for the symptom;
   4. the calibrated regression (evidence/calibrated_reliability.py) on the development perturbations (the lockbox
-     removed): with IMPC as the only mouse source (the form before 9.93) and with all four, the second at three
-     source-deviation penalties, and the symptoms it reports with no label positive.
+     removed): the separate fit per species (the default since the owner's ruling of 24 October 2026 on 9.56), with
+     each species' calibration cells against the bar for a fit of its own, and the pooled form, each with all four
+     mouse sources at three source-deviation penalties; the pooled fit with IMPC as the only mouse source (the form
+     before 9.93); and the symptoms the regression reports with no label positive.
 
 A label gene is a gene perturbation (a gene or "<gene>|gain_of_function") with at least one kept positive in the label
 selection; a label positive is a kept pair. Literature mice are often made for genes already tied to the human
@@ -171,39 +173,74 @@ def main() -> int:
     mouse_paths = {source: (arguments.mouse_dir or processed) / relative if source != "IMPC-knockout" else processed / relative for source, relative in MOUSE_TABLES.items()}
     before = cells_for([*human, mouse_paths["IMPC-knockout"]])
     after = cells_for([*human, *mouse_paths.values()])
-    fit_before = fit_calibration(before, data.outcomes, data.label_mask, fit_rows, symptom_names=list(data.symptoms), row_is_drug=row_is_drug)
-    fits_after = {penalty: fit_calibration(after, data.outcomes, data.label_mask, fit_rows, source_deviation_penalty=penalty, symptom_names=list(data.symptoms),
-                                           row_is_drug=row_is_drug) for penalty in PENALTIES}
-    excluded = fit_calibration(after, data.outcomes, data.label_mask, fit_rows, symptom_names=list(data.symptoms), row_is_drug=row_is_drug,
-                               exclude_symptoms_without_label_positives=True)
+    common = dict(symptom_names=list(data.symptoms), row_is_drug=row_is_drug)
+    fit_before = fit_calibration(before, data.outcomes, data.label_mask, fit_rows, species_form="pooled", **common)
+    impc_only_separate = fit_calibration(before, data.outcomes, data.label_mask, fit_rows, **common)
+    separate = {penalty: fit_calibration(after, data.outcomes, data.label_mask, fit_rows, source_deviation_penalty=penalty, **common) for penalty in PENALTIES}
+    pooled = {penalty: fit_calibration(after, data.outcomes, data.label_mask, fit_rows, source_deviation_penalty=penalty, species_form="pooled", **common)
+              for penalty in PENALTIES}
+    excluded = fit_calibration(after, data.outcomes, data.label_mask, fit_rows, exclude_symptoms_without_label_positives=True, **common)
     mouse_terms = ["species:mouse", "species_direction:mouse:negative", *[f"source:{source}" for source in MOUSE_TABLES],
                    *[f"source_direction:{source}:negative" for source in MOUSE_TABLES], "direction:positive", "class:animal"]
+    species_terms = [*[f"source:{source}" for source in MOUSE_TABLES], *[f"source_direction:{source}:negative" for source in MOUSE_TABLES],
+                     "direction:positive", "log_records", "log_popularity"]
+
+    def part_rows(part) -> list[str]:
+        return ["| term | coefficient |", "| --- | --- |", f"| intercept (the species-level effect) | {part.intercept:+.3f} |", *coefficient_rows(part, species_terms)]
+
+    default = separate[SOURCE_DEVIATION_PENALTY]
+    counts = default.species_cells
     lines += ["", "## 4. The calibrated reliability regression", "",
               f"Fitted as `--soft-prior-probability calibrated` fits it (evidence/calibrated_reliability.py), on the {len(fit_rows):,} perturbations outside "
               f"`{LOCKBOX}` of {len(data.perturbation_ids):,} loaded, with the grade-C records of `{arguments.evidence_dir.name}` and the report tables "
               f"{', '.join(f'`{relative}`' for relative in HUMAN_TABLES)}; the base L2 strength is that of C = 1.", "",
+              "### 4.1 The separate fit per species (the default, the owner's ruling of 24 October 2026 on 9.56)", "",
+              "A species is fitted on its own when its usable calibration cells hold at least 20 positives and 20 negatives "
+              "(`--soft-prior-calibration-minimum-cases`); below that it is read through the pooled form with the human cells.", "",
+              "| species | usable cells | positive | negative | fitted by |", "| --- | --- | --- | --- | --- |",
+              *[f"| {level} | {entry['cells']:,} | {entry['positives']:,} | {entry['negatives']:,} | {default.fit_of_species[level]} |" for level, entry in sorted(counts.items())],
+              "", f"With IMPC as the only mouse source the default also fits mouse apart: mouse is fitted by `{impc_only_separate.fit_of_species.get('mouse', '-')}` "
+              f"({impc_only_separate.species_cells.get('mouse', {}).get('positives', 0):,} positive and {impc_only_separate.species_cells.get('mouse', {}).get('negatives', 0):,} "
+              "negative cells), so a calibrated run with the IMPC table changes under the ruling; `--soft-prior-calibration-species-form pooled` gives the fit of "
+              "before 9.93.", ""]
+    for penalty, fitted in separate.items():
+        mouse = fitted.parts.get("mouse")
+        if mouse is None or mouse.kept_tiers:
+            lines += [f"**Mouse fit, penalty {penalty:g}:** not fitted on its own ({fitted.fit_of_species.get('mouse')}).", ""]
+            continue
+        lines += [f"**Mouse fit, source-deviation penalty {penalty:g}**{' (the default)' if penalty == SOURCE_DEVIATION_PENALTY else ''} "
+                  f"({mouse.training_rows:,} cells, {mouse.training_positives:,} positive):", "", *part_rows(mouse), ""]
+    if "mouse" in impc_only_separate.parts and not impc_only_separate.parts["mouse"].kept_tiers:
+        lines += ["**Mouse fit with IMPC the only mouse source** (penalty 10): the intercept is IMPC's effect and no source column remains.", "",
+                  *part_rows(impc_only_separate.parts["mouse"]), ""]
+    human = default.parts.get("human")
+    if human is not None and not human.kept_tiers:
+        lines += [f"Human fit ({human.training_rows:,} cells, {human.training_positives:,} positive): intercept {human.intercept:+.3f}, "
+                  f"direction:positive {human.coefficients.get('direction:positive', 0.0):+.3f}.", ""]
+    lines += ["Mean prediction by class and direction at the median popularity (separate, penalty 10): "
+              + ", ".join(f"{group} {value:.3f}" for group, value in default.predicted_by_class_and_direction.items()) + ".", "",
+              "### 4.2 The pooled form (`--soft-prior-calibration-species-form pooled`, and the fallback for a species below the bar)", "",
               f"**Before 9.93** (IMPC the only mouse source; {fit_before.training_rows:,} training cells, {fit_before.training_positives:,} positive): "
               "species:mouse, source:IMPC-knockout and class:animal are one column three times over, so the fit splits one effect between them "
               "and only their sum is read.", "",
               "| term | coefficient |", "| --- | --- |", *coefficient_rows(fit_before, mouse_terms), ""]
-    for penalty, fitted in fits_after.items():
-        lines += [f"**With the three sources of 9.93, source-deviation penalty {penalty:g}** ({fitted.training_rows:,} training cells, "
-                  f"{fitted.training_positives:,} positive{', the default' if penalty == SOURCE_DEVIATION_PENALTY else ''}):", "",
-                  "| term | coefficient |", "| --- | --- |", *coefficient_rows(fitted, mouse_terms), ""]
-    default_fit = fits_after[SOURCE_DEVIATION_PENALTY]
-    lines += ["class:animal and species:mouse remain one column while every animal source is a mouse one, so the species effect is their sum; a "
-              "source's absences are weighted by species_direction:mouse:negative plus its own source_direction term, against direction:positive for its calls.", "",
-              "Species effect (species:mouse + class:animal) by penalty: "
-              + ", ".join(f"{penalty:g}: {fitted.coefficients.get('species:mouse', 0.0) + fitted.coefficients.get('class:animal', 0.0):+.3f}" for penalty, fitted in fits_after.items())
+    for penalty, fitted in pooled.items():
+        lines += [f"**Pooled, with the three sources of 9.93, source-deviation penalty {penalty:g}** ({fitted.training_rows:,} training cells, "
+                  f"{fitted.training_positives:,} positive):", "", "| term | coefficient |", "| --- | --- |", *coefficient_rows(fitted, mouse_terms), ""]
+    lines += ["In the pooled form class:animal and species:mouse remain one column while every animal source is a mouse one, so the species effect is "
+              "their sum: " + ", ".join(f"penalty {penalty:g} {fitted.coefficients.get('species:mouse', 0.0) + fitted.coefficients.get('class:animal', 0.0):+.3f}"
+                                         for penalty, fitted in pooled.items())
               + f"; before 9.93 the same sum with source:IMPC-knockout: {sum(fit_before.coefficients.get(name, 0.0) for name in ('species:mouse', 'class:animal', 'source:IMPC-knockout')):+.3f}.", "",
-              "Mean prediction by class and direction at the median popularity (penalty 10): "
-              + ", ".join(f"{group} {value:.3f}" for group, value in default_fit.predicted_by_class_and_direction.items()) + ".", "",
-              "### Symptoms with no label positive on the fit rows of their cells' kind", "",
+              "### 4.3 Symptoms with no label positive on the fit rows of their cells' kind", "",
               "| symptom | kinds | cells | by source |", "| --- | --- | --- | --- |"]
-    for symptom, entry in sorted(default_fit.symptoms_without_label_positives.items()):
+    for symptom, entry in sorted(default.symptoms_without_label_positives.items()):
         lines.append(f"| {symptom} | {', '.join(entry['kinds'])} | {entry['cells']:,} | {', '.join(f'{name} {count:,}' for name, count in sorted(entry['cells_by_source'].items()))} |")
-    lines += ["", f"With those cells left out (`--soft-prior-calibration-exclude-unlabelled-symptoms`, penalty 10): {excluded.training_rows:,} training cells; "
-              + ", ".join(f"`{name}` {excluded.coefficients[name]:+.3f}" for name in mouse_terms if name in excluded.coefficients) + ".", ""]
+    excluded_mouse = excluded.parts.get("mouse")
+    if excluded_mouse is not None and not excluded_mouse.kept_tiers:
+        lines += ["", f"With those cells left out (`--soft-prior-calibration-exclude-unlabelled-symptoms`, separate, penalty 10): mouse fit {excluded_mouse.training_rows:,} cells, "
+                  f"intercept {excluded_mouse.intercept:+.3f}; " + ", ".join(f"`{name}` {excluded_mouse.coefficients[name]:+.3f}" for name in species_terms if name in excluded_mouse.coefficients) + ".", ""]
+    else:
+        lines += [""]
     arguments.output.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {arguments.output}")
     return 0

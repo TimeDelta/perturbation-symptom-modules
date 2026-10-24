@@ -145,10 +145,10 @@ def mouse_calibration(sources_cycle=("IMPC-knockout", "MGI-literature", "SFARI-m
     return pairs, cells, outcomes
 
 
-def test_with_impc_the_only_mouse_source_the_columns_and_fit_are_those_before_9_93():
+def test_with_impc_the_only_mouse_source_the_pooled_columns_and_fit_are_those_before_9_93():
     pairs, cells, outcomes = mouse_calibration(sources_cycle=("IMPC-knockout",))
     assert not [name for name in cells.columns if name.startswith(("species_direction:", "source_direction:"))]
-    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5)
+    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, species_form="pooled")
     assert fitted.penalty_multiples == {}
     # the same fit by hand, as fit_calibration did before 9.93
     from sklearn.linear_model import LogisticRegression
@@ -166,7 +166,7 @@ def test_two_mouse_sources_take_the_pooled_form_with_species_source_and_directio
     assert "source_direction:MGI-literature:negative" not in cells.columns, "a source with calls only has no absence term"
     mouse = cells["species:mouse"].to_numpy()
     assert (mouse == cells[["source:IMPC-knockout", "source:MGI-literature", "source:SFARI-mouse-models"]].sum(axis=1).to_numpy()).all(), "the collinearity the penalty resolves"
-    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5)
+    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, species_form="pooled")
     assert set(fitted.penalty_multiples) == {"source:IMPC-knockout", "source:MGI-literature", "source:SFARI-mouse-models",
                                              "source_direction:IMPC-knockout:negative", "source_direction:SFARI-mouse-models:negative"}
     assert fitted.coefficients["source:MGI-literature"] > fitted.coefficients["source:IMPC-knockout"]
@@ -174,8 +174,8 @@ def test_two_mouse_sources_take_the_pooled_form_with_species_source_and_directio
 
 def test_the_deviation_penalty_shrinks_the_deviations_toward_zero():
     pairs, cells, outcomes = mouse_calibration()
-    loose = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, source_deviation_penalty=1.0)
-    tight = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, source_deviation_penalty=1000.0)
+    loose = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, source_deviation_penalty=1.0, species_form="pooled")
+    tight = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, source_deviation_penalty=1000.0, species_form="pooled")
     for name in tight.penalty_multiples:
         assert abs(tight.coefficients[name]) < abs(loose.coefficients[name]) + 1e-12
         assert abs(tight.coefficients[name]) < 0.05
@@ -201,3 +201,53 @@ def test_a_symptom_with_no_label_positive_is_reported_and_left_out_only_when_ask
     assert excluded.training_rows == len(cells) - 30 and excluded.excluded_symptoms_without_label_positives
     summary = summarise_calibration(reported)
     assert "insomnia" in summary["symptoms_without_label_positives"]
+
+
+# --- the owner's ruling on 9.56 (24 October 2026): each species fitted apart where its cells allow ----------------
+
+
+def test_the_default_fits_each_species_apart_with_the_intercept_as_the_species_effect():
+    pairs, cells, outcomes = mouse_calibration(n=400)
+    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5)
+    assert fitted.form == "separate" and fitted.fit_of_species == {"human": "human", "mouse": "mouse"}
+    mouse = fitted.parts["mouse"]
+    assert not [name for name in mouse.features if name.startswith(("species", "class:"))], "constant within the fit, or the complement of direction"
+    assert {"source:IMPC-knockout", "source:MGI-literature", "source:SFARI-mouse-models", "source_direction:IMPC-knockout:negative"} <= set(mouse.penalty_multiples)
+    assert mouse.coefficients["source:MGI-literature"] > mouse.coefficients["source:IMPC-knockout"]
+    human = fitted.parts["human"]
+    assert not [name for name in human.features if "IMPC" in name or "MGI" in name or "SFARI" in name]
+    # each cell is predicted by its own species' fit
+    predicted = predict(fitted, cells)
+    is_mouse = cells["species:mouse"].to_numpy() > 0
+    assert np.allclose(predicted[is_mouse], predict(mouse, cells[is_mouse])) and np.allclose(predicted[~is_mouse], predict(human, cells[~is_mouse]))
+    assert summarise_calibration(fitted)["species_cells"]["mouse"]["cells"] == int(is_mouse.sum())
+
+
+def test_a_species_too_small_for_its_own_fit_is_read_through_the_pooled_form():
+    pairs, cells, outcomes = mouse_calibration(n=120)
+    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=30)
+    counts = fitted.species_cells["mouse"]
+    assert min(counts["positives"], counts["negatives"]) < 30
+    assert fitted.fit_of_species["mouse"] == "pooled" and "pooled" in fitted.parts and fitted.fit_of_species["human"] == "human"
+    pooled = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=30, species_form="pooled")
+    is_mouse = cells["species:mouse"].to_numpy() > 0
+    if not pooled.kept_tiers:
+        assert np.allclose(predict(fitted, cells)[is_mouse], predict(pooled, cells)[is_mouse])
+
+
+def test_one_species_is_one_fit_whatever_the_form():
+    cells, outcomes, _ = toy_calibration()
+    separate = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5)
+    pooled = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5, species_form="pooled")
+    assert separate.form == "one species" and not separate.parts and separate.coefficients == pooled.coefficients
+
+
+def test_a_fit_that_keeps_the_tiers_leaves_its_cells_at_the_tier_value():
+    pairs, cells, outcomes = mouse_calibration(n=400)
+    fitted = fit_calibration(cells, outcomes, None, np.arange(len(outcomes)), minimum_cases=5)
+    fitted.parts["mouse"].kept_tiers = True
+    tier_matrix = np.full(outcomes.shape, 0.5)
+    matrix = calibrated_probability_matrix(fitted, cells, tier_matrix)
+    is_mouse = cells["species:mouse"].to_numpy() > 0
+    assert (matrix[cells.row[is_mouse], cells.column[is_mouse]] == 0.5).all()
+    assert not np.allclose(matrix[cells.row[~is_mouse], cells.column[~is_mouse]], 0.5)

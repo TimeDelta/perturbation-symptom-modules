@@ -79,7 +79,9 @@ from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics imp
 from mechanistic_pathway_learning.evidence.allele_mechanisms import gene_of_perturbation
 from mechanistic_pathway_learning.evidence.calibrated_reliability import (
     MINIMUM_CALIBRATION_CASES,
+    DEFAULT_SPECIES_FORM,
     SOURCE_DEVIATION_PENALTY,
+    SPECIES_FORMS,
     calibrated_probability_matrix,
     cell_table,
     feature_frame,
@@ -496,6 +498,9 @@ ARGUMENTS_RECORDED_ONLY_WHEN_SET = {"start_at_weighted_optimum", "rewire_encodes
 SOFT_PRIOR_SETTINGS = {"soft_prior_tiers", "soft_prior_tempering", "soft_prior_count_cap", "soft_prior_record_grades", "soft_prior_reports", "permute_soft_priors",
                        "soft_prior_probability", "soft_prior_calibration_minimum_cases", "soft_prior_calibration_source_deviation_penalty",
                        "soft_prior_calibration_exclude_unlabelled_symptoms"}
+# the settings of the calibration mean nothing under the tier probabilities, so they enter only with --soft-prior-probability
+# calibrated; the species form, added 24 October 2026 (9.93), changed what a calibrated run fits, so it is recorded there
+CALIBRATION_SETTINGS = {"soft_prior_calibration_species_form"}
 # and the edge priors' settings mean nothing while their strength is 0 (decision 9.57), nor do those of the gates they
 # make (9.62) and of the curated edges taken as known (9.63); until 17 October 2026 the gates' settings of 9.62 were
 # recorded whatever the strength, so a run without edge priors resumed under them reported changes that were not
@@ -605,7 +610,8 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
     edge_priors_on = bool(getattr(arguments, "edge_prior_strength", 0.0))
     fingerprint = {f"argument:{name}": str(value) for name, value in sorted(vars(arguments).items())
                    if name not in RESUME_CONTROL_ARGUMENTS and not (name in ARGUMENTS_RECORDED_ONLY_WHEN_SET and not value)
-                   and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)}
+                   and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)
+                   and not (name in CALIBRATION_SETTINGS and not (soft_priors_on and getattr(arguments, "soft_prior_probability", "tier") == "calibrated"))}
     fingerprint.update({
         "input:outcomes": array_sha256(data.outcomes), "input:weights": array_sha256(data.weights),
         "input:label_mask": None if label_mask is None else array_sha256(label_mask),
@@ -1832,6 +1838,10 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--soft-prior-calibration-source-deviation-penalty", type=float, default=None,
                         help="the L2 strength on a non-human source's deviation from its species and on its absence term, as a multiple of the base strength, "
                              f"in the partially pooled form the regression takes when a species has two or more sources (decision 9.93); default {SOURCE_DEVIATION_PENALTY}")
+    parser.add_argument("--soft-prior-calibration-species-form", choices=SPECIES_FORMS, default=DEFAULT_SPECIES_FORM,
+                        help="separate (default; the owner, 24 October 2026, on decision 9.56): the human cells and each non-human species fitted apart, a "
+                             "species with fewer than --soft-prior-calibration-minimum-cases positive or negative cells read through the pooled form instead; "
+                             "pooled: one regression with species, source and source x direction terms (decision 9.93)")
     parser.add_argument("--soft-prior-calibration-exclude-unlabelled-symptoms", action="store_true",
                         help="leave out of the calibration the cells of a symptom with no label positive on the fit rows of their perturbation kind; such symptoms "
                              "are reported in results.json whether or not this is set (decision 9.93)")
@@ -2208,7 +2218,8 @@ def main() -> None:
             calibration = fit_calibration(calibration_cells, data.outcomes, label_mask, fit_rows, arguments.soft_prior_calibration_minimum_cases,
                                           source_deviation_penalty=SOURCE_DEVIATION_PENALTY if penalty is None else penalty, symptom_names=list(data.symptoms),
                                           row_is_drug=np.asarray(data.perturbation_types) == "drug",
-                                          exclude_symptoms_without_label_positives=bool(getattr(arguments, "soft_prior_calibration_exclude_unlabelled_symptoms", False)))
+                                          exclude_symptoms_without_label_positives=bool(getattr(arguments, "soft_prior_calibration_exclude_unlabelled_symptoms", False)),
+                                          species_form=getattr(arguments, "soft_prior_calibration_species_form", DEFAULT_SPECIES_FORM))
             if calibration.symptoms_without_label_positives:  # reported, not fitted silently (decision 9.93)
                 print(f"soft-prior calibration ({phase}): symptoms with no label positive on the fit rows of their cells' kind "
                       f"({'left out of the fit' if calibration.excluded_symptoms_without_label_positives else 'fitted as negatives'}): "

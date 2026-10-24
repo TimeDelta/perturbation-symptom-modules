@@ -254,3 +254,15 @@ deviation, both shrunk toward 0 by an L2 penalty ten times the base one
 (`--soft-prior-calibration-source-deviation-penalty`). A table whose only mouse source is IMPC fits the model it
 fitted before, bit for bit. Whether to fit each species apart instead is still the owner's (9.93). The coefficients on
 v5 are in `docs/mouse_sources_measured_v5.md`.
+
+## 12. Addition, 24 October 2026: each species fitted apart (the owner's ruling on 9.56, decision 9.93)
+
+The owner, 24 October 2026 (19:47 EDT): "I'd prefer it to always be separate for PDF species if the data can handle
+it", read as "for each species" (a dictation slip). So the calibrated regression now fits, by default, the human cells
+alone and each non-human species alone (`--soft-prior-calibration-species-form separate`); the pooled form of section
+11 is the option `pooled` and the fallback. Within a species' fit each source keeps its own column and its source x
+direction column, shrunk toward 0 by the deviation penalty, and the intercept is the species-level effect. A species is
+fitted alone when its usable calibration cells hold at least 20 positives and 20 negatives
+(`--soft-prior-calibration-minimum-cases`); below that it is read through the pooled form with the human cells, because
+the pooled form still uses its cells where the tiers would not. On v5 mouse passes (140 positive and 2,853 negative
+cells). The coefficients are in `docs/mouse_sources_measured_v5.md` section 4 and the reasons in decision 9.93.
