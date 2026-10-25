@@ -9,7 +9,9 @@ starts, so a session passes them on to the passes and agents it starts.
 These are the authoritative files, in the order to read them. Anything else, including a session's memory, is checked
 against them before it is acted on.
 
-- `docs/status.md`: what is current (releases, registered rules, open decisions, documents due for review). Generated.
+- `docs/status.md`: what is current (releases, registered rules, open decisions, when each living document was last
+  reviewed). Generated. Which living documents are due for a review depends on today's date and on what changed
+  since, so it is printed by `PYTHONPATH=. python experiments/generate_status.py --review` and never committed.
 - `configs/registered_rules.json`: every registered value, asserted against the code by
   `tests/test_registration_matches_the_code.py`.
 - `docs/preregistration.md`: the registered hypotheses, models and analyses with their amendments.
@@ -157,7 +159,8 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   request #19 because the branch held a merge of `main`, and a rebase or squash merge on GitHub gives every commit a
   new hash, which leaves `docs/decision_history.md` naming commits that are not on `main` and fails
   `tests/test_documentation_process.py::test_the_decision_history_is_current`. A merge commit was the only GitHub
-  method left, and the owner preferred direct pushes to that.
+  method left (#19 landed that way, commit `5efc117`, the last pull request merged), and the owner preferred direct
+  pushes to that.
 - **The full suite passes before every push**: `set -o pipefail; PYTHONPATH=. python -m pytest -q -p no:cacheprovider`.
   A failing suite is not pushed.
 - **`main` is never force-pushed.** When a push is refused because `main` has moved, run `git pull --rebase origin

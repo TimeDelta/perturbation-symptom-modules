@@ -12,9 +12,9 @@ docs/experiment_design.md. Read that first. [docs/README.md](docs/README.md) is 
 ## Status
 
 What is current is generated, not written here: `docs/status.md` (data releases and their counts, the registered rules
-and their amendments, the decisions open and closed, which documents are generated and when, which living documents
-are due for a review) and `docs/decision_history.md` (when each decision was recorded and closed, from the git
-history). `docs/documentation_process.md` states which documents are kept current by overwriting, which are dated
+and their amendments, the decisions open and closed, which documents are generated and when, when each living document
+was last reviewed; `PYTHONPATH=. python experiments/generate_status.py --review` prints which are due) and
+`docs/decision_history.md` (when each decision was recorded and closed, from the git history). `docs/documentation_process.md` states which documents are kept current by overwriting, which are dated
 records, and the checks `tests/test_documentation_process.py` runs. The release counts below are rendered from the
 manifests by `experiments/generate_status.py`:
 
@@ -22,8 +22,13 @@ manifests by `experiments/generate_status.py`:
 - `data/releases/v0.4` (created 2026-10-06, commit b1c9d02, 44 files, 1 manifest amendment): `graph_full` 33,964 nodes and 255,367 edges; `graph` 24,185 nodes and 94,786 edges; `evidence_full` 3,910 observations over 1,655 perturbations and 11 symptoms; `evidence_slice_sweeps` 861 observations over 451 perturbations and 10 symptoms; `evidence_two_entries` 861 observations over 451 perturbations and 10 symptoms.
 <!-- /generated:release_counts -->
 
-The narrative that follows is the state of the project when it was last written; the dated documents it names carry
-the measurements, and `docs/status.md` says which of them are current.
+The narrative that follows is the state of the project as it was written between 3 and 15 October 2026, kept as history;
+the dated documents it names carry the measurements, and `docs/status.md` says which of them are current. Three things
+changed after it was written: the linear-response encoder
+(`mechanistic_pathway_learning/models/linear_response_encoder.py`, 6 October 2026) is the one tested model and the
+message-passing encoder a robustness reading (decision 9.77, 22 October 2026; `tested_models` and `robustness_models`
+in `configs/registered_rules.json`); flux sampling was dropped from the confirmation on 8 October 2026
+(`docs/research_summary.md`); and the label likelihood is positive-unlabelled (decision 9.90, `label_likelihood`).
 
 Phase 1 is measured and Phases 2 and 3 have started on the monogenic slice. The slice is a pilot; the confirmatory test is the full graph with every layer (docs/preregistration.md, amendment of 7 October 2026). Implemented and tested:
 the noisy-OR pathway module head (sum or mean pooling over hard-concrete supports), soft constraint
@@ -118,6 +123,7 @@ python experiments/run_main_model_batch.py --configuration b3_typed_nodes --grou
 python -m venv ~/.venvs/mpl && source ~/.venvs/mpl/bin/activate
 pip install -e ".[dev]"            # model and evaluation code
 pip install -e ".[graph]"          # add cobra, omnipath, decoupler, chembl client for Phase 1
+pip install -e ".[experiments,descriptors]"   # scipy, matplotlib, h5py for the measurement scripts the tests import; rdkit and ESM for node descriptors
 pytest
 ```
 
@@ -131,9 +137,10 @@ mechanistic_pathway_learning/
   graph/         physiology graph build (Human-GEM + OmniPath + CollecTRI + ChEMBL), currency tagging
   evidence/      HPO, SIDER/OnSIDES, PubTator3/CTD/SemMedDB loaders; evidence grading; proxy audit
   perturbation/  flux-sampling features per gene knockout; drug target mapping
-  models/        encoder, noisy-OR head, soft constraint losses, MDL selection, baselines
+  models/        linear-response and message-passing encoders, noisy-OR head, edge gates, soft constraint losses, MDL selection, baselines
   evaluation/    splits, metrics, negative controls, GWAS enrichment, equifinality tests, mechanism cards
-experiments/     phase runners, HPO audit, batch driver, aggregator, module analysis
+experiments/     phase runners, HPO audit, batch driver, aggregator, module analysis, the document generators
+scripts/         data-layer rebuild, raw-source fetches, the background job registry (docs/job_harness.md)
 tests/
 ```
 
@@ -194,7 +201,8 @@ behind them.
   never accepted that"), a softmax mixture that was sparsemax, and symptom folds as a test of circularity.
   The v4 rebuild ran in a separate session; decisions left open at the end include 9.41 and 9.42 in docs/open_decisions.md.
 - https://claude.ai/share/a44b3cb1-b2f5-47b4-a829-5674879deb77 — 20 to 21 October 2026. Two decisions built
-  as draft pull requests, and the rebases that followed a merge. 9.75: the owner asked whether the ryanodine
+  as draft pull requests (both on `main` since 21 October 2026, rebased: commits `3c9df8f` and `286eb26`), and the
+  rebases that followed a merge. 9.75: the owner asked whether the ryanodine
   receptor and the other intracellular ligand-gated channels carry compartmental charge; measured on v5, none
   did, since every luminal calcium node was a currency metabolite and `ions_moved_inward` reads the
   extracellular and cytosolic sides alone. The ruling was store content rather than charge, because the
@@ -242,8 +250,8 @@ behind them.
   (`decision_ids_owing_nothing`, with a test). On 24 October, while building 1.2, the owner asked "why are we
   setting orphenadrine aside?!" The bridging rule (amendment items 1(b) and 16) had been written against the
   chained drug grouping that item 25 replaced on 13 October and was never revisited. The owner ruled "then
-  undo that and include orphenadrine": amendment item 33 withdraws the rule, and pull request #18 lifts the
-  target limit in the build with orphenadrine in. Owed on the owner's machine: a rebuild from scratch, a
+  undo that and include orphenadrine": amendment item 33 withdraws the rule, and pull request #18 (merged 24 October
+  2026, commit `6fc5c65`) lifts the target limit in the build with orphenadrine in. Owed on the owner's machine: a rebuild from scratch, a
   measurement of what orphenadrine does to item 25's target partition (not measured on any table) and then
   the draw (1.1). One claim made on 21 October is withdrawn: that the rebuild sets never-above-placebo pairs
   aside against amendment 1(d). The script builds both selections, one masking those pairs and one counting

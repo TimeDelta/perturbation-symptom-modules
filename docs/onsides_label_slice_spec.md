@@ -1,6 +1,6 @@
 # OnSIDES later label slice: identifier bridge, report schema and qualification rule
 
-Specification of evidence class E2's later slice (design section 4.2), as implemented in mechanistic_pathway_learning/evidence/onsides_identifier_bridge.py, mechanistic_pathway_learning/evidence/load_onsides_label_events.py, experiments/fetch_onsides_identifier_bridge.py and experiments/build_onsides_reports.py. The generated page docs/onsides_label_slice.md carries the per-symptom, per-country and per-section tables of the current build; this page says what the columns and counts mean. Counts here are from the build of 5 October 2026 on OnSIDES v3.1.1 (data release 2026-04-22), ChEMBL 37 and SIDER 4.1. MedDRA term names are never written to a committed file; identifiers and target symptoms only.
+Specification of evidence class E2's later slice (design section 4.2), as implemented in mechanistic_pathway_learning/evidence/onsides_identifier_bridge.py, mechanistic_pathway_learning/evidence/load_onsides_label_events.py, experiments/fetch_onsides_identifier_bridge.py and experiments/build_onsides_reports.py. The generated page docs/onsides_label_slice.md carries the per-symptom, per-country and per-section tables of the current build; this page says what the columns and counts mean. Counts here are from the build of 5 October 2026 on OnSIDES v3.1.1 (data release 2026-04-22), ChEMBL 37 and SIDER 4.1, the build released as data/releases/v0.4/onsides; "build of 5 October 2026" below means that build. The builder and the loader have changed since (sections 4 and 5 say where), and docs/symptom_crosswalk.csv gained preferred terms and twelve symptoms on 7 and 9 October 2026, so a rebuild would match more statements than counted here. MedDRA term names are never written to a committed file; identifiers and target symptoms only.
 
 ## 1. Inputs
 
@@ -32,13 +32,13 @@ A unified ingredient's perturbation_id is the STITCH flat identifier of the lowe
 
 Mechanism targets: mechanisms.json is keyed by molecule_chembl_id and by parent_molecule_chembl_id (mechanisms_by_parent_and_molecule), the one keying the bridge fetch, the missing-target fetch and the report builder share, so a mechanism ChEMBL records on a salt form counts for the parent. mechanism_target_ids lists the human targets of the parent (organism Homo sapiens or unknown), single_mechanism_target applies has_dominant_target with one target and nervous_system_atc applies is_nervous_system_atc to atc_codes. The targets of every mechanism under a bridged parent are fetched into targets.json when missing (64 records added on 5 October 2026; 631 now); a target id still missing after the fetch is listed under errors and is reported by the builder as target_record_missing rather than as a missing graph gene.
 
-Bridge counts of the current file: ingredients 1,866; with_any_mechanism_target 1,134; single_mechanism_target 892; single_target_and_atc_n 150; single_target_and_atc_n_onsides_only 28; unified_with_sider 1,000 over 973 distinct SIDER drugs. The name-bridge comparison (sider_name_bridge_comparison) records that the 861 ingredients whose name equals a SIDER drug name are all unified, 857 to a CID of that name and 4 to another CID through the parent route; 139 ingredients are unified without a name match.
+Bridge counts of the released file (data/releases/v0.4/onsides/ingredient_identifier_bridge.json, as of the build of 5 October 2026): ingredients 1,866; with_any_mechanism_target 1,134; single_mechanism_target 892; single_target_and_atc_n 150; single_target_and_atc_n_onsides_only 28; unified_with_sider 1,000 over 973 distinct SIDER drugs. The name-bridge comparison (sider_name_bridge_comparison) records that the 861 ingredients whose name equals a SIDER drug name are all unified, 857 to a CID of that name and 4 to another CID through the parent route; 139 ingredients are unified without a name match.
 
 ## 3. Statements (aggregate_label_statements)
 
 Term matching: a PT row of vocab_meddra_adverse_effect matches a target symptom when its name is a crosswalk preferred term (docs/symptom_crosswalk.csv). An LLT row matches through the PT it falls under, using the LLT-to-PT pairing SIDER lists per label term in meddra_all_se.tsv.gz (sider_lower_level_to_preferred_terms; 5,805 LLT names paired without redistributing MedDRA); without the pairing an LLT matches only on an exact name, which never happens in the v3.1.1 vocabulary. 21 OnSIDES LLT ids fall under crosswalk PTs this way; a MedDRA LLT-to-PT table kept outside the repository would be the complete solution. The statement keeps the source term type in meddra_term_type.
 
-One statement per (ingredient_id, target_symptom, meddra_id, label_section, source_country) over the events of every label whose RxNorm products contain the ingredient: label_count distinct labels, single_ingredient_label_count of them with exactly one ingredient, labels_of_ingredient_in_country, max_pred1, mean_pred1 and match_methods (the distinct match_method values joined by ";"). Current build: 5,959 statements, 5,649 PT-coded and 310 LLT-coded.
+One statement per (ingredient_id, target_symptom, meddra_id, label_section, source_country) over the events of every label whose RxNorm products contain the ingredient: label_count distinct labels, single_ingredient_label_count of them with exactly one ingredient, labels_of_ingredient_in_country, max_pred1, mean_pred1 and match_methods (the distinct match_method values joined by ";"). Build of 5 October 2026: 5,959 statements, 5,649 PT-coded and 310 LLT-coded.
 
 Label sections exist for US labels only: AR (Adverse Reactions), BW (Boxed Warning) and WP (Warnings and Precautions). Every UK, EU and JP event carries label_section NA, OnSIDES' value for the undivided non-US label whose extraction covers the undesirable-effects section; no US event does (crosstab of the statements: EU 1,550, JP 671 and UK 1,288 NA rows, US 2,216 AR, 20 BW and 214 WP rows).
 
@@ -49,7 +49,7 @@ The 35 shared columns of docs/evidence_reports_spec.md come first (REPORT_COLUMN
 | column | value |
 |---|---|
 | report_id | `OnSIDES-label|{perturbation_id}|{ingredient_id}|{meddra_id}|{symptom}|{label_section}|{source_country}` |
-| perturbation_id, perturbation_type, perturbation_label | the bridge's perturbation_id; "drug"; the SIDER drug name when unified, else the ingredient name |
+| perturbation_id, perturbation_type, perturbation_label | the bridge's perturbation_id; "drug"; the SIDER drug name when unified (since 24 October 2026 passed through sider_drug_names.readable_drug_name, which applies configs/sider_drug_name_corrections.csv), else the ingredient name |
 | symptom, relation, evidence_class, source, report_value | target symptom; "induces"; "pharmacological"; "OnSIDES-label"; 1 (OnSIDES records no absences) |
 | source_record_id, source_record_label | ingredient_id and ingredient name |
 | source_term_id, source_term_label | meddra_id and the term name (blanked by the data release) |
@@ -60,7 +60,7 @@ The 35 shared columns of docs/evidence_reports_spec.md come first (REPORT_COLUMN
 | rubric_log_sample_size, rubric_frequency_known, rubric_evidence_code_pcs, rubric_evidence_code_tas, rubric_evidence_code_iea, rubric_placebo_controlled, rubric_curated_synopsis, rubric_causal_association | 0.0 |
 | association_type, evidence_date_source | "" |
 | limitations | section 6 |
-| perturbation_nodes | JSON list of [node_id, sign, 1/len(mapped)] per gene node of the single target |
+| perturbation_nodes | JSON list of [node_id, sign, 1/len(mapped)] per graph node of each target. In the build of 5 October 2026 the nodes were the gene nodes of the single protein target; since 8 October 2026 (commit 0242dde) they come from perturbation.map_drug_targets_to_graph_nodes.GraphNodeLookup, which also places non-protein targets on Human-GEM metabolites (configs/non_protein_drug_targets.csv, docs/drug_targets_any_type.md) and gives a gene node its subunit's own sign where the target carries one, and since 17 October 2026 (decision 8.11) a qualifying ingredient's ChEMBL complex targets are first narrowed to the subunits the Guide to PHARMACOLOGY names (`--narrow-complex-targets`, on by default; `--narrow-by-site-structure` is the extension awaiting the owner) |
 | rubric_log_label_count | log1p(label_count) |
 | rubric_boxed_warning | 1.0 for BW (US labels only) |
 | rubric_adverse_reactions_section | 1.0 for AR and for NA: the non-US extraction covers the adverse-reactions text, so the feature is not a second copy of rubric_us_label |
@@ -74,12 +74,12 @@ The 35 shared columns of docs/evidence_reports_spec.md come first (REPORT_COLUMN
 
 The rule SIDER rows pass in assemble_evidence_table.py, applied per ingredient, then two row-level tests; the first failing test names disqualified_reason:
 
-| disqualified_reason | test | statements (current build) |
+| disqualified_reason | test | statements (build of 5 October 2026) |
 |---|---|---|
 | no_chembl_parent | the bridge has no ChEMBL parent | 479 |
-| no_single_mechanism_target | the parent's human mechanism targets are not exactly one (has_dominant_target, max_targets 1) | 2,125 |
+| no_single_mechanism_target | the parent's human mechanism targets are not exactly one (has_dominant_target, max_targets 1). Since 8 October 2026 `--max-drug-targets` sets the cap and 0 lifts it (pass the assembler the same value), and an ingredient with no mechanism target whose parent is in configs/drugs_acting_as_graph_compounds.csv takes that graph compound as its one target, as a SIDER drug does | 2,125 |
 | no_atc_code | the ingredient has no ATC code at all; there is no waiver, since a SIDER drug without a code does not qualify either | 130 |
-| atc_not_nervous_system | no ATC N code (is_nervous_system_atc, the version 1 proxy for central action) | 1,985 |
+| atc_not_nervous_system | no ATC N code (has_admitted_atc_code with the group N prefixes, the version 1 proxy for central action). Since 10 October 2026 `--admitted-atc-prefixes <csv>` replaces group N by a written list of groups and substances (atc_prefix column; pass the assembler the same file), and the reason is then atc_not_admitted | 1,985 |
 | combination_label_only | every label behind the statement is a combination product (single_ingredient_label_count 0): the label of carbidopa/levodopa says nothing about carbidopa alone | 96 |
 | target_record_missing | the target has no record in targets.json, so no gene symbol can be mapped | 0 |
 | no_graph_node | the target's gene symbols are not graph nodes | 0 |
@@ -94,8 +94,8 @@ Clauses joined with "; ": "label statement without frequency"; "{label_count} la
 
 Two SIDER sides are measured for the qualifying OnSIDES (perturbation_id, symptom) pairs. The qualified side is the SIDER-label pairs of the assembled table (data/processed/evidence_full/evidence_reports.parquet, source SIDER-label, relation induces): the 543 pairs of SIDER drugs that passed SIDER's own ChEMBL mapping, single-target and ATC N rules, which the time split trains on. The raw side is every PT adverse-event row of SIDER 4.1 whose term is in the crosswalk (5,248 (identifier, symptom) pairs), looked up for every STITCH flat identifier the bridge links to the perturbation (the unified CID and its collisions), independent of SIDER's qualification.
 
-Current build: 587 OnSIDES pairs; 283 in both; 260 SIDER only; 304 absent from the qualified table, of which 204 are on 2015 SIDER labels and 100 are later-slice candidates (41 on perturbations SIDER also holds, 59 on OnSIDES-only perturbations). The design's time split (section 6.1) trains on the SIDER 2015 pairs and tests on the later-slice candidates, not on every pair absent from the qualified table; a candidate may still have been on a 2015 label that SIDER's extraction missed, and OnSIDES rows are dated by the release.
+Build of 5 October 2026: 587 OnSIDES pairs; 283 in both; 260 SIDER only; 304 absent from the qualified table, of which 204 are on 2015 SIDER labels and 100 are later-slice candidates (41 on perturbations SIDER also holds, 59 on OnSIDES-only perturbations). The design's time split (section 6.1) trains on the SIDER 2015 pairs and tests on the later-slice candidates, not on every pair absent from the qualified table; a candidate may still have been on a 2015 label that SIDER's extraction missed, and OnSIDES rows are dated by the release.
 
 ## 8. Known limits
 
-The stereo-flattened SIDER identifier can pool stereoisomers of one drug under one perturbation (section 2); a measured blood-brain barrier flag is still to replace the ATC N proxy; the LLT pairing covers only the terms SIDER listed; the assembled table under data/processed/evidence_full was built before the rule changes of 5 October 2026 (ATC waiver removed, combination-only statements excluded, LLT pairing, name unification) and is to be re-assembled with the new onsides_reports.parquet.
+The stereo-flattened SIDER identifier can pool stereoisomers of one drug under one perturbation (section 2). The ATC N proxy still decides central action in this builder (has_admitted_atc_code; `--admitted-atc-prefixes` can replace group N by a written list of ATC prefixes, section 5); the measured Kp,uu,brain admission rule of 12 October 2026 (experiments/apply_central_action_rule.py, which writes configs/centrally_acting_drugs.csv) is not read by it, so no measured blood-brain barrier flag has replaced the proxy here. The LLT pairing covers only the terms SIDER listed. The full table was re-assembled with the 5 October 2026 onsides_reports.parquet in the same commit (d00ddc5) and released as data/releases/v0.4/evidence_full (3,910 observations; 7,488 reports, 1,144 of them OnSIDES-label).

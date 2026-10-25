@@ -54,15 +54,21 @@ Every row also states, in one line each:
 
 ## Questions under appraisal
 
-Q1 is live: it bears on the result recorded in `docs/graph_content_null_results.md`, where
-the graph's wiring carries signal that an unsigned random walk already extracts and the
-signed mechanistic encoder adds nothing on top.
+Q1 was opened on 7 October 2026 against the result then recorded in `docs/graph_content_null_results.md`: on the
+monogenic slice pilot (the metabolic slice graph, 451 genes, one layer) the graph's wiring carried signal that an
+unsigned random walk extracted and the signed mechanistic encoders had not been shown to add to. The owner ruled on
+21 October 2026 (decision 9.82) that those slice comparisons with the random walk are history, measured on a graph
+that predates the decisions of 13 October and later that changed the graph and the propagation, and are not evidence
+about the current encoders. The appraisal below stands as written on 7 October; what it bears on is that dated
+result, not the current model. The appraisal chain ended that day when its cap was spent (slot log below); Q1 is open
+in the strict form stated under "State of Q1 when the cap was spent".
 
 - **Q1.** Has signed or relation-typed propagation on a biological network been shown to
   beat unsigned diffusion for predicting a phenotype or a clinical label?
 - **Q2.** Where edge signs are reported to help, what fraction of nodes receive messages of
-  both signs? (Our graph: 7,811 of 21,337 destinations, 36.6%, and all of them annihilate under the
-  encoder's cross-relation mean.)
+  both signs? (Our graph, measured 7 October 2026 on the metabolic slice graph `data/processed/graph`: 7,811 of 21,337
+  destinations, 36.6%, and all of them annihilate under the encoder's cross-relation mean;
+  `docs/graph_content_null_results.md` and `docs/membrane_potential_reach.md`.)
 - **Q3.** Is noisy-OR pooling over pathway modules reported against a linear or sum-pooled
   alternative anywhere, with a held-out comparison?
 
@@ -87,21 +93,24 @@ signed mechanistic encoder adds nothing on top.
 | [10.1186/s12915-024-01968-0](https://doi.org/10.1186/s12915-024-01968-0) (PMID 39148051) | Q1 | `supports` | `same_construct_other_domain` | `weak` | "A novel strategy for propagating signed message in signed networks addresses heterogeneity and consistency among nodes connected by signed edges" | an ablation replacing their signed propagation with an unsigned one, same features and same split; the abstract reports neither | whether the reported AUROC of 0.9742 owes anything to the signed strategy, and whether any of it transfers off a similarity-feature bipartite graph |
 | [10.1186/1756-0500-7-516](https://doi.org/10.1186/1756-0500-7-516) (PMID 25113603) | Q1, Q2 | `supports` | `analogous_mechanism` | `weak` | "the aggregation method we used is limited to a specific class of causal network models called \"causally consistent\", which is equivalent to the notion of balance of a signed graph used in graph theory" | a held-out comparison of their signed aggregation against an unsigned random walk on the same networks and the same readout; they report neither | whether an unsigned walk would have scored the same, which is our whole question |
 
-## How the task is paced
+## How the task was paced (7 October 2026; the chain ended that day at slot 19 of 19)
 
 One paper per firing, each firing scheduled about five minutes after the last, through a
-one-shot self-directed reminder rather than a background shell. A firing does nothing but
+one-shot self-directed reminder rather than a background shell. A firing did nothing but
 read one source, write one row, push the file and schedule the next. If any registered job
-under `runs/jobs/` needs attention, the firing handles that and skips the paper.
+under `runs/jobs/` needed attention, the firing handled that and skipped the paper.
 
-The limit is enforced by `scripts/literature_pacing.sh`, not by intention. The firing must
-call it with `claim` before reading anything, which checks and consumes the slot in one
-step, so a firing cannot read a second source by calling the gate twice. The gate refuses
-inside 300 seconds of the last appraisal and refuses outright after 19 appraisals, which is
-the number of PubMed records matching the Q1 query. A refusal means no source is read that
-firing. The chain also stops on a message from the author or when a question is closed.
+The limit was enforced by `scripts/literature_pacing.sh`, not by intention; the script is still in the
+repository with the same limits. The firing had to call it with `claim` before reading anything, which
+checks and consumes the slot in one step, so a firing could not read a second source by calling the gate
+twice. The gate refuses inside 300 seconds of the last appraisal and refuses outright after 19 appraisals,
+which was the number of PubMed records matching the Q1 query. A refusal meant no source was read that
+firing. The chain would also have stopped on a message from the author or when a question was closed.
 
 ### Handoff to a separate session (7 October 2026, 17:55 UTC)
+
+This section is the handoff as written that afternoon. The chain ended the same evening when the cap was spent (slot
+log below), so the ownership and seeding instructions here are history and no session owns the file now.
 
 The paced chain was stopped in the experiment session at the user's request after slot 10 of 19 (nine rows and one
 replacement search), so that it can continue in a session started after the user connected a Consensus Pro account.
@@ -195,11 +204,13 @@ so a sign-homogeneity count at destinations is not a balance measurement either 
 is the frustration index, or its cheap exact check for balance: two-colour the nodes so that
 every positive edge joins same-coloured nodes and every negative edge joins differently
 coloured ones, by breadth-first search per component, and count the edges that fail.
-`experiments/measure_signed_graph_balance.py` does this. Run on the stored edge table of
-`data/processed/graph` it returns zero frustrated edges, but that result is vacuous: the
-stored table has no negative edges at all, since the negative signs are derived inside the
-encoder. The script therefore has to be run on the derived relation stack before it says
-anything, which is recorded as open work rather than a result.
+`experiments/measure_signed_graph_balance.py` does this. When this note was written (7 October 2026,
+morning) the script read the stored edge table of `data/processed/graph` and returned zero frustrated
+edges, a vacuous result: the stored table has no negative edges at all, since the negative signs are
+derived inside the encoder. Later the same day (commit e1d03ca) the script was changed to add the derived
+depletes_substrate relation by default, as the encoder's signed_stacked_adjacency does, so it now measures
+the relation stack; `--stored-edges-only` keeps the table-only count. The measurement on the stack is
+reported under "The pattern across the five rows" below.
 
 ## Queue for Q1
 
@@ -403,7 +414,8 @@ dynamics or drug-target status under a signed logic with no unsigned variant vis
 
 The paper names our problem and does not measure it. Its signed propagation exists precisely
 because nodes joined by signed edges disagree in sign, which is the condition measured on our
-graph at 36% of destinations, so it is prior art for the aggregator work in task #24 rather
+graph at 36% of destinations, so it is prior art for the aggregator work in task #24 (an item of the
+experiment session's task list on 7 October 2026, not a repository identifier) rather
 than evidence about it. Three things keep the weight at `weak`. The sign is a property of the
 association label, the direction of an abundance change, not of an edge in a causal network.
 The outcome is association and sign classification, not a phenotype from a perturbation. And
@@ -444,7 +456,11 @@ docs/membrane_potential_reach.md shows.
 
 **Measurement that now has a point:** run `experiments/measure_signed_graph_balance.py` on the derived
 relation stack rather than the stored edge table, to report the frustration per relation and confirm
-the count above rather than deriving it.
+the count above rather than deriving it. (Done later on 7 October 2026: the script measures the stack by
+default since commit e1d03ca, and the counts are in the next section. The derived count above, 34,791
+pairs on the metabolic graph, agrees with the measured 34,791 frustrated edges there; the neuronal count
+above, 36,562, does not match the measured 38,958 of the next section, and which is right is left to the
+owner, since neither was re-measured for this entry.)
 
 ### Note on 39976387, the nearest published analogue so far
 
@@ -491,7 +507,11 @@ biological networks leans on it or on its near-miss.
 A stoichiometric metabolic graph violates balance by construction, not by accident. Every substrate_of
 edge forms a negative two-cycle with the depletes_substrate edge the encoder derives from it, giving
 34,791 frustrated edges of 129,577 (26.9%) on the metabolic graph and 38,958 of 143,079 (27.2%) on the
-neuronal graph, measured by `experiments/measure_signed_graph_balance.py`. So the balance-theoretic
+neuronal graph, measured by `experiments/measure_signed_graph_balance.py` on 7 October 2026 on the slice
+graphs of that day (`data/processed/graph`, the 94,786 stored edges of the release v0.4 `graph` table plus
+34,791 derived depletion edges, and the graph_neuronal build of the same day). The graph has been rebuilt
+several times since (the v4 and v5 builds), so these are the counts of that graph, not of the current
+one. So the balance-theoretic
 tools are unavailable here, and the papers that work best on association networks do so partly because
 those networks are close to balanced.
 
@@ -818,10 +838,12 @@ Why `moderate`. The evaluation is held out and the baseline at issue is run, but
 chance and no spread over drugs is printed in the text.
 
 What it suggests for our comparison. Direction and sign are separate attributes, and this paper is evidence for
-direction alone. The note on our null result (docs/graph_content_null_results.md) does not say whether the random
-walk with restart follows edge direction or symmetrises the graph. If it follows direction, the gain reported here
-is already inside our baseline. If it symmetrises, a directed unsigned arm is the comparison that separates
-direction from sign, and the signed encoder has so far been compared with a baseline that lacks both.
+direction alone. When this note was written, the note on our null result (docs/graph_content_null_results.md) did not
+say whether the random walk with restart follows edge direction or symmetrises the graph. It has since answered
+(section "The baseline is undirected and the encoders are not", 7 October 2026): the walk symmetrises the graph and
+both trained encoders follow the stored direction, so the signed encoder had been compared with a baseline that
+lacks both direction and sign, and a directed unsigned arm is the comparison that separates the two. That arm is
+`experiments/score_directed_random_walk.py` (docs/directed_random_walk.md); its results are not in this file.
 
 No instruction-like text was found in the article.
 
@@ -963,8 +985,9 @@ is fitted. It still does not reach Q1, for a reason worth keeping: on a directio
 prediction to make, so the comparison Q1 asks for only exists for the strength of a response or for a phenotype
 ranking, and the abstract reports neither against a sign-blind model. Its headline accuracies also need the
 majority-direction rate beside them before they can be credited. Our sign check on the HPO laboratory labels
-(docs/linear_response_sign_check.md) has the majority direction at 0.806, above the untrained signed response at
-0.615, so an accuracy near 80 percent is uninformative until the base rate is known. The paper is the best support so
+(docs/linear_response_sign_check.md, generated 7 October 2026 on the slice graph of that day) has the majority
+direction at 0.806, above the untrained signed response at 0.615 (the "plain, 8 steps, pool" reading), so an accuracy
+near 80 percent is uninformative until the base rate is known. The paper is the best support so
 far for the premise behind the linear-response encoder, that topology without kinetics carries the sign of a
 perturbation's effect, and no support yet for the claim that this sign improves a phenotype prediction.
 

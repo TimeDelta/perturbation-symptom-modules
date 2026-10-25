@@ -47,12 +47,20 @@ article text): pubtator_relations_filtered.parquet, ctd_relations_filtered.parqu
 sider_chemical_mesh_map.parquet, pubmed_publication_dates.json, pubtator_relations_summary.json,
 ctd_relations_summary.json, documents.parquet (titles and abstracts stay inside data/processed), documents_summary.json,
 literature_reports.parquet and literature_summary.json; raw downloads and response caches under data/raw/pubtator3,
-data/raw/ctd and data/raw/hgnc with a pin file next to each download.
+data/raw/ctd and data/raw/hgnc with a pin file next to each download. Since 11 October 2026 the CTD fetch also writes
+CTD_TERMS.md beside its table (mechanistic_pathway_learning/evidence/ctd_terms.py, write_ctd_terms): the citation and
+the links to CTD that CTD's terms of use ask for, carried into the release (data/releases/v0.4/literature/CTD_TERMS.md,
+manifest amendment of 2026-10-11).
 
 ## 2. MeSH descriptors per target symptom and their verification
 
-Choice. Each target symptom gets the MeSH descriptor that names the sign or symptom itself (level "symptom") and,
-flagged apart, the diagnostic category whose literature is a soft prior on its cardinal symptom (level "diagnosis").
+Choice. Each target symptom of the twelve in the crosswalk on 3 October 2026 gets the MeSH descriptor that names the
+sign or symptom itself (level "symptom") and, flagged apart, the diagnostic category whose literature is a soft prior
+on its cardinal symptom (level "diagnosis"). The twelve symptoms added to docs/symptom_crosswalk.csv on 7 and 9 October 2026
+(apathy, suicidality, self_injury, compulsive_behavior, disinhibition_or_impulsivity, hyperactivity, emotional_lability,
+increased_appetite, abnormal_dreams, decreased_libido, catatonia, parkinsonism) carry no MeSH descriptor and so have no
+literature channel until one is verified by the procedure below; the crosswalk notes say so for parkinsonism, and the
+builds of this document predate them.
 Both levels are retrieved; the level column travels with every report so the two can be weighted apart, and the
 limitations text names a diagnosis-level report as such. Assumption A7 keeps diagnoses out of the targets, not out
 of the priors. Diagnosis descriptors were limited to the category nearest the symptom (Depressive Disorder and
@@ -321,11 +329,17 @@ reports (159,342) rest on papers beyond the cap, so the appraisal grades a minor
   grade, the literature rows counting only in the reliability fit. The experiment loader keeps grades A and B as
   labels and refuses D and E (experiment_data.SOFT_PRIOR_ONLY_GRADES), so no literature row can become a label or an
   evaluation positive. associated_with stays a third relation that the induces experiments never read.
-- Not yet built: the training-side use of the soft priors (when it is, literature rows must be excluded for every
-  perturbation of the evaluation fold, since a report on a held-out gene's symptom would leak its label), the
-  structure-based chemical mapping, the species check on gene rows through the Species annotations (an animal
-  paper can mention a human NCBI Gene id; the appraisal now records animal-only papers, the loader does not drop them),
-  the document-grounded language-model appraisal and the SemMedDB predications gated on the UMLS license.
+- Built on 16 October 2026, after this document's builds: the training-side use of the soft priors
+  (mechanistic_pathway_learning/evidence/soft_priors.py; experiments/run_main_model.py --soft-prior-strength and
+  --soft-prior-reports, off by default and off in the registered model). Literature rows enter only from the admitted
+  sources (PubTator3-cause, PubTator3-stimulate, PubTator3-inhibit and CTD-curated; associated_with is not evidence of
+  induction) and, in the module's words, "the prior is applied to the rows a fit trains on and to nothing scored",
+  which is the leakage condition this document asked for: a report on a held-out gene's symptom must not reach its
+  label.
+- Not yet built: the structure-based chemical mapping, the species check on gene rows through the Species annotations
+  (an animal paper can mention a human NCBI Gene id; the appraisal records animal-only papers, the loader does not drop
+  them), the document-grounded language-model appraisal (llm_evidence_appraisal.py, model unpinned) and the SemMedDB
+  predications gated on the UMLS license.
 - Open question 13 of the design concerns how gene association reports should count; after this build the gene
   rows also carry induces reports with a sign from the stimulate and inhibit types, so the question narrows to the
   associate rows.

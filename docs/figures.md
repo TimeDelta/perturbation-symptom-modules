@@ -1,12 +1,15 @@
-# Explanatory figures (updated 16 October 2026)
+# Explanatory figures
 
 Drawn by experiments/make_explanatory_figures.py from the repository's own outputs (graph tables, summaries and run
 results), so each figure can be regenerated after the inputs change; a figure whose inputs are absent is skipped with a
-message and keeps its last drawing. Figures 1 to 3 and 7 to 12 read the v5 tables and the graph the registered model
-reads with them, `graph_full_neuronal_split_binders_drugs_v5`. Figures 5 and 6 are the monogenic slice pilot's, drawn
-from its runs of 8 October 2026, and are unchanged since. Figures 15 and 16 read the planted-truth simulations of the
-hard edge gates (`docs/edge_gate_simulation_results.json`). No figure reads a lockbox output, and no full-graph model has
-been scored.
+message and keeps its last drawing. The committed drawings under docs/figures/ are those of 17 October 2026, apart from
+figures 5 and 6 (9 October 2026); a count or number quoted below is what the figure read on that day. Figures 1 to 3 and
+7 to 12 read the v5 tables and the graph the registered model reads with them,
+`graph_full_neuronal_split_binders_drugs_v5`. Figures 5 and 6 are the monogenic slice pilot's, drawn from its runs of
+8 October 2026, and are unchanged since; under decision 9.82 (21 October 2026) those slice readings are history and not
+evidence about the current graph or encoders. Figures 15 and 16 read the planted-truth simulations of the hard edge
+gates (`docs/edge_gate_simulation_results.json`). No figure reads a lockbox output, and no full-graph model has been
+scored.
 
 ## 1. The model
 
@@ -20,15 +23,20 @@ hypermorphic gain +1, and HTT's CAG expansion is a node of its own with four cit
 of its own, joined to its targets by its ChEMBL mechanism edges, with an ablation arm that seeds the targets instead
 (the user, 10 October 2026). The message-passing encoder runs 3 layers of typed messages with the relations shared
 through a rank-2 factorisation. The linear-response encoder propagates to a fixed point (tolerance 0.001, at most 60
-rounds) over the signed adjacency of each relation normalised by total in-degree, with a learned gain per relation,
-positive input weights, cofactor relations, reversible reactions and compartment pH; each cell class reads the settled
-state scaled by its limiting step (figure 2). Both read the difference field. The node descriptors are read under the
-registered seed masking, so a perturbation's own nodes, their encodes partners and a drug node's targets read only
-their structural and expression columns. Labels are better_v2 on the 38 fine constructs (figure 3); trial arms, FAERS
-and IMPC knockouts enter the reliability fit as soft classes and never as labels (decision 9.48). Folds are grouped by
-disease cluster and drug targets; the held-out set on v5 is drawn on the owner's go-ahead (decision 1.1). The edge
-priors of decision 9.57 are built and off in the registered model; the hard gates of decision 9.62 are being built
-(figure 12). Every count is read from the graph and the summaries when the figure is drawn.
+rounds) over the signed adjacency of each relation, with a learned gain per relation, positive input weights, cofactor
+relations, reversible reactions and compartment pH; each cell class reads the settled state scaled by its limiting step
+(figure 2). The registered normalisation is the per-seed forward cone (`--normalisation forward_cone`, decision 9.16,
+registered 20 October 2026): each edge is divided by its destination's in-degree over every relation, counting only the
+edges whose source the seed can reach. The drawing of 17 October 2026 still reads "normalised by total in-degree", the
+registered rule until that date. Both read the difference field. The node descriptors are read under the registered
+seed masking, so a perturbation's own nodes, their encodes partners and a drug node's targets read only their
+structural and expression columns. Labels are better_v2 on the fine constructs (figure 3; 38 when the figure was drawn,
+39 since decision 9.74 split akathisia from restlessness, merged 20 October 2026); trial arms, FAERS and IMPC knockouts
+enter the reliability fit as soft classes and never as labels (decision 9.48). Every kept pair is counted once under
+the positive-unlabelled likelihood (registered 24 October 2026, decision 9.90). Folds are grouped by disease cluster
+and drug targets; the held-out set on v5 is drawn on the owner's go-ahead (decision 1.1). The edge priors of decision
+9.57 are built and off in the registered model; the hard gates of decision 9.62 are built (figures 12 to 16) and act
+only when the edge priors are on. Every count is read from the graph and the summaries when the figure is drawn.
 
 ## 2. Cell-class channels
 
@@ -50,14 +58,15 @@ class, x_k / (max_j x_j + 1 nCPM) (mechanistic_pathway_learning/graph/brain_expr
 
 ![label selection](figures/label_selection.png)
 
-The better_v2 selection on the v5 tables: 38 fine constructs (decision 9.58) and the allele perturbations (decision
-9.54). Gene pairs are kept at HPO frequency 0.30 or more; drug pairs at label frequency 1 percent or more or when both
-SIDER and OnSIDES list them. 4,448 of 8,123 positive pairs are kept. A pair set aside is masked out of the loss and
-every metric; it is not a negative. Also masked are the pairs whose only evidence is grade C (a human association) and
-the kept drug pairs never more frequent on the drug than on placebo in a label that gives both arms (70 on v5).
-Intellectual disability is the largest construct by far, 1,243 kept pairs (decision 9.61 is about it). Anhedonia,
-abulia, pill-rolling tremor, bulimia, catatonia and psychomotor retardation keep fewer than the 5 positives the macro
-average needs.
+The better_v2 selection on the v5 tables as drawn on 17 October 2026: 38 fine constructs (decision 9.58; 39 since
+decision 9.74, whose akathisia construct a redrawn figure will show) and the allele perturbations (decision 9.54). Gene
+pairs are kept at HPO frequency 0.30 or more; drug pairs at label frequency 1 percent or more or when both SIDER and
+OnSIDES list them. 4,448 of 8,123 positive pairs are kept. A pair set aside is masked out of the loss and every metric;
+it is not a negative. Also masked are the pairs whose only evidence is grade C (a human association) and the kept drug
+pairs never more frequent on the drug than on placebo in a label that gives both arms (70 on v5). Intellectual
+disability is the largest construct by far, 1,243 kept pairs (decision 9.61 is about it). Anhedonia, abulia,
+pill-rolling tremor, bulimia, catatonia and psychomotor retardation keep fewer than the 5 positives the macro average
+needs.
 
 ## 4. The dopaminergic class
 
@@ -66,8 +75,8 @@ average needs.
 The Human Protein Atlas single-nucleus cluster types have no dopaminergic type, so dopamine neuron markers peak at a
 few nCPM in unrelated types (SLC6A3 at 0.6 in splatter neurons). Cluster 395 of the same atlas (Siletti et al. 2023),
 summed from 872 nuclei and scaled to HPA's nCPM with a trimmed mean of log ratios, carries TH, SLC6A3 and SLC18A2 at
-hundreds of nCPM and GAD1 and AQP4 below 3. Data: CC BY 4.0 (Siletti et al. 2023, via CZ CELLxGENE) and HPA
-(CC BY-SA 4.0).
+hundreds of nCPM and GAD1 and AQP4 below 3. Data: CC BY 4.0 (Siletti et al. 2023, via CZ CELLxGENE) and HPA (CC BY
+4.0 as docs/data_sources.md records it since 20 October 2026; this line read "CC BY-SA 4.0" until then).
 
 ## 5. Slice pilot: one-change comparisons
 
@@ -82,18 +91,22 @@ blocks: dropping the gene block scores below dropping the protein block, -0.025 
 gene-derived reaction block scores below it too, -0.030 [-0.046, -0.015]. Three within-strata intervals exclude zero (descriptors in message passing,
 -0.020; the same gene-against-protein pair, -0.022; the neuronal graph under the noisy-OR head, -0.019).
 docs/twin_comparisons.md has the numbers. The module-fix and gene-and-protein-split arms (runs/module_fix) are read in
-docs/module_health_results.md, docs/module_health_fast_leak_results.md and, when split_slice ends, its own document.
+docs/module_health_results.md and docs/module_health_fast_leak_results.md; the split_slice job's comparison tables
+(docs/gene_protein_split.md, "Slice runs") are in no commit. These are readings of the slice pilot of 6 to 8 October
+2026 and are history under decision 9.82.
 
 ## 6. Slice pilot: baselines and models
 
 ![slice baselines and models](figures/slice_baselines_and_models.png)
 
 Per-fold macro AUPRC of the four slice baselines and every five-fold slice configuration of runs/phase3_aggregate.json
-(41 configurations). One configuration has a mean above the random walk's 0.293: b3_typed_nodes_descriptors_brain_without_protein
-at 0.296, with a fold standard deviation of 0.041 against the walk's 0.014, which no paired comparison has tested. The
-amendment of 7 October attributes the trained models' position to the slice's size and single layer rather than to the
-mechanism; the slice cannot tell those two apart. b3_typed_nodes appears twice: the earlier run and the rerun under
-the current code (runs/encoder/).
+(41 configurations), on the slice graph of the first week of October 2026. One configuration has a mean above the random
+walk's 0.293: b3_typed_nodes_descriptors_brain_without_protein at 0.296, with a fold standard deviation of 0.041 against
+the walk's 0.014, which no paired comparison has tested. The amendment of 7 October attributes the trained models'
+position to the slice's size and single layer rather than to the mechanism; the slice cannot tell those two apart.
+b3_typed_nodes appears twice: the earlier run and the rerun under the code of 8 October 2026 (runs/encoder/). The owner
+rejected this comparison as evidence about the current model (decision 9.82: "it's on like v.1 or v.2 graph when it
+barely matched the physiology"); it stays here as the record of that pilot.
 
 ## 7. Gene and protein nodes
 
@@ -138,11 +151,11 @@ the argument.
 
 ![graph composition](figures/graph_composition.png)
 
-`graph_full_neuronal_split_binders_drugs_v5`: 49,797 nodes in eight types and 268,958 edges in 22 relations, by sign,
-and the same edges by the source layer they come from (OmniPath signalling, Human-GEM metabolism, CollecTRI
-transcription, the gene-to-protein split, Reactome complexes and sets, BRENDA enzyme regulation, the drug mechanism and
-sequestration edges, the electrical edges, the curated neuronal and redox edges, plasma carriage and the allele's
-edges). `docs/graph_summary.md` gives the same counts as tables.
+`graph_full_neuronal_split_binders_drugs_v5` as drawn on 17 October 2026: 49,797 nodes in eight types and 268,958 edges
+in 22 relations, by sign, and the same edges by the source layer they come from (OmniPath signalling, Human-GEM
+metabolism, CollecTRI transcription, the gene-to-protein split, Reactome complexes and sets, BRENDA enzyme regulation,
+the drug mechanism and sequestration edges, the electrical edges, the curated neuronal and redox edges, plasma carriage
+and the allele's edges). `docs/graph_summary.md` gives the same counts as tables.
 
 ## 11. Alleles as perturbations
 
@@ -161,10 +174,11 @@ paper; 3 pairs whose sources disagree and 2,760 that no source types stay untype
 
 Left: the 163,276 gated edges of the v5 graph by evidence tier, with the prior that each is real in the form decided on
 16 October 2026, sigmoid(n logit p), and the cost of closing it, n logit p nats (decision 9.62). Only the 15 edges an
-IntAct absence lowered below one half are cheaper closed. Right: a hard concrete gate (Louizos et al. 2018) started at
-its prior is mostly fractional, and the paper's test-time gate reads a 0.9 edge as 0.67; that is why the decided build
-ends with a binary pass, which trains the gates alone with the read-out (open when P(open) is at least one half) in the
-forward pass and a surrogate gradient in the backward pass.
+IntAct absence lowered below one half are cheaper closed; that count is of 17 October 2026, before decision 9.88
+(22 October 2026) stopped an isoform record from contesting a gene pair, and has not been measured on v5 since. Right: a
+hard concrete gate (Louizos et al. 2018) started at its prior is mostly fractional, and the paper's test-time gate
+reads a 0.9 edge as 0.67; that is why the decided build ends with a binary pass, which trains the gates alone with the
+read-out (open when P(open) is at least one half) in the forward pass and a surrogate gradient in the backward pass.
 
 ## 13. Fitting the hard edge gates
 

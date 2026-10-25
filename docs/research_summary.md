@@ -26,8 +26,12 @@ Status: mostly done. The full-data rewiring control has to be repeated at the mi
 needed (findings 2 and 8).
 
 - Labels: monogenic gene-symptom pairs from HPO with provenance-based grades and a reliability model; drug-symptom
-  pairs from SIDER 4.1 and OnSIDES labels for drugs with a single mechanism target and an ATC nervous-system code.
-  Unobserved pairs are unlabelled, not negative.
+  pairs from SIDER 4.1 and OnSIDES labels. The drug admission rule in release v0.4 was a single mechanism target and
+  an ATC nervous-system code; the registered rule since amendment items 1, 14 and 33 (docs/preregistration.md) is no
+  limit on targets (`scripts/rebuild_data_layer.sh --max-drug-targets 0`, 24 October 2026) and, for a drug outside the
+  nervous-system code, the three-part central-action rule of item 14. Unobserved pairs are unlabelled, not negative;
+  under the registered `label_likelihood` (`positive_unlabelled`, decision 9.90) they enter as unlabelled pairs of a
+  positive-unlabelled likelihood rather than as negatives at reduced weight.
 - Splits: disease-cluster grouping (genes of one disease leave training together), Human-GEM subsystem hold-out,
   time split by evidence date.
 - Controls run with every split: labels permuted within degree strata, degree-preserving rewiring, popularity and
@@ -44,16 +48,22 @@ needed (findings 2 and 8).
 ### Aim 2. Test whether the pathway-module model beats the best baseline
 
 Status: slice pilot done (negative); the confirmatory test is specified (docs/preregistration.md, "Confirmatory
-specification, 8 October 2026" and its amendments) and its development pilots run on the full graph in this 4-core
-container; the lockbox runs wait for the user's go-ahead.
+specification, 8 October 2026" and its amendments); no confirmatory run has been scored, and the held-out set waits
+for the owner's go-ahead (decision 1.1) and the v4 rebuild and redraw (decision 1.2).
 
-- Hypothesis H1, for each of four models on its own (message passing and linear response, each with the noisy-OR and
-  the sigmoid head): the model beats the best baseline per reading on the lockbox in macro and micro AUPRC and in both
-  within-degree-strata readings. H2, tested only if H1 holds: it also loses macro and micro AUPRC when retrained on a
-  rewired graph.
-- Test: one-sided 0.025 per model, paired bootstrap over lockbox perturbations, macro and micro differences of at
-  least 0.041 and 0.028 (the projected 95 percent half-widths). The 0.05 floor and Holm's procedure of the first
-  version are withdrawn (rows of 8 October below).
+- Hypothesis H1, for the one tested model (`tested_models` in configs/registered_rules.json:
+  `confirmatory_v2_linear_response_noisy_or`, the noisy-OR head on the linear-response encoder): the model beats the
+  best baseline per reading on the lockbox in macro and micro AUPRC and in both within-degree-strata readings. H2,
+  tested only if H1 holds: it also loses macro and micro AUPRC when retrained on a rewired graph. The message-passing
+  noisy-OR configuration is a robustness reading outside the tested family (`robustness_models`, decision 9.77,
+  22 October 2026). History: the family was four models (two encoders, two heads) on 8 October 2026, two after the
+  sigmoid head was dropped (the row of 8 October below; registered as `tested_models` at the freeze of 15 October)
+  and one from 22 October.
+- Test: one-sided 0.05 (`alpha_one_sided`; 0.025 per model while two models were tested, returned to 0.05 on
+  22 October 2026, decision 9.78), a group bootstrap over lockbox leakage groups, no magnitude floor (`floor_rule`
+  none, registered 15 October 2026: the decision rests on the paired interval). History: the first version's 0.05
+  floor and Holm over eight hypotheses were withdrawn on 8 October, and the projected half-width floors of 0.041 macro
+  and 0.028 micro that replaced them were withdrawn on 15 October (rows of 8 October below; docs/amendment_history.md).
 - Pre-registered failure criterion (docs/preregistration.md): if no model beats the baselines, the architecture is
   abandoned before the ablations run.
 - Slice result: no trained configuration beats the random walk (finding 5). The slice is a pilot and does not
@@ -88,17 +98,21 @@ container; the lockbox runs wait for the user's go-ahead.
 | 8 | On the slice the random walk reads the graph's wiring, not only its degree sequence | real graph 0.293 against 0.268 ± 0.010 over 20 rewirings at 50 swaps per edge; none of the 20 as good, p = 0.048, which is the smallest value 20 draws allow; the real score is 2.4 null standard deviations above the null mean. Limits: the margin over the best rewiring is 0.006, below the real graph's own fold spread of ±0.014, and rewiring keeps degree per relation but not the metabolite-reaction bipartite structure. Rerun on 8 October with a null that rewires the walk's own undirected graph (the old null moved apart the two stored edges of one undirected pair, so its graphs were denser than the real one): 0.264 ± 0.011, best 0.285, again none of 20 as good (p = 0.048), real score 2.5 null standard deviations above the mean, margin over the best 0.008 | docs/rewiring_null_distribution.md; docs/rewiring_null_distribution_walk_graph.md; docs/graph_content_null_results.md (7 October) |
 | 9 | Adding content to the graph has not moved the score; the protein descriptors are the only addition with a sign of an effect, and it does not survive correction | every one-argument twin with five folds, 20 pairs, three readings each (per fold with a t interval, pooled with a paired bootstrap over perturbations, within degree strata), uncorrected 95 percent intervals: manganese layer -0.002 [-0.008, +0.005] per fold; neuronal and oxidative variant +0.012 [-0.028, +0.053] per fold, +0.004 [-0.009, +0.015] pooled; its curated layers +0.007 [-0.029, +0.043]; signed logarithm +0.002 [-0.012, +0.015] (B3) and -0.001 [-0.027, +0.024] (B6); laboratory loss -0.002 [-0.008, +0.005]; protein descriptors -0.030 [-0.056, -0.004] per fold (p = 0.034) and -0.018 [-0.039, -0.002] within strata, but -0.001 [-0.017, +0.018] pooled. Three of 20 per-fold intervals exclude zero, about one is expected by chance, and none survives Holm's correction (smallest adjusted p 0.18) | docs/twin_comparisons.md; docs/graph_content_null_results.md; docs/neuronal_variant_comparison.md (7 October) |
 | 10 | Untrained, the linear response predicts the direction of measured metabolite changes worse than always guessing "increased" | 1,067 signed gene-metabolite pairs from HPO laboratory abnormalities; sign agreement 0.615 at best (8 steps, summed over compartment copies) against 0.806 for the majority direction; AUROC 0.574 | docs/linear_response_sign_check.md (7 October) |
-| 11 | Candidate cause of the null, not yet tested: the encoder's per-node averaging cancels production against consumption | 7,811 of 21,337 destinations (36.6 percent) receive both signs; at equal gains the aggregate input sums to zero at all 7,811 metabolites that receive both signs (92 percent of 8,460; first recorded as 88 percent, an undercount) and at no reaction. It predicts that keeping the stoichiometric counts moves the score. The spectral arm keeps them but also shrinks the field nearly everywhere; against its twin it scores -0.007 [-0.058, +0.043] per fold, -0.007 [-0.020, +0.008] pooled and -0.009 [-0.028, +0.012] within degree strata, so not established either way. The total-in-degree arm keeps them at the in-degree magnitude (running, two folds of five) and the sign ablation removes the cancellation with the signs (running, one fold of five). The cross-relation mixture cannot break an exact cancellation, since every statistic in it is odd | docs/membrane_potential_reach.md; docs/graph_content_null_results.md (7 October) |
+| 11 | Candidate cause of the null, not yet tested: the encoder's per-node averaging cancels production against consumption | 7,811 of 21,337 destinations (36.6 percent) receive both signs; at equal gains the aggregate input sums to zero at all 7,811 metabolites that receive both signs (92 percent of 8,460; first recorded as 88 percent, an undercount) and at no reaction. It predicts that keeping the stoichiometric counts moves the score. The spectral arm keeps them but also shrinks the field nearly everywhere; against its twin it scores -0.007 [-0.058, +0.043] per fold, -0.007 [-0.020, +0.008] pooled and -0.009 [-0.028, +0.012] within degree strata, so not established either way. The total-in-degree arm keeps them at the in-degree magnitude: against its twin, -0.000 [-0.011, +0.010] per fold, +0.001 [-0.004, +0.006] pooled and +0.003 [-0.005, +0.012] within degree strata (docs/twin_comparisons.md, 8 October); the sign ablation (finding 15) removes the cancellation with the signs and moves nothing either. The cross-relation mixture cannot break an exact cancellation, since every statistic in it is odd. Slice pilot on the graph of 6 to 8 October 2026; `total_in_degree` was later registered as the normalisation (amendment item 28) and narrowed to `forward_cone` (decision 9.16) | docs/membrane_potential_reach.md; docs/graph_content_null_results.md (7 October); docs/twin_comparisons.md (8 October) |
 | 12 | The disease-cluster split divides almost every pathway between training and test, and the split pathways carry label information across it; protein complexes do not | of 308 held-out genes whose primary subsystem is a pathway, 271 (88 percent) have a training gene with the same one and 37 have none; a held-out gene's mean Jaccard similarity of positive symptom sets to its same-pathway training genes exceeds its mean to all training genes by +0.050 [+0.028, +0.072] (bootstrap over 271 held-out genes), to genes sharing any pathway subsystem by +0.028 [+0.013, +0.044], to genes sharing a catalysed reaction by +0.020 [-0.014, +0.055] and to complex partners by -0.011 [-0.069, +0.050] (58 genes, 13 percent, have a complex partner in training) | docs/fold_mechanism_sharing.md (7 October) |
 | 13 | The trained models trail the random walk only where a gene's pathway is split across folds; elsewhere they tie it | split-pathway genes (271): B3 typed nodes minus random walk -0.049 [-0.075, -0.023], B6 linear response with gate time scale -0.037 [-0.068, -0.005], B3 linear response with cofactors -0.073 [-0.099, -0.048], B6 mechanistic with gate time scale -0.022 [-0.051, +0.023]; unsplit genes (180): every trained model within an interval including zero (B3 typed nodes -0.000 [-0.037, +0.034]). The random walk's own lift over popularity is +0.072 on split-pathway genes, +0.076 on the 37 genes whose pathway is absent from training (5 symptoms scorable, intervals near ±0.1) and +0.041 on the 143 genes with no pathway subsystem, so its edge follows being a pathway enzyme rather than the split itself. The random walk reads the labels of training neighbours at prediction time and the trained models do not, which is the candidate reason; pooled predictions, strata by primary subsystem, no correction for the number of comparisons | docs/score_by_pathway_split.md (7 October) |
 | 14 | Scored only on the genes it gives a distinct prediction, the noisy-OR model still does not beat the random walk on those genes | per fold, a held-out gene is undecided when its prediction is within 1e-6 of the largest tied group's, so the model makes no ranking among those genes. B6 linear response with the gate learning rate decides 176 of 451 genes (39 percent): 48 percent of split-pathway genes against 21 percent of genes with no pathway subsystem, median metabolic-graph degree 4 against 2. On the decided genes it scores 0.251 against the random walk's 0.278 on the same genes, paired -0.027 [-0.060, +0.014], and beats popularity by +0.040 [+0.026, +0.077] and B3 linear response with cofactors by +0.045 [+0.019, +0.084]. B6 mechanistic with the gate learning rate decides 376 (83 percent): -0.017 [-0.040, +0.019] against the random walk on its decided genes; on the 75 it leaves undecided the random walk scores 0.351, a lift of +0.168 over popularity. Uncorrected intervals; the decided set is chosen by the model's own outputs, without labels | docs/score_by_module_coverage.md (7 October) |
-| 15 | The random-walk baseline is undirected while both encoders follow edge direction; following direction neither costs nor adds to the walk | the encoders put each edge at [target, source] (the linear response adds only the depletion edge in reverse); the walk and every rewiring in row 8 symmetrise the graph. Three unsigned walks with one shared readout, minus the undirected one: the encoder's edge directions +0.005 [-0.003, +0.013] per fold, +0.006 [+0.001, +0.011] pooled, -0.002 [-0.011, +0.009] within degree strata; downstream only +0.006 [-0.015, +0.027], +0.008 [+0.003, +0.014], +0.012 [-0.002, +0.028]. One reading of three excludes zero for each, uncorrected. The sign ablation of B3 linear response with cofactors (every edge +1) is running | docs/directed_random_walk.md; docs/graph_content_null_results.md (7 October) |
+| 15 | The random-walk baseline is undirected while both encoders follow edge direction; following direction neither costs nor adds to the walk | the encoders put each edge at [target, source] (the linear response adds only the depletion edge in reverse); the walk and every rewiring in row 8 symmetrise the graph. Three unsigned walks with one shared readout, minus the undirected one: the encoder's edge directions +0.005 [-0.003, +0.013] per fold, +0.006 [+0.001, +0.011] pooled, -0.002 [-0.011, +0.009] within degree strata; downstream only +0.006 [-0.015, +0.027], +0.008 [+0.003, +0.014], +0.012 [-0.002, +0.028]. One reading of three excludes zero for each, uncorrected. The sign ablation of B3 linear response with cofactors (every edge +1, `--edge-signs all_positive`) against its signed twin: +0.000 [-0.005, +0.006] per fold, +0.003 [-0.005, +0.010] pooled, +0.002 [-0.011, +0.014] within degree strata, so on the slice the signs neither cost nor add | docs/directed_random_walk.md; docs/graph_content_null_results.md (7 October); docs/twin_comparisons.md (8 October) |
 | 16 | A readout trained on the walk's own distributions does not beat the untrained walk, so the trained models' deficit is weak evidence against their mechanism | per-symptom L2 logistic regression on the walk distribution (square-rooted, 32 SVD components fitted per fold), minus the walk: undirected -0.012 [-0.031, +0.006] per fold, -0.026 [-0.044, -0.011] pooled, -0.004 [-0.026, +0.015] within degree strata; downstream-only walk +0.001 [-0.036, +0.037], -0.020 [-0.037, -0.002], +0.005 [-0.018, +0.023]. One readout design, fixed before scoring; uncorrected intervals | docs/trained_diffusion_readout.md; docs/graph_content_null_results.md (7 October) |
 
-Data layer:
+Data layer (release `data/releases/v0.4`, created 6 October 2026, the one committed release; the counts below are that
+release's and are reported by docs/status.md. The graphs the registered model trains on, `graph_full_neuronal_split_*`
+under `data/processed/` through the v4 and v5 rebuilds, are not in a release and are not counted here):
 
 - Graph: 33,964 nodes and 255,367 typed edges (Human-GEM 2.0.1 with compartments, OmniPath, CollecTRI regulons
-  restricted to brain-expressed transcription factors, GTEx v10 brain expression on gene nodes).
+  restricted to brain-expressed transcription factors, GTEx v10 brain expression on gene nodes). The regulon
+  restriction is history: since decision 9.76 (20 October 2026) a factor's regulon is dropped only when the factor is
+  unexpressed in every cell class and every tissue (docs/experiment_design.md section 3.3).
 - Labels: 2,425 grade A gene pairs, 876 grade B drug pairs over 142 drugs, 609 grade C non-causal associations;
   the full-data baselines score 1,417 perturbations (1,275 genes, 142 drugs) in 901 disease clusters.
 - Literature priors: 214,375 PubTator3 and CTD reports over 134,747 papers, grade E, never labels.
@@ -123,7 +137,7 @@ Superseded numbers to avoid:
 
 | Figure | Content | Status |
 |---|---|---|
-| F1 | Data and model schematic: evidence sources, graph layers, perturbation encoder, modules, noisy-OR output | not made |
+| F1 | Data and model schematic: evidence sources, graph layers, perturbation encoder, modules, noisy-OR output | made: docs/figures/model_pipeline.png (docs/figures.md section 1, redrawn 9 October 2026) |
 | F2 | Leakage cascade: random walk under gene, disease-cluster and permuted-label conditions (finding 1) | numbers ready |
 | F3 | Wiring against degree: real graph against the 20-rewiring null (finding 8); the full-data panel waits for the rerun of finding 2 | slice ready |
 | F4 | Main comparison with paired-bootstrap intervals, slice then full data (finding 5 and Aim 2) | slice ready |
@@ -131,6 +145,9 @@ Superseded numbers to avoid:
 | F6 | Module diagnostics: gate travel against its bound, support size, link matrix, sufficiency test (finding 6) | slice ready |
 | F7 | Time-split results (finding 4 and Aim 3) | monogenic ready |
 | F8 | Sign agreement of the untrained response against the majority direction (finding 10) | ready |
+
+This table is the plan for the write-up and its statuses were read on 7 October 2026, on the slice pilot. The figures
+that exist, with what each shows and the graph it was drawn on, are in docs/figures.md (`docs/figures/`).
 
 ## 5. Likely objections and current answers
 
@@ -144,7 +161,7 @@ Superseded numbers to avoid:
 | Why these symptoms and not diagnoses? | assumption A7 and the symptom crosswalk (docs/symptom_crosswalk.csv) |
 | Why does degree explain so much? | hub structure in the graph and in the labels (design assumption A9); on the slice the wiring adds signal beyond degree (finding 8), and the full-data control needs rerunning (finding 2) |
 | Why were the modules unused, and are they used now? | the gates were still shrinking when early stopping ended training; a separate gate learning rate fixes that, and the modules now carry links but none passes the sufficiency test (finding 6) |
-| The graph carries signal, so why does the mechanistic encoder not beat diffusion? | open; finding 11 is a candidate cause, tested by the spectral normalisation and cross-relation mixture arms. The literature search has not yet found a published case of signed propagation on a mechanistic network beating unsigned diffusion for a phenotype (docs/literature_appraisal_staging.md, question Q1) |
+| The graph carries signal, so why does the mechanistic encoder not beat diffusion? | a question of the slice pilot of 6 to 8 October 2026, which decision 9.82 rules is not evidence about the current graph or encoders; on the slice, finding 11 was the candidate cause, tested by the spectral normalisation, total-in-degree and sign-ablation arms (findings 11 and 15). The literature search has not yet found a published case of signed propagation on a mechanistic network beating unsigned diffusion for a phenotype (docs/literature_appraisal_staging.md, question Q1) |
 | Does the graph give the right direction of change? | untrained, no better than the majority direction (finding 10) |
 
 ## 6. Decisions and provenance

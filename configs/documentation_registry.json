@@ -5,13 +5,13 @@
  "documents": {
   "CLAUDE.md": {
    "class": "living",
-   "reviewed": "2026-10-21",
-   "as_of_commit": "65bb3aa"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "README.md": {
    "class": "living",
-   "reviewed": "2026-10-15",
-   "as_of_commit": "6c6f4a3"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/README.md": {
    "class": "generated",
@@ -147,8 +147,8 @@
   },
   "docs/confirmatory_runbook.md": {
    "class": "living",
-   "reviewed": "2026-10-09",
-   "as_of_commit": "65a8491",
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda",
    "names_absent_paths": {
     "docs/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
     "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
@@ -165,8 +165,8 @@
   },
   "docs/data_sources.md": {
    "class": "living",
-   "reviewed": "2026-10-14",
-   "as_of_commit": "ec4ad4d"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/decision_history.md": {
    "class": "generated",
@@ -192,8 +192,8 @@
   },
   "docs/documentation_process.md": {
    "class": "living",
-   "reviewed": "2026-10-15",
-   "as_of_commit": "585e400"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/drug_administration_routes.md": {
    "class": "generated",
@@ -243,13 +243,13 @@
   },
   "docs/evidence_reports_spec.md": {
    "class": "living",
-   "reviewed": "2026-10-03",
-   "as_of_commit": "ec2510e"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/experiment_design.md": {
    "class": "living",
-   "reviewed": "2026-10-11",
-   "as_of_commit": "4059cd0",
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda",
    "names_absent_paths": {
     "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
    }
@@ -300,8 +300,8 @@
   },
   "docs/figures.md": {
    "class": "living",
-   "reviewed": "2026-10-16",
-   "as_of_commit": "ccc7b2a"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/fine_symptom_constructs.md": {
    "class": "generated",
@@ -328,8 +328,8 @@
   },
   "docs/gene_protein_split.md": {
    "class": "living",
-   "reviewed": "2026-10-09",
-   "as_of_commit": "6f41e7b",
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda",
    "names_absent_paths": {
     "docs/split_slice_comparisons.md": "a slice comparison table the document says exists; no commit has held it",
     "docs/split_slice_comparisons_merged_strata.md": "as above"
@@ -371,8 +371,8 @@
   },
   "docs/job_harness.md": {
    "class": "living",
-   "reviewed": "2026-10-10",
-   "as_of_commit": "df589cf"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/label_central_action.md": {
    "class": "generated",
@@ -424,8 +424,8 @@
   },
   "docs/literature_appraisal_staging.md": {
    "class": "living",
-   "reviewed": "2026-10-07",
-   "as_of_commit": "36b2e32"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/literature_survey.md": {
    "class": "generated",
@@ -433,8 +433,8 @@
   },
   "docs/literature_survey_spec.md": {
    "class": "living",
-   "reviewed": "2026-10-06",
-   "as_of_commit": "f398ed4"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/mechanism_cards/b6_default_disease_cluster/anxiety.md": {
    "class": "generated",
@@ -508,8 +508,8 @@
   },
   "docs/membrane_potential_constants.md": {
    "class": "living",
-   "reviewed": "2026-10-13",
-   "as_of_commit": "818c866"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/membrane_potential_reach.md": {
    "class": "record",
@@ -574,8 +574,8 @@
   },
   "docs/onsides_label_slice_spec.md": {
    "class": "living",
-   "reviewed": "2026-10-05",
-   "as_of_commit": "d00ddc5"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/open_decisions.md": {
    "class": "record",
@@ -670,8 +670,8 @@
   },
   "docs/preregistration.md": {
    "class": "living",
-   "reviewed": "2026-10-15",
-   "as_of_commit": "33e8892"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/preregistration_amendment_draft.md": {
    "class": "draft",
@@ -703,8 +703,8 @@
   },
   "docs/research_summary.md": {
    "class": "living",
-   "reviewed": "2026-10-13",
-   "as_of_commit": "f06bfbf"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/rewiring_null_distribution.md": {
    "class": "generated",
@@ -824,8 +824,8 @@
   },
   "docs/nonlinearity_inventory.md": {
    "class": "living",
-   "reviewed": "2026-10-21",
-   "as_of_commit": "65bb3aa"
+   "reviewed": "2026-10-25",
+   "as_of_commit": "be15dda"
   },
   "docs/mouse_sources_measured_v5.md": {
    "class": "generated",

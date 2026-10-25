@@ -2,10 +2,13 @@
 
 Written on 8 October 2026 and revised the same day after the user's corrections (gene descriptors limited to the brain
 expression columns; one protein node per entry where one gene has several; seed masking included). The split is built
-into new directories (section "Built"); no existing graph directory was regenerated, and no confirmatory configuration
-uses the split. The measurements read graph_full_neuronal, evidence_full_v2 with better_v2 and the pinned reviewed
-UniProt table (20,431 entries). The degree rankers below read development outcomes only (the 317 lockbox perturbations
-are left out); lockbox counts are membership counts.
+into new directories (section "Built"); no existing graph directory was regenerated. When this was written no
+confirmatory configuration used the split; since 9 October 2026 the confirmatory_v2 configurations read its
+plasma-binder variant, and the registered model reads the v5 drug and allele graph built on it (section "Not changed").
+The measurements of 8 October read graph_full_neuronal, evidence_full_v2 with better_v2 and the pinned reviewed UniProt
+table (20,431 entries), and are the measurements of that graph and that day. The degree rankers below read development
+outcomes only (the 317 lockbox perturbations of configs/lockbox_v2.json are left out); lockbox counts are membership
+counts.
 
 ## The user's statements
 
@@ -61,8 +64,9 @@ target of an edge, the target end of transcription excluded since it stays at th
 
 Defects found:
 - experiments/build_protein_descriptors.py groups entries by UniProt's primary gene-name field. 68 entries list several
-  genes ("DEFB4A; DEFB4B"), so 57 gene nodes get no protein descriptors in any current graph. It is not fixed under the
-  running jobs; the split build fixes it.
+  genes ("DEFB4A; DEFB4B"), so 57 gene nodes get no protein descriptors on a merged graph. The grouping was left as it
+  was on 8 October 2026 while the jobs that read the merged tables ran, and still is; the split build places each
+  entry's row on its protein node instead, which is where the registered model reads it.
 - The sign of each reduced-rank direction is not fixed by the fit: a refit with another thread count reproduced the 64
   descriptor columns to 3.7e-12 up to sign, with 29 columns flipped. A learned input layer absorbs a flip, but a rerun
   of build_protein_descriptors.py would not reproduce the stored table byte for byte. The per-entry table takes the
@@ -109,8 +113,9 @@ Defects found:
    joined to a seed by an encodes edge (default, for the user). Without it the knocked-out gene's protein descriptors, or
    a drug target's gene expression, would sit one hop from the seed, where the merged graph hid them on the seed itself.
    It applies only on graphs with an encodes relation, so no merged-graph run changes. The slice arms carry seed masking
-   for message passing; the linear-response arms stay without a treatment, since the descriptor rule's pick there
-   (zero_init_slow) still waits for the user.
+   for message passing; the linear-response arms were run without a treatment, because on 8 October 2026 the descriptor
+   rule's pick there (zero_init_slow) still waited for the user. Decided 13 October 2026 (amendment item 21 of
+   docs/preregistration.md): `seed_masked` in both encoders, the trainer's default with `--node-descriptors`.
 7. **Degree** (the user's decision: degree follows the split). Every use of degree reads the split graph's own degree:
    - the strata;
    - degree_popularity;
@@ -173,9 +178,14 @@ Consequences of the user's decision:
   refit_pilots read them.
 - The confirmatory_v2 configurations named graph_full_neuronal when this was written. Decided since, by the user on
   9 October 2026: they move to graph_full_neuronal_split with the split descriptor table, the split cell-class weights
-  and a third message-passing layer (docs/preregistration.md, amendment of 9 October 2026). The degree check on the
-  full split graph is done and `encodes` is held fixed in the H2 rewiring (decision 8, the user's second amendment of
-  9 October 2026); the development pilots on the split graph come before any lockbox run.
+  and a third message-passing layer (docs/preregistration.md, amendment of 9 October 2026), and later the same day to
+  its plasma-binder variant graph_full_neuronal_split_binders (the user: "yes, include binder edges in confirmatory
+  graph"; amendment of 9 October 2026 (fourth)), which is what `FULL_GRAPH_ARGUMENTS_V2` of
+  experiments/run_main_model_batch.py names. The registered model since the amendments of 12 and 13 October 2026 (the
+  v4 flags, `--num-layers 3` the trainer's default) reads the v5 drug and allele graph built on that variant,
+  graph_full_neuronal_split_binders_drugs_v5 (scripts/rebuild_data_layer.sh). The degree check on the full split graph
+  is done and `encodes` is held fixed in the H2 rewiring (point 8 above, the user's second amendment of 9 October
+  2026); the development pilots on the split graph come before any lockbox run.
 
 ## Built (8 October 2026, new directories only)
 
@@ -230,7 +240,7 @@ the protein nodes, which is what a protein node should carry for an entity-only 
 - **Rewired runs.** The rewired reaction rules read a protein catalyst's Ensembl id, which the protein node keeps as an
   identifier, not as a descriptor.
 - **Tests and smoke runs.**
-  - tests/test_gene_protein_split.py (6 tests); the full suite passes.
+  - tests/test_gene_protein_split.py (8 tests); the full suite passes.
   - Two-epoch smoke runs of both split slice arms trained without error; the message-passing run reports the mask over
     2,851 encodes edges.
 
@@ -269,6 +279,11 @@ compare_twin_runs.py keys its cache by run names only:
 
 The last two pairs read the brain expression descriptors (with seed masking for message passing) on the merged slice
 under the module fix.
+
+docs/split_slice_comparisons.md and docs/split_slice_comparisons_merged_strata.md are the two tables these commands
+write; no commit has held either, so the job's readings are not in this repository. Whatever they show, they are
+readings of the slice graphs built on 8 October 2026 (data/processed/graph_split and data/processed/graph) and carry
+that graph and date when reported (CLAUDE.md, "A measurement carries the graph it was taken on").
 
 ## Correction of 8 October 2026 (late): complex accessions
 

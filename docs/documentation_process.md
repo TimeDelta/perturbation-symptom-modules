@@ -45,8 +45,8 @@ a row is added in the turn the decision is taken, edited only to close it (the i
 correction, and ids are never dropped or renumbered. `docs/decision_history.md` is its chronology, read from the git
 history of the log by `experiments/generate_decision_history.py`: the commit that first holds a row is the earliest
 the decision can have been recorded, whatever date the row claims. `docs/amendment_history.md` is the same for the
-registration, from `Amends:` trailers. `docs/data_layer_rebuild.md` and the readings under `docs/exposure_sources/`
-are append-only.
+registration, from `Amends:` trailers. `docs/data_layer_rebuild.md`, the readings under `docs/exposure_sources/` and
+the other records the register marks `append_only: true` are append-only.
 
 ## What is current
 
@@ -58,7 +58,8 @@ reviewed. Whether a review is due depends on today's date and on what changed af
 diagnostic is printed by `python experiments/generate_status.py --review` and never committed, where it would be
 stale by the next commit or the next day. The same script renders the release counts into the README between `<!-- generated:release_counts -->`
 markers, so the README restates no number by hand; a test asserts that no release count appears in the README
-prose outside that block.
+prose outside that block. It also writes `docs/README.md`, the index of every registered document by topic, through
+`experiments/generate_docs_index.py` (added 17 October 2026).
 
 What is deliberately absent from every living document: the state of a container, a session or a running job. That
 state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --status`). A dated record may say
@@ -73,11 +74,13 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   it by striking the id. Never remove or renumber an id. Write amendments to registered rules as `Amends:` trailers.
 - After changing data, rules, the decision log or any document: `python experiments/generate_status.py`,
   `python experiments/generate_decision_history.py`, `python experiments/generate_amendment_history.py`, then
-  `pytest tests/test_documentation_process.py -q`. The `.claude/settings.json` hook runs that test file after any
-  edit under `docs/`, so a stale page is reported in the same turn that made it stale.
+  `pytest tests/test_documentation_process.py -q`. The `.claude/settings.json` hook runs that test file and
+  `tests/test_amendment_history.py` after an edit to a Markdown file under `docs/`, to `README.md`, `CLAUDE.md`,
+  `configs/documentation_registry.json` or `configs/registered_rules.json`, so a stale page is reported in the same
+  turn that made it stale.
 - When a generated document is regenerated, its generator writes the stamp; a generator that does not yet (most of
-  the 93 predate the stamp) is given it at its next change by calling `provenance_stamp` from
-  `mechanistic_pathway_learning/documentation.py`.
+  the generated documents predate the stamp; `docs/status.md` counts them) is given it at its next change by calling
+  `provenance_stamp` from `mechanistic_pathway_learning/documentation.py`.
 - A new document is registered before it is committed. A document that is superseded gets `superseded_by` in the
   register and stays; nothing is deleted from the record.
 - A living document that `docs/status.md` lists as due is read against the repository, corrected by overwriting, and

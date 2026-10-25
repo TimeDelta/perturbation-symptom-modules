@@ -10,7 +10,8 @@ check-ins that run the resume script.
 `JOB_COMMAND` (resumable: rerunning it continues from checkpoints), `JOB_DONE_MARKER`, an optional
 `JOB_FAILED_MARKER` and an optional `JOB_DESCRIPTION`. `runs/` is not in git, so the registry and the markers live on
 the session's disk, which survives a container restart but not a new container; `.claude/hooks/session-start.sh` runs
-the script when a container starts.
+the script when a cloud container starts (`CLAUDE_CODE_REMOTE=true`), after it has installed the package with every
+extra and the pinned pandas and pyarrow and, on a shallow clone, fetched the full git history (24 October 2026).
 
 - `bash scripts/resume_jobs.sh` relaunches what is unfinished and reports every job.
 - `bash scripts/resume_jobs.sh --status` reports only.
@@ -21,13 +22,15 @@ the script when a container starts.
   one fold directory. To keep a job from relaunching, move its `.job` file to `runs/jobs/paused/`.
 
 Every run but `--stop` ends with the line `resume_jobs: N active jobs` and writes the same count to
-`runs/jobs/active_job_count`. A job is active when it is running, or unfinished with neither marker. A failed job is
-not active: it is never relaunched and needs a person.
+`runs/jobs/active_job_count`; when `runs/jobs/` holds no `.job` file the script prints `resume_jobs: no registered
+jobs` and exits without writing the count. A job is active when it is running, or unfinished with neither marker. A
+failed job is not active: it is never relaunched and needs a person.
 
 ## The check-in routines, and when they are paused
 
-Four scheduled routines fire into the session that created them, staggered so a reclaimed container is restarted
-within about fifteen minutes:
+Four scheduled routines were created for the session of 6 to 10 October 2026 and fire into it, staggered so a
+reclaimed container is restarted within about fifteen minutes. The rows are a dated record of which routines exist;
+their present state is read with `list_triggers`, not here:
 
 | id | schedule | name | fires into |
 |---|---|---|---|
@@ -82,4 +85,5 @@ The prompts hold the detail. In outline: pull, run the resume script, arm one ba
 against that job's own markers, and report a finished job against the twin the documents name. The working documents
 win over any summary in a routine's prompt, which has gone stale before: docs/confirmatory_runbook.md,
 docs/preregistration.md, docs/graph_content_null_results.md, docs/membrane_potential_reach.md and
-docs/literature_appraisal_staging.md (owned by the separate literature session: read it, never edit it).
+docs/literature_appraisal_staging.md (written by the paced literature appraisal of 7 October 2026,
+`scripts/literature_pacing.sh`: read it, never edit it).

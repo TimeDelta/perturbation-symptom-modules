@@ -8,9 +8,32 @@ script and the rule that pauses the check-in routines while no job is active are
 Two families. The first (confirmatory_* configurations, configs/lockbox_v1.json, better_v1 labels) is not tested: its
 development pilots (steps 1 and 1b) are reported as checks that each configuration trains. The second
 (confirmatory_v2_* configurations, configs/lockbox_v2.json, better_v2 labels, rotated stratified validation, group
-bootstrap, floors each model's 95 percent half-width plus 0.005, computed in the scoring; the user's decisions of 8 October 2026 and the amendments that record them)
-is the one tested: two models, the noisy-OR head of each encoder (the user dropped the sigmoid head on 8 October
-2026). No second-family run starts before the module fix is decided (step 0).
+bootstrap; the user's decisions of 8 October 2026 and the amendments that record them) is the one tested. No
+second-family run starts before the module fix is decided (step 0).
+
+What has changed since the steps below were written (8 and 9 October 2026), as `configs/registered_rules.json`,
+`configs/head_choice.json` and `docs/open_decisions.md` record it; the steps are kept as written and a step that one of
+these changes touches says so where it applies:
+
+- One tested model, not two. The user dropped the sigmoid head on 8 October 2026, which left the noisy-OR head of each
+  encoder; on 22 October 2026 the message-passing encoder moved out of the tested family to a robustness reading
+  (decision 9.77, the owner: "Defer it to robustness"). The registered rules `tested_models`
+  (`confirmatory_v2_linear_response_noisy_or`) and `robustness_models` (`confirmatory_v2_message_passing_noisy_or`)
+  hold this, and `configs/head_choice.json` carries the two under `chosen` and `robustness`.
+- No magnitude floor. The floor of 8 October (each model's 95 percent half-width plus 0.005, computed in the scoring)
+  was removed on 15 October 2026 (the owner: "no floor. paired interval"); the registered rule `floor_rule` is `none`,
+  which is the default of `experiments/score_confirmatory.py --floor-rule`.
+- The one-sided level is 0.05 (decision 9.78, 22 October 2026), after 0.025 per model while two models were tested.
+- The held-out set is not drawn. The lockbox the steps name, configs/lockbox_v2.json, was drawn on the evidence_full_v2
+  table; the registration since 12 October 2026 (amendment items 1, 2 and 25) rebuilds the table (v4, then the v5 fine
+  constructs) and redraws the held-out set on it by the target partition of item 25, only on the owner's go-ahead and
+  under the leakage ceiling of decision 9.35 (decisions 1.1 and 1.2). The registered model is the v4 flags of
+  experiments/run_main_model_batch.py (`V4_LINEAR_RESPONSE_MODEL`, `V4_MESSAGE_PASSING_MODEL`), which the trainer's
+  defaults equal, on the v5 tables and the graph `graph_full_neuronal_split_binders_drugs_v5`. The confirmatory_v2
+  configurations below (graph_full_neuronal_split_binders, evidence_full_v2, better_v2, lockbox_v2) are the family as
+  registered on 9 October 2026; no lockbox run has been made on either.
+- The descriptor treatment is decided (amendment item 21, 13 October 2026): `seed_masked` in both encoders, which is
+  the trainer's default with `--node-descriptors`. Step 2b's wait for the user's confirmation ended with it.
 
 ## Steps
 
@@ -54,13 +77,15 @@ is the one tested: two models, the noisy-OR head of each encoder (the user dropp
    (docs/confirmatory_pilots_development.md).
 1c. v2_development (second family; registered 8 October 2026, stopped before it trained anything and paused the same
    day, runs/jobs/paused/; it refuses to start without runs/full/v2_development.go): the development baselines of
-   lockbox_v2 (runs/full/baselines_lockbox_v2_development, docs/phase2_baselines_lockbox_v2_development.md), then the two
+   lockbox_v2 (runs/full/baselines_lockbox_v2_development, docs/phase2_baselines_lockbox_v2_development.md, which
+   experiments/run_baselines.py `--markdown-output` writes when the job runs; no commit holds it yet), then the two
    configurations confirmatory_v2_{message_passing,linear_response}_noisy_or on the five grouped development folds with
-   seed 0 (runs/full/confirmatory_v2_*_disease_cluster_and_targets_development/fold<k>_seed0), then configs/head_choice.json,
-   which records the two noisy-OR models as the user's decision. experiments/choose_heads.py is not run. When it ends,
-   check that each of the 10 runs trained (falling training loss, no NaN, a refit) and that its modules pass the health
-   reading of step 0. Report each configuration's five-fold readings against the best baselines, and commit
-   configs/head_choice.json and the baseline document.
+   seed 0 (runs/full/confirmatory_v2_*_disease_cluster_and_targets_development/fold<k>_seed0). configs/head_choice.json
+   was written on 15 October 2026 from the user's decision, not from this job, and amended on 22 October 2026 (decision
+   9.77): `chosen` names confirmatory_v2_linear_response_noisy_or and `robustness` names
+   confirmatory_v2_message_passing_noisy_or. experiments/choose_heads.py is not run. When the job ends, check that each
+   of the 10 runs trained (falling training loss, no NaN, a refit) and that its modules pass the health reading of step
+   0. Report each configuration's five-fold readings against the best baselines, and commit the baseline document.
 1d. After 1c: register the ablation of the two tested models, `<chosen configuration>_without_descriptors` on the same
    five development folds with seed 0 (`bash runs/full/v2_ablation.sh`, one chain per encoder at 2 threads, as in
    runs/full/v2_development.sh), and report it against the tested models when it ends. It is a development reading and does
@@ -94,19 +119,28 @@ is the one tested: two models, the noisy-OR head of each encoder (the user dropp
    them.
    Either way, record the readings and the outcome under the amendment in docs/preregistration.md, add a row to
    docs/research_summary.md, commit the three documents and push.
+   Decided 13 October 2026 (amendment item 21 of docs/preregistration.md; the owner: "it HAS to use seed_masked to be
+   physiological and to avoid signal leakage"): `seed_masked` in both encoders, replacing the reading of the treatment
+   rule (seed_masked for message passing, zero_init_slow for linear response). The trainer's `--descriptor-treatment`
+   defaults to seed_masked with `--node-descriptors`, so the confirmatory_v2 configurations carry it without naming it
+   and the v4 configurations name it. No configuration moves to zero_init_slow or to a block arm.
 3. Register confirmatory_lockbox only when the user has given the go-ahead in their own message (8 October 2026: "Don't
-   finalize the lockbox until I've given the go ahead"), step 1c ended with all 10 runs trained and
-   configs/head_choice.json written on lockbox_v2, step 2b has been reported, the user has confirmed its outcome, and
-   any re-runs of step 2b trained. A check-in, a document or a job marker is not the go-ahead:
+   finalize the lockbox until I've given the go ahead"), step 1c ended with all 10 runs trained, step 2b has been
+   reported and decided (item 21, above), and any re-runs of step 2b trained. Since 12 October 2026 the go-ahead is
+   also the one that draws the held-out set (decision 1.1, under the leakage ceiling of 9.35), after the rebuild of
+   decision 1.2; the lockbox file the job reads is then the one drawn on that table, not configs/lockbox_v2.json as
+   the job script of 9 October names it. A check-in, a document or a job marker is not the go-ahead:
    `bash scripts/resume_jobs.sh --register confirmatory_lockbox "bash runs/full/confirmatory_lockbox.sh" runs/full/confirmatory_lockbox.done runs/full/confirmatory_lockbox.failed "the 30 confirmatory lockbox runs of the two tested models, the lockbox baselines and the one-time scoring"`.
    runs/full/confirmatory_lockbox.sh reads the two models from configs/head_choice.json. If a development run failed to
    train, do not register it; report to the user, because an amendment needs a dated entry in the specification
    before the first lockbox run.
-4. confirmatory_lockbox: the 30 lockbox runs (two models, seeds 0 to 4, real labels, permuted labels and a symmetric
-   rewiring with rewired reaction expression), then the lockbox baselines for seeds 0 to 4
-   (runs/full/lockbox_v2_baselines), then experiments/score_confirmatory.py (defaults: lockbox_v2, better_v2, the models
-   of configs/head_choice.json, group bootstrap, floors each model's half-width plus 0.005), which writes
-   runs/confirmatory/SCORED and docs/confirmatory_results.md. When it ends, report docs/confirmatory_results.md as the
+4. confirmatory_lockbox: the 30 lockbox runs (two models, the tested one and the robustness one, seeds 0 to 4, real
+   labels, permuted labels and a symmetric rewiring with rewired reaction expression), then the lockbox baselines for
+   seeds 0 to 4 (runs/full/lockbox_v2_baselines), then experiments/score_confirmatory.py (defaults: lockbox_v2,
+   better_v2, the `chosen` model of configs/head_choice.json, group bootstrap, 4,000 resamples, one-sided 0.05, no
+   floor; the robustness model is scored by naming it to `--models` in a run declared outside the tested family),
+   which writes runs/confirmatory/SCORED and docs/confirmatory_results.md (its `--markdown-output` default; the file
+   exists only once the scorer has run). When it ends, report docs/confirmatory_results.md as the
    scorer wrote it, commit it and tell the user. If the scorer stops because a run is missing or refused, it writes
    nothing (no output, no SCORED marker) and prints the runs and the reasons; the reasons name no score, so they may be
    read. Resume a missing run by registering the same job again (the trainer resumes from its checkpoint) and score
@@ -130,9 +164,12 @@ score_confirmatory.py runs once; a second scoring (--rescore, or a run after SCO
   development runs of a descriptor treatment the slice selects (the user allowed full-graph tests of the treatments on
   8 October). The first family's ablation_pilots_without_descriptors job was retired before it trained anything
   (superseded by step 1d).
-- Edits to the confirmatory_v2 configurations, configs/lockbox_v2.json, configs/head_choice.json once written,
-  experiments/choose_heads.py, experiments/score_confirmatory.py or the decision rule, except where step 2b directs or
-  the user decides. The first family's configurations and configs/lockbox_v1.json stay as records.
+- Edits to the confirmatory_v2 configurations, configs/lockbox_v2.json, configs/head_choice.json (written 15 October
+  2026), experiments/choose_heads.py, experiments/score_confirmatory.py or the decision rule, except where step 2b
+  directs or the user decides. The user's decisions so far are the amendments the registered rules record: the floor
+  removed (15 October 2026), the message-passing encoder moved to robustness in configs/head_choice.json (22 October
+  2026, decision 9.77) and the scorer's `--alpha` default returned to 0.05 (decision 9.78). The first family's
+  configurations and configs/lockbox_v1.json stay as records.
 - Regenerating graph_full_neuronal, evidence_full_v2, the better_v1 or better_v2 selection, the node descriptors, the
   cell-class weights or the expression tables of experiments/write_expression_tables.py while a confirmatory job reads
   them.

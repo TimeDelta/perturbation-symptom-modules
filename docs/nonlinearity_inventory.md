@@ -1,10 +1,12 @@
 # Where linearity binds
 
 Every place the physiology needs something the linear-response encoder cannot represent because it is linear, with
-what the code does instead. Kept current for decision 9.81 (saturation inside the fixed point, and whether the
-message-passing encoder leaves the tested models). Counts are the repository's own, taken on
-`data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes` (49,796 nodes, 280,966 edges) unless another
-source is named. Written 21 October 2026.
+what the code does instead. Kept current for decision 9.81 (saturation inside the fixed point). The second question
+9.81 was raised with, whether the message-passing encoder leaves the tested models, was settled on 22 October 2026 by
+decisions 9.77 and 9.78: the encoder is a robustness reading under the registered rule `robustness_models`. Counts are
+the repository's own, taken on `data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes` (49,796 nodes,
+280,966 edges) on 21 October 2026 unless another source is named. Written 21 October 2026; read against the
+repository at 7104489 on 25 October 2026.
 
 ## 1. The cases
 
@@ -29,7 +31,9 @@ coming back is partly the same analysis being made again, which is why this docu
 
 Fixed-point update: `state = (1 - damping) * state + damping * (relation_messages + node_major_input)`, damping 0.5,
 the input added again every round, tolerance 1e-3, at most 60 rounds. Contraction: `|gain_r| <= 0.9` per relation and
-channel, and every row of `sum_r |S_r|` sums to at most 1.
+channel, and every row of `sum_r |S_r|` sums to at most 1 over the edges that carry (the registered normalisation is
+`forward_cone`, decision 9.16: the `total_in_degree` divisor read per seed over the edges whose source that seed can
+reach; `experiments/run_main_model.py --normalisation`).
 
 | Nonlinearity | Where | Default |
 |---|---|---|
@@ -78,15 +82,19 @@ over the signed field for `member_of`; the owner ruled that a signed AND is "bet
 - Duplicated rather than shared: `present_nodes`, `reset_flip_collection`, `flip_effect_estimates`,
   `perturbation_difference_field`, `descriptor_parameters`.
 - Normalisation differs in substance: the linear encoder divides by the sum of the weights feeding a destination,
-  over all relations together (decision 4.11); the message-passing encoder divides by edge counts, per relation.
+  over all relations together (decision 4.11), counted per seed over the edges the seed can reach (`forward_cone`,
+  decision 9.16); the message-passing encoder divides by edge counts, per relation.
 - Readouts differ: `channel_expansion` with `output_gate` and `descriptor_gate`, against `base_node_state` with
   `feature_projection` and `descriptor_projection`.
 - The message-passing encoder has a fixed-point mode, off by default, allowed only with `shared_low_rank` weights.
 
 ## 6. Registration
 
-`tested_models` in `configs/registered_rules.json` names the noisy-OR configurations of both encoders. The owner ruled
-on 21 October 2026 that changing them goes through an amendment (9.81).
+`tested_models` in `configs/registered_rules.json` names one model, the noisy-OR configuration of the linear-response
+encoder (`confirmatory_v2_linear_response_noisy_or`); `robustness_models` holds the message-passing noisy-OR
+configuration, read and reported outside the tested family and spending no alpha (decision 9.77, 22 October 2026).
+Until 22 October 2026 `tested_models` named the noisy-OR configurations of both encoders. The owner ruled on
+21 October 2026 that changing them goes through an amendment (9.81), and the registered value changed that way.
 
 ## 7. Rulings that bear on the cases
 
@@ -103,4 +111,7 @@ on 21 October 2026 that changing them goes through an amendment (9.81).
    238 alternatives.
 3. Whether the pH ceiling is read at the right node: cytosolic H+ (`MAM02039c`) has 2,048 incoming and 1,281 outgoing
    edges, so one perturbed reaction moves it by about 1/4,096 of its own change.
-4. Whether the message-passing encoder leaves the tested models and stays as a named comparison, or is removed.
+
+Settled since the inventory was written: whether the message-passing encoder leaves the tested models. It left them on
+22 October 2026 (decision 9.77) and stays as a robustness reading under `robustness_models`, not as a tested model
+and not removed; the one-sided level returned to 0.05 with it (decision 9.78).

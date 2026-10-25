@@ -173,8 +173,9 @@ confirmation.
 - Training. Each confirmatory run trains on the 1,222 development perturbations, of which one grouped seventh is the
   validation set for early stopping (fold `seed % 7` of round(1 / 0.15) = 7 grouped folds, so seeds 0 to 4 rotate over
   folds 0 to 4 and folds 5 and 6 never serve as validation — corrected 15 October 2026 from "fold 0", which describes
-  seed 0 alone, against run_main_model.py lines 1016 and 1048; validation loss, patience 8, at most 60
-  epochs; as amended on 8 October, drawn from the groups no larger than half of it, 142 perturbations, and followed by a
+  seed 0 alone, against the validation_fold assignment of run_main_model.py (its lines 1016 and 1048 on that date);
+  validation loss, patience 8, at most 60 epochs; as amended on 8 October, drawn from the groups no larger than half of
+  it, 142 perturbations, and followed by a
   refit on all 1,222 for the chosen number of epochs, which is the model scored), and scores the lockbox once
   (--lockbox configs/lockbox_v1.json --score-lockbox). Seeds 0 to 4. Per seed and model, two control runs: labels permuted
   within degree quintiles and within the lockbox and the development set apart (rows move whole with their weights and
@@ -1775,14 +1776,17 @@ cell-class weights and combined perturbations are named per run and belong to th
   cost, and the pass is cached per perturbation, so it is paid once per perturbation and not once per epoch. Registered
   before it is built; the cost is to be measured on the rebuilt graph, and the 13 regional descriptor columns of item
   21a become redundant when it lands.
-- **Message passing is not at its registered form.** Item 8 of 12 October (one repeated layer, rank-factored, run to a
-  fixed point) is not built, so the encoder keeps its three layers with weights per layer and does not reach a fixed
-  point. Until it is built the two encoders differ in more than their response law, and item 7 is met by the
-  linear-response encoder only.
-- **Three registered items have no code.** The per-pair placebo weights of item 3 (`configs/placebo_negative_weights.csv`
-  is written but not read by the trainer, which applies the 0.5 default to every such negative), the Open Targets
-  weight of 0.45 of item 12, and the Holm procedure of item 18. Each is registered and unbuilt, and a run made before
-  they are built does not implement them.
+- **Message passing was not at its registered form when this was written.** Item 8 of 12 October (one repeated layer,
+  rank-factored, run to a fixed point) was built later on 13 October 2026 (commit `d9ea1e7`;
+  `--relation-parameterisation shared_low_rank` is the trainer's default and the encoder runs to the
+  `--fixed-point-tolerance` of item 7). What remains is that the encoder does not hold the perturbation on at every
+  round (decision 9.83, deferred by the owner), so item 7 is met by the linear-response encoder only.
+- **Three registered items had no code when this was written.** The per-pair placebo weights of item 3
+  (`configs/placebo_negative_weights.csv`, which the trainer then did not read, applying the 0.5 default to every such
+  negative), the Open Targets weight of 0.45 of item 12, and the Holm procedure of item 18. All three were built later
+  on 13 October 2026 (commits `a44593d`, the weights file read by `--placebo-negative-weights-file` and Holm over H2 and
+  P1 in `experiments/score_confirmatory.py`, and `33572fb`, the weight in `loss_weight_for_record`; item 12a). A run
+  made before they were built does not implement them.
 - **A gene knockout and an inhibitor of that gene's protein are nearly the same input.** Both reach the protein with
   sign -1 and magnitude 1, differing only in the entry hop, although a knockout removes the protein and everything it
   does while an inhibitor blocks activity and leaves it in place, at a partial occupancy, in the cells the drug
@@ -2212,8 +2216,11 @@ relation inherits its parent edge's weight, each being the same physical edge re
   most consequential: selecting the route channel on the settled sign alone zeroes every downstream node of a
   knockout in an all-activating region, because no negative-sign route exists there, which would have cost the gene
   arm's 4,289 evidence rows.
-- **Item 12's loader (8.5) and item 5c's occupancy input path (8.1) are unbuilt.** Both change a model input and
-  both enter at the v4 rebuild in any case; after 4.12, neither is work to do at the end of a long pass.
+- **Item 12's loader (8.5) and item 5c's occupancy input path (8.1) were unbuilt when this was written.** Both change
+  a model input and both enter at the v4 rebuild in any case; after 4.12, neither was work to do at the end of a long
+  pass. The loader was wired on 14 October 2026 (commit `016ff6a`, decision 8.5 on option (a):
+  `assemble_evidence_table.py --open-targets-scoped-rows`, the class reaching the Dawid-Skene fit as item 12d
+  registers); the occupancy input path is still unbuilt (decision 8.1).
 
 **31. Item 14(a) is tightened to a central action, and a second medicines agency is read only where no
 pharmacology section exists** (the owner, 13 October 2026: "I'm okay losing metoprolol and propranolol so 1 is

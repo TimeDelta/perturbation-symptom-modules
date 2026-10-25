@@ -117,8 +117,9 @@ because the error shows what reading second-hand costs.
 
 ## Verbatim quotations, each attributed
 
-Markup note: all four publications were read as JATS XML or HTML. Subscripts and superscripts are flattened inline
-in the quotations below (so "[Na+]o" stands for a bracketed Na-plus with a subscript "o"); nothing else is changed.
+Markup note: the four publications read on 12 October 2026 were read as JATS XML or HTML; Hodgkin & Katz 1949 was read
+on 13 October from the PDF the owner supplied, and its quotations are in the set D table. Subscripts and superscripts
+are flattened inline in the quotations below (so "[Na+]o" stands for a bracketed Na-plus with a subscript "o"); nothing else is changed.
 
 **Düsterwald, Currin, Burman, Akerman, Kay & Raimondo 2018, *eLife* 7:e39575, doi 10.7554/eLife.39575.**
 Table 1, caption and rows (Europe PMC JATS, read 12 October 2026):
@@ -254,8 +255,10 @@ service on 12 October 2026, not from a licence landing page.
   https://creativecommons.org/licenses/by-nc-sa/4.0/)." Published 20 September 2017, so the six months have long
   passed and CC BY-NC-SA 4.0 applies. **Non-commercial and share-alike**: quoting the sentences above is within it,
   redistributing the article is not.
-- **Hodgkin & Katz 1949 (J. Physiol.): licence not verified.** The article was not read, so no licence sentence was
-  read for it. Nothing from it is reproduced here beyond the two ratios as quoted by Alvarez & Latorre 2017.
+- **Hodgkin & Katz 1949 (J. Physiol.): licence not verified.** On 12 October 2026 the article had not been read and
+  nothing from it was reproduced beyond the two ratios as quoted by Alvarez & Latorre 2017. On 13 October it was read in
+  the original from the PDF the owner supplied; no licence statement was read in it, so the licence stays unverified, and
+  what is reproduced from it is the three short sentences quoted in the set D table (pp. 69, 71 and 72).
 
 ## What could not be verified
 
@@ -272,7 +275,9 @@ service on 12 October 2026, not from a licence landing page.
    equation in symbolic form but no numeric ratio. Addresses for the owner to open:
    `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%22PK%3APNa%3APCl%22&format=json` and
    `https://pubmed.ncbi.nlm.nih.gov/?term=Goldman-Hodgkin-Katz+relative+permeability+neuron`.
-2. **Hodgkin & Katz 1949 at first hand.** The permeability ratio 1 : 0.04 : 0.45 is reported here only as quoted by
+2. **Hodgkin & Katz 1949 at first hand. Settled 13 October 2026**: the owner supplied the PDF, the article was read in
+   the original and the set D table now quotes it (the resting ratio confirmed, the refractory ratio corrected). What
+   follows is the record of 12 October, when the ratio 1 : 0.04 : 0.45 was reported only as quoted by
    Alvarez & Latorre 2017. Routes tried: PubMed MCP `get_full_text_article` for PMC1392331, which returned an empty
    `full_text` field (the PMC copy is a page scan); the Europe PMC full-text XML service for PMC1392331, which
    answered HTTP 500 (no XML held); the PMC Open Access service at
@@ -286,7 +291,10 @@ service on 12 October 2026, not from a licence landing page.
    next section shows the table's own reversal potentials are reproduced by the Nernst equation at 37 °C to within
    1 mV, but that is this pass's inference, **not** a statement of the source, and it is not reported as a source
    value. Address for the owner: `https://www.frontiersin.org/articles/10.3389/fncel.2015.00419/full`.
-4. **The numbered footnote markers in Raimondo et al. 2015 Table 1.** The cells carry superscript markers 1 to 10
+4. **The numbered footnote markers in Raimondo et al. 2015 Table 1. Settled 13 October 2026** from the typeset PDF the
+   owner supplied: the superscripts are reference indices and estimates are marked by grey fill; the only two grey
+   cells are seizure-column values this project does not use (the set B section above). What follows is the record of
+   12 October, when this was open. The cells carry superscript markers 1 to 10
    (for example "96 mM" with marker 1 on intracellular K⁺, and marker 4 on three separate extracellular values).
    Their texts are in neither the Europe PMC JATS nor the Frontiers HTML page, both of which were read; only the
    general table footnote is present. So it is not known from what was read which individual cells are the ones the
@@ -314,7 +322,7 @@ this pass was affected by an unanswered request, and nothing here is recorded as
 | Address | Refusal | Date |
 |---|---|---|
 | `https://pmc.ncbi.nlm.nih.gov/utils/oa/oa.fcgi?id=PMC1392331` (PMC Open Access service, to locate the Hodgkin & Katz 1949 file) | Robots rule. `https://pmc.ncbi.nlm.nih.gov/robots.txt` reads `User-agent: *` ... `Allow: /articles/` ... `Disallow: /`, so `/utils/` is disallowed for every automated reader. Left unread. | 2026-10-12 |
-| `https://pmc.ncbi.nlm.nih.gov/articles/instance/1392331/pdf/jphysiol01475-0050.pdf` (the scanned Hodgkin & Katz 1949 PDF) | Human/robot check. The address is inside the robots-allowed `/articles/` tree, but the server answered HTTP 200 with a 1,816-byte interstitial titled "Preparing to download ..." carrying `POW_CHALLENGE`, `POW_DIFFICULTY` and a `window.ncbi.pmc.pow.init(...)` call — a proof-of-work gate. Under the ruling of 11 October 2026 a check that the visitor is human is not solved, cached around or mirrored. The challenge was **not** solved and the PDF was not read. The reading script's challenge-marker list does not yet contain `POW_CHALLENGE`, so it recorded the interstitial as a page read; it is recorded as a refusal here. | 2026-10-12 |
+| `https://pmc.ncbi.nlm.nih.gov/articles/instance/1392331/pdf/jphysiol01475-0050.pdf` (the scanned Hodgkin & Katz 1949 PDF) | Human/robot check. The address is inside the robots-allowed `/articles/` tree, but the server answered HTTP 200 with a 1,816-byte interstitial titled "Preparing to download ..." carrying `POW_CHALLENGE`, `POW_DIFFICULTY` and a `window.ncbi.pmc.pow.init(...)` call — a proof-of-work gate. Under the ruling of 11 October 2026 a check that the visitor is human is not solved, cached around or mirrored. The challenge was **not** solved and the PDF was not read. The reading script's challenge-marker list did not then contain `POW_CHALLENGE`, so it recorded the interstitial as a page read; it is recorded as a refusal here, and the markers `pow_challenge`, `pow_difficulty`, `pow.init` and "preparing to download" were added to `CHALLENGE_MARKERS` the same day (commit 84cc176). | 2026-10-12 |
 | `https://www.ebi.ac.uk/europepmc/webservices/rest/PMC1392331/fullTextXML` | Not a refusal, a genuine absence: HTTP 500, Europe PMC holds no full-text XML for this scan-only article. | 2026-10-12 |
 
 **Text addressed to an AI assistant.** None on any web page read. Two tool services returned instruction text
