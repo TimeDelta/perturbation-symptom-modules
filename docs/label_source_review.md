@@ -3335,6 +3335,30 @@ Cu,br/Cu,pl (homog.)` rows of culot2013, which is why this was measured rather t
    measurement literature never covered, and for the benzodiazepines among them occupancy would be the wrong readout
    even if it existed.
 
+### 30.8 Two further Kp,uu,brain sources found on 24 October 2026 (recorded 25 October 2026)
+
+A search made on 24 October 2026 after the PK coverage check (`docs/pk_coverage_check_2026-10-24.md`) found the
+Kp,uu,brain column to be the binding constraint (94 of 222 drugs, human for 13). It did not repeat the passes of 30.1
+to 30.6 and found no compilation they missed; the conclusion of 30.2 that the gap is structural stands. It found two
+papers not in the repository and ruled one out. Every bibliographic fact and quotation below was checked again on
+25 October 2026 through the PubMed service (metadata, copyright record and PubMed Central full text); no Kp,uu value
+was transcribed from either paper.
+
+| source | what it holds | licence, as read | status |
+| --- | --- | --- | --- |
+| Zou et al. 2025, *AAPS J* 27(2):52, doi 10.1208/s12248-025-01035-8, PMID 40021548 (`zou2025kpuu`; not the Zou et al. 2025 of *J Chem Inf Model*, PMID 40340403, already in `docs/brain_exposure_data_feasibility.md`) | the abstract: the study analyses "reported Kp,uu,brain, unbound drug concentrations in the brain and IC50 values against pharmacological targets for 17 drugs including anticonvulsants, antidepressants, antipsychotics, and antimicrobials" and "PK and PD profiles of 18 drugs measured from human glioblastoma tumors". Its conclusion bears on the registered occupancy anchor as much as on coverage: a high Kp,uu "does not necessarily translate into adequate target coverage (Cu,brain/IC50)", and it calls for "integrative approaches combining Kp,uu,brain data with comprehensive PK/PD analysis". (PubMed's plain-text abstract drops the subscripts; the symbols are restored here from the paper's title and keywords.) | **not open.** PubMed's copyright record: "© 2025. The Author(s), under exclusive licence to American Association of Pharmaceutical Scientists." No PubMed Central record; no licence recorded. **A correction exists**: *AAPS J* 28(4), 28 May 2026, doi 10.1208/s12248-026-01256-5, PMID 42209871 ("Published Erratum"; PubMed holds no copyright metadata for it), so any value taken must come from the corrected version | for the owner to open, together with its correction: https://doi.org/10.1208/s12248-025-01035-8 and https://doi.org/10.1208/s12248-026-01256-5. Not fetched; the publisher's page was not requested |
+| Wanat and Brzezińska 2023, *Membranes* 13(7):623, doi 10.3390/membranes13070623, PMID 37504989, PMC10384010 (`wanat2023chromatographic`) | a chromatographic BBB-permeability modelling paper over 181 active pharmaceutical ingredients "isolated from the pharmaceutical preparations"; its Kp,uu,brain column is a secondary compilation behind one citation: "The third dependent variable, Kp,uu,brain, was collected for only 29 APIs out of all 181 drugs included in the study." (introduction, PubMed Central full text) | **CC BY 4.0, verified**: PubMed Central's record carries "© 2023 by the authors." with the licence https://creativecommons.org/licenses/by/4.0/ | an index to primary sources, not a table to transcribe: taking values from it would add a provenance class the grading scheme does not have. The primary source it cites is the one to read |
+
+Ruled out, and already so recorded: Loryan et al. 2022, *Pharm Res* 39(7):1321, doi 10.1007/s11095-022-03246-6, PMID
+35411506 (`loryan2022kpuu`) is a survey of pharmaceutical companies on how they use the Kp,uu concept and holds no
+compound table; the repository cites it for its abstract only (section 10), which is right.
+
+One claim of the search is withdrawn here rather than recorded: it named Kalvass et al. 2007 as "still not
+retrievable" and an item for the owner. The owner supplied that paper as a PDF on 15 October 2026 and its Table 2 is
+transcribed (decision 9.41, `data/raw/label_review/effect_site_tables/kpuu/kalvass2007.csv`), so nothing is owed on
+it. The search also noted that single-compound papers of 2024 to 2026 (BI-907828, EKZ-438, AM-8719, the Bällgren
+2025 oxycodone antiporter study) add nothing for this drug list.
+
 ## 31. Combining the rules, and the extra Kp,uu values kept (12 October, 21:50)
 
 The owner: "What about combining the rules? Yes keep additional kp,uu values."

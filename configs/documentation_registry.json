@@ -610,6 +610,12 @@
    "recorded": "2026-10-12",
    "append_only": false
   },
+  "docs/pk_coverage_check_2026-10-24.md": {
+   "class": "record",
+   "recorded": "2026-10-25",
+   "append_only": false,
+   "what": "the PK coverage measurement of 24 October 2026 at a9503af, whose scripts were lost; brought into the repository on 25 October 2026"
+  },
   "docs/phase1_counts.md": {
    "class": "generated",
    "generator": "experiments/run_phase1_counts.py"
