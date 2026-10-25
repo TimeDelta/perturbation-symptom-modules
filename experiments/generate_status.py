@@ -95,7 +95,9 @@ def release_summaries() -> list[dict]:
 
 
 def registered_rules() -> dict:
-    rules = json.loads(REGISTERED_RULES_PATH.read_text(encoding="utf-8"))
+    registry = json.loads(REGISTERED_RULES_PATH.read_text(encoding="utf-8"))
+    # the rules sit under the "rules" key beside the "_"-prefixed notes; a file without that key holds them at the top
+    rules = registry.get("rules", registry)
     ids = [key for key in rules if not key.startswith("_")]
     amendments = 0
     if AMENDMENT_HISTORY_PATH.exists():
