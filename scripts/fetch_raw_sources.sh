@@ -113,6 +113,12 @@ fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_clust
 # pineal, and the build summary says so. The FANTOM5 table of Expression Atlas E-MTAB-3358 that filled the column on
 # 20 October 2026 is no longer fetched (docs/data_sources.md records why).
 
+# Fenckova et al. 2019 (Biol Psychiatry 86:294-305, PMID 31272685), supplementary file mmc2.xlsx: neuron-specific RNAi
+# of the Drosophila orthologs of 286 intellectual disability genes in light-off jump habituation (Tables S1 to S5, S7).
+# NOT fetched here: ars.els-cdn.com disallows every path for automated readers, and PMC (PMC7053436) answered its copy
+# with a check that the visitor is human. The owner supplied the file on 25 October 2026; it sits in
+# data/raw/fenckova_2019_habituation/mmc2.xlsx with a .pin.json beside it (docs/data_sources.md). All rights reserved.
+
 # The adult human brain atlas's genes x clusters aggregate (Siletti et al. 2023, PMID 37824663; the authors' Dropbox link
 # from the README of github.com/linnarsson-lab/adult-human-brain): mean UMI per nucleus for 59,480 genes in the 461
 # clusters, the source of the noradrenergic_neuron class (cluster 398; graph/siletti_cluster_classes.py, decision 9.76).
