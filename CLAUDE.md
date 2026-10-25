@@ -97,6 +97,23 @@ against them before it is acted on.
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.
 
+## Models (25 October 2026)
+
+- **Research is done on Fable.** The handoff of 24 October 2026 carried the rule "Fable only. If the session is on
+  any other model, or falls back to one, stop and take no action."; the owner narrowed it on 25 October 2026: "That
+  fable only rule is supposed to be for research", and asked for it here ("Sure. Put it in the Claude md").
+- **What counts as research.** Finding and reading sources, verifying a licence, appraising literature, and turning
+  what a source says into a claim, a decision entry or a curated edge. Engineering may run on any model: environment
+  setup, builds, tests, pins, graph and data-layer code, and running a measurement script. Interpreting a measurement
+  for a decision is research. (This line was proposed by the session of 25 October 2026 with the question "Tell me if
+  the line belongs elsewhere"; the owner's reply was the request above.)
+- **A session on another model** hands each research step to a subagent started on Fable (the Agent tool's `model`
+  set to `fable`), or leaves that step undone and says so. A research step whose model falls back from Fable is
+  stopped and reported, not finished on the fallback model.
+- **Research done on another model before this rule was recorded** is flagged where it is recorded and rechecked by
+  a Fable pass before it is relied on. The one known case: the Fenckova et al. 2019 licence row of
+  `docs/data_sources.md`, read on 25 October 2026.
+
 ## Documents (15 October 2026)
 
 - **What is current is generated, not remembered.** Read `docs/status.md` (releases, registered rules, decisions,
