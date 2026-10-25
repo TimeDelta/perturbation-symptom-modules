@@ -114,7 +114,10 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   stopped and reported, not finished on the fallback model.
 - **Research done on another model before this rule was recorded** is flagged where it is recorded and rechecked by
   a Fable pass before it is relied on. The one known case: the Fenckova et al. 2019 licence row of
-  `docs/data_sources.md`, read on 25 October 2026.
+  `docs/data_sources.md`, read on 25 October 2026. Rechecked on Fable on 25 October 2026: the non-Fable reading
+  ("All rights reserved", from PubMed's copyright record) was wrong; the version of record is CC BY-NC-ND 4.0, read on
+  the publisher's PDF in the Radboud Repository and matched by Crossref, Europe PMC and OpenAlex (the row and
+  `docs/label_source_review.md` section 36 hold the quote). No case flagged under this rule remains open.
 
 ## Documents (15 October 2026)
 
