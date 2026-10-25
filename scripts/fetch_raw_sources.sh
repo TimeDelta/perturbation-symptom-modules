@@ -259,7 +259,8 @@ fetch "$raw_directory/wormbase/phenotype_ontology.WS298.obo" "https://ftp.ebi.ac
 # ChEMBL's rat catalepsy assays and their activities, page by page through experiments/read_public_page.py.
 PYTHONPATH=. python experiments/fetch_chembl_rat_behaviour.py --output-dir "$raw_directory/chembl_rat_behaviour" \
   || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/chembl_rat_behaviour/manifest.json" >> "$report_path"
-# The Fenckova et al. 2019 supplement (mmc2.xlsx, Tables S1 to S7) is not fetched: the owner supplied it on 24 October
+# The Fenckova et al. 2019 supplement (mmc2.xlsx, sheets S1 to S5 and S7) is not fetched (ars.els-cdn.com disallows
+# automated readers and PMC answers its copy with a check that the visitor is human): the owner supplied it on 24 October
 # 2026; place it at data/raw/fenckova_2019/mmc2.xlsx (sha256 f020b26750de9980b6d727e700664dc90d6b96a79a8eb4e33245c8b43dd7d913).
 
 if [ "$with_cellxgene" = "yes" ]; then
