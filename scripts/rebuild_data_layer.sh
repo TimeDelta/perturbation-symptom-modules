@@ -98,16 +98,20 @@ fi
 evidence_build "_parkinsonism" docs/symptom_crosswalk.csv
 
 # --- evidence table v4: the label changes the user approved on 10 and 11 October 2026 ---------------------------------
-# docs/label_source_review.md, sections 8, 9 and 13: a drug with at most three mechanism targets is admitted, a gene whose
-# every causal association is a gain of function is seeded with sign +1, and a kept drug pair never more frequent on the
-# drug than on placebo is set aside. No held-out set is drawn on this table yet and nothing registered reads it.
+# docs/label_source_review.md, sections 8, 9 and 13: a gene whose every causal association is a gain of function is
+# seeded with sign +1, and a kept drug pair never more frequent on the drug than on placebo is set aside. A drug is
+# admitted whatever the number of its mechanism targets (--max-drug-targets 0: amendment item 1(a), built 24 October
+# 2026), and no drug is set aside for joining leakage blocks: the bridging rule of items 1(b) and 16 is withdrawn by
+# item 33, so orphenadrine is in. Every table built before 24 October 2026 carries the three-target limit, and this
+# script's steps skip an output that exists, so the limit leaves a table only when it is rebuilt from scratch.
+# No held-out set is drawn on this table yet and nothing registered reads it.
 step "$processed/onsides_v4/onsides_reports.parquet" "OnSIDES reports v4" \
   python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk.csv --output-dir "$processed/onsides_v4" \
-    --markdown-output "$log_directory/onsides_v4.md" --evidence-dir "$processed/evidence_full_v4" --max-drug-targets 3
+    --markdown-output "$log_directory/onsides_v4.md" --evidence-dir "$processed/evidence_full_v4" --max-drug-targets 0
 step "$processed/evidence_full_v4/evidence_records.parquet" "evidence table v4" \
   python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk.csv --graph-dir "$processed/graph_full" \
     --output-dir "$processed/evidence_full_v4" --extra-reports "$processed/onsides_v4/onsides_reports.parquet" \
-    --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 3 --seed-gain-of-function-genes-positive
+    --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --seed-gain-of-function-genes-positive
 step "$processed/label_selection/better_v2_full_v4.parquet" "label selection better_v2 on v4, never-above-placebo pairs set aside" \
   python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v4" --mask-grades C --mask-never-above-placebo \
     --output "$processed/label_selection/better_v2_full_v4.parquet"
@@ -234,11 +238,11 @@ fi
 if [ "$stage" = "fine" ]; then
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
-      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 3
+      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
-      --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 3 --allele-perturbations
+      --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"

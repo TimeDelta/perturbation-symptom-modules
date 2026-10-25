@@ -48,6 +48,7 @@ def experiment_data_with_every_array_filled() -> ExperimentData:
         values[name] = np.ones((NUM_PERTURBATIONS, NUM_SYMPTOMS), dtype=bool)
     values["frequencies"] = np.ones((NUM_PERTURBATIONS, NUM_SYMPTOMS))
     values["placebo_negative_weight_matrix"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.5)
+    values["evidenced_negative_power"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), 0.9)
     # decision 9.92: the source of each evidenced negative and the per-pair strengths a label selection may carry
     values["evidenced_negative_source"] = np.full((NUM_PERTURBATIONS, NUM_SYMPTOMS), "Phenopacket-Store", dtype=object)
     for name in ("phenopacket_individuals_observed", "phenopacket_individuals_assessed", "meta_analysis_participants", "meta_analysis_rate_ratio",
