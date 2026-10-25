@@ -235,3 +235,45 @@ are curation errors rather than evidence and are recorded in `docs/reconstructio
 
 This does not change any prior: a prior never touches a label, and the 13 non-label records are eligible cells like any
 other unlabelled pair.
+
+## 11. Correction, 24 October 2026: what the owner asked about species (decision 9.56), and the species terms of 9.93
+
+Section 9 says "Species is a feature rather than a separate fit, as the owner asked (9.56)". That is the opposite of
+what 9.56 records. The owner wrote, on 16 October 2026: "wouldn't all non-human evidence need to be fit separately so
+species isn't one of the fit features ... Even primate research I would think should have its negative evidence
+weighted differently though". The question asks for a separate fit per non-human species, or at least for a
+non-human source's absences to be weighted apart from its calls; it was not answered before 24 October 2026, and the
+docstring of `evidence/calibrated_reliability.py` repeated the misreading until the same day.
+
+What 9.93 built is the partially pooled answer to its second half, not a choice between the two. With IMPC as the
+only mouse source, species:mouse equalled source:IMPC-knockout (and class:animal), so a species effect could not be
+told from a pipeline effect. Three mouse sources now enter beside IMPC (MGI-literature, MGI-screen,
+SFARI-mouse-models), and when a species has two or more sources the regression has a species main effect shared by
+them, a species x direction term, and for each non-human source a deviation from its species and a source x direction
+deviation, both shrunk toward 0 by an L2 penalty ten times the base one
+(`--soft-prior-calibration-source-deviation-penalty`). A table whose only mouse source is IMPC fits the model it
+fitted before, bit for bit. Whether to fit each species apart instead is still the owner's (9.93). The coefficients on
+v5 are in `docs/mouse_sources_measured_v5.md`.
+
+## 12. Addition, 24 October 2026: each species fitted apart (the owner's ruling on 9.56, decision 9.93)
+
+The owner, 24 October 2026 (19:47 EDT): "I'd prefer it to always be separate for PDF species if the data can handle
+it", read as "for each species" (a dictation slip). So the calibrated regression now fits, by default, the human cells
+alone and each non-human species alone (`--soft-prior-calibration-species-form separate`); the pooled form of section
+11 is the option `pooled` and the fallback. Within a species' fit each source keeps its own column and its source x
+direction column, shrunk toward 0 by the deviation penalty, and the intercept is the species-level effect. A species is
+fitted alone when its usable calibration cells hold at least 20 positives and 20 negatives
+(`--soft-prior-calibration-minimum-cases`); below that it is read through the pooled form with the human cells, because
+the pooled form still uses its cells where the tiers would not. On v5 mouse passes (140 positive and 2,853 negative
+cells). The coefficients are in `docs/mouse_sources_measured_v5.md` section 4 and the reasons in decision 9.93.
+
+## 13. Addition, 24 October 2026: species beyond mouse, pooled until standalone (decision 9.94)
+
+The owner, 24 October 2026 (20:10 EDT): "Pooled sources until standalone". Nine report sources of rat, fly, zebrafish
+and worm (RGD-rat, ChEMBL-rat-in-vivo, FlyBase-classical, FlyBase-RNAi, Fenckova-2019-RNAi, ZFIN-mutant,
+ZFIN-morpholino, WormBase-variation, WormBase-RNAi; `evidence/cross_species_reports.py`) enter as soft priors, class
+animal, each with its own source and species. The calibrated regression reads each species through the pooled form with
+the human cells until its usable calibration cells hold 20 positives and 20 negatives, and fits it on its own after
+that, which is the rule of section 12 applied per species. On v5 every one of the four is below the bar and pooled
+(`docs/mouse_sources_measured_v5.md` section 5). Since decision 9.90 the default loss is the positive-unlabelled
+likelihood, which takes no soft prior, so these tables are read only under `--label-likelihood weighted`.

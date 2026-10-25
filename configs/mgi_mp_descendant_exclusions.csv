@@ -1,0 +1,9 @@
+mp_term_id,mp_term_name,ancestor_in_crosswalk,reason
+MP:0002629,hyperactivity elicited by ethanol administration,MP:0001399,"a response to a drug challenge (""increased activity after ingestion of alcohol""), not the baseline locomotion the crosswalk reads"
+MP:0008911,induced hyperactivity,MP:0001399,"a response to handling, touching or noise (""increased physical activity following stimulation""), not baseline locomotion"
+MP:0008912,nervous,MP:0001399,"""increased, skittish, behavior induced by stimulation such as handling, touching or noise"": reactivity, not baseline locomotion"
+MP:0012297,hyperactivity elicited by feed restriction,MP:0001399,"a response to food restriction (""increased activity after restriction of food"")"
+MP:0014369,enhanced spatial working memory,MP:0008428,the opposite direction of the cognitive_impairment row it sits under (abnormal spatial working memory is read as an impairment)
+MP:0011958,increased compensatory feeding amount,MP:0011939,"a response to a fast (""increased amount of food consumed after a period of fasting""), not spontaneous intake"
+MP:0011957,decreased compensatory feeding amount,MP:0011940,"a response to a fast (""decreased amount of food consumed after a period of fasting"")"
+MP:0003908,decreased stereotypic behavior,MP:0001408,the opposite direction of the compulsive_behavior row it sits under

@@ -814,6 +814,11 @@
    "class": "living",
    "reviewed": "2026-10-21",
    "as_of_commit": "65bb3aa"
+  },
+  "docs/mouse_sources_measured_v5.md": {
+   "class": "generated",
+   "generator": "experiments/measure_mouse_sources.py",
+   "what": "the animal report sources of decisions 9.93 and 9.94 (mouse: IMPC, MGI-literature, MGI-screen, SFARI-mouse-models; rat, fly, zebrafish and worm) measured on the v5 tables: calls, absences, label-positive rates given each, the calibrated regression's species, source and source x direction terms, and each species' route (pooled or its own fit)"
   }
  }
 }

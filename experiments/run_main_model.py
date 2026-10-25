@@ -82,6 +82,9 @@ from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics imp
 from mechanistic_pathway_learning.evidence.allele_mechanisms import gene_of_perturbation
 from mechanistic_pathway_learning.evidence.calibrated_reliability import (
     MINIMUM_CALIBRATION_CASES,
+    DEFAULT_SPECIES_FORM,
+    SOURCE_DEVIATION_PENALTY,
+    SPECIES_FORMS,
     calibrated_probability_matrix,
     cell_table,
     feature_frame,
@@ -514,10 +517,15 @@ RESUME_CONTROL_ARGUMENTS = {"run_dir", "resume", "refit_on_validation", "max_epo
 # flags added after runs had started: off, they leave the fingerprint as it was, so a resumed run reports no change
 ARGUMENTS_RECORDED_ONLY_WHEN_SET = {"start_at_weighted_optimum", "rewire_encodes", "equal_drug_shares", "normalise_drug_input", "drug_entry",
                                     "drug_mechanism_before_first_layer", "sequestration_carries", "permute_drug_targets", "placebo_negative_weight",
-                                    "soft_prior_strength", "edge_prior_strength"}
+                                    "soft_prior_strength", "edge_prior_strength", "soft_prior_calibration_source_deviation_penalty",
+                                    "soft_prior_calibration_exclude_unlabelled_symptoms"}
 # the settings of the soft prior mean nothing while its strength is 0, so they enter the fingerprint only when it is on
 SOFT_PRIOR_SETTINGS = {"soft_prior_tiers", "soft_prior_tempering", "soft_prior_count_cap", "soft_prior_record_grades", "soft_prior_reports", "permute_soft_priors",
-                       "soft_prior_probability", "soft_prior_calibration_minimum_cases"}
+                       "soft_prior_probability", "soft_prior_calibration_minimum_cases", "soft_prior_calibration_source_deviation_penalty",
+                       "soft_prior_calibration_exclude_unlabelled_symptoms"}
+# the settings of the calibration mean nothing under the tier probabilities, so they enter only with --soft-prior-probability
+# calibrated; the species form, added 24 October 2026 (9.93), changed what a calibrated run fits, so it is recorded there
+CALIBRATION_SETTINGS = {"soft_prior_calibration_species_form"}
 # and the edge priors' settings mean nothing while their strength is 0 (decision 9.57), nor do those of the gates they
 # make (9.62) and of the curated edges taken as known (9.63); until 17 October 2026 the gates' settings of 9.62 were
 # recorded whatever the strength, so a run without edge priors resumed under them reported changes that were not
@@ -638,6 +646,7 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
     fingerprint = {f"argument:{name}": str(value) for name, value in sorted(vars(arguments).items())
                    if name not in RESUME_CONTROL_ARGUMENTS and not (name in ARGUMENTS_RECORDED_ONLY_WHEN_SET and not value)
                    and not (name in SOFT_PRIOR_SETTINGS and not soft_priors_on) and not (name in EDGE_PRIOR_SETTINGS and not edge_priors_on)
+                   and not (name in CALIBRATION_SETTINGS and not (soft_priors_on and getattr(arguments, "soft_prior_probability", "tier") == "calibrated"))
                    and not ((name in LABEL_LIKELIHOOD_SETTINGS or name == "label_likelihood") and not positive_unlabelled)
                    and not (name in EDGE_NEGATIVE_EVIDENCE_SETTINGS and not negative_evidence_on)}
     fingerprint.update({
@@ -2039,6 +2048,16 @@ def build_argument_parser() -> argparse.ArgumentParser:
                              "prior's features, fitted on the rows each fit trains on and read at the median popularity; the tiers' strengths apply either way")
     parser.add_argument("--soft-prior-calibration-minimum-cases", type=int, default=MINIMUM_CALIBRATION_CASES,
                         help="below this many positive or negative calibration cells on the fit rows the tiers are kept")
+    parser.add_argument("--soft-prior-calibration-source-deviation-penalty", type=float, default=None,
+                        help="the L2 strength on a non-human source's deviation from its species and on its absence term, as a multiple of the base strength, "
+                             f"in the partially pooled form the regression takes when a species has two or more sources (decision 9.93); default {SOURCE_DEVIATION_PENALTY}")
+    parser.add_argument("--soft-prior-calibration-species-form", choices=SPECIES_FORMS, default=DEFAULT_SPECIES_FORM,
+                        help="separate (default; the owner, 24 October 2026, on decision 9.56): the human cells and each non-human species fitted apart, a "
+                             "species with fewer than --soft-prior-calibration-minimum-cases positive or negative cells read through the pooled form instead; "
+                             "pooled: one regression with species, source and source x direction terms (decision 9.93)")
+    parser.add_argument("--soft-prior-calibration-exclude-unlabelled-symptoms", action="store_true",
+                        help="leave out of the calibration the cells of a symptom with no label positive on the fit rows of their perturbation kind; such symptoms "
+                             "are reported in results.json whether or not this is set (decision 9.93)")
     parser.add_argument("--permute-soft-priors", action="store_true",
                         help="negative control: the soft priors moved among eligible cells so that every perturbation and symptom keeps its number of them (the "
                              "layout is lost, the popularity is kept); the real arm must beat it for the prior to carry pair-specific information")
@@ -2481,7 +2500,16 @@ def main() -> None:
         probability = soft_prior_probability
         if calibration_cells is not None and soft_prior_probability is not None:
             # the regression is fitted on this phase's rows alone (the lockbox is already out, a held-out fold never in)
-            calibration = fit_calibration(calibration_cells, data.outcomes, label_mask, fit_rows, arguments.soft_prior_calibration_minimum_cases)
+            penalty = getattr(arguments, "soft_prior_calibration_source_deviation_penalty", None)
+            calibration = fit_calibration(calibration_cells, data.outcomes, label_mask, fit_rows, arguments.soft_prior_calibration_minimum_cases,
+                                          source_deviation_penalty=SOURCE_DEVIATION_PENALTY if penalty is None else penalty, symptom_names=list(data.symptoms),
+                                          row_is_drug=np.asarray(data.perturbation_types) == "drug",
+                                          exclude_symptoms_without_label_positives=bool(getattr(arguments, "soft_prior_calibration_exclude_unlabelled_symptoms", False)),
+                                          species_form=getattr(arguments, "soft_prior_calibration_species_form", DEFAULT_SPECIES_FORM))
+            if calibration.symptoms_without_label_positives:  # reported, not fitted silently (decision 9.93)
+                print(f"soft-prior calibration ({phase}): symptoms with no label positive on the fit rows of their cells' kind "
+                      f"({'left out of the fit' if calibration.excluded_symptoms_without_label_positives else 'fitted as negatives'}): "
+                      f"{ {name: entry['cells'] for name, entry in calibration.symptoms_without_label_positives.items()} }")
             probability = calibrated_probability_matrix(calibration, calibration_cells, tier_probability)
             if arguments.permute_soft_priors:  # the same swaps as the tiers' matrix took: the prior cells and the seed are the same
                 probability, _, _ = permute_soft_priors(probability, tier_strength, soft_prior_eligible, np.arange(len(data.perturbation_ids)), random_seed=arguments.seed)

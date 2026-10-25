@@ -278,6 +278,15 @@ if [ "$stage" = "fine" ]; then
   step "$processed/impc_v5/impc_reports.parquet" "IMPC knockout phenotypes at the fine level" \
     python experiments/build_impc_reports.py --graph-dir "$processed/graph_full" --crosswalk configs/impc_symptom_crosswalk_fine.csv \
       --output-dir "$processed/impc_v5" --markdown-output "$log_directory/impc_knockout_evidence_v5.md"
+  # the mouse sources beyond IMPC (decision 9.93), next to impc_v5 and on the same crosswalk and graph genes; each
+  # joins training only through --soft-prior-reports
+  step "$processed/sfari_v5/sfari_reports.parquet" "MGI literature and screen annotations and SFARI mouse models at the fine level" \
+    python experiments/build_mouse_source_reports.py --graph-dir "$processed/graph_full" --crosswalk configs/impc_symptom_crosswalk_fine.csv \
+      --output-root "$processed" --suffix _v5
+  # the species beyond mouse (decision 9.94), on the same graph genes
+  step "$processed/rgd_rat_v5/rgd_rat_reports.parquet" "rat, fly, zebrafish and worm report sources at the fine level" \
+    python experiments/build_cross_species_reports.py --graph-dir "$processed/graph_full" --crosswalk configs/impc_symptom_crosswalk_fine.csv \
+      --drug-tables "$processed/evidence_full_v5/evidence_reports.parquet" --output-root "$processed" --suffix _v5
   step "$processed/literature_v5/literature_reports.parquet" "literature reports re-keyed to the fine namesakes" \
     python experiments/rekey_literature_to_fine.py --input data/releases/v0.4/literature/literature_reports.parquet --output "$processed/literature_v5/literature_reports.parquet"
   # trial outcome measures (decision 9.60): the per-drug cache under data/raw/clinicaltrials_outcomes is reused; fine constructs
