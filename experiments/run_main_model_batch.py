@@ -74,7 +74,8 @@ SLICE_GATE_TIME_SCALES_LINEAR_RESPONSE = [argument for argument in SLICE_MODULE_
 # point) is not built, so it keeps the registered three layers until it is.
 V4_SHARED_MODEL = ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--group-by", "disease_cluster_and_targets",
                    "--label-grades", "A", "B", "--negative-weight", "0.2", "--placebo-negative-weight", "0.5",
-                   "--placebo-negative-weights-file", "configs/placebo_negative_weights.csv", "--equal-drug-shares",
+                   "--placebo-negative-weights-file", "configs/placebo_negative_weights.csv", "--label-likelihood", "positive_unlabelled",
+                   "--equal-drug-shares",
                    "--keep-large-groups-in-training", "--refit-on-validation", "--start-at-weighted-optimum",
                    "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02",
                    "--leak-learning-rate", "0.0002", "--gate-learning-rate", "0.05", "--node-features", "typed",
@@ -293,7 +294,9 @@ CONFIGURATIONS: dict[str, list[str]] = {
     "b6_linear_response_time_scales_cofactors_degree": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--encoder", "linear_response", "--cofactor-relations", "--degree-offset",
                                                         "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002"],
     "b3_typed_nodes": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum", "--node-features", "typed"],
-    "b6_frequency_target": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--positive-target-from-frequency"],
+    # a frequency target and a soft prior have no place in the counted-once likelihood (decision 9.90), so their arms
+    # name the weighted loss they were built on
+    "b6_frequency_target": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--positive-target-from-frequency", "--label-likelihood", "weighted"],
     "b6_default_permuted": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--permute-labels"],
     "b3_sigmoid": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum"],
     "b3_sigmoid_absolute": ["--head", "sigmoid", "--field", "absolute", "--pooling", "mean"],
@@ -303,10 +306,10 @@ CONFIGURATIONS: dict[str, list[str]] = {
     # on the unlabelled pairs of the rows a fit trains on, and its negative control, the same priors moved among
     # eligible cells with every perturbation's and symptom's count kept. The report tables are data and go in --extra
     # (--soft-prior-reports ...). Off (the default) is the registered model; nothing here is a primary reading.
-    "v4_linear_response_soft_priors": [*V4_LINEAR_RESPONSE_MODEL, "--soft-prior-strength", "1.0"],
-    "v4_linear_response_soft_priors_permuted": [*V4_LINEAR_RESPONSE_MODEL, "--soft-prior-strength", "1.0", "--permute-soft-priors"],
-    "v4_message_passing_soft_priors": [*V4_MESSAGE_PASSING_MODEL, "--soft-prior-strength", "1.0"],
-    "v4_message_passing_soft_priors_permuted": [*V4_MESSAGE_PASSING_MODEL, "--soft-prior-strength", "1.0", "--permute-soft-priors"],
+    "v4_linear_response_soft_priors": [*V4_LINEAR_RESPONSE_MODEL, "--soft-prior-strength", "1.0", "--label-likelihood", "weighted"],
+    "v4_linear_response_soft_priors_permuted": [*V4_LINEAR_RESPONSE_MODEL, "--soft-prior-strength", "1.0", "--permute-soft-priors", "--label-likelihood", "weighted"],
+    "v4_message_passing_soft_priors": [*V4_MESSAGE_PASSING_MODEL, "--soft-prior-strength", "1.0", "--label-likelihood", "weighted"],
+    "v4_message_passing_soft_priors_permuted": [*V4_MESSAGE_PASSING_MODEL, "--soft-prior-strength", "1.0", "--permute-soft-priors", "--label-likelihood", "weighted"],
     # The edge-prior arm (decision 9.57, 16 October 2026): the registered model with a learnable presence gate on every
     # edge whose evidence has a tier (configs/edge_prior_tiers.csv), started at the edge's prior and pulled back to it,
     # and its negative control, the same priors shuffled among the gated edges of each relation. Needs the graph's

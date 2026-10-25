@@ -2907,6 +2907,8 @@ owner's call rather than this script's".
 That open band is settled by the sentence and is now closed: the exclusion is toddler and earlier, so a preschool band
 stays in. Nothing changes in any table, because no row of the pinned database carries that band.
 
+**Added 22 October 2026 (decision 9.89).** The owner withdrew the newborn-through-toddler exclusion: "that old decision doesn't apply now that I've included neurodevelopment". Every subgroup is now read; the constant named above is `NEWBORN_THROUGH_TODDLER_SUBGROUPS` and marks a stratum, not an exclusion.
+
 `configs/admitted_atc_prefixes_draft.csv` is a different thing: ATC groups and six named drugs, each with the sentence
 of its label that states a central action. Its exclusions are the seven groups left off in 9.4 (endocrine cancer
 therapy, insulins, beta blockers, the other first-generation antihistamines, the 5-HT3 antagonists, domperidone, and
@@ -3574,3 +3576,75 @@ reporting; it is not independent evidence of truth.
 
 The AstraZeneca PheWAS portal (its licence and items), the terms of JADER and VigiBase, the copy-number cohort papers
 and the report's remaining references.
+
+
+## 34. Sources read for the label-negative sources (22 October 2026, decision 9.92)
+
+The owner asked for negative labels, which are "as important as positives here for fitting the priors to the truth".
+Three sources were read for them, each for its terms and for the sentences the code and the curated table rest on.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| Phenopacket Store, release 0.1.27 | "BSD 3-Clause License"; "Copyright (c) 2022, Monarch Initiative"; "Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met" | the `LICENSE` file at tag 0.1.27 (commit 3f3619800b2c), fetched with git from github.com/monarch-initiative/phenopacket-store |
+| GA4GH Phenopacket schema 2.0.0, PhenotypicFeature | "This element is a flag to indicate whether the phenotype was observed or not." "Therefore it is only required in cases to indicate that the phenotype was looked for, but found to be absent." | phenopacket-schema.readthedocs.io/en/2.0.0/phenotype.html, a search result, read with the fetch tool |
+| ClinicalTrials.gov results checklist, adverse events | "Method for AE assessment—Systematic Assessment (e.g., solicited by a questionnaire)"; "Non-Systematic Assessment (e.g., unsolicited)"; "Frequency above which OAEs will be reported (0–5%)" | cdn.clinicaltrials.gov/documents/data-prep-checklist-ae.pdf, a search result, read with the fetch tool |
+| ClinicalTrials.gov robots file | "User-agent: *" followed by "Disallow: /api/" (with "Allow: /api/int/" and "Allow: /api/seo/" for the site's own pages) | clinicaltrials.gov/robots.txt, read from the shell |
+| Cholesterol Treatment Trialists' Collaboration, Lancet 2026 (PMID 41655587) | "Adverse event data from blinded randomised trials do not support causal relationships between statin therapy and most of the conditions (including cognitive impairment, depression, sleep disturbance, and peripheral neuropathy) listed in product labels as potential undesirable effects." "Our analyses do not support a causal role of statins for the vast majority of events listed as undesirable effects in statin SmPCs, including sleep disturbance, memory loss, sexual dysfunction, depression, and interstitial lung disease, which were previously listed by at least one regulatory agency as a potential statin class effect." | the abstract and the full text of PMC7619005 through the PubMed service |
+| the same, web appendix | webfigure 1c, statin (n=62028) against placebo (n=61912): "Cognitive or memory impairment 616 (0.2) 639 (0.2) ... 0.96 (0.86 − 1.07)"; "Depression 1910 (0.7) 2016 (0.8) ... 0.95 (0.89 − 1.01)"; "Sleep−related disorders 1728 (0.7) 1731 (0.7) ... 1.00 (0.93 − 1.07)"; the regimen key of Table 1: "S indicates simvastatin, P indicates pravastatin, F indicates fluvastatin, A indicates atorvastatin, R indicates rosuvastatin, and L indicates lovastatin" | Europe PMC's supplementary-files and full-text services for PMC7619005, read with `experiments/read_public_page.py` (appendix archive sha256 2d0b56bd827778f5...) |
+
+Four statements behind the minimum ages of `configs/symptom_minimum_assessment_age.csv` were read the same day: the HPO
+definitions of Global developmental delay ("This term should only be used to describe children younger than five
+years of age.") and of Adult onset ("Onset of disease manifestations in adulthood, defined here as at the age of 16
+years or later."), in hp.obo release 2026-09-01; and through the PubMed service the abstracts of Egger et al. 2006
+(PMID 16601400: "a reasonably reliable standardized measure of DSM-IV psychiatric symptoms and disorders in
+preschoolers for use in both research and clinical service evaluations of preschoolers as young as 2 years old") and
+Kaufman et al. 1997 (PMID 9204677: "Subjects were 55 psychiatric outpatients and 11 normal controls (aged 7 through 17
+years).").
+
+One refusal, recorded as the working rules ask. The ClinicalTrials.gov robots file disallows `/api/` for every
+reader, and a research pass's shell reader was refused there on 22 October. Nothing under `/api/` was read in this
+pass. The existing fetcher sends its requests to `/api/v2/studies` without reading the robots file; whether it may go
+on doing so, since the API is the provider's documented programmatic service while its robots file turns readers away
+from it, is the owner's to rule (decision 9.92). The assessment types were therefore to be measured from the
+fetcher's per-drug cache alone, and no cache was on the machine on 22 October. The second route tried was the
+ClinicalTrials.gov connector: its study record (`get_trial_details` for NCT02389816, a placebo-controlled
+vortioxetine trial with results) carries no adverse-event module, so it cannot say how a term was collected. AACT, the
+Clinical Trials Transformation Initiative's database of the same records, was not used: it is a copy of the records
+the robots rule covers, which the working rules do not admit as a route around a refusal. No text on any page read
+was addressed to an AI assistant.
+
+## 35. Sources read for the mouse sources beyond IMPC (24 October 2026, decision 9.93)
+
+Every page below was read with `experiments/read_public_page.py`, which read each site's robots file first; none of
+the sites asked whether the visitor was human.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| MGI copyright and licensing | "MGI data and annotations are licensed under a Creative Commons Attribution 4.0 International License (CC-BY)." and "The Mammalian Phenotype (MP) Ontology, the Mouse Developmental Anatomy (EMAPA) Ontology, and the Mouse Adult Anatomy Ontology (MA) are products of MGI and are licensed under a Creative Commons Attribution 4.0 International" | www.informatics.jax.org/mgihome/other/copyright.shtml; the host served no robots file |
+| MGI reports | `MGI_PhenoGenoMP.rpt`, `MGI_PhenotypicAllele.rpt` and `MPheno_OBO.ontology` from www.informatics.jax.org/downloads/reports/; the allele report's header: "Allele symbols are usually of the form xxx<yy>, where the <> enclose the part of the symbol that is superscripted." and "Transgene insertions, with symbols of the form Tg(aaa)##bbb, are included in this listing, but notably have no corresponding gene marker." | the files themselves; the ontology's header reads "data-version: releases/2026-09-23/mp.obo", and the release asset of tag v2026-09-23 on GitHub has the same SHA-256 |
+| SFARI Gene terms | "All data on SFARI Gene are derived from sources that are in the public domain, and we encourage users to include such data in their publications, with appropriate citation of the primary data source, the SFARI Gene website, and relevant publications describing SFARI Gene." The terms also say "The materials contained in this website are protected by applicable copyright and trademark law" and ask users not to "attempt to circumvent the security features of this website"; nothing in them bans reading or using the data | gene.sfari.org/terms-and-privacy/ ("Version 1 Effective Date: June 22, 2017"); the robots file disallows only `/wp/wp-admin/` |
+| SFARI Gene mouse-model pages | 269 pages, one per gene of the module's gene list (`download-csv.php?api-endpoint=animal-genes`), each naming "Latest Release: 2026 Q2" | gene.sfari.org/database/animal-models/genetic-animal-models/<GENE>/Mus+musculus; pinned in `data/raw/sfari/manifest.tsv` |
+| ChEMBL 37 preferred names | the preferred names of 21 drugs SIDER 4.1 names by a truncation or a code (vortioxetine for "Lu" among them), listed with where each was read in `configs/sider_drug_name_corrections.csv` | the pinned `data/raw/chembl/molecule_parents.json` and the ChEMBL connector |
+
+Alzforum was not used: its terms of service forbid data mining (the owner, 24 October 2026). One refusal: PubChem's
+robots file disallows its `/rest/` path for automated readers, so a compound's PubChem title was not read for the
+drug names; ChEMBL was the second source. No text on any page read was addressed to an AI assistant.
+
+## 36. Sources read for the species beyond mouse (24 October 2026, decision 9.94)
+
+Every page and file below was read with `experiments/read_public_page.py` unless named otherwise; no page read was
+addressed to an AI assistant.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| Alliance of Genome Resources | "Most Alliance data is available under CC0 1.0 Universal (Public Domain Dedication)." "Some datasets may use CC-BY 4.0 (attribution required)." | registry.opendata.aws/alliance-genome-resources (a search result, read with the fetch tool); the orthology file's header: "Orthology Filter: Stringent", "Alliance Database Version: 9.0.0" |
+| RGD | Bioregistry's license field for RGD: "CC-BY-4.0" | bioregistry.io/rgd (a search result, read with the fetch tool); RGD's citing page refused by its robots file |
+| FlyBase | "All annotations and data produced by FlyBase that are accessible from flybase.org are distributed under a Creative Commons Attribution 4.0 International License (CC BY 4.0)." | flybase.org/wiki/FlyBase:About |
+| ZFIN | "ZFIN data and data annotations are licensed under a Creative Commons Attribution 4.0 International License" | zfin.org/warranty.html |
+| WormBase | "Permission to use the information contained in this database was given by the researchers/institutes"; "Users of the database are solely responsible for compliance with any copyright restrictions" | wiki.wormbase.org/index.php/WormBaseWiki:Copyrights (a search result, read with the fetch tool) |
+| Fenckova et al. 2019, supplement | "Corrected p-values < 0.05 were considered significant (padj)"; the knockdowns used "w1118; 2xGMR-wIR; elav-Gal4, UAS-Dicer-2 (panneuronal)" | the supplement PDF (mmc1) the owner attached |
+
+Refusals: downloads.wormbase.org and wormbase.org answered with a check that the visitor is human ("Just a moment...
+Enable JavaScript and cookies to continue"); EBI's FTP mirror of the same release was read instead. rgd.mcw.edu's
+robots file disallows its citing page. PubChem's `/rest/` path stays refused (section 35). genepile.com was not used: it
+serves an expired certificate issued for another domain.

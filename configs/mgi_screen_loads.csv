@@ -1,0 +1,5 @@
+load,superscript_pattern,allele_name_contains,mutagenesis,note
+Lexicon,Lex$,Lexicon,targeted mutation and gene trap,"Lexicon Genetics (later Lexicon Pharmaceuticals) knockouts and OmniBank gene traps, loaded to MGI with the producer's phenotyping and no PubMed id; allele names read ""Lexicon Genetics"", ""Lexicon Pharmaceuticals"" or ""Lexicon Genomics"" (MGI_PhenotypicAllele.rpt, 24 October 2026)"
+Deltagen,Dgen$,Deltagen,targeted mutation,"Deltagen knockouts with the producer's phenotyping, no PubMed id; allele names read ""Deltagen"""
+Beutler Mutagenetix,Btlr$,Beutler,ENU and endonuclease-mediated,"the Beutler laboratory's phenotype-driven ENU screen (Mutagenetix) and its CRISPR re-creations, loaded without a PubMed id; allele names read ""Bruce Beutler"""
+JAX Neuroscience Mutagenesis Facility,^nmf[0-9]+$,neuroscience mutagenesis facility,ENU,"the Jackson Laboratory's neuroscience ENU screen; superscripts nmf followed by a number, allele names read ""neuroscience mutagenesis facility"""

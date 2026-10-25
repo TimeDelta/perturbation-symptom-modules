@@ -19,6 +19,11 @@ targets, so the limit there does not bind and their rows are the rows the rebuil
 
 Measurement only: no evidence table, selection, graph or model is changed, and no held-out set is drawn.
 
+History, framed as such: change 2 was withdrawn on 24 October 2026 (amendment item 33, the owner: "then undo that
+and include orphenadrine"). This script's measurements were taken under the chained drug grouping that item 25
+replaced on 13 October 2026, and the build no longer sets any drug aside; the script is kept as the record of what
+was measured on 12 October and does not describe the build.
+
 Usage:
   PYTHONPATH=. python experiments/label_review/rebuild_leakage_cost.py
 """

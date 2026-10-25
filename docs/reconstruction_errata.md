@@ -39,3 +39,40 @@ Dropping only the gene-reaction association would leave an uncatalysed reaction 
 cytosol to the extracellular space, and the linear-response and message-passing encoders both propagate
 substrate -> reaction -> product whether or not a catalyst is attached. The reaction has to be removed entirely for the
 vesicle to become the only exocytosis route (see the VMAT2 handling in docs/experiment_design.md, section 5.2).
+## Human Phenotype Ontology annotation errata (added 21 October 2026)
+
+Scope note: the three entries below are curation errors in HPO annotation rows rather than in Human-GEM or Recon3D.
+They are recorded here because this is the committed record of source curation errors and what the build does about
+each. Found while classifying the monogenic negative-report pairs
+(`docs/monogenic_negative_report_pairs_2026-10-21.md`, decision 9.85), on the pinned HPO release v2026-09-01.
+
+### POLG's "Dementia 0/35" is a cohort of patients with TYMP mutations
+
+POLG reaches OMIM:603041 (mitochondrial neurogastrointestinal encephalomyopathy, MNGIE) only through
+`mim2gene_medgen` in `genes_to_disease.txt`, not through a curated gene-disease assertion. The negative annotation on
+that disease, Dementia at 0 of 35 patients, cites PMID 10852545, which is Nishino et al., "Mitochondrial
+neurogastrointestinal encephalomyopathy: an autosomal recessive disorder due to thymidine phosphorylase mutations",
+Ann Neurol 2000;47(6):792-800. That paper reports "21 probands (35 patients)" in whom "Homozygous or compound
+heterozygous mutations were present in all patients tested" in the thymidine phosphorylase gene, that is TYMP. The
+0-of-35 therefore describes TYMP carriers and says nothing about POLG.
+
+Build action: none yet. The pair is a candidate for exclusion from the monogenic negatives; it is listed as an
+erratum here and left in the table until the owner rules on decision 9.85, so that no count changes silently.
+
+### CHCHD2's two negative annotations cite an unrelated paper
+
+Both negative rows behind CHCHD2 cite PMID 12244316, which is Takashima et al., "Mutation of TDP1, encoding a
+topoisomerase I-dependent DNA damage repair enzyme, in spinocerebellar ataxia with axonal neuropathy", Nat Genet
+2002;32(2):267-72, doi:10.1038/ng987. That paper concerns TDP1 and SCAN1 and does not mention CHCHD2, so the
+reference is probably wrong in the source. Both CHCHD2 records are among the 13 that are not labels, so nothing in
+training reads them today.
+
+Build action: none; recorded so that a later pass does not treat these as evidence of absence.
+
+### The negative on MAPT parkinsonism rests on a susceptibility association
+
+The negative comes from an Orphanet association typed "Major susceptibility factor", which is not a causal
+gene-disease assertion. An absence of a phenotype in a susceptibility cohort is weaker than an absence in a
+monogenic cohort, and the evidence model does not distinguish them.
+
+Build action: none; it bears on decision 9.85 and on how the evidence classes treat Orphanet association types.

@@ -12,7 +12,9 @@
 # fetch_node_descriptor_sources.py (UniProt proteome, GO, hp-base.owl, ChEBI), fetch_reactome_pathways.py,
 # fetch_plasma_binder_annotations.py, fetch_onsides_identifier_bridge.py, fetch_fraction_unbound_database.py,
 # fetch_pubtator_relations.py, fetch_ctd_chemical_disease.py and
-# python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC).
+# python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC). The one script this file does call is
+# experiments/fetch_sfari_mouse_models.py (decision 9.93) and experiments/fetch_chembl_rat_behaviour.py (9.94), because
+# neither source has a file to fetch with curl.
 #
 # Usage: bash scripts/fetch_raw_sources.sh [--with-cellxgene]
 #   --with-cellxgene also fetches the four adult human brain atlas dissections (1.24 GB), which only the dopaminergic
@@ -137,6 +139,12 @@ fetch "$raw_directory/orphadata/en_product1.xml" "https://www.orphadata.com/data
 # on the fly, so a later fetch reports DRIFT against the recorded hash. CC BY 4.0, read on G2P's responsible-handover page.
 fetch "$raw_directory/gene2phenotype/G2P_all_panels.csv" "https://www.ebi.ac.uk/gene2phenotype/api/panel/all/download" 6c93384ddec85532a6d0881756d31a45077fe2bda61a9d259a800a5c6125f5d9
 
+# Phenopacket Store, release 0.1.27 (github.com/monarch-initiative/phenopacket-store, tag 0.1.27 at commit 3f36198 of
+# 9 June 2026): the case-level phenotypes of decision 9.92, read in place by experiments/build_phenopacket_counts.py.
+# BSD-3-Clause, read in the LICENSE file at the tag. A release asset is fixed by its tag, so DRIFT here means the asset
+# was replaced.
+fetch "$raw_directory/phenopacket_store/all_phenopackets.zip" "https://github.com/monarch-initiative/phenopacket-store/releases/download/0.1.27/all_phenopackets.zip" d0c70005bb09b87035087516252b6b539fbc0415be7c664b73c9cde7eedf205a
+
 # OnSIDES v3.1.1 release asset (84,862,297 bytes recorded in docs/alternative_sources.md). The builds read parquet
 # tables under data/raw/onsides/v3.1.1/parquet; scripts/convert_onsides_to_parquet.py makes them from this archive.
 fetch "$raw_directory/onsides/v3.1.1/onsides-v3.1.1.zip" "https://github.com/tatonetti-lab/onsides/releases/download/v3.1.1/onsides-v3.1.1.zip"
@@ -169,8 +177,11 @@ fetch "$raw_directory/uniprot/uniprot_human_manganese_cofactor.tsv.gz" "https://
 
 # --- sources added 15 October 2026 for the evidence tiers, the negatives and the new modalities (docs/data_sources.md) ---
 # IntAct's curated negative interactions (PSI-MITAB; the pairs curators recorded as not interacting). 5,178,956 bytes on
-# 14 January 2026. The licence page is script-rendered; the EMBL-EBI terms of use (read 15 October 2026) impose no
-# restriction beyond the data owner's, and the row in docs/data_sources.md names the licence as unverified.
+# 14 January 2026. CC BY 4.0, verified in the provider's paper (del Toro et al. 2022, doi 10.1093/nar/gkab1006;
+# docs/data_sources.md quotes the sentence). The robots file of ftp.ebi.ac.uk disallows every
+# path for every reader; this fetch and the IMPC ones below are kept on the owner's ruling of 22 October 2026, "don't
+# refuse FTP from EBI" (CLAUDE.md). Most of the file's records are isoform-specific, and
+# mechanistic_pathway_learning/graph/edge_negatives.py keeps the isoform of each (decision 9.88).
 fetch "$raw_directory/intact/intact_negative.txt" "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact_negative.txt"
 
 # IUPHAR/BPS Guide to PHARMACOLOGY: the two public CSV exports the drug-target re-derivation reads
@@ -190,6 +201,72 @@ fetch "$raw_directory/gtopdb_2026/ligand_id_mapping.csv" "https://www.guidetopha
 fetch "$raw_directory/impc/README.md" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/README.md"
 fetch "$raw_directory/impc/genotype-phenotype-assertions-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/genotype-phenotype-assertions-ALL.csv.gz"
 fetch "$raw_directory/impc/statistical-results-ALL.csv.gz" "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results/statistical-results-ALL.csv.gz"
+
+# --- sources added 22 October 2026 for the negative edge observations of decision 9.91 (docs/data_sources.md) ---
+# HuRI and Lit-BM (Luck et al. 2020) from interactome-atlas.org, whose download page states "The data and web portal are
+# made available to the public under the CC BY 4.0 license". Files of 9 March 2020; 1,681,536 and 430,112 bytes.
+# graph/huri_tested_space.py; experiments/measure_binds_resource_precision.py.
+fetch "$raw_directory/huri/HuRI.tsv" "https://interactome-atlas.org/data/HuRI.tsv" 4cdf94366ff6e23e71ef9ec81922e85b2b3a1fb08e938f7b00d86c027cf1ecd6
+fetch "$raw_directory/huri/Lit-BM.tsv" "https://interactome-atlas.org/data/Lit-BM.tsv" f39c9c4b8a372286c3eca77d0ff651d837a643d32235eae866daae082663391d
+# Genome-wide Perturb-seq in K562 (Replogle et al. 2022): the gemgroup z-normalised pseudo-bulk table, 374,587,922 bytes
+# (figshare plus 20029387, file 35773217, CC BY 4.0; the provider's md5 a3dfaa94ea8724217f5ecb1e14a5f0c8). The single-cell
+# tables are 10 to 66 GB and are not read. graph/perturbseq_responses.py.
+fetch "$raw_directory/replogle2022/K562_gwps_normalized_bulk_01.h5ad" "https://ndownloader.figshare.com/files/35773217" 37e48c474d8b5dead4151f96ea8f5fe7bbe6beb10eeea48685b740c3f74490a2
+# ChEMBL 37 from the EBI FTP (the owner, 22 October 2026: "don't refuse FTP from EBI"): the licence file, the UniProt to
+# target mapping and UniChem's ChEMBL to ChEBI mapping (src1src7, rolling: a later fetch reports DRIFT). The activity
+# records themselves are fetched per graph by experiments/fetch_chembl_edge_activities.py from ChEMBL's web service.
+fetch "$raw_directory/chembl_37/LICENSE" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/LICENSE" f0c22ca33207ad8a85129a71f1454fcf8f2f71c99e68da5da01538210fa3ffba
+fetch "$raw_directory/chembl_37/chembl_uniprot_mapping.txt" "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/chembl_uniprot_mapping.txt" 5b21436984a41e31bfe178d807544c7ece4649303c397d461c14a61f27f6d082
+fetch "$raw_directory/chembl_37/src1src7.txt.gz" "https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id1/src1src7.txt.gz" 7974d208a415188f3190ac7cac5c976e35e4c8c59c4c88f607c4af4f5a3432c2
+# Negatome 2.0 (Blohm et al. 2014) is NOT fetched here: its host, iegext02.helmholtz-munich.de/proj/ppi/negatome/,
+# answered every request of 22 October 2026 with a gateway 502 and the older mips.helmholtz-muenchen.de address with a
+# certificate that does not verify (docs/data_sources.md lists every route tried). graph/negatome_negatives.py reads the
+# pair files (manual.txt, manual_stringent.txt, pdb.txt, pdb_stringent.txt and the like) from data/raw/negatome/ once
+# they are placed there by hand, with a .pin.json beside each. The GO annotation file the NOT rules read
+# (goa_human.gaf.gz) is fetched by experiments/fetch_node_descriptor_sources.py.
+
+# --- sources added 24 October 2026: mouse report sources beyond IMPC (decision 9.93) ---
+# MGI's genotype-phenotype annotations and allele attributes (evidence/mgi_mouse_phenotypes.py). "MGI data and
+# annotations are licensed under a Creative Commons Attribution 4.0 International License (CC-BY)"
+# (https://www.informatics.jax.org/mgihome/other/copyright.shtml, read 24 October 2026). MGI regenerates these reports
+# with each data load and keeps no dated copy, so the pin is the SHA-256 of the files read on 24 October 2026 (16:26
+# UTC); a later fetch reports DRIFT and the measurement record of 9.93 is then history. The host served no robots file
+# on 24 October 2026.
+fetch "$raw_directory/mgi/MGI_PhenoGenoMP.rpt" "https://www.informatics.jax.org/downloads/reports/MGI_PhenoGenoMP.rpt" 952b04f1ba1bd588837559d7e6c4bac5c5082bbc5cab47e34d7b741191d599cc
+fetch "$raw_directory/mgi/MGI_PhenotypicAllele.rpt" "https://www.informatics.jax.org/downloads/reports/MGI_PhenotypicAllele.rpt" ef322cdf1dab83ea33f7660683b7e60f91c5e4d31abb7595ee438ee038cbdb60
+# The Mammalian Phenotype ontology by its release tag, the same bytes as MGI's MPheno_OBO.ontology of 24 October 2026
+# ("data-version: releases/2026-09-23/mp.obo"); CC BY 4.0 on the same MGI page.
+fetch "$raw_directory/mgi/mp.obo" "https://github.com/mgijax/mammalian-phenotype-ontology/releases/download/v2026-09-23/mp.obo" 93bacc7a9731aec917377cf8d8f95e22b12e61d7665d180ce2d2a17d195728d3
+# SFARI Gene's mouse-model pages have no versioned download, so they are read page by page through
+# experiments/read_public_page.py (robots rules and checks that the visitor is human respected) and pinned by SHA-256
+# in data/raw/sfari/manifest.tsv; the release they name (2026 Q2 on 24 October 2026) is in manifest.json.
+PYTHONPATH=. python experiments/fetch_sfari_mouse_models.py --output-dir "$raw_directory/sfari" \
+  || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/sfari/manifest.tsv" >> "$report_path"
+
+# --- sources added 24 October 2026: species beyond mouse (decision 9.94; evidence/cross_species_reports.py) ---
+# Alliance of Genome Resources 9.0.0 orthology, stringent filter ("Most Alliance data is available under CC0 1.0
+# Universal (Public Domain Dedication).", registry.opendata.aws/alliance-genome-resources, read 24 October 2026).
+fetch "$raw_directory/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz" "https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz" 977ad252878d25a6cf486a9054448feff0e308e83e2fe5d6e8b6ec31c45491d4
+# RGD rat gene to MP annotations ("!date-generated: 2026-07-25"); CC BY 4.0 per Bioregistry (RGD's own citing page is
+# closed to automated readers by its robots file). Rolling: a later fetch reports DRIFT.
+fetch "$raw_directory/rgd/rattus_genes_mp" "https://download.rgd.mcw.edu/data_release/annotated_rgd_objects_by_ontology/rattus_genes_mp" 5a7847e153878ecd018719bc033bcaddb9b1a72cd1f57e448cc6779eba0fa97b
+# FlyBase release FB2026_03 genotype to phenotype file; CC BY 4.0 ("All annotations and data produced by FlyBase that
+# are accessible from flybase.org are distributed under a Creative Commons Attribution 4.0 International License").
+fetch "$raw_directory/flybase/genotype_phenotype_data_fb_2026_03.tsv.gz" "https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/genotype_phenotype_data_fb_2026_03.tsv.gz" 57468fbce2ad4a26809926041fc440c2b3e074a68f9804308fde364ea83f5aec
+# ZFIN's Fish with Abnormal and Normal Phenotypes and Fish Components (the downloads of 23 October 2026); CC BY 4.0
+# ("ZFIN data and data annotations are licensed under a Creative Commons Attribution 4.0 International License").
+# Rolling: a later fetch reports DRIFT.
+fetch "$raw_directory/zfin/phenotype_fish.txt" "https://zfin.org/downloads/phenotype_fish.txt" a71bfd55b8774b218eb5d4c5dbd4865320b9a8d01eed4b2ec94acc137b61dd6b
+fetch "$raw_directory/zfin/fish_components_fish.txt" "https://zfin.org/downloads/fish_components_fish.txt" 962f9ef4c0644b9a51a19fae04fc4e4e2a6733013d3c3d2cdb5bd81a9014b1dc
+# WormBase WS298 from EBI's FTP mirror: downloads.wormbase.org answered with a check that the visitor is human on 24
+# October 2026, a refusal this project respects; the EBI FTP host is read on the owner's ruling "don't refuse FTP from EBI".
+fetch "$raw_directory/wormbase/phenotype_association.WS298.wb" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_association.WS298.wb" 3459ca02779b93557a5fde3c58c978036f0c5e0e943affebfe2b3b6b89b034ab
+fetch "$raw_directory/wormbase/phenotype_ontology.WS298.obo" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_ontology.WS298.obo" ac8fae2c31975d77b1b32b7e2a531df2d4d8491dd510b363b22ac3ec19668e85
+# ChEMBL's rat catalepsy assays and their activities, page by page through experiments/read_public_page.py.
+PYTHONPATH=. python experiments/fetch_chembl_rat_behaviour.py --output-dir "$raw_directory/chembl_rat_behaviour" \
+  || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/chembl_rat_behaviour/manifest.json" >> "$report_path"
+# The Fenckova et al. 2019 supplement (mmc2.xlsx, Tables S1 to S7) is not fetched: the owner supplied it on 24 October
+# 2026; place it at data/raw/fenckova_2019/mmc2.xlsx (sha256 f020b26750de9980b6d727e700664dc90d6b96a79a8eb4e33245c8b43dd7d913).
 
 if [ "$with_cellxgene" = "yes" ]; then
   # Adult human brain atlas dissections holding cluster 395 (Siletti et al. 2023; CELLxGENE collection

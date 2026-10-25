@@ -12,6 +12,21 @@ Two routes beyond the exact-name match of the first pass (decision 9.26):
   mapper, which walks conjugate acid and base pairs. Decision 9.17's guard applies to charge and not to identity,
   so a conjugate crossing is allowed here: an inhibitor named as an acid and held as its base is the same molecule
   acting on the same enzyme.
+
+A negative observation is not an edge (decision 9.88). The extraction writes a `no_inhibition` row where BRENDA's note
+says the compound did not inhibit the human enzyme (experiments/extract_brenda_enzyme_regulation.py). Those rows are
+mapped by the same two routes and written to their own table (--no-inhibition-output); the derived table of edges
+keeps the three relations `inhibits`, `activates` and `cofactor_of`. --compare-with names the derived table before a
+regeneration and adds to the summary how many pairs each relation gained and lost, which is the measurement the
+decision asks for.
+
+Usage, after decision 9.88 (the BRENDA JSON is the owner's, release 2026.1; the paths below are an example):
+  cp configs/brenda_metabolite_enzyme_regulation.csv data/processed/brenda_metabolite_enzyme_regulation_before_9_88.csv
+  python experiments/extract_brenda_enzyme_regulation.py brenda_2026_1.json --output data/processed/brenda_regulation_records.csv
+  python experiments/map_brenda_regulation_to_graph.py --regulation-records data/processed/brenda_regulation_records.csv \
+      --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4 --output configs/brenda_metabolite_enzyme_regulation.csv \
+      --summary docs/brenda_regulation_mapping.json --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \
+      --compare-with data/processed/brenda_metabolite_enzyme_regulation_before_9_88.csv
 """
 import argparse
 import collections
@@ -22,6 +37,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from experiments.extract_brenda_enzyme_regulation import NO_INHIBITION_RELATION
 from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import (
     ChemicalDefinition,
     human_gem_metabolites_by_chebi,
@@ -58,6 +74,40 @@ def chebi_id_by_lowercase_name(chebi_obo_path: Path) -> dict[str, str]:
     return name_to_term
 
 
+PAIR_KEY = ["base_metabolite_id", "uniprot_accession", "relation_type"]
+
+
+def pairs_of(rows: pd.DataFrame) -> pd.DataFrame:
+    """One row per (metabolite, enzyme, relation, sign) with its record count and provenance."""
+    columns = ["base_metabolite_id", "uniprot_accession", "relation_type", "sign", "brenda_record_count", "ec_numbers", "brenda_reference_count",
+               "enzyme_routes", "example_ligand_name"]
+    if rows.empty:
+        return pd.DataFrame(columns=columns)
+    pairs = (rows.groupby(["base_metabolite_id", "uniprot_accession", "relation_type", "sign"], as_index=False)
+             .agg(brenda_record_count=("ec_number", "size"),
+                  ec_numbers=("ec_number", lambda values: ";".join(sorted(set(values))[:6])),
+                  brenda_reference_count=("brenda_reference_count", "sum"),
+                  enzyme_routes=("enzyme_route", lambda values: ";".join(sorted(set(values)))),
+                  example_ligand_name=("ligand_name", "first")))
+    return pairs.sort_values(["relation_type", "base_metabolite_id", "uniprot_accession"])[columns]
+
+
+def overlap_with_inhibits(no_inhibition_pairs: pd.DataFrame, pairs: pd.DataFrame) -> int:
+    """How many negative observations fall on a pair another record states as an inhibition: the two stay apart."""
+    inhibits = pairs[pairs.relation_type == "inhibits"]
+    return int(len(no_inhibition_pairs.merge(inhibits, on=["base_metabolite_id", "uniprot_accession"]))) if len(no_inhibition_pairs) else 0
+
+
+def pair_changes(before: pd.DataFrame, after: pd.DataFrame) -> dict:
+    """Per relation: pairs before, after, lost and gained, between two derived tables."""
+    keys_before = set(map(tuple, before[PAIR_KEY].astype(str).to_numpy()))
+    keys_after = set(map(tuple, after[PAIR_KEY].astype(str).to_numpy()))
+    relations = sorted({key[2] for key in keys_before | keys_after})
+    return {relation: {"before": sum(key[2] == relation for key in keys_before), "after": sum(key[2] == relation for key in keys_after),
+                       "lost": sum(key[2] == relation for key in keys_before - keys_after), "gained": sum(key[2] == relation for key in keys_after - keys_before)}
+            for relation in relations}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--regulation-records", type=Path, required=True)
@@ -67,6 +117,10 @@ def main() -> None:
     parser.add_argument("--metabolites-table", type=Path, default=Path("data/raw/Human-GEM/model/metabolites.tsv"))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--no-inhibition-output", type=Path, default=Path("configs/brenda_metabolite_enzyme_no_inhibition.csv"),
+                        help="the negative observations: pairs BRENDA's notes say the compound did not inhibit (decision 9.88); never edges")
+    parser.add_argument("--compare-with", type=Path, default=None,
+                        help="the derived table before this regeneration; the summary then counts the pairs each relation gained and lost")
     arguments = parser.parse_args()
 
     regulation = pd.read_csv(arguments.regulation_records)
@@ -128,15 +182,13 @@ def main() -> None:
                             "enzyme_route": enzyme_route,
                             "brenda_reference_count": row.brenda_reference_count})
 
-    pairs = (pd.DataFrame(output_rows)
-             .groupby(["base_metabolite_id", "uniprot_accession", "relation_type", "sign"], as_index=False)
-             .agg(brenda_record_count=("ec_number", "size"),
-                  ec_numbers=("ec_number", lambda values: ";".join(sorted(set(values))[:6])),
-                  brenda_reference_count=("brenda_reference_count", "sum"),
-                  enzyme_routes=("enzyme_route", lambda values: ";".join(sorted(set(values)))),
-                  example_ligand_name=("ligand_name", "first")))
-    pairs = pairs.sort_values(["relation_type", "base_metabolite_id", "uniprot_accession"])
+    mapped = pd.DataFrame(output_rows, columns=["base_metabolite_id", "uniprot_accession", "relation_type", "sign", "ec_number", "brenda_field",
+                                                "ligand_name", "enzyme_route", "brenda_reference_count"])
+    negative = mapped.relation_type == NO_INHIBITION_RELATION
+    pairs = pairs_of(mapped[~negative])
     pairs.to_csv(arguments.output, index=False)
+    no_inhibition_pairs = pairs_of(mapped[negative])
+    no_inhibition_pairs.to_csv(arguments.no_inhibition_output, index=False)
 
     summary = {"regulation_records_read": len(regulation),
                "distinct_ligand_names": int(regulation.ligand_name.nunique()),
@@ -146,7 +198,14 @@ def main() -> None:
                "pairs_written": len(pairs),
                "pairs_by_relation": pairs.relation_type.value_counts().to_dict(),
                "distinct_metabolites": int(pairs.base_metabolite_id.nunique()),
-               "distinct_enzymes": int(pairs.uniprot_accession.nunique())}
+               "distinct_enzymes": int(pairs.uniprot_accession.nunique()),
+               "records_by_relation_and_note_class": ({f"{relation}: {note_class}": int(count) for (relation, note_class), count
+                                                       in regulation.groupby(["relation_type", regulation.note_class.fillna("")]).size().items()}
+                                                      if "note_class" in regulation.columns else "the records predate decision 9.88 and carry no note class"),
+               "no_inhibition_pairs_written": len(no_inhibition_pairs),
+               "no_inhibition_pairs_that_are_also_inhibits_pairs": overlap_with_inhibits(no_inhibition_pairs, pairs)}
+    if arguments.compare_with is not None:
+        summary["compared_with"] = {"path": str(arguments.compare_with), **pair_changes(pd.read_csv(arguments.compare_with), pairs)}
     arguments.summary.write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))
 

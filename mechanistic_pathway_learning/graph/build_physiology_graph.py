@@ -68,6 +68,10 @@ RELATION_TYPES: list[str] = [
     "inhibits",
     "regulates_transcription_of",
     "targets",
+    # decision 9.86, appended so that every relation before them keeps its index
+    "couples_primary",
+    "couples_secondary",
+    "g_alpha_regulates_effector",
 ]
 
 
@@ -244,8 +248,34 @@ def load_curated_edge_sign_overrides(overrides_path: Path | None) -> dict[tuple[
 
 
 DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH = Path("configs/admitted_receptor_g_alpha_coupling.csv")
-G_ALPHA_GENE_SYMBOLS = frozenset({"GNAS", "GNAL", "GNAI1", "GNAI2", "GNAI3", "GNAO1", "GNAZ",
-                                  "GNAQ", "GNA11", "GNA12", "GNA13"})
+# The G alpha genes of each family, as HGNC groups them: 1426 "G protein subunits alpha, group s", 1428 "group i",
+# 1427 "group q", 1429 "group 12/13" (data/raw/hgnc/hgnc_complete_set.txt, read 21 October 2026). Until then the set
+# left out GNA14 and GNA15 of the q group and the transducins GNAT1 to GNAT3 of the i group, so no edge into them was
+# filtered (decision 9.86). experiments/expand_receptor_g_alpha_families.py expands the admitted table over the same
+# groups, and tests/test_receptor_g_alpha_coupling_filter.py holds this mapping to HGNC.
+G_ALPHA_FAMILY_MEMBERS: dict[str, tuple[str, ...]] = {
+    "Gs": ("GNAL", "GNAS"),
+    "Gi/o": ("GNAI1", "GNAI2", "GNAI3", "GNAO1", "GNAT1", "GNAT2", "GNAT3", "GNAZ"),
+    "Gq/11": ("GNA11", "GNA14", "GNA15", "GNAQ"),
+    "G12/13": ("GNA12", "GNA13"),
+}
+G_ALPHA_GENE_SYMBOLS = frozenset(gene for members in G_ALPHA_FAMILY_MEMBERS.values() for gene in members)
+# The transmembrane adenylyl cyclases, which Gs stimulates and Gi/o inhibits. ADCY10 is the soluble cyclase, regulated
+# by bicarbonate and calcium rather than by G proteins, and is left out.
+ADENYLYL_CYCLASE_SYMBOLS = frozenset(f"ADCY{number}" for number in range(1, 10))
+# Decision 9.86 (the owner, 21 October 2026: "build the suggested change"). Each edge type carries its own learned
+# gain in the linear-response encoder, so these separate what was one gain for every activates edge:
+#   couples_primary / couples_secondary: an annotated receptor's admitted, positively signed edge into a G alpha of a
+#     family GtoPdb lists as its primary or its secondary transducer. The two gains are learned apart, so the model
+#     can learn how much a secondary coupling counts against a primary one without a fixed weight (9.20);
+#   g_alpha_regulates_effector: a signed edge from any G alpha into a transmembrane adenylyl cyclase, with its sign
+#     (+1 Gs, -1 Gi/o). One relation and one positive gain for both directions, so the balance at the cyclase comes
+#     from the signs and is no longer the ratio of the activates and inhibits gains, which training sets from the
+#     whole graph (measured on v5: an inhibits gain 1.36 times the activates gain would flip ADRB2's cAMP response).
+COUPLES_PRIMARY_RELATION = "couples_primary"
+COUPLES_SECONDARY_RELATION = "couples_secondary"
+G_ALPHA_REGULATES_EFFECTOR_RELATION = "g_alpha_regulates_effector"
+COUPLING_RELATIONS: tuple[str, ...] = (COUPLES_PRIMARY_RELATION, COUPLES_SECONDARY_RELATION, G_ALPHA_REGULATES_EFFECTOR_RELATION)
 
 
 def load_admitted_receptor_g_alpha_coupling(coupling_path: Path | None) -> tuple[set[tuple[str, str]], set[str]]:
@@ -284,6 +314,44 @@ def receptor_g_alpha_edge_is_dropped(source_symbol: str, target_symbol: str, sig
     return (source_upper, target_upper) not in admitted_pairs
 
 
+def load_receptor_g_alpha_transducer_roles(coupling_path: Path | None) -> dict[tuple[str, str], str]:
+    """{(receptor, G alpha): "primary" or "secondary"} from the admitted table; primary wins where a pair is both."""
+    if coupling_path is None or not Path(coupling_path).exists():
+        return {}
+    roles: dict[tuple[str, str], str] = {}
+    with open(coupling_path, encoding="utf-8") as coupling_file:
+        for row in csv.DictReader(coupling_file):
+            pair = (row["receptor_gene_symbol"].strip().upper(), row["g_alpha_gene_symbol"].strip().upper())
+            role = row["transducer_role"].strip().lower()
+            if role not in ("primary", "secondary"):
+                raise ValueError(f"{coupling_path}: transducer_role {role!r} for {pair} is neither primary nor secondary")
+            if roles.get(pair) != "primary":
+                roles[pair] = role
+    return roles
+
+
+def typed_coupling_relation(source_symbol: str, target_symbol: str, relation: str, sign: float,
+                            transducer_role_of_pair: dict[tuple[str, str], str], annotated_receptors: set[str]) -> str:
+    """The edge type of decision 9.86 for a signalling edge, or its relation unchanged.
+
+    An annotated receptor's positively signed edge into an admitted G alpha becomes couples_primary or
+    couples_secondary by the pair's transducer role; a signed edge from a G alpha into a transmembrane adenylyl cyclase
+    becomes g_alpha_regulates_effector with its sign. An unsigned edge (binds) is never retyped, and neither is a
+    receptor's negatively signed edge into a G alpha, which is not a coupling."""
+    if sign == 0.0:
+        return relation
+    source_upper, target_upper = source_symbol.upper(), target_symbol.upper()
+    if source_upper in G_ALPHA_GENE_SYMBOLS and target_upper in ADENYLYL_CYCLASE_SYMBOLS:
+        return G_ALPHA_REGULATES_EFFECTOR_RELATION
+    if sign > 0 and target_upper in G_ALPHA_GENE_SYMBOLS and source_upper in annotated_receptors:
+        role = transducer_role_of_pair.get((source_upper, target_upper))
+        if role == "primary":
+            return COUPLES_PRIMARY_RELATION
+        if role == "secondary":
+            return COUPLES_SECONDARY_RELATION
+    return relation
+
+
 def add_gene_nodes(nodes: pd.DataFrame, symbols: set[str]) -> pd.DataFrame:
     existing = set(nodes.node_id)
     new_rows = [{"node_id": gene_node_id(symbol), "node_type": "gene", "display_name": symbol, "gene_symbol": symbol, "in_metabolic_layer": False, "degree": 0}
@@ -293,10 +361,16 @@ def add_gene_nodes(nodes: pd.DataFrame, symbols: set[str]) -> pd.DataFrame:
 
 def build_signaling_layer(nodes: pd.DataFrame, interactions_path: Path,
                           curated_sign_overrides: dict | None = None,
-                          admitted_receptor_g_alpha_coupling: tuple[set, set] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+                          admitted_receptor_g_alpha_coupling: tuple[set, set] | None = None,
+                          transducer_role_of_pair: dict[tuple[str, str], str] | None = None,
+                          typed_coupling_relations: bool = False) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     """curated_sign_overrides (decision 9.10(a), built 14 October 2026) corrects a sign the source states the other
     way round; load_curated_edge_sign_overrides documents why the GRK and arrestin edges need it. The third return
     value counts what was applied and what was skipped, so a build log records both.
+
+    typed_coupling_relations (decision 9.86) gives receptor-to-G-alpha coupling and G-alpha-to-cyclase edges their own
+    edge types (typed_coupling_relation); transducer_role_of_pair is load_receptor_g_alpha_transducer_roles. It is
+    off here so a caller that names neither builds the layer it always built; build_physiology_graph turns it on.
     """
     overrides = curated_sign_overrides or {}
     admitted_pairs, annotated_receptors = admitted_receptor_g_alpha_coupling or (set(), set())
@@ -305,7 +379,10 @@ def build_signaling_layer(nodes: pd.DataFrame, interactions_path: Path,
     override_counts = {"overrides_loaded": len(overrides), "edges_corrected": 0,
                        "overrides_skipped_because_the_source_no_longer_agrees": 0, "overrides_never_matched": 0,
                        "admitted_coupling_pairs_loaded": len(admitted_pairs),
-                       "receptor_g_alpha_edges_dropped_as_unlisted": 0}
+                       "receptor_g_alpha_edges_dropped_as_unlisted": 0,
+                       **{f"edges_typed_{name}": 0 for name in COUPLING_RELATIONS},
+                       "receptor_g_alpha_edges_left_inhibits": 0}
+    roles = transducer_role_of_pair or {}
     override_keys_that_matched: set[tuple[str, str]] = set()
     with open(interactions_path, encoding="utf-8") as interactions_file:
         for row in csv.DictReader(interactions_file, delimiter="\t"):
@@ -330,6 +407,13 @@ def build_signaling_layer(nodes: pd.DataFrame, interactions_path: Path,
                     if receptor_g_alpha_edge_is_dropped(source, target, sign_for_this_edge, admitted_pairs, annotated_receptors):
                         override_counts["receptor_g_alpha_edges_dropped_as_unlisted"] += 1
                         continue
+                    if typed_coupling_relations:
+                        typed = typed_coupling_relation(source, target, relation_for_this_edge, sign_for_this_edge, roles, annotated_receptors)
+                        if typed != relation_for_this_edge:
+                            override_counts[f"edges_typed_{typed}"] += 1
+                            relation_for_this_edge = typed
+                        elif (sign_for_this_edge < 0 and target.upper() in G_ALPHA_GENE_SYMBOLS and source.upper() in annotated_receptors):
+                            override_counts["receptor_g_alpha_edges_left_inhibits"] += 1
                     edge_rows.append({"source_id": gene_node_id(source), "target_id": gene_node_id(target), "relation_type": relation_for_this_edge, "sign": sign_for_this_edge, "evidence_source": "OmniPath"})
                     if relation_for_this_edge == "binds":
                         edge_rows.append({"source_id": gene_node_id(target), "target_id": gene_node_id(source), "relation_type": relation_for_this_edge, "sign": sign_for_this_edge, "evidence_source": "OmniPath"})
@@ -637,6 +721,7 @@ def build_physiology_graph(
     geo_pineal_directory: Path | None = None,
     siletti_aggregate_path: Path | None = None,
     detection_threshold_ncpm: float = DETECTION_THRESHOLD_NCPM,
+    typed_coupling_relations: bool = True,
 ) -> dict:
     model = load_human_gem(model_path)
     nodes, edges = build_metabolic_layer(model, gene_symbols_from_table(genes_table_path), model_yaml_path)
@@ -645,7 +730,9 @@ def build_physiology_graph(
         nodes, signaling_edges, sign_override_counts = build_signaling_layer(
             nodes, signaling_interactions_path,
             curated_sign_overrides=load_curated_edge_sign_overrides(curated_edge_sign_overrides_path),
-            admitted_receptor_g_alpha_coupling=load_admitted_receptor_g_alpha_coupling(admitted_receptor_g_alpha_coupling_path))
+            admitted_receptor_g_alpha_coupling=load_admitted_receptor_g_alpha_coupling(admitted_receptor_g_alpha_coupling_path),
+            transducer_role_of_pair=load_receptor_g_alpha_transducer_roles(admitted_receptor_g_alpha_coupling_path),
+            typed_coupling_relations=typed_coupling_relations)
         print(f"curated edge sign overrides: {sign_override_counts}")
         edge_tables.append(signaling_edges)
     if transcription_regulons_path is not None and transcription_regulons_path.exists():
@@ -697,6 +784,8 @@ def build_physiology_graph(
     summary["reactions_with_subsystem"] = int((reactions.subsystem.fillna("") != "").sum())
     summary["distinct_subsystems"] = int(reactions.subsystem.fillna("").replace("", pd.NA).nunique())
     summary["brain_expression"] = brain_expression_counts
+    # the sign overrides, the coupling filter and the coupling edge types, so the graph records what its build did
+    summary["signaling_layer_counts"] = sign_override_counts if signaling_interactions_path is not None and signaling_interactions_path.exists() else {}
     (output_directory / "graph_summary.json").write_text(json.dumps(summary, indent=1))
     return summary
 
@@ -727,6 +816,9 @@ def main() -> None:
                         help="signs the source annotates one way and the physiology requires the other way (decision 9.10a); pass an absent path to build without them")
     parser.add_argument("--admitted-receptor-g-alpha-coupling", type=Path, default=DEFAULT_ADMITTED_RECEPTOR_G_ALPHA_COUPLING_PATH,
                         help="GtoPdb primary and secondary transducers per receptor (decision 9.23); a signed edge from an annotated receptor into a G alpha the annotation does not list is dropped. Pass an absent path to keep every coupling edge")
+    parser.add_argument("--no-typed-coupling-relations", dest="typed_coupling_relations", action="store_false",
+                        help="leave receptor-to-G-alpha coupling and G-alpha-to-cyclase edges as activates and inhibits, the graph before decision 9.86, "
+                             "for the ablation of the coupling edge types")
     arguments = parser.parse_args()
     summary = build_physiology_graph(arguments.model_path, arguments.output_dir, arguments.genes_table, arguments.degree_quantile_threshold,
                                      arguments.signaling, arguments.transcription, arguments.small_molecule, arguments.metabolites_table, arguments.model_yaml,
@@ -734,7 +826,7 @@ def main() -> None:
                                      arguments.curated_edge_sign_overrides,
                                      arguments.admitted_receptor_g_alpha_coupling,
                                      arguments.cell_class_expression, arguments.geo_pineal_dir, arguments.siletti_aggregate,
-                                     arguments.cell_class_detection_threshold_ncpm)
+                                     arguments.cell_class_detection_threshold_ncpm, arguments.typed_coupling_relations)
     print(json.dumps(summary, indent=1))
 
 

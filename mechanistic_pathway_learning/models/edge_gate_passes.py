@@ -151,6 +151,10 @@ def closure_evidence(encoder, gates: HardConcreteEdgeGates, data_loss: Callable[
     log-odds that it is false, given every other edge as read out and the fitted parameters, is E - logit(pi), so
     P(false) = sigmoid(E - logit(pi)). At a local optimum under single flips every closed edge has E > logit(pi), so
     P(false) > 1/2; a closure below one half is one the passes left where reopening it alone would lower the objective.
+    The posterior reading takes E as a log-likelihood ratio of the labels. Under --label-likelihood positive_unlabelled
+    (decision 9.90) it is one: every pair weighs 1, W is the number of counted pairs and E is the change in the labels'
+    code length. Under the weighted loss E is in units of label weight, a silent pair counting 0.2 and a label its
+    evidence weight, and the reading is approximate in that measure.
 
     Why it is reported (docs/edge_gate_simulation.md): in planted worlds the closures with E of 1 nat or more were false
     far more often than the read-out's closures as a whole, so a closure's E says how far to believe it. Each closed edge

@@ -44,6 +44,7 @@ import pandas as pd
 from mechanistic_pathway_learning.evidence.evidence_reports import REPORT_COLUMNS
 from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, has_admitted_atc_code
 from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import IngredientBridge, mechanism_targets_for_parent, passes_single_target_rule
+from mechanistic_pathway_learning.evidence.sider_drug_names import readable_drug_name
 from mechanistic_pathway_learning.perturbation.gtopdb_drug_targets import pubchem_cid_from_perturbation_id
 from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import GraphNodeLookup, graph_compound_targets
 from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import DrugTarget
@@ -238,7 +239,7 @@ def onsides_reports(
         if complex_target_narrowing is not None and qualification.qualifies:  # only an ingredient that can enter is narrowed and recorded
             if bridge.ingredient_id not in narrowed_targets:
                 pubchem_cid = bridge.sider_pubchem_cid if bridge.sider_pubchem_cid is not None else pubchem_cid_from_perturbation_id(bridge.perturbation_id)
-                narrowed, record = complex_target_narrowing.narrow(qualification.drug_targets, pubchem_cid, bridge.sider_drug_name or bridge.ingredient_name)
+                narrowed, record = complex_target_narrowing.narrow(qualification.drug_targets, pubchem_cid, readable_drug_name(bridge.perturbation_id, bridge.sider_drug_name) or bridge.ingredient_name)
                 narrowed_targets[bridge.ingredient_id] = narrowed
                 if record["narrowed"] or record["kept_whole"]:
                     narrowing_by_ingredient[bridge.ingredient_id] = {"ingredient": bridge.ingredient_name, "perturbation_id": bridge.perturbation_id, **record}
@@ -262,7 +263,7 @@ def onsides_reports(
         row = {column: "" for column in REPORT_COLUMNS}
         row.update({
             "report_id": f"{ONSIDES_SOURCE}|{bridge.perturbation_id}|{statement.ingredient_id}|{statement.meddra_id}|{statement.target_symptom}|{statement.label_section}|{statement.source_country}",
-            "perturbation_id": bridge.perturbation_id, "perturbation_type": "drug", "perturbation_label": bridge.sider_drug_name or statement.ingredient_name,
+            "perturbation_id": bridge.perturbation_id, "perturbation_type": "drug", "perturbation_label": readable_drug_name(bridge.perturbation_id, bridge.sider_drug_name) or statement.ingredient_name,
             "symptom": statement.target_symptom, "relation": "induces", "evidence_class": "pharmacological", "source": ONSIDES_SOURCE, "report_value": 1,
             "source_record_id": str(statement.ingredient_id), "source_record_label": statement.ingredient_name,
             "source_term_id": str(statement.meddra_id), "source_term_label": statement.meddra_name,

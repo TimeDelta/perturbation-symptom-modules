@@ -7,7 +7,8 @@ SIDER 4.1 (http://sideeffects.embl.de/media/download/), labels current to 2015:
                               frequency_lower, frequency_upper, concept_type, UMLS_meddra_cui, side_effect_name
   meddra_all_indications.tsv.gz  STITCH_flat, UMLS_label_cui, detection_method, label_concept_name,
                               concept_type, UMLS_meddra_cui, meddra_concept_name
-  drug_names.tsv              STITCH_flat, drug_name
+  drug_names.tsv              STITCH_flat, drug_name (some names truncated or coded; read through
+                              evidence/sider_drug_names.py, which corrects them)
   drug_atc.tsv                STITCH_flat, ATC_code (one row per code)
 A STITCH flat identifier CID1xxxxxxxx encodes PubChem CID xxxxxxxx (the leading 1 marks the
 flat, stereo-merged form); strip "CID1" and leading zeros to recover the PubChem CID.
@@ -35,6 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from mechanistic_pathway_learning.evidence.evidence_reports import EvidenceReport, limitations_text
+from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
 
 
 @dataclass
@@ -150,7 +152,8 @@ def load_sider_events(
     NLP_indication and drops NLP_precondition and text_mention, which include mentions of the condition
     in label text that are not indications.
     """
-    drug_names = {key: values[0] for key, values in read_two_column_tsv(sider_directory / "drug_names.tsv").items()}
+    # SIDER truncates or codes some names ("Lu" for vortioxetine); evidence/sider_drug_names.py corrects them (decision 9.93)
+    drug_names = corrected_drug_names({key: values[0] for key, values in read_two_column_tsv(sider_directory / "drug_names.tsv").items()})
     atc_codes = read_two_column_tsv(sider_directory / "drug_atc.tsv")
     preferred_term_to_symptom = read_preferred_term_to_target_symptom(crosswalk_path)
     frequency_rows_by_pair = load_sider_frequency_rows(sider_directory)

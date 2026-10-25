@@ -153,7 +153,9 @@ def run_trainer(paths: dict[str, Path], run_directory: Path, *extra: str) -> dic
     command = [sys.executable, "experiments/run_main_model.py", "--graph-dir", str(paths["graph"]), "--evidence-dir", str(paths["evidence"]), "--run-dir", str(run_directory),
                "--encoder", "message_passing", "--max-epochs", "2", "--num-bootstrap", "3", "--refit-on-validation", "--validation-fraction", "0.3",
                "--no-keep-large-groups-in-training", "--fold", "0", "--seed", "0", "--batch-size", "8", "--placebo-negative-weights-file", "none",
-               "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]), *extra]
+               "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]),
+               # a soft prior is defined for the weighted loss only (decision 9.90), as the soft-prior arms of the batch say
+               "--label-likelihood", "weighted", *extra]
     completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
     assert completed.returncode == 0, completed.stderr[-3000:]
     split_directory = next(path for path in run_directory.iterdir() if path.is_dir())

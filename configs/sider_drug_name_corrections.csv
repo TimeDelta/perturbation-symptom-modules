@@ -1,0 +1,22 @@
+stitch_flat_id,sider_name,corrected_name,chembl_id,where_read,note
+CID109966051,Lu,vortioxetine,CHEMBL2104993,"data/raw/chembl/unichem_pubchem_to_chembl.json and molecule_parents.json (ChEMBL 37, 2026-05-01): pref_name VORTIOXETINE","SIDER truncates the development code Lu AA21004 at its first space; the v5 label table carried the name Lu"
+CID109941444,SOM230,pasireotide,CHEMBL3349607,"molecule_parents.json (ChEMBL 37): pref_name PASIREOTIDE",development code
+CID116065945,TMC435,simeprevir,CHEMBL501849,"molecule_parents.json (ChEMBL 37): pref_name SIMEPREVIR",development code
+CID100656892,TMC207,bedaquiline,CHEMBL376488,"molecule_parents.json (ChEMBL 37): pref_name BEDAQUILINE",development code
+CID100477468,FK463,micafungin,CHEMBL457547,"molecule_parents.json (ChEMBL 37): pref_name MICAFUNGIN",development code
+CID105479141,CGP,mifamurtide acid,CHEMBL2111100,"molecule_parents.json (ChEMBL 37): pref_name MIFAMURTIDE ACID",SIDER truncates the code at its first space
+CID100443379,CAS,enalaprilat anhydrous,CHEMBL577,"molecule_parents.json (ChEMBL 37): pref_name ENALAPRILAT ANHYDROUS","SIDER's name is the start of a CAS number, not a drug name"
+CID100065014,AMD3100,plerixafor octahydrochloride,CHEMBL2311028,"molecule_parents.json (ChEMBL 37): pref_name PLERIXAFOR OCTAHYDROCHLORIDE",development code
+CID100003222,CAS,enalapril maleate,CHEMBL1200659,"ChEMBL connector, compound CHEMBL1200659, read 24 October 2026: pref_name ENALAPRIL MALEATE","SIDER's name is the start of a CAS number, not a drug name"
+CID100071362,Hoe,icatibant acetate,CHEMBL2028852,"ChEMBL connector, compound CHEMBL2028852, read 24 October 2026: pref_name ICATIBANT ACETATE (synonym HOE 140)",SIDER truncates the code HOE 140 at its first space
+CID100077997,MK-462,rizatriptan benzoate,CHEMBL1201032,"ChEMBL connector, compound CHEMBL1201032, read 24 October 2026: pref_name RIZATRIPTAN BENZOATE (synonym MK-0462)",development code
+CID100104741,ICI,fulvestrant,CHEMBL1358,"ChEMBL connector, compound CHEMBL1358, read 24 October 2026: pref_name FULVESTRANT (synonym ICI 182,780)",SIDER truncates the code ICI 182780 at its first space
+CID100107969,FTY720,fingolimod hydrochloride,CHEMBL544665,"ChEMBL connector, compound CHEMBL544665, read 24 October 2026: pref_name FINGOLIMOD HYDROCHLORIDE (synonym FTY720)",development code
+CID111234049,TR-700,tedizolid,CHEMBL1257051,"ChEMBL connector, compound CHEMBL1257051, read 24 October 2026: pref_name TEDIZOLID (synonym TR-700)",development code
+CID111499245,AN2690,tavaborole,CHEMBL443052,"ChEMBL connector, compound CHEMBL443052, read 24 October 2026: pref_name TAVABOROLE (synonym AN2690)",development code
+CID115951529,MDV3100,enzalutamide,CHEMBL1082407,"ChEMBL connector, compound CHEMBL1082407, read 24 October 2026: pref_name ENZALUTAMIDE (synonym MDV3100)",development code
+CID116126651,PCI-32765,ibrutinib,CHEMBL1873475,"ChEMBL connector, compound CHEMBL1873475, read 24 October 2026: pref_name IBRUTINIB (synonym PCI-32765)",development code
+CID116130957,Org,ganirelix,CHEMBL1251,"ChEMBL connector, compound CHEMBL1251, read 24 October 2026: pref_name GANIRELIX (synonym Orgalutran)",SIDER truncates the name at its first space
+CID154677977,A77,teriflunomide,CHEMBL973,"ChEMBL connector, compound CHEMBL973, read 24 October 2026: pref_name TERIFLUNOMIDE (synonym A77 1726); the CID's other ChEMBL id CHEMBL2062101 was not read",SIDER truncates the code A77 1726 at its first space
+CID100023703,ogen,estropipate,CHEMBL1200980,"ChEMBL connector, compound CHEMBL1200980, read 24 October 2026: pref_name ESTROPIPATE (synonym Ogen)",a brand name with its capital lost
+CID100004649,APAs,aminosalicylic acid,CHEMBL1169,"ChEMBL connector, compound CHEMBL1169, read 24 October 2026: pref_name AMINOSALICYLIC ACID",an abbreviation

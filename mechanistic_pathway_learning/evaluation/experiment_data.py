@@ -77,6 +77,12 @@ class ExperimentData:
     evidenced_negative: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where a negative rests on a controlled comparison, not on silence (a label selection's counts_as_negative rows)
     is_reversible_reaction: np.ndarray | None = None  # [num_nodes] the reaction node's reversible flag, from which the linear-response encoder derives product_opposes (item 27)
     placebo_negative_weight_matrix: np.ndarray | None = None  # [num_perturbations, num_symptoms] per-pair loss weight of those negatives, NaN where none is stated (amendment item 3; set by run_main_model.py, not by the loader)
+    # [num_perturbations, num_symptoms] the power of the assessment behind each evidenced negative, the probability that it
+    # would have found a real link (decision 9.90; models/positive_unlabelled_likelihood.py), NaN where the source states
+    # none. A loader of a source that states k observed of n assessed, or a meta-analysis's participant counts, writes it
+    # beside evidenced_negative; under --label-likelihood positive_unlabelled the trainer falls back to the placebo weight
+    # file and then to --placebo-negative-weight where it is NaN or None.
+    evidenced_negative_power: np.ndarray | None = None
     label_mask: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where a pair is labelled; False for a positive pair a label selection set aside (neither positive nor negative); None when no selection was given
     masked_for_soft_evidence: np.ndarray | None = None  # [num_perturbations, num_symptoms] True where label_mask is False only because the pair's evidence is below the label grade (a selection's masks_a_negative rows); a soft prior may apply there (evidence/soft_priors.py)
     label_selection_summary: dict | None = None
@@ -100,6 +106,18 @@ class ExperimentData:
     edge_prior_gated: np.ndarray | None = None
     edge_prior_probability: np.ndarray | None = None
     edge_prior_strength: np.ndarray | None = None
+    # Evidenced negatives of decision 9.92, read from a label selection that carries them; all None otherwise. The source
+    # of each evidenced negative ("" where none, and for the never-above-placebo pairs, which name none), and the
+    # per-pair strength of what each source measured, NaN where it measured nothing: Phenopacket Store's k individuals
+    # observed of n assessed (a propensity, k/n, for a positive; a power, n, for a negative), and a meta-analysis's
+    # participants and rate ratio with its 95 percent interval.
+    evidenced_negative_source: np.ndarray | None = None
+    phenopacket_individuals_observed: np.ndarray | None = None
+    phenopacket_individuals_assessed: np.ndarray | None = None
+    meta_analysis_participants: np.ndarray | None = None
+    meta_analysis_rate_ratio: np.ndarray | None = None
+    meta_analysis_rate_ratio_lower_95: np.ndarray | None = None
+    meta_analysis_rate_ratio_upper_95: np.ndarray | None = None
 
     def structural_node_features(self) -> np.ndarray:
         """Fixed per-node features with no node identity: one-hot type, multi-hot compartment, log degree, currency, transport and reversibility flags, brain expression (log TPM and expressed flag).
@@ -197,13 +215,19 @@ GROUPING_COLUMNS = {"gene": "group_id", "disease_cluster": "disease_cluster_id",
 
 
 PER_PERTURBATION_LISTS = ("perturbation_ids", "perturbation_labels", "perturbation_types", "group_ids", "perturbation_seeds", "perturbation_signs", "perturbation_magnitudes")
+# The [num_perturbations, num_symptoms] arrays of decision 9.92 that a label selection may carry; moved with the rows by
+# every restriction and permutation, as evidenced_negative is.
+EVIDENCED_NEGATIVE_ARRAYS = ("evidenced_negative_source", "phenopacket_individuals_observed", "phenopacket_individuals_assessed",
+                                      "meta_analysis_participants", "meta_analysis_rate_ratio", "meta_analysis_rate_ratio_lower_95",
+                                      "meta_analysis_rate_ratio_upper_95")
 # Every [num_perturbations, ...] array, so restrict_to_perturbations slices them all. A field left out of this tuple
 # keeps its full length while outcomes is cut to the development rows, and the first loss that multiplies the two
 # raises a broadcast error: evidenced_negative and placebo_negative_weight_matrix were both missing until
 # 13 October 2026, which broke every development run that used a placebo-negative label selection.
 PER_PERTURBATION_ARRAYS = ("outcomes", "weights", "in_metabolic_layer", "frequencies", "evidence_dates",
                            "evidence_date_is_publication", "label_mask", "evidenced_negative",
-                           "placebo_negative_weight_matrix", "masked_for_soft_evidence")
+                           "placebo_negative_weight_matrix", "masked_for_soft_evidence", "evidenced_negative_power",
+                           *EVIDENCED_NEGATIVE_ARRAYS)
 
 
 def restrict_to_perturbations(data: "ExperimentData", keep: np.ndarray) -> "ExperimentData":
@@ -440,7 +464,11 @@ def load_experiment_data(graph_directory: Path, evidence_directory: Path, relati
     --never-above-placebo-as-negative) is the one case in which a selection changes an outcome: the pair's outcome becomes
     0 and it stays labelled, so it trains and scores as a negative. Such a pair is marked in evidenced_negative, because
     its absence rests on a controlled comparison and not on silence, and the trainer can weigh it above an unlabelled
-    pair (experiments/run_main_model.py --placebo-negative-weight).
+    pair (experiments/run_main_model.py --placebo-negative-weight). A counts_as_negative row that names its
+    evidenced_negative_source (decision 9.92: Phenopacket Store exclusions, the statin-placebo meta-analysis) may also
+    land on an unlabelled pair: the pair stays outcome 0 and labelled and is marked in evidenced_negative and
+    evidenced_negative_source. The selection's per-pair strength columns become the matrices of
+    EVIDENCED_NEGATIVE_ARRAYS (NaN where a pair has none), for the positive-unlabelled likelihood to read.
 
     drug_entry matters only on a graph with drug entry nodes (graph/drug_entry_nodes.py; a drug_entry_nodes.parquet in
     the graph directory). "targets", the default, drops those nodes and seeds a drug on its targets, so the arrays are
@@ -547,6 +575,7 @@ def load_experiment_data(graph_directory: Path, evidence_directory: Path, relati
             signs[row.perturbation_id] = np.array([sign for _, sign, _ in seed_triples])
             magnitudes[row.perturbation_id] = np.array([magnitude for _, _, magnitude in seed_triples])
     label_mask, label_selection_summary = None, None
+    evidenced_negative_source, strength_matrices = None, {}
     if label_selection is not None:
         selection = pd.read_parquet(label_selection)
         label_mask = np.ones_like(outcomes, dtype=bool)
@@ -557,14 +586,38 @@ def load_experiment_data(graph_directory: Path, evidence_directory: Path, relati
         counts_as_negative = selection.counts_as_negative.fillna(False).astype(bool) if "counts_as_negative" in selection.columns else pd.Series(False, index=selection.index)
         set_aside = selection[~selection.keep.astype(bool) & ~masks_a_negative & ~counts_as_negative]
         masked, not_positive, masked_negatives, relabelled_as_negative = 0, 0, 0, 0
-        for row in selection[counts_as_negative].itertuples(index=False):  # a positive the selection relabels: it becomes a labelled negative
+        # A row naming its source (decision 9.92: Phenopacket Store exclusions, the statin-placebo meta-analysis) may also
+        # land on an unlabelled pair, which then stays outcome 0 and labelled and is marked an evidenced negative. A
+        # never-above-placebo row names none and, as before, counts only on a positive.
+        named_source = (selection.evidenced_negative_source.fillna("").astype(str) if "evidenced_negative_source" in selection.columns
+                        else pd.Series("", index=selection.index))
+        evidenced_negative_source = np.full(outcomes.shape, "", dtype=object)
+        unlabelled_made_negative, named_rows_not_placed = 0, 0
+        for row, source in zip(selection[counts_as_negative].itertuples(index=False), named_source[counts_as_negative]):
             position, column = perturbation_row.get(row.perturbation_id), symptom_index.get(row.symptom)
+            if position is not None and column is not None and outcomes[position, column] == 0 and source:
+                evidenced_negative[position, column] = True
+                evidenced_negative_source[position, column] = source
+                unlabelled_made_negative += 1
+                continue
             if position is None or column is None or outcomes[position, column] == 0:
                 not_positive += 1
+                named_rows_not_placed += bool(source)
                 continue
             outcomes[position, column], weights[position, column], frequencies[position, column] = 0.0, 0.0, np.nan
             evidenced_negative[position, column] = True  # the trainer may weigh it above an unlabelled pair (--placebo-negative-weight)
+            evidenced_negative_source[position, column] = source
             relabelled_as_negative += 1
+        strength_matrices = {}
+        for name in EVIDENCED_NEGATIVE_ARRAYS[1:]:
+            if name not in selection.columns:
+                continue
+            matrix = np.full(outcomes.shape, np.nan)
+            for perturbation_id, symptom, value in zip(selection.perturbation_id, selection.symptom, pd.to_numeric(selection[name], errors="coerce")):
+                position, column = perturbation_row.get(perturbation_id), symptom_index.get(symptom)
+                if position is not None and column is not None and np.isfinite(value):
+                    matrix[position, column] = float(value)
+            strength_matrices[name] = matrix
         for row in set_aside.itertuples(index=False):
             position, column = perturbation_row.get(row.perturbation_id), symptom_index.get(row.symptom)
             if position is None or column is None or outcomes[position, column] == 0:
@@ -595,6 +648,13 @@ def load_experiment_data(graph_directory: Path, evidence_directory: Path, relati
             label_selection_summary["positive_pairs_relabelled_as_negatives"] = relabelled_as_negative
         else:
             evidenced_negative = None
+        if named_source.astype(bool).any():  # recorded only for a selection with a decision 9.92 source, so others keep their summary
+            label_selection_summary["unlabelled_pairs_made_evidenced_negatives"] = unlabelled_made_negative
+            label_selection_summary["evidenced_negative_rows_whose_pair_is_not_in_the_table"] = named_rows_not_placed
+            label_selection_summary["evidenced_negatives_by_source"] = {str(source): int(count) for source, count in
+                                                                        zip(*np.unique(evidenced_negative_source[evidenced_negative_source != ""].astype(str), return_counts=True))}
+        else:
+            evidenced_negative_source = None
     edge_weight, entry_node_mask = None, None
     # A graph may give an edge a weight of its own: today the driving-force edges of the computed membrane-potential
     # build, whose weights come from the linearised voltage equation (graph/membrane_potential.py). Absent column, or
@@ -661,6 +721,8 @@ def load_experiment_data(graph_directory: Path, evidence_directory: Path, relati
         label_mask=label_mask,
         masked_for_soft_evidence=None if label_selection is None else masked_for_soft_evidence,
         evidenced_negative=None if label_selection is None else evidenced_negative,
+        evidenced_negative_source=evidenced_negative_source,
+        **{name: strength_matrices.get(name) for name in EVIDENCED_NEGATIVE_ARRAYS[1:]},
         label_selection_summary=label_selection_summary,
         edge_weight=edge_weight,
         entry_node_mask=entry_node_mask,

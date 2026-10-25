@@ -207,3 +207,73 @@ control stays a control.
 What it is not: Dawid-Skene. There is no latent truth and no conditional-independence assumption; the target is the
 label table, with its own ascertainment, which is why popularity is in the model and why the arm is still read against
 the permuted prior. The calibrated arm joins the grid of section 4 as a third axis (tier against calibrated).
+## 10. Correction, 21 October 2026: 21 of the 34 monogenic negative-report records are labels, not 34
+
+Section 7 above says "The 34 further monogenic records with a negative report are grade A, which makes them labels".
+The count is right and the inference is wrong, and this section is the dated correction rather than an edit to it.
+
+Reproducing the monogenic assembly on the pinned HPO release v2026-09-01, Orphadata products 6 and 1 and the coarse
+`docs/symptom_crosswalk.csv` (24 symptoms) gives 38 monogenic records with `negative_report_count > 0`: 34 at grade A
+and 4 at grade C (MAPT anxiety, CPT1C and RAB32 cognitive impairment, TRPM7 parkinsonism). Both the per-symptom
+negative counts and the all-negative counts match `docs/physiology_audit.md` section 5 exactly, so the 34 is
+reproducible from the pins.
+
+What does not follow is that all 34 are labels. 13 of them carry `positive_report_count == 0`: they reach grade A only
+because `grade_weighting_rows` keeps a 0-of-N row, and the loader then drops them because it keeps only pairs with a
+positive report. That is the rule `docs/experiment_design.md` already states, that rows "whose only annotations report
+0 of N patients" are "no longer positive labels". Their genes are CHCHD2 (twice), COQ7, KIF1C, LAMP2, MME, PNPT1,
+SAMD9L, PPFIA3, PLD4, CAMK2A, PPP2R5C and TENM4. Six become default negatives because the gene carries another label;
+for the other seven the gene leaves the perturbation set.
+
+So **21** of the 34 are pairs carrying both a positive and a negative report, and those 21 are the ones trained as
+positive labels. The registered `better_v2` selection keeps 13 of them and sets aside 8 (DARS2, DNM1L, NKX2-1, PDE10A,
+PRKN, SCARB2, SPTLC1, TYMP) for a frequency below 0.30 or missing.
+
+The pair-by-pair classification, with the disease entries behind each positive and each negative report, is
+`docs/monogenic_negative_report_pairs_2026-10-21.md`, and decision 9.85 records what is open. Three of the negatives
+are curation errors rather than evidence and are recorded in `docs/reconstruction_errata.md`.
+
+This does not change any prior: a prior never touches a label, and the 13 non-label records are eligible cells like any
+other unlabelled pair.
+
+## 11. Correction, 24 October 2026: what the owner asked about species (decision 9.56), and the species terms of 9.93
+
+Section 9 says "Species is a feature rather than a separate fit, as the owner asked (9.56)". That is the opposite of
+what 9.56 records. The owner wrote, on 16 October 2026: "wouldn't all non-human evidence need to be fit separately so
+species isn't one of the fit features ... Even primate research I would think should have its negative evidence
+weighted differently though". The question asks for a separate fit per non-human species, or at least for a
+non-human source's absences to be weighted apart from its calls; it was not answered before 24 October 2026, and the
+docstring of `evidence/calibrated_reliability.py` repeated the misreading until the same day.
+
+What 9.93 built is the partially pooled answer to its second half, not a choice between the two. With IMPC as the
+only mouse source, species:mouse equalled source:IMPC-knockout (and class:animal), so a species effect could not be
+told from a pipeline effect. Three mouse sources now enter beside IMPC (MGI-literature, MGI-screen,
+SFARI-mouse-models), and when a species has two or more sources the regression has a species main effect shared by
+them, a species x direction term, and for each non-human source a deviation from its species and a source x direction
+deviation, both shrunk toward 0 by an L2 penalty ten times the base one
+(`--soft-prior-calibration-source-deviation-penalty`). A table whose only mouse source is IMPC fits the model it
+fitted before, bit for bit. Whether to fit each species apart instead is still the owner's (9.93). The coefficients on
+v5 are in `docs/mouse_sources_measured_v5.md`.
+
+## 12. Addition, 24 October 2026: each species fitted apart (the owner's ruling on 9.56, decision 9.93)
+
+The owner, 24 October 2026 (19:47 EDT): "I'd prefer it to always be separate for PDF species if the data can handle
+it", read as "for each species" (a dictation slip). So the calibrated regression now fits, by default, the human cells
+alone and each non-human species alone (`--soft-prior-calibration-species-form separate`); the pooled form of section
+11 is the option `pooled` and the fallback. Within a species' fit each source keeps its own column and its source x
+direction column, shrunk toward 0 by the deviation penalty, and the intercept is the species-level effect. A species is
+fitted alone when its usable calibration cells hold at least 20 positives and 20 negatives
+(`--soft-prior-calibration-minimum-cases`); below that it is read through the pooled form with the human cells, because
+the pooled form still uses its cells where the tiers would not. On v5 mouse passes (140 positive and 2,853 negative
+cells). The coefficients are in `docs/mouse_sources_measured_v5.md` section 4 and the reasons in decision 9.93.
+
+## 13. Addition, 24 October 2026: species beyond mouse, pooled until standalone (decision 9.94)
+
+The owner, 24 October 2026 (20:10 EDT): "Pooled sources until standalone". Nine report sources of rat, fly, zebrafish
+and worm (RGD-rat, ChEMBL-rat-in-vivo, FlyBase-classical, FlyBase-RNAi, Fenckova-2019-RNAi, ZFIN-mutant,
+ZFIN-morpholino, WormBase-variation, WormBase-RNAi; `evidence/cross_species_reports.py`) enter as soft priors, class
+animal, each with its own source and species. The calibrated regression reads each species through the pooled form with
+the human cells until its usable calibration cells hold 20 positives and 20 negatives, and fits it on its own after
+that, which is the rule of section 12 applied per species. On v5 every one of the four is below the bar and pooled
+(`docs/mouse_sources_measured_v5.md` section 5). Since decision 9.90 the default loss is the positive-unlabelled
+likelihood, which takes no soft prior, so these tables are read only under `--label-likelihood weighted`.

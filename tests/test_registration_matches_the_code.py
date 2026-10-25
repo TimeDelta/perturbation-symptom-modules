@@ -145,3 +145,19 @@ def test_the_registration_points_at_the_rule_file_rather_than_restating_the_rule
     assert "configs/registered_rules.json" in registration, (
         "docs/preregistration.md does not reference the machine-checked rule file, so a reader has no way to know "
         "which of its statements is canonical")
+
+
+def test_the_labels_are_counted_once_under_the_positive_unlabelled_likelihood(registered_rules):
+    """Decision 9.90: every pair counted once, at its code length; the weighted cross-entropy of amendment item 3 is the
+    arm it replaced, kept by name."""
+    assert registered_rules["label_likelihood"]["value"] == "positive_unlabelled"
+    assert argument_parser_default("run_main_model", "--label-likelihood") == "positive_unlabelled"
+    batch_source = (REPOSITORY_ROOT / "experiments" / "run_main_model_batch.py").read_text()
+    assert '"--label-likelihood", "positive_unlabelled",' in batch_source, "the v4 model states the registered likelihood"
+    from mechanistic_pathway_learning.models.positive_unlabelled_likelihood import DERIVED_PROPENSITY
+    assert DERIVED_PROPENSITY == "derived", "the per-cell propensity w + (1 - w) r(t, s) the rule states"
+    source = (REPOSITORY_ROOT / "experiments" / "run_main_model.py").read_text()
+    assert 'type=propensity_or_derived, default=DERIVED_PROPENSITY' in source, "the propensity is derived per type and symptom by default"
+    assert '"--false-report-rate", nargs="*", default=[]' in source, "the false-report rate is 0 for every type by default"
+    assert argument_parser_default("run_main_model", "--negative-weight") == 0.2, "w, the propensity of rare labels"
+    assert '"--negative-weight", "0.2",' in batch_source
