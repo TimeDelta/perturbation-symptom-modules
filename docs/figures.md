@@ -28,7 +28,11 @@ relations, reversible reactions and compartment pH; each cell class reads the se
 (figure 2). The registered normalisation is the per-seed forward cone (`--normalisation forward_cone`, decision 9.16,
 registered 20 October 2026): each edge is divided by its destination's in-degree over every relation, counting only the
 edges whose source the seed can reach. The drawing of 17 October 2026 still reads "normalised by total in-degree", the
-registered rule until that date. Both read the difference field. The node descriptors are read under the registered
+registered rule until that date. Since 25 October 2026 the script takes the normalisation, which encoder is tested,
+the head, the likelihood of the labels and the fixed-point settings from `configs/registered_rules.json` and the
+encoder's defaults (`registered_model_facts`, tested by `tests/test_explanatory_figures.py`), so the next drawing
+states the registered rules without a text edit; the drawing waits for the v5 graph, which is not in every checkout.
+Both read the difference field. The node descriptors are read under the registered
 seed masking, so a perturbation's own nodes, their encodes partners and a drug node's targets read only their
 structural and expression columns. Labels are better_v2 on the fine constructs (figure 3; 38 when the figure was drawn,
 39 since decision 9.74 split akathisia from restlessness, merged 20 October 2026); trial arms, FAERS and IMPC knockouts

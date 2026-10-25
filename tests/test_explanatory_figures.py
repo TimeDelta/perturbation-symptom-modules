@@ -115,3 +115,34 @@ def test_the_digest_reads_a_closure_as_false_with_the_posterior_its_evidence_and
     assert abs(posterior_false(math.log(prior / (1 - prior)) + 1.0, prior) - 1 / (1 + math.exp(-1.0))) < 1e-12
     edges = [{"real": False, "posterior_false": 0.95}, {"real": True, "posterior_false": 0.92}, {"real": False, "posterior_false": 0.6}]
     assert selected_scores(edges, lambda edge: edge["posterior_false"] >= 0.9) == {"closed": 2, "false": 1, "precision": 0.5}
+
+
+def test_the_model_figure_reads_the_registered_rules_and_hard_codes_none_of_them(tmp_path):
+    """Figure 1 states the normalisation, which encoder is tested, the head and the likelihood of the labels. They come
+    from configs/registered_rules.json, so a registered change reaches the figure on its next drawing: a changed rule
+    changes the text, and the script's source holds none of the superseded wording."""
+    import json
+    from pathlib import Path
+
+    from experiments import make_explanatory_figures as figures
+
+    registered = json.loads(Path("configs/registered_rules.json").read_text())["rules"]
+    facts = figures.registered_model_facts()
+    assert registered["normalisation"]["value"].replace("_", " ") in facts["normalisation"].replace("-", " ") or \
+        facts["normalisation"] == figures.NORMALISATION_WORDS[registered["normalisation"]["value"]]
+    assert facts["label_likelihood"] == registered["label_likelihood"]["value"]
+    assert facts["linear_response_role"] == ("tested" if any("linear_response" in name for name in registered["tested_models"]["value"]) else "robustness reading")
+
+    changed = json.loads(Path("configs/registered_rules.json").read_text())
+    changed["rules"]["normalisation"]["value"] = "in_degree"
+    changed["rules"]["tested_models"]["value"] = ["confirmatory_v2_message_passing_noisy_or"]
+    changed["rules"]["robustness_models"]["value"] = ["confirmatory_v2_linear_response_noisy_or"]
+    changed_path = tmp_path / "registered_rules.json"
+    changed_path.write_text(json.dumps(changed))
+    altered = figures.registered_model_facts(changed_path)
+    assert altered["normalisation"] == figures.NORMALISATION_WORDS["in_degree"]
+    assert (altered["message_passing_role"], altered["linear_response_role"]) == ("tested", "robustness reading")
+
+    source = Path(figures.__file__).read_text()
+    for superseded in ("by total in-degree", "one per tested model", "3 layers of typed messages", "a noisy-OR head on each encoder", "only the 15 edges"):
+        assert superseded not in source, f"the figure script still states {superseded!r} by hand"

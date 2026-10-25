@@ -47,7 +47,11 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 from matplotlib.path import Path as MatplotlibPath  # noqa: E402
 
 from mechanistic_pathway_learning.graph.tag_currency_metabolites import currency_flags  # noqa: E402
-from mechanistic_pathway_learning.models.linear_response_encoder import LinearResponseEncoder  # noqa: E402
+from mechanistic_pathway_learning.models.linear_response_encoder import (  # noqa: E402
+    DEFAULT_FIXED_POINT_TOLERANCE,
+    DEFAULT_MAX_PROPAGATION_STEPS,
+    LinearResponseEncoder,
+)
 
 OUTPUT_DIRECTORY = Path("docs/figures")
 FULL_GRAPH_DIRECTORY = Path("data/processed/graph_full_neuronal")
@@ -56,6 +60,7 @@ SPLIT_GRAPH_DIRECTORY = Path("data/processed/graph_full_neuronal_split")
 # (docs/preregistration.md, amendments of 9 October 2026, first and fourth), the drug entry nodes (the user, 10 October
 # 2026: "i definitely want drugs as nodes with an ablation on them") and the neomorphic allele node (decision 9.54)
 CONFIRMATORY_GRAPH_DIRECTORY = Path("data/processed/graph_full_neuronal_split_binders_drugs_v5")
+REGISTERED_RULES = Path("configs/registered_rules.json")
 BINDER_SUMMARY = CONFIRMATORY_GRAPH_DIRECTORY / "plasma_binder_summary.json"
 EVIDENCE_DIRECTORY = Path("data/processed/evidence_full_v5")
 EDGE_PRIOR_TIERS = Path("configs/edge_prior_tiers.csv")
@@ -182,12 +187,47 @@ def edge_prior_counts(graph_directory: Path) -> dict:
     return {"gated": int(gated.sum()), "edges": int(len(evidence))}
 
 
+NORMALISATION_WORDS = {
+    "forward_cone": "the destination's in-degree over the edges\nthe seed can reach (forward cone, per seed)",
+    "total_in_degree": "total in-degree",
+    "in_degree": "in-degree per relation, then across relations",
+}
+
+
+def registered_model_facts(rules_path: Path = REGISTERED_RULES) -> dict:
+    """What the model figures say about the registered model, read from configs/registered_rules.json and the encoder's
+    own defaults, so a registered change reaches the figure on its next drawing instead of waiting for someone to edit
+    the text: the normalisation, which encoder is tested and which is a robustness reading, the head, the likelihood of
+    the labels, and the settings of the fixed point."""
+    registry = json.loads(rules_path.read_text())
+    rules = registry.get("rules", registry)
+    tested, robustness = rules["tested_models"]["value"], rules.get("robustness_models", {}).get("value", [])
+
+    def role(encoder_key: str) -> str:
+        if any(encoder_key in name for name in tested):
+            return "tested"
+        return "robustness reading" if any(encoder_key in name for name in robustness) else "not registered"
+
+    heads = sorted({"noisy-OR" if name.endswith("_noisy_or") else "registered" for name in tested + robustness})
+    normalisation = rules["normalisation"]["value"]
+    return {
+        "normalisation": NORMALISATION_WORDS.get(normalisation, normalisation.replace("_", " ")),
+        "linear_response_role": role("linear_response"),
+        "message_passing_role": role("message_passing"),
+        "head": " and ".join(heads),
+        "label_likelihood": rules["label_likelihood"]["value"],
+        "tolerance": DEFAULT_FIXED_POINT_TOLERANCE,
+        "maximum_rounds": DEFAULT_MAX_PROPAGATION_STEPS,
+    }
+
+
 def figure_model_pipeline() -> None:
     counts = graph_layer_counts(CONFIRMATORY_GRAPH_DIRECTORY)
     binder_summary = json.loads(BINDER_SUMMARY.read_text())
     entry_summary = json.loads((CONFIRMATORY_GRAPH_DIRECTORY / "drug_entry_summary.json").read_text())
     label_summary = json.loads(LABEL_SELECTION_SUMMARY.read_text())
     gate_counts = edge_prior_counts(CONFIRMATORY_GRAPH_DIRECTORY)
+    registered = registered_model_facts()
     cell_classes = [column for column in pd.read_parquet(CELL_CLASS_WEIGHTS).columns if column != "all_cells"]
     layer_lines = "\n".join(f"{layer}: {number:,}" for layer, number in sorted(counts["edges_by_layer"].items(), key=lambda item: -item[1]))
     node_lines = ", ".join(f"{number:,} {node_type.replace('_', ' ')}" for node_type, number in counts["node_types"].items())
@@ -222,12 +262,12 @@ def figure_model_pipeline() -> None:
                      f"edge priors (9.57): {gate_counts['gated']:,} edges carry a prior\nthat they are real; off in the registered\n"
                      "model; hard gates, a binary second pass and\nexact flip checks built (9.62; figures 13-16)",
                      BOX_COLOURS["graph"]),
-        measured_box(figure, axis, "3. Encoder (one per tested model)",
-                     "message passing: 3 layers of typed messages,\nrelations shared through a rank-2 factorisation,\n"
-                     "edge signs from the graph; node states from\nstructural features and descriptors\n\n"
-                     "linear response, to a fixed point (tolerance\n0.001, at most 60 rounds):\n"
+        measured_box(figure, axis, f"3. Encoders (linear response: {registered['linear_response_role']};\nmessage passing: {registered['message_passing_role']})",
+                     "message passing: typed messages through one\nrepeated layer, relations shared through a rank-2\n"
+                     f"factorisation, run to a fixed point (tolerance\n{registered['tolerance']:g}); edge signs from the graph; node\nstates from structural features and descriptors\n\n"
+                     f"linear response, to a fixed point (tolerance\n{registered['tolerance']:g}, at most {registered['maximum_rounds']} rounds):\n"
                      "h(t+1) = (1 - d) h(t) + d (sum_r g_r S_r h(t) + u)\n"
-                     "S_r: signed adjacency of relation r, normalised\nby total in-degree; g_r: learned gain per relation\n"
+                     f"S_r: signed adjacency of relation r, normalised\nby {registered['normalisation']}; g_r: learned gain per relation\n"
                      "with gates, both encoders read a closed gate as a\ndeleted edge (figure 14)\n"
                      "positive input weights, cofactor relations,\nreversible reactions, compartment pH\n"
                      f"class k reads b_k h*: b_k, the weakest node weight\non the widest route (the limiting step;\n"
@@ -253,11 +293,13 @@ def figure_model_pipeline() -> None:
                      "labels: HPO annotations (a gene's alleles),\nSIDER and OnSIDES drug labels (drugs); trial\n"
                      "arms, FAERS and IMPC knockouts enter the\nreliability fit as soft classes, never as labels\n"
                      "better_v2 (figure 3): low-frequency positives,\ngrade C pairs and drug pairs never above\n"
-                     "placebo are masked, neither positive nor\nnegative; unobserved pairs stay unlabelled\n\n"
+                     "placebo are masked, neither positive nor\nnegative; unobserved pairs stay unlabelled\n"
+                     f"likelihood: {registered['label_likelihood'].replace('_', '-')}\n\n"
                      "folds grouped by disease cluster and drug\ntargets; the held-out set on v5 is drawn on\n"
                      "the owner's go-ahead (1.1); refit on\ntraining and validation together", BOX_COLOURS["output"]),
     ]
-    title = "The registered model (the v4 flags, a noisy-OR head on each encoder) on the v5 tables, from a perturbation to symptom probabilities"
+    title = (f"The registered model (the v4 flags, a {registered['head']} head) on the v5 tables, "
+             "from a perturbation to symptom probabilities")
     title_width, title_height = text_size_in_inches(figure, axis, title, 14.0, "bold")
     rows = (first_row, second_row)
     row_heights = [max(box["height"] for box in row) for row in rows]
@@ -888,9 +930,11 @@ def figure_edge_priors() -> None:
     gate_axis.set_title("A hard concrete gate at its prior is not hard: most samples are fractional\n"
                         "(Louizos et al. 2018: gamma -0.1, zeta 1.1, beta 2/3), so the build ends with a binary pass", fontsize=10.5, fontweight="bold")
     figure.suptitle("Edge priors (decision 9.57) and the hard gates decided and built on 16 October 2026 (decision 9.62; figures 13 to 16)", fontsize=12.5, fontweight="bold")
+    below_one_half = gated_evidence.prior < 0.5
+    cheaper_closed, cheaper_closed_by_intact = int(below_one_half.sum()), int((below_one_half & gated_evidence.contested).sum())
     figure.text(0.5, 0.055, "Closing an edge costs logit(prior) = n logit p nats of fit; with the gate's entropy, the per-edge cost is the KL divergence to "
-                "Bernoulli(prior). A positive closing cost keeps open an edge the data say nothing about;\nonly the 15 edges an IntAct absence lowered below "
-                "one half are cheaper closed. The binary second pass trains the gates alone with the read-out in the forward pass and a surrogate gradient, a "
+                f"Bernoulli(prior). A positive closing cost keeps open an edge the data say nothing about;\nonly the {cheaper_closed} edges whose prior is below "
+                f"one half ({cheaper_closed_by_intact} of them lowered by an IntAct absence) are cheaper closed. The binary second pass trains the gates alone with the read-out in the forward pass and a surrogate gradient, a "
                 "steep sigmoid at the threshold,\nin the backward pass. Numbers from experiments/measure_edge_gate_readings.py.", ha="center", va="top", fontsize=8)
     figure.tight_layout(rect=(0, 0.075, 1, 0.94))
     save(figure, "edge_priors")
