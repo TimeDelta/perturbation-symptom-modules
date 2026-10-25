@@ -144,3 +144,25 @@ def test_a_gate_titled_client_challenge_is_a_refusal():
     assert read_public_page.looks_like_challenge(200, gate.replace("Client Challenge", "Loading"))
     assert not read_public_page.looks_like_challenge(200, "<html><body><h1>A client's challenge to the model</h1><p>"
                                                      + "text " * 5000 + "</p></body></html>")
+
+
+def test_a_page_carrying_only_cloudflares_passive_telemetry_script_is_read():
+    """WormBase's release directory listing (200, 5,173 bytes) was refused on 24 October 2026 because Cloudflare had
+    injected its bot-telemetry script, whose path holds "challenge-platform", into the full page (decision 9.95)."""
+    listing = ('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"><html><head>'
+               '<title>Index of /releases/current-production-release/ONTOLOGY</title></head><body>'
+               '<h1>Index of /releases/current-production-release/ONTOLOGY</h1><table><tr><td>'
+               '<a href="phenotype_association.WS298.wb.gz">phenotype_association.WS298.wb.gz</a></td></tr></table>'
+               "<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;"
+               "var d=b.createElement('script');d.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';"
+               "b.getElementsByTagName('head')[0].appendChild(d);}})();</script></body></html>")
+    assert not read_public_page.looks_like_challenge(200, listing)
+
+
+def test_a_real_cloudflare_challenge_is_still_a_refusal():
+    interstitial = ('<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>'
+                    '<div id="challenge-body"></div><script>window._cf_chl_opt={cvId: "3"};</script>'
+                    '<script src="/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1"></script></body></html>')
+    assert read_public_page.looks_like_challenge(200, interstitial)
+    passive_and_real = interstitial.replace("</body>", "<script>d.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';</script></body>")
+    assert read_public_page.looks_like_challenge(200, passive_and_real)

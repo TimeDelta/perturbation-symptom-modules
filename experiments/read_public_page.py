@@ -59,6 +59,13 @@ CHALLENGE_MARKERS = (
     # titled "Client Challenge", with its assets under a /_fs-ch- path and none of the words above.
     "client challenge", "/_fs-ch-",
 )
+# Cloudflare injects its passive bot-telemetry script (/cdn-cgi/challenge-platform/scripts/jsd/main.js) into ordinary
+# pages it serves in full, so a "challenge-platform" match inside that script alone is not a check that the visitor is
+# human (decision 9.95: WormBase's release directory listing, 200 and 5,173 bytes, was refused on 24 October 2026 for
+# that script alone). A real Cloudflare challenge loads /cdn-cgi/challenge-platform/h/... and carries cf-chl markers,
+# which still match after this script is set aside.
+PASSIVE_TELEMETRY_SCRIPT = re.compile(r"<script\b[^>]*>(?:(?!</script>).)*?/cdn-cgi/challenge-platform/scripts/jsd/(?:(?!</script>).)*?</script>",
+                                      re.S | re.I)
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
 # The hosts read past a robots rule, each with the ruling that admits it. The robots file of ftp.ebi.ac.uk reads
 # "User-agent: *" and "Disallow: /" (read 22 October 2026), which closed the releases scripts/fetch_raw_sources.sh
@@ -105,8 +112,9 @@ def looks_like_challenge(status_code: int, response_text: str) -> bool:
     """True when the answer is a refusal or a check that the visitor is human rather than the page asked for."""
     if status_code in CHALLENGE_STATUS_CODES:
         return True
-    leading_text = response_text[:20000].lower()
-    return len(response_text) < 20000 and any(marker in leading_text for marker in CHALLENGE_MARKERS)
+    without_passive_telemetry = PASSIVE_TELEMETRY_SCRIPT.sub(" ", response_text)
+    leading_text = without_passive_telemetry[:20000].lower()
+    return len(without_passive_telemetry) < 20000 and any(marker in leading_text for marker in CHALLENGE_MARKERS)
 
 
 def text_of_page(page_source: str) -> str:
