@@ -19,15 +19,14 @@ value, the file wins and the prose is a record of what was registered earlier.
 
 **Superseded on the decision rule** (marked 15 October 2026, before any lockbox run): **there is no magnitude floor.**
 The floor was revised three times on 8 October (0.05 to a fixed 0.041 macro and 0.028 micro, then to each model's
-realised half-width plus 0.005) and removed on 15 October, the owner: "no floor. paired interval". The decision rests
-on the paired interval, and effect sizes are reported in standard errors of the available precision. The tested models
-are the two noisy-OR configurations by the head decision, not four. The 0.05 here is the first version of the floor and
-is kept as the record of it.
-Proposed in design version 0.4 and to be confirmed here: the pathway-wise split is the Human-GEM
-subsystem hold-out (pathway subsystems only; transport, exchange and isolated bins are not
-pathways), scored on pooled held-out predictions and paired with the permuted-label run of the
-same split; the curated modules hold 37 perturbations on the monogenic slice and serve the
-interpretability overlap instead.
+realised half-width plus 0.005) and removed on 15 October, the owner: "no floor. paired interval". The decision rests on
+the paired interval, and effect sizes are reported in standard errors of the available precision. The tested models are
+the two noisy-OR configurations by the head decision, not four, and from 22 October 2026 one (item 34b). The 0.05 here
+is the first version of the floor and is kept as the record of it. Proposed in design version 0.4 and to be confirmed
+here: the pathway-wise split is the Human-GEM subsystem hold-out (pathway subsystems only; transport, exchange and
+isolated bins are not pathways), scored on pooled held-out predictions and paired with the permuted-label run of the
+same split; the curated modules hold 37 perturbations on the monogenic slice and serve the interpretability overlap
+instead.
 
 Failure criterion: if the proposed model does not beat the popularity and network proximity
 baselines under the disease-cluster grouped split, the architecture is abandoned before ablations
@@ -193,17 +192,17 @@ confirmation.
   degree strata; the permutation difference in differences (the advantage on the real labels minus the advantage when model
   and baseline are trained and scored on permuted labels); the rewiring difference (the model minus the same model on its
   rewired graph).
-- Hypotheses and decision. **Superseded in three respects by the amendments of 8 October 2026 below** (marked 15
+-  Hypotheses and decision. **Superseded in three respects by the amendments of 8 October 2026 below** (marked 15
   October 2026, before any lockbox run): Holm's procedure over the eight hypotheses is withdrawn and each model is
-  tested on its own at one-sided 0.025; there is no magnitude floor at all as of 15 October 2026, the 0.05 here having
-  been revised twice on 8 October and then removed; and the two permutation
-  readings became secondary rather than part of H1. The paragraph is kept as the record of the original rule.
-  H1 (prediction) for a model: macro, micro, both within-strata and both permutation readings
+  tested on its own at one-sided 0.025 (one model at one-sided 0.05 from 22 October 2026, items 34b and 34c); there is
+  no magnitude floor at all as of 15 October 2026, the 0.05 here having been revised twice on 8 October and then
+  removed; and the two permutation readings became secondary rather than part of H1. The paragraph is kept as the record
+  of the original rule. H1 (prediction) for a model: macro, micro, both within-strata and both permutation readings
   above zero, and the macro and micro differences at least 0.05. H2 (graph content): H1 and both rewiring readings above
-  zero. Each reading's one-sided p-value comes from a paired bootstrap over lockbox perturbations (4,000 resamples, the same
-  rows for every model, seed and baseline); a hypothesis's p-value is the largest of its readings' (an intersection-union
-  test, Berger 1982). Holm's procedure (Holm 1979) runs over the eight hypotheses at one-sided 0.025. A model is confirmed
-  for H1 or H2 when Holm rejects that hypothesis and its macro and micro differences reach 0.05.
+  zero. Each reading's one-sided p-value comes from a paired bootstrap over lockbox perturbations (4,000 resamples, the
+  same rows for every model, seed and baseline); a hypothesis's p-value is the largest of its readings' (an
+  intersection-union test, Berger 1982). Holm's procedure (Holm 1979) runs over the eight hypotheses at one-sided 0.025.
+  A model is confirmed for H1 or H2 when Holm rejects that hypothesis and its macro and micro differences reach 0.05.
 - Failure criterion, replacing the one at the top: if no model is confirmed for H1, the architecture has not been shown
   to predict better than the baselines. The ablations still run (amendment of 7 October).
 - Secondary readings, outside the Holm family and reported with paired intervals: noisy-OR minus sigmoid within each
@@ -380,14 +379,15 @@ the plain treatment.
 
 Amendment, 8 October 2026, before any lockbox run (the user's decisions): the test, the micro floor, a no-descriptor
 branch and graph paring.
-- Test. **Two models, not four** (corrected 15 October 2026: the head decision below drops the sigmoid configurations,
-  so this bullet's four-model arithmetic and its 0.096 bound describe a model set that no longer exists; with two
-  tested models the chance that one passes by luck is at most 0.05, as the head amendment states). Each tested model
-  is a candidate and is tested on its own at one-sided 0.025: H1 first, and H2 only if
-  that model's H1 is confirmed, at the same level. Holm's procedure over the eight hypotheses is withdrawn; nothing is
-  divided across models. Consequence, stated beside the results by experiments/score_confirmatory.py: with four models
-  and no correction across them, the chance that at least one is confirmed by luck is above 0.025, at most
-  1 - 0.975^4 = 0.096 if the four were independent and less since they share the data, the lockbox and the baselines.
+-  Test. **Two models, not four** (corrected 15 October 2026: the head decision below drops the sigmoid configurations,
+  so this bullet's four-model arithmetic and its 0.096 bound describe a model set that no longer exists; with two tested
+  models the chance that one passes by luck is at most 0.05, as the head amendment states; from 22 October 2026 one
+  model is tested, at one-sided 0.05, items 34b and 34c). Each tested model is a candidate and is tested on its own at
+  one-sided 0.025: H1 first, and H2 only if that model's H1 is confirmed, at the same level. Holm's procedure over the
+  eight hypotheses is withdrawn; nothing is divided across models. Consequence, stated beside the results by
+  experiments/score_confirmatory.py: with four models and no correction across them, the chance that at least one is
+  confirmed by luck is above 0.025, at most 1 - 0.975^4 = 0.096 if the four were independent and less since they share
+  the data, the lockbox and the baselines.
 - Floors. The macro difference must be at least 0.041 and the micro difference at least 0.028, the median projected
   95 percent half-widths of a macro and a micro difference on a 20 percent hold-out (the precision statement above). The
   first version of this amendment kept the macro floor at 0.05; the user moved it to 0.041 the same day, before any
@@ -715,18 +715,18 @@ pilots of the first family stay as they are and are reported as checks that each
   not nodes. They still carry some of the wiring (a protein's embedding predicts some of its partners), which can only
   make the rewired model better and the rewiring difference smaller, so it can cost H2 power but not confirm it
   wrongly. The scorer refuses a rewired run without either flag. runs/full/confirmatory_lockbox.sh passes both.
-- Two tested models instead of four: one head per encoder, chosen on the development set before any lockbox run by
-  experiments/choose_heads.py, written before any run it reads existed. For each encoder, the noisy-OR and the sigmoid
-  configuration run on the five grouped development folds with seed 0, and so do the development baselines. Per fold,
-  the four H1 readings are computed as the scorer computes them on the lockbox, each against the best baseline of that
-  reading (the highest five-fold mean, chosen without reference to any model). A head's margin is the smallest of: the
-  mean macro difference minus the macro floor, the mean micro difference minus the micro floor (0.032 and 0.043, the
-  amendment below) and the two mean within-strata differences.
-  The head with the larger margin is tested; margins within 0.001 choose noisy-OR. The other two configurations and
-  the four without descriptors stay development readings. With two models tested at one-sided 0.025 each, the chance
-  that at least one passes by luck is at most 2 x 0.025 = 0.05 whatever the dependence between the two tests (0.049 if
-  they were independent), against at most 0.10 (0.096) with four. The choice reads development folds only, so it does
-  not bias the lockbox test of the model it picks.
+-  Two tested models instead of four (one from 22 October 2026, item 34b): one head per encoder, chosen on the
+  development set before any lockbox run by experiments/choose_heads.py, written before any run it reads existed. For
+  each encoder, the noisy-OR and the sigmoid configuration run on the five grouped development folds with seed 0, and so
+  do the development baselines. Per fold, the four H1 readings are computed as the scorer computes them on the lockbox,
+  each against the best baseline of that reading (the highest five-fold mean, chosen without reference to any model). A
+  head's margin is the smallest of: the mean macro difference minus the macro floor, the mean micro difference minus the
+  micro floor (0.032 and 0.043, the amendment below) and the two mean within-strata differences. The head with the
+  larger margin is tested; margins within 0.001 choose noisy-OR. The other two configurations and the four without
+  descriptors stay development readings. With two models tested at one-sided 0.025 each, the chance that at least one
+  passes by luck is at most 2 x 0.025 = 0.05 whatever the dependence between the two tests (0.049 if they were
+  independent), against at most 0.10 (0.096) with four. The choice reads development folds only, so it does not bias the
+  lockbox test of the model it picks.
 - Still open: the lockbox's drug share (the user asked for the precision estimate first; a draft that returns lockbox
   drug groups to development until the lockbox holds 20 percent of the drugs and moves unread development gene groups
   in is kept outside the repository and registers nothing), --bce-in-log-space, the per-type popularity baselines and
@@ -777,26 +777,26 @@ decisions, after the precision estimate they asked for).
   before the scoring, so the blinding is unchanged. The projected floors below (0.032 and 0.043) remain the floors of
   the head choice, where no lockbox interval exists, and the scorer reports them beside the realised floors. Power is
   as stated below when the realised width equals the projected median.
-- **Floors, removed 15 October 2026, before any lockbox run** (the owner: "no floor. paired interval"). There is no
+-  **Floors, removed 15 October 2026, before any lockbox run** (the owner: "no floor. paired interval"). There is no
   magnitude bar. A model is confirmed for H1 when it is complete, its four direction conditions hold (macro, micro and
   both within-strata readings above zero, which is a sign condition and not a floor) and its H1 p-value is at or below
-  one-sided 0.025; H2 and P1 follow as already registered. `score_confirmatory.py --floor-rule none` is the default and
-  `model_floors` returns minus infinity, so a NaN difference still fails because NaN is not at or above minus infinity.
-  `half_width_plus_margin` and `fixed` stay in the code so an earlier reading can be reproduced, and neither is the
-  registered rule. **Reason, in the owner's words across 15 October**: "why bother arguing an arbitrary setpoint for H1
-  at all?" and "i'm saying just report the effect size in multiples of the available precision". The floor had become
-  nearly inert in any case - its own bullet above says a difference at its floor "lies 0.005 above what the lockbox
-  resolves for that comparison", so it was the significance condition shifted by a chosen 0.005, and the 0.005 was the
-  only content it added beyond the paired interval. **What carries the question of size instead**: the paired interval
-  on `model - best baseline`, which already contains the baseline's instability because it is a paired difference, plus
-  effect sizes reported in **standard errors** of the available precision, in two versions - a shared divisor, the
-  largest median standard error over the closed registered baseline set and the tested models, which makes the two
-  models comparable with each other and states that the effect exceeds any precision in the study; and a per-model
-  divisor, each model against its own, which is what shows how well that particular effect is resolved. Neither version
-  enters the decision. The deciding bootstrap resamples the five composite seeds and the leakage groups together, so the
-  interval includes the seed variance that the precision statement above records as missing; the seeds remain joint
-  (the owner: "i don't really care enough to separate them as individual confounds"), so the interval is honest about
-  total variability and cannot attribute init against split.
+  one-sided 0.025 (0.05 from 22 October 2026, item 34c); H2 and P1 follow as already registered. `score_confirmatory.py
+  --floor-rule none` is the default and `model_floors` returns minus infinity, so a NaN difference still fails because
+  NaN is not at or above minus infinity. `half_width_plus_margin` and `fixed` stay in the code so an earlier reading can
+  be reproduced, and neither is the registered rule. **Reason, in the owner's words across 15 October**: "why bother
+  arguing an arbitrary setpoint for H1 at all?" and "i'm saying just report the effect size in multiples of the
+  available precision". The floor had become nearly inert in any case - its own bullet above says a difference at its
+  floor "lies 0.005 above what the lockbox resolves for that comparison", so it was the significance condition shifted
+  by a chosen 0.005, and the 0.005 was the only content it added beyond the paired interval. **What carries the question
+  of size instead**: the paired interval on `model - best baseline`, which already contains the baseline's instability
+  because it is a paired difference, plus effect sizes reported in **standard errors** of the available precision, in
+  two versions - a shared divisor, the largest median standard error over the closed registered baseline set and the
+  tested models, which makes the two models comparable with each other and states that the effect exceeds any precision
+  in the study; and a per-model divisor, each model against its own, which is what shows how well that particular effect
+  is resolved. Neither version enters the decision. The deciding bootstrap resamples the five composite seeds and the
+  leakage groups together, so the interval includes the seed variance that the precision statement above records as
+  missing; the seeds remain joint (the owner: "i don't really care enough to separate them as individual confounds"), so
+  the interval is honest about total variability and cannot attribute init against split.
 - Projected floors. H1 needed a macro difference of at least 0.032 and a micro difference of at least 0.043 (the user's values):
   the median 95 percent half-width of a difference under the group bootstrap, which now decides, plus 0.005. The
   medians are measured under the scorer's statistics (macro symptoms fixed per hold-out, micro over the scored
@@ -847,13 +847,14 @@ decisions, after the precision estimate they asked for).
 
 Amendment, 8 October 2026, before any second-family run (the user's decisions): the sigmoid head is dropped and the
 modules are fixed first.
-- Head. "I guess we should drop the sigmoid head then". The tested models are the noisy-OR configurations of the two
-  encoders, confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or. No head is chosen on
-  the development runs: experiments/choose_heads.py stays as a record and is not run. configs/head_choice.json records
-  the two models as the user's decision, and the scorer and the lockbox job read it as before. With two tested models,
-  the chance that one passes by luck stays at most 0.05. The second family's sigmoid configurations are not run. Reason
-  (the user's statement of purpose that day, "It's to be able to use the graph to determine what the pathways for
-  symptoms are"): only the noisy-OR head has modules that can be read as pathways.
+-  Head. "I guess we should drop the sigmoid head then". The tested models are the noisy-OR configurations of the two
+  encoders, confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or (from 22 October 2026
+  the linear-response configuration alone is tested and the message-passing one is a robustness reading, item 34b). No
+  head is chosen on the development runs: experiments/choose_heads.py stays as a record and is not run.
+  configs/head_choice.json records the two models as the user's decision, and the scorer and the lockbox job read it as
+  before. With two tested models, the chance that one passes by luck stays at most 0.05. The second family's sigmoid
+  configurations are not run. Reason (the user's statement of purpose that day, "It's to be able to use the graph to
+  determine what the pathways for symptoms are"): only the noisy-OR head has modules that can be read as pathways.
 - Order. "Unacceptable to start the v2 experiment runs yet until that is done. Ya. Fixing the modules first makes
   sense." The second family's development job (v2_development) was stopped before it trained anything and is paused.
   It runs only after the user decides the module fix. The module fix is developed on the slice under the rule of
@@ -1141,16 +1142,18 @@ does not train, validate or enter H1 or H2 (user, 11 October: "I accept put the 
 mostly in the held out set"). The registered group rule chains; for added perturbations a one-step rule is used
 instead, because chaining would pull 149 further perturbations into the held-out set.
 
-**3. The loss.** `--equal-drug-shares` is on in every confirmatory configuration and its ablations: each drug's
-positives and, apart, its negatives are rescaled to the mean counts over the training drugs (user, 12 October: "let's
-do the control version and the equal loss per share version"). The negatives of item 1(d) take a weight of **0.5 by
-default**, and where the drug's label states the trial arm sizes the weight is `n_effective / (n_effective + 214.39)`
-with `n_effective = 1 / (1/n_drug + 1/n_placebo)` and 214.39 the median effective size over the **25 drugs** that
-state both arm sizes, so a drug of typical size weighs exactly the default (user, 12 October: "I think -.5 is best
-unless you disagree" and "look for placebo arm sizes for those specific studies and then calculate negative weight
-based on that then use .5 as default for nothing found"). 41 of the 61 pairs carry a measured weight and 20 the
-default, and the weights run from 0.057 to 0.772 (`configs/placebo_negative_weights.csv`). A loss weight below zero
-is refused by the trainer, and so is a file that gives one.
+**3. The loss.** (The weighted loss of this item was superseded on 24 October 2026 by item 34d, which counts each pair
+once; `--equal-drug-shares` stands, the placebo weights now supply item 34d's power a, and the item is kept as the
+record and as the `--label-likelihood weighted` arm.) `--equal-drug-shares` is on in every confirmatory configuration
+and its ablations: each drug's positives and, apart, its negatives are rescaled to the mean counts over the training
+drugs (user, 12 October: "let's do the control version and the equal loss per share version"). The negatives of item
+1(d) take a weight of **0.5 by default**, and where the drug's label states the trial arm sizes the weight is
+`n_effective / (n_effective + 214.39)` with `n_effective = 1 / (1/n_drug + 1/n_placebo)` and 214.39 the median effective
+size over the **25 drugs** that state both arm sizes, so a drug of typical size weighs exactly the default (user, 12
+October: "I think -.5 is best unless you disagree" and "look for placebo arm sizes for those specific studies and then
+calculate negative weight based on that then use .5 as default for nothing found"). 41 of the 61 pairs carry a measured
+weight and 20 the default, and the weights run from 0.057 to 0.772 (`configs/placebo_negative_weights.csv`). A loss
+weight below zero is refused by the trainer, and so is a file that gives one.
 
 **Corrected 13 October 2026 to the constant the file was built with.** This item read "214 the median effective size
 over the pairs that have one". Both halves were wrong: the median over the 41 pairs is 196.56, and the file's weights
@@ -2151,7 +2154,8 @@ both sides because one step consumes and regenerates them - GRIP1 and GRIP2, PIC
 neuronal K+ in channel gating. Their net stoichiometry is zero, and the right encoding is a modifier edge that
 enables the reaction without being consumed or produced. Not built.
 
-**28. The signed adjacency is scaled by `total_in_degree`, so the stoichiometric counts survive** (the owner, 13
+**28. The signed adjacency is scaled by `total_in_degree`, so the stoichiometric counts survive** (narrowed on 20
+October 2026 to `forward_cone`, item 34a) (the owner, 13
 October 2026: "setting mean as the aggregator doesn't sound very physiological though. Can you justify it?", then
 "Set total in degree divisor as the normalization method default"). It cannot be justified as physiology, and this
 item says so rather than defending it: mass balance at a metabolite is a signed **sum**, and the per-node divisor
@@ -2570,6 +2574,60 @@ moves by one drug at the rebuild.
 
 **What this amendment does not change.** Item 25's split and its two readings, the central-action rule of items 14
 and 31, and every model, test and threshold.
+
+
+Amendment, written 25 October 2026 for the changes registered between 20 and 24 October 2026, before any lockbox run
+and before the held-out set has been drawn (decision 1.1 is open).
+
+**34. Four registered rules changed between 20 and 24 October 2026; this item states them in the registration** (the
+owner, 25 October 2026: "Amend it"). Each change was made in `configs/registered_rules.json` with an `Amends:` trailer
+and is listed in `docs/amendment_history.md`, but this document was not amended with them, so until today its text
+still stated the earlier rules. The four are below in the order they were registered. Every one was outcome-blind:
+no lockbox has been drawn, so no confirmatory result existed to see. The earlier text is kept as the record and is
+marked where it states the superseded rule.
+
+**a. The normalisation is `forward_cone`, which narrows item 28** (decision 9.16; registered 20 October 2026 in commit
+`e9758bd`, merged with pull request #8 on 22 October 2026). The owner asked for the per-seed divisor on 14 October
+("do the per-seed cone divisor then") and for it to be wired in on 20 October ("can you please implement that"). The
+registered rule: each edge is divided by the destination's in-degree summed over every relation, counting only the
+edges whose source the seed can reach, per seed, so the unsigned row sums over the edges that carry are one. Item 28's
+`total_in_degree` is the same divisor counted over every edge, and the two coincide wherever a seed reaches every node.
+Item 28's reasoning stands: the divisor is a numerical requirement for the contraction, not physiology.
+
+**b. One model is tested: the noisy-OR configuration of the linear-response encoder** (decision 9.77; registered 22
+October 2026 in commit `342c62d`). The owner: "Defer it to robustness. I don't want it constraining things because
+this is more about mechanistically identifiably predictive nosology". `tested_models` is
+`confirmatory_v2_linear_response_noisy_or` alone, and the new rule `robustness_models` holds
+`confirmatory_v2_message_passing_noisy_or`, which is read and reported with its intervals outside the tested family
+and spends no alpha. `configs/head_choice.json` records the tested model under `chosen` and the other under
+`robustness`. Both encoders keep the noisy-OR head. A robustness reading that disagrees is reported as a disagreement
+and cannot withdraw the tested model's result. What is given up is the corroboration that a second tested encoder of
+a different inductive bias would have given.
+
+**c. The one-sided level is 0.05** (decision 9.78; registered 22 October 2026 in commit `8174d18`). The owner: "Move it
+back to the .05 alpha please with just one model now". The level was halved to 0.025 on 8 October 2026 only because
+two models were tested without a correction across them; with one tested model the registered familywise 0.05 is
+carried by one test. H1 comes first, then H2 and P1 by Holm at the same level, so the smaller of their two p-values
+faces 0.025 and the larger 0.05. Item 18 is not edited, by decision 9.78: the rule it states is unchanged, and its
+"0.0125" now reads 0.025.
+
+**d. The labels' likelihood counts each pair once, as a positive-unlabelled code length; it replaces item 3's weighted
+loss** (decision 9.90; registered 24 October 2026 in commit `039bbd8`, merged with pull request #17 the same day). The
+owner, 22 October 2026: "labeled / unlabeled costs formulation accepted" and "each label should only be counted once in
+the MDL calculation". With f the probability that the link is real, pi the labelling propensity, b the false-report
+rate and a the power behind an evidenced negative, a labelled positive costs -log(b + (1 - b) pi f), an unlabelled pair
+-log(1 - b) - log(1 - pi f) and an evidenced negative -log(1 - a f). The registered values: pi at the median literature
+popularity is w + (1 - w) r(t, s) per perturbation type and symptom, w = 0.2 and r(t, s) the cell's labelled share on
+the fit rows, with one popularity slope learned when a literature table is named; b = 0; a is item 3's
+n_effective / (n_effective + 214.39), 0.5 where the label states no arm sizes. Every counted pair weighs one, so the
+evidence weights, `--negative-weight` as a weight and `--positive-target` are not read, and item 3's placebo weights
+now supply a and are no longer loss weights. `--equal-drug-shares` stays on. Item 3's weighted loss is kept as the
+`--label-likelihood weighted` arm. The choices decision 9.90 lists as the owner's, (b) to (h), stay open there.
+
+**What this amendment does not change.** The noisy-OR head, the order H1 then H2 and P1, the absence of a magnitude
+floor, the group bootstrap and its resamples, item 25's split and every threshold. Counts of confirmatory runs written
+before 22 October 2026 (the 60 of items 25 and 26) counted both encoders; whether the robustness model also runs its
+permuted and rewired variants is not settled by this item.
 
 To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
