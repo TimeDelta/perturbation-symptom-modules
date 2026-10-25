@@ -133,6 +133,26 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
 - **No container or session state in a living document.** That state is on the machine
   (`bash scripts/resume_jobs.sh --status`); a dated record may describe it, a living document may not.
 
+## Pushing (24 October 2026)
+
+- **Work is pushed straight to `main`; no new pull requests are opened.** "I think it's better to just start pushing
+  directly to main" (the owner, 24 October 2026). The reason, as history: on 24 October GitHub would not rebase pull
+  request #19 because the branch held a merge of `main`, and a rebase or squash merge on GitHub gives every commit a
+  new hash, which leaves `docs/decision_history.md` naming commits that are not on `main` and fails
+  `tests/test_documentation_process.py::test_the_decision_history_is_current`. A merge commit was the only GitHub
+  method left, and the owner preferred direct pushes to that.
+- **The full suite passes before every push**: `set -o pipefail; PYTHONPATH=. python -m pytest -q -p no:cacheprovider`.
+  A failing suite is not pushed.
+- **`main` is never force-pushed.** When a push is refused because `main` has moved, run `git pull --rebase origin
+  main`. The rebase gives the local commits new hashes, so when they include a change to `docs/open_decisions.md`,
+  regenerate the pages (the generators under "Documents" above) in a commit of their own after the rebase, run the
+  full suite again, then push. The two-commit rule for the decision log holds as before.
+- **Decision ids.** Take the next free id by the command under "Documents" just before committing, and read it again
+  after a `git pull --rebase`. When another session has pushed the same id first, the session pushing second
+  renumbers its own, as the rule for branches merging second says.
+- **Parallel work** (an agent, a second session) is done in its own worktree on a local branch and lands by rebasing
+  onto `origin/main` and pushing to `main`, under the same rules; it does not open a pull request.
+
 ## Jobs (16 October 2026)
 
 - **Never edit a shell script while a job is running it.** bash reads a script incrementally, so an edit that changes
