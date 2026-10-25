@@ -307,6 +307,12 @@
    "class": "generated",
    "generator": "experiments/build_fine_symptom_crosswalk.py"
   },
+  "docs/fixed_point_against_pharmacological_steady_state.md": {
+   "class": "record",
+   "recorded": "2026-10-21",
+   "append_only": false,
+   "what": "a reading of 21 October 2026 separating the pharmacokinetic clock, the network's relaxation rates and each label's observation time: no relaxation rate changes any fixed point once the gains are read as dimensionless steady-state sensitivities, so the 0.615 of finding 10 is an 8-round transient against a converged 0.593, and the acute labels read the quasi-steady state of the fast subsystem"
+  },
   "docs/fold_mechanism_sharing.md": {
    "class": "generated",
    "generator": "experiments/measure_fold_mechanism_sharing.py"
@@ -747,6 +753,12 @@
    "class": "generated",
    "generator": "experiments/generate_status.py",
    "what": "the one page that says what is current"
+  },
+  "docs/steady_state_readout_alternatives.md": {
+   "class": "record",
+   "recorded": "2026-10-20",
+   "append_only": false,
+   "what": "a reading of 20 October 2026 of what a fixed-point readout of the linear-response encoder cannot represent, with twelve alternatives ranked by cost; its claim that the rates dropping out is the whole problem is corrected by the record of 21 October"
   },
   "docs/superfluous_physiology_review.md": {
    "class": "record",
