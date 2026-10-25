@@ -64,7 +64,7 @@ TOPICS = (
                               "docs/linear_response_sign_check.md", "docs/tissue_saturation.md", "docs/data_sources.md", "docs/alternative_sources.md")),
     ("Drugs: targets, exposure and entry", ("docs/drug_*.md", "docs/central_action_rule.md", "docs/label_central_action*.md", "docs/effect_site_data_coverage.md",
                                             "docs/fraction_unbound_coverage.md", "docs/occupancy_*.md", "docs/target_occupancy_measured.md", "docs/off_target*.md",
-                                            "docs/pet_occupancy_feasibility.md", "docs/placeholder_concentration_calibration.md", "docs/orosomucoid_label_stake.md",
+                                            "docs/pet_occupancy_feasibility.md", "docs/pk_coverage_check_*.md", "docs/placeholder_concentration_calibration.md", "docs/orosomucoid_label_stake.md",
                                             "docs/special_population_carrier_signal.md", "docs/rodent_readout_human_evidence.md",
                                             "docs/psychiatric_drug_additions.md", "docs/four_held_drugs_search.md", "docs/gtopdb_target_rederivation.md",
                                             "docs/brain_exposure_data_feasibility.md", "docs/exposure_sources/*.md", "docs/label_plasma_binders*.md")),
