@@ -3629,3 +3629,22 @@ the sites asked whether the visitor was human.
 Alzforum was not used: its terms of service forbid data mining (the owner, 24 October 2026). One refusal: PubChem's
 robots file disallows its `/rest/` path for automated readers, so a compound's PubChem title was not read for the
 drug names; ChEMBL was the second source. No text on any page read was addressed to an AI assistant.
+
+## 36. Sources read for the species beyond mouse (24 October 2026, decision 9.94)
+
+Every page and file below was read with `experiments/read_public_page.py` unless named otherwise; no page read was
+addressed to an AI assistant.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| Alliance of Genome Resources | "Most Alliance data is available under CC0 1.0 Universal (Public Domain Dedication)." "Some datasets may use CC-BY 4.0 (attribution required)." | registry.opendata.aws/alliance-genome-resources (a search result, read with the fetch tool); the orthology file's header: "Orthology Filter: Stringent", "Alliance Database Version: 9.0.0" |
+| RGD | Bioregistry's license field for RGD: "CC-BY-4.0" | bioregistry.io/rgd (a search result, read with the fetch tool); RGD's citing page refused by its robots file |
+| FlyBase | "All annotations and data produced by FlyBase that are accessible from flybase.org are distributed under a Creative Commons Attribution 4.0 International License (CC BY 4.0)." | flybase.org/wiki/FlyBase:About |
+| ZFIN | "ZFIN data and data annotations are licensed under a Creative Commons Attribution 4.0 International License" | zfin.org/warranty.html |
+| WormBase | "Permission to use the information contained in this database was given by the researchers/institutes"; "Users of the database are solely responsible for compliance with any copyright restrictions" | wiki.wormbase.org/index.php/WormBaseWiki:Copyrights (a search result, read with the fetch tool) |
+| Fenckova et al. 2019, supplement | "Corrected p-values < 0.05 were considered significant (padj)"; the knockdowns used "w1118; 2xGMR-wIR; elav-Gal4, UAS-Dicer-2 (panneuronal)" | the supplement PDF (mmc1) the owner attached |
+
+Refusals: downloads.wormbase.org and wormbase.org answered with a check that the visitor is human ("Just a moment...
+Enable JavaScript and cookies to continue"); EBI's FTP mirror of the same release was read instead. rgd.mcw.edu's
+robots file disallows its citing page. PubChem's `/rest/` path stays refused (section 35). genepile.com was not used: it
+serves an expired certificate issued for another domain.

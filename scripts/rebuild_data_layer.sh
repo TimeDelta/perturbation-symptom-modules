@@ -283,6 +283,10 @@ if [ "$stage" = "fine" ]; then
   step "$processed/sfari_v5/sfari_reports.parquet" "MGI literature and screen annotations and SFARI mouse models at the fine level" \
     python experiments/build_mouse_source_reports.py --graph-dir "$processed/graph_full" --crosswalk configs/impc_symptom_crosswalk_fine.csv \
       --output-root "$processed" --suffix _v5
+  # the species beyond mouse (decision 9.94), on the same graph genes
+  step "$processed/rgd_rat_v5/rgd_rat_reports.parquet" "rat, fly, zebrafish and worm report sources at the fine level" \
+    python experiments/build_cross_species_reports.py --graph-dir "$processed/graph_full" --crosswalk configs/impc_symptom_crosswalk_fine.csv \
+      --drug-tables "$processed/evidence_full_v5/evidence_reports.parquet" --output-root "$processed" --suffix _v5
   step "$processed/literature_v5/literature_reports.parquet" "literature reports re-keyed to the fine namesakes" \
     python experiments/rekey_literature_to_fine.py --input data/releases/v0.4/literature/literature_reports.parquet --output "$processed/literature_v5/literature_reports.parquet"
   # trial outcome measures (decision 9.60): the per-drug cache under data/raw/clinicaltrials_outcomes is reused; fine constructs

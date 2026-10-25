@@ -79,6 +79,87 @@ def coefficient_rows(calibration, names: list[str]) -> list[str]:
     return [f"| `{name}` | {calibration.coefficients[name]:+.3f} |" for name in names if name in calibration.coefficients]
 
 
+SPECIES_TABLES = {"RGD-rat": "rgd_rat", "ChEMBL-rat-in-vivo": "chembl_rat_in_vivo", "FlyBase-classical": "flybase_classical", "FlyBase-RNAi": "flybase_rnai",
+                  "Fenckova-2019-RNAi": "fenckova_2019", "ZFIN-mutant": "zfin_mutant", "ZFIN-morpholino": "zfin_morpholino",
+                  "WormBase-variation": "wormbase_variation", "WormBase-RNAi": "wormbase_rnai"}
+
+
+def species_section(arguments, processed: Path, selection: pd.DataFrame, universe: set[str], positives: dict, data, fit_rows, row_is_drug, cells_for,
+                    mouse_and_human_paths: list[Path]) -> list[str]:
+    """Section 5 (decision 9.94): each source of a species beyond mouse, at the default validity classes, and the
+    calibration's routing of each species (pooled with the human cells below the bar, its own fit above it)."""
+    from mechanistic_pathway_learning.evidence.cross_species_reports import SOURCE_SPECIES
+
+    directory = arguments.species_dir or arguments.mouse_dir or processed
+    kept = selection[selection.keep.astype(bool)]
+    drug_universe = set(kept[kept.perturbation_type == "drug"].perturbation_id.astype(str))
+    drug_positives: dict[str, set[str]] = {}
+    for perturbation_id, symptom in zip(kept[kept.perturbation_type == "drug"].perturbation_id, kept[kept.perturbation_type == "drug"].symptom):
+        drug_positives.setdefault(symptom, set()).add(str(perturbation_id))
+    tables, paths = {}, []
+    for source, name in SPECIES_TABLES.items():
+        path = directory / f"{name}_v5" / f"{name}_reports.parquet"
+        if path.is_file():
+            tables[source] = pd.read_parquet(path)
+            if len(tables[source]):
+                paths.append(path)
+    lines = ["", "## 5. Species beyond mouse (decision 9.94: \"Pooled sources until standalone\")", "",
+             f"The tables of `experiments/build_cross_species_reports.py` at the default validity classes (strong and moderate), built from the same v5 "
+             "graph genes; genes through Alliance 9.0.0 one-to-one orthologues. A label gene or drug is a gene or drug perturbation with a kept positive.", "",
+             "| source | species | calls | absences | human genes or drugs | label genes or drugs covered |", "| --- | --- | --- | --- | --- | --- |"]
+    for source, table in tables.items():
+        induces = table[table.relation == "induces"] if len(table) else table
+        identifiers = set(table.perturbation_id.astype(str)) if len(table) else set()
+        covered = identifiers & (drug_universe if source == "ChEMBL-rat-in-vivo" else universe)
+        lines.append(f"| {source} | {SOURCE_SPECIES[source]} | {int((induces.report_value == 1).sum()) if len(table) else 0:,} | "
+                     f"{int((induces.report_value == 0).sum()) if len(table) else 0:,} | {len(identifiers):,} | {len(covered):,} |")
+    lines += ["", "Label-positive rate given a call and given an absence (positives/perturbations, rate), against the base rate among all label genes "
+              "(label drugs for the rat drug source), for each symptom a source maps:", "",
+              "| source | symptom | base rate | call | absence |", "| --- | --- | --- | --- | --- |"]
+    rate_tables = dict(tables)
+    if arguments.all_validities_dir is not None:  # a source empty at the default classes is shown at the classes off by default, and marked so
+        for source, name in SPECIES_TABLES.items():
+            path = arguments.all_validities_dir / f"{name}_v5_all_validities" / f"{name}_reports.parquet"
+            if not len(rate_tables.get(source, [])) and path.is_file():
+                rate_tables[f"{source} (classes off by default)"] = pd.read_parquet(path)
+    for source, table in rate_tables.items():
+        if not len(table):
+            continue
+        drug = source.startswith("ChEMBL-rat-in-vivo")
+        pool, positive_sets = (drug_universe, drug_positives) if drug else (universe, positives)
+        for symptom in sorted(set(table[table.relation == "induces"].symptom)):
+            positive = positive_sets.get(symptom, set())
+            induces = table[(table.relation == "induces") & (table.symptom == symptom)]
+            lines.append(f"| {source} | {symptom} | {len(positive)}/{len(pool)} ({len(positive) / max(len(pool), 1):.3f}) | "
+                         f"{rate(set(induces[induces.report_value == 1].perturbation_id.astype(str)) & pool, positive)} | "
+                         f"{rate(set(induces[induces.report_value == 0].perturbation_id.astype(str)) & pool, positive)} |")
+    if arguments.all_validities_dir is not None:
+        lines += ["", "With every validity class read (`--include-weak --include-validity weak_intellectual_disability weak_worm`), calls and absences: "
+                  + ", ".join(f"{source} {int((frame.report_value == 1).sum()):,} and {int((frame.report_value == 0).sum()):,}"
+                              for source, name in SPECIES_TABLES.items()
+                              if (arguments.all_validities_dir / f"{name}_v5_all_validities" / f"{name}_reports.parquet").is_file()
+                              for frame in [pd.read_parquet(arguments.all_validities_dir / f"{name}_v5_all_validities" / f"{name}_reports.parquet")]) + "."]
+    cells = cells_for([*mouse_and_human_paths, *paths])
+    fitted = fit_calibration(cells, data.outcomes, data.label_mask, fit_rows, symptom_names=list(data.symptoms), row_is_drug=row_is_drug)
+    lines += ["", "### 5.1 The routing of each species, with every source above in the reports (separate form, penalty 10)", "",
+              "A species is fitted on its own when its usable calibration cells hold at least 20 positives and 20 negatives; below that it is read "
+              "through the pooled form with the human cells.", "",
+              "| species | usable cells | positive | negative | fitted by | why |", "| --- | --- | --- | --- | --- | --- |"]
+    for level, entry in sorted(fitted.species_cells.items()):
+        route = fitted.fit_of_species.get(level, "-")
+        why = ("the human fit" if level == "human" else
+               f"passes the bar ({entry['positives']} positive, {entry['negatives']} negative)" if route == level else
+               f"below the bar: {min(entry['positives'], entry['negatives'])} {'positives' if entry['positives'] < entry['negatives'] else 'negatives'}, fewer than 20")
+        lines.append(f"| {level} | {entry['cells']:,} | {entry['positives']:,} | {entry['negatives']:,} | {route} | {why} |")
+    for name, part in fitted.parts.items():
+        if part.kept_tiers or name == "human":
+            continue
+        shown = [term for term in part.features if term.startswith(("source:", "source_direction:", "species:", "species_direction:")) or term == "direction:positive"]
+        lines += ["", f"**The {name} fit** ({part.training_rows:,} cells, {part.training_positives:,} positive): intercept {part.intercept:+.3f}; "
+                  + ", ".join(f"`{term}` {part.coefficients[term]:+.3f}" for term in shown if any(source in term for source in [*SPECIES_TABLES, *MOUSE_TABLES]) or term == "direction:positive" or term.startswith("species")) + "."]
+    return lines + [""]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--processed-dir", type=Path, default=Path("data/processed"))
@@ -86,6 +167,8 @@ def main() -> int:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v5"))
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v5.parquet"))
     parser.add_argument("--mouse-dir", type=Path, default=None, help="where the three tables of 9.93 are, when not under --processed-dir")
+    parser.add_argument("--species-dir", type=Path, default=None, help="where the tables of 9.94 are (default --mouse-dir, else --processed-dir)")
+    parser.add_argument("--all-validities-dir", type=Path, default=None, help="the tables of 9.94 built with every validity class, for their counts")
     parser.add_argument("--graph-note", default="the v5 data layer rebuilt on 22 October 2026 from main at 608df34, before the coupling edge types of pull request #11")
     parser.add_argument("--output", type=Path, default=Path("docs/mouse_sources_measured_v5.md"))
     arguments = parser.parse_args()
@@ -103,7 +186,7 @@ def main() -> int:
     universe, positives = label_positives(selection)
     symptoms = sorted({symptom for table in tables.values() for symptom in table[(table.relation == "induces")].symptom.unique()})
 
-    lines = ["# Mouse report sources beyond IMPC, measured on v5 (decision 9.93)", "",
+    lines = ["# Animal report sources beyond IMPC, measured on v5 (decisions 9.93 and 9.94)", "",
              provenance_stamp("experiments/measure_mouse_sources.py", [str(arguments.label_selection), str(arguments.evidence_dir), str(arguments.graph_dir),
                                                                        *[MOUSE_TABLES[source] for source in MOUSE_TABLES], *HUMAN_TABLES]), "",
              f"Graph and tables: {arguments.graph_note}. The numbers are measured on those tables and are not evidence about a later graph. "
@@ -213,10 +296,10 @@ def main() -> int:
     if "mouse" in impc_only_separate.parts and not impc_only_separate.parts["mouse"].kept_tiers:
         lines += ["**Mouse fit with IMPC the only mouse source** (penalty 10): the intercept is IMPC's effect and no source column remains.", "",
                   *part_rows(impc_only_separate.parts["mouse"]), ""]
-    human = default.parts.get("human")
-    if human is not None and not human.kept_tiers:
-        lines += [f"Human fit ({human.training_rows:,} cells, {human.training_positives:,} positive): intercept {human.intercept:+.3f}, "
-                  f"direction:positive {human.coefficients.get('direction:positive', 0.0):+.3f}.", ""]
+    human_part = default.parts.get("human")
+    if human_part is not None and not human_part.kept_tiers:
+        lines += [f"Human fit ({human_part.training_rows:,} cells, {human_part.training_positives:,} positive): intercept {human_part.intercept:+.3f}, "
+                  f"direction:positive {human_part.coefficients.get('direction:positive', 0.0):+.3f}.", ""]
     lines += ["Mean prediction by class and direction at the median popularity (separate, penalty 10): "
               + ", ".join(f"{group} {value:.3f}" for group, value in default.predicted_by_class_and_direction.items()) + ".", "",
               "### 4.2 The pooled form (`--soft-prior-calibration-species-form pooled`, and the fallback for a species below the bar)", "",
@@ -241,6 +324,7 @@ def main() -> int:
                   f"intercept {excluded_mouse.intercept:+.3f}; " + ", ".join(f"`{name}` {excluded_mouse.coefficients[name]:+.3f}" for name in species_terms if name in excluded_mouse.coefficients) + ".", ""]
     else:
         lines += [""]
+    lines += species_section(arguments, processed, selection, universe, positives, data, fit_rows, row_is_drug, cells_for, [*human, *mouse_paths.values()])
     arguments.output.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {arguments.output}")
     return 0

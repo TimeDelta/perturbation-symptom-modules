@@ -39,6 +39,11 @@ read through the pooled form with the human cells rather than kept at the tiers,
 own cells set its species, source and source x direction terms while the human cells hold the shared ones, where the
 tiers would discard the cells altogether; the pooled form below is that fallback and the option species_form
 "pooled". A fit that fails the bar itself keeps the tiers for its cells. A table with one species is one fit, as before.
+The owner's ruling on the species beyond mouse (24 October 2026, 20:10 EDT, decision 9.94), "Pooled sources until
+standalone", is this rule applied to each species on its own count: rat, zebrafish, fly and worm enter the pooled form
+with the human cells while they are below the bar and get their own fit once they pass it, with nothing to change in
+the code. A pair whose animal evidence comes from two species is given the species nearest to human among them
+(SPECIES_PRIORITY), and the other species' sources stay columns of that fit.
 
 The pooled form (decision 9.93, before the ruling the only form; species_form "pooled"). While IMPC was the only mouse
 source, the column species:mouse equalled source:IMPC-knockout, so a species effect could not be told from a pipeline
@@ -102,8 +107,14 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-# every label-side source measured in another species; the three after IMPC were added by decision 9.93
-SPECIES_OF_SOURCE = {"IMPC-knockout": "mouse", "MGI-literature": "mouse", "MGI-screen": "mouse", "SFARI-mouse-models": "mouse"}
+# every label-side source measured in another species: the three after IMPC added by decision 9.93, the rat, fly,
+# zebrafish and worm sources by 9.94 (evidence/cross_species_reports.py SOURCE_SPECIES)
+SPECIES_OF_SOURCE = {"IMPC-knockout": "mouse", "MGI-literature": "mouse", "MGI-screen": "mouse", "SFARI-mouse-models": "mouse",
+                     "RGD-rat": "rat", "ChEMBL-rat-in-vivo": "rat", "FlyBase-classical": "fly", "FlyBase-RNAi": "fly", "Fenckova-2019-RNAi": "fly",
+                     "ZFIN-mutant": "zebrafish", "ZFIN-morpholino": "zebrafish", "WormBase-variation": "worm", "WormBase-RNAi": "worm"}
+# A pair whose animal evidence comes from two species (resolve_pairs joins the sources of one class) is given the
+# species nearest to human among them, in this order (9.94); its other species' sources stay as source columns.
+SPECIES_PRIORITY = ("mouse", "rat", "zebrafish", "fly", "worm")
 LOGIT_CLIP = 10.0
 DEFAULT_SPECIES = "human"
 MINIMUM_CALIBRATION_CASES = 20
@@ -141,12 +152,12 @@ class Calibration:
 
 
 def species_of_sources(sources: str) -> str:
-    """The species of a pair's evidence: the first non-human species among its sources, else human."""
-    for source in str(sources).split(";"):
-        species = SPECIES_OF_SOURCE.get(source.strip())
-        if species:
-            return species
-    return DEFAULT_SPECIES
+    """The species of a pair's evidence: the non-human species among its sources nearest to human (SPECIES_PRIORITY),
+    else human. With one non-human species, as every table before 9.94 had, that is the first one found."""
+    found = {SPECIES_OF_SOURCE[source.strip()] for source in str(sources).split(";") if source.strip() in SPECIES_OF_SOURCE}
+    if not found:
+        return DEFAULT_SPECIES
+    return min(found, key=lambda level: SPECIES_PRIORITY.index(level) if level in SPECIES_PRIORITY else len(SPECIES_PRIORITY))
 
 
 def feature_frame(pairs: pd.DataFrame, perturbation_types: dict[str, str], log_popularity: dict[str, float]) -> pd.DataFrame:

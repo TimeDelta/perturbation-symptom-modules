@@ -1,0 +1,6 @@
+superscript_pattern,scope,note
+^elav,pan-neuronal,"elav-GAL4 lines (C155, PLu and the like), expressed in all neurons"
+^nSyb|^n-syb,pan-neuronal,neuronal synaptobrevin GAL4 lines
+^Act5C|^Act\.,whole-body,actin 5C GAL4 lines
+^tub\.|^alphaTub84B,whole-body,tubulin GAL4 lines
+^da\.|^da-,whole-body,daughterless GAL4 lines

@@ -266,3 +266,14 @@ fitted alone when its usable calibration cells hold at least 20 positives and 20
 (`--soft-prior-calibration-minimum-cases`); below that it is read through the pooled form with the human cells, because
 the pooled form still uses its cells where the tiers would not. On v5 mouse passes (140 positive and 2,853 negative
 cells). The coefficients are in `docs/mouse_sources_measured_v5.md` section 4 and the reasons in decision 9.93.
+
+## 13. Addition, 24 October 2026: species beyond mouse, pooled until standalone (decision 9.94)
+
+The owner, 24 October 2026 (20:10 EDT): "Pooled sources until standalone". Nine report sources of rat, fly, zebrafish
+and worm (RGD-rat, ChEMBL-rat-in-vivo, FlyBase-classical, FlyBase-RNAi, Fenckova-2019-RNAi, ZFIN-mutant,
+ZFIN-morpholino, WormBase-variation, WormBase-RNAi; `evidence/cross_species_reports.py`) enter as soft priors, class
+animal, each with its own source and species. The calibrated regression reads each species through the pooled form with
+the human cells until its usable calibration cells hold 20 positives and 20 negatives, and fits it on its own after
+that, which is the rule of section 12 applied per species. On v5 every one of the four is below the bar and pooled
+(`docs/mouse_sources_measured_v5.md` section 5). Since decision 9.90 the default loss is the positive-unlabelled
+likelihood, which takes no soft prior, so these tables are read only under `--label-likelihood weighted`.

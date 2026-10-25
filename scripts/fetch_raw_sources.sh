@@ -13,7 +13,8 @@
 # fetch_plasma_binder_annotations.py, fetch_onsides_identifier_bridge.py, fetch_fraction_unbound_database.py,
 # fetch_pubtator_relations.py, fetch_ctd_chemical_disease.py and
 # python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC). The one script this file does call is
-# experiments/fetch_sfari_mouse_models.py (decision 9.93), because SFARI has no file to fetch with curl.
+# experiments/fetch_sfari_mouse_models.py (decision 9.93) and experiments/fetch_chembl_rat_behaviour.py (9.94), because
+# neither source has a file to fetch with curl.
 #
 # Usage: bash scripts/fetch_raw_sources.sh [--with-cellxgene]
 #   --with-cellxgene also fetches the four adult human brain atlas dissections (1.24 GB), which only the dopaminergic
@@ -235,6 +236,31 @@ fetch "$raw_directory/mgi/mp.obo" "https://github.com/mgijax/mammalian-phenotype
 # in data/raw/sfari/manifest.tsv; the release they name (2026 Q2 on 24 October 2026) is in manifest.json.
 PYTHONPATH=. python experiments/fetch_sfari_mouse_models.py --output-dir "$raw_directory/sfari" \
   || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/sfari/manifest.tsv" >> "$report_path"
+
+# --- sources added 24 October 2026: species beyond mouse (decision 9.94; evidence/cross_species_reports.py) ---
+# Alliance of Genome Resources 9.0.0 orthology, stringent filter ("Most Alliance data is available under CC0 1.0
+# Universal (Public Domain Dedication).", registry.opendata.aws/alliance-genome-resources, read 24 October 2026).
+fetch "$raw_directory/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz" "https://fms.alliancegenome.org/download/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz" 977ad252878d25a6cf486a9054448feff0e308e83e2fe5d6e8b6ec31c45491d4
+# RGD rat gene to MP annotations ("!date-generated: 2026-07-25"); CC BY 4.0 per Bioregistry (RGD's own citing page is
+# closed to automated readers by its robots file). Rolling: a later fetch reports DRIFT.
+fetch "$raw_directory/rgd/rattus_genes_mp" "https://download.rgd.mcw.edu/data_release/annotated_rgd_objects_by_ontology/rattus_genes_mp" 5a7847e153878ecd018719bc033bcaddb9b1a72cd1f57e448cc6779eba0fa97b
+# FlyBase release FB2026_03 genotype to phenotype file; CC BY 4.0 ("All annotations and data produced by FlyBase that
+# are accessible from flybase.org are distributed under a Creative Commons Attribution 4.0 International License").
+fetch "$raw_directory/flybase/genotype_phenotype_data_fb_2026_03.tsv.gz" "https://s3ftp.flybase.org/releases/current/precomputed_files/alleles/genotype_phenotype_data_fb_2026_03.tsv.gz" 57468fbce2ad4a26809926041fc440c2b3e074a68f9804308fde364ea83f5aec
+# ZFIN's Fish with Abnormal and Normal Phenotypes and Fish Components (the downloads of 23 October 2026); CC BY 4.0
+# ("ZFIN data and data annotations are licensed under a Creative Commons Attribution 4.0 International License").
+# Rolling: a later fetch reports DRIFT.
+fetch "$raw_directory/zfin/phenotype_fish.txt" "https://zfin.org/downloads/phenotype_fish.txt" a71bfd55b8774b218eb5d4c5dbd4865320b9a8d01eed4b2ec94acc137b61dd6b
+fetch "$raw_directory/zfin/fish_components_fish.txt" "https://zfin.org/downloads/fish_components_fish.txt" 962f9ef4c0644b9a51a19fae04fc4e4e2a6733013d3c3d2cdb5bd81a9014b1dc
+# WormBase WS298 from EBI's FTP mirror: downloads.wormbase.org answered with a check that the visitor is human on 24
+# October 2026, a refusal this project respects; the EBI FTP host is read on the owner's ruling "don't refuse FTP from EBI".
+fetch "$raw_directory/wormbase/phenotype_association.WS298.wb" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_association.WS298.wb" 3459ca02779b93557a5fde3c58c978036f0c5e0e943affebfe2b3b6b89b034ab
+fetch "$raw_directory/wormbase/phenotype_ontology.WS298.obo" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_ontology.WS298.obo" ac8fae2c31975d77b1b32b7e2a531df2d4d8491dd510b363b22ac3ec19668e85
+# ChEMBL's rat catalepsy assays and their activities, page by page through experiments/read_public_page.py.
+PYTHONPATH=. python experiments/fetch_chembl_rat_behaviour.py --output-dir "$raw_directory/chembl_rat_behaviour" \
+  || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/chembl_rat_behaviour/manifest.json" >> "$report_path"
+# The Fenckova et al. 2019 supplement (mmc2.xlsx, Tables S1 to S7) is not fetched: the owner supplied it on 24 October
+# 2026; place it at data/raw/fenckova_2019/mmc2.xlsx (sha256 f020b26750de9980b6d727e700664dc90d6b96a79a8eb4e33245c8b43dd7d913).
 
 if [ "$with_cellxgene" = "yes" ]; then
   # Adult human brain atlas dissections holding cluster 395 (Siletti et al. 2023; CELLxGENE collection
