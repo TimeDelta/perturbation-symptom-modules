@@ -248,6 +248,33 @@ behind them.
   the draw (1.1). One claim made on 21 October is withdrawn: that the rebuild sets never-above-placebo pairs
   aside against amendment 1(d). The script builds both selections, one masking those pairs and one counting
   them as negatives; which one the trainer reads was not checked.
+- https://claude.ai/share/5b6991e9-2255-44c8-b7c7-6f57a0208afd — 22 to 24 October 2026. Negative evidence,
+  the positive-unlabelled likelihood, animal report sources and the pull-request queue. Pull request #8's
+  conflicts with the hard edge gates on main were resolved; its decisions moved from 9.77 and 9.78 to 9.86 and
+  9.87, #12's to 9.84 and 9.85, and the rule that the branch merging second renumbers its own went into
+  CLAUDE.md. Asked for a more MDL-principled edge gate, the owner accepted a counted-once code per labelled
+  pair, with each source's reliability measured from published figures and never fitted, positives and
+  negatives separately. Built and merged: 9.88 (IntAct negatives per isoform, BRENDA "no inhibition", and
+  EBI's FTP host as the one robots exception: "don't refuse FTP from EBI"); 9.89 (the newborn-through-toddler
+  exclusion withdrawn); 9.90 (the positive-unlabelled likelihood with a module-size cost, now the registered
+  default); 9.91 (edge negatives from HuRI, Perturb-seq, ChEMBL inactives and GO NOT, each with a likelihood
+  ratio read from a publication; the graph's binds edges have 8.2% precision for direct binary binding against
+  HuRI); 9.92 (Phenopacket Store, ClinicalTrials.gov `assessmentType`, the CTT 2026 statin negatives); 9.93
+  (MGI and SFARI); 9.94 (rat, fly, zebrafish and worm sources, and the Fenckova et al. 2019 table the owner
+  supplied, under the ruling "Pooled sources until standalone": on the 22 October v5 rebuild only mouse has
+  its own calibration fit, 139 positive and 2,848 negative cells, and fly, rat and zebrafish are pooled with
+  the human cells); 9.95 (the page reader no longer refuses a page for Cloudflare's passive telemetry
+  script). Negatome 2.0 stays absent: the owner stated "Negatome data is not available". From 24 October work
+  is pushed straight to main ("I think it's better to just start pushing directly to main"), after GitHub
+  would not rebase #19 and a rebase or squash merge would break the commit hashes in
+  `docs/decision_history.md`. One claim is withdrawn: the 20 October reply that HPA ranks the VAMP1 classes
+  opposite to mouse was an aggregation artifact (the class value takes a per-gene maximum over cluster
+  types); per cluster type the direction matches mouse with a smaller gap. Left to the owner: whether
+  WormBase WS298, read from EBI's FTP mirror after WormBase's own host showed a human check, may stay; RGD's
+  licence, unverified behind RGD's robots file; the ClinicalTrials.gov `/api/` robots ruling; and the BRENDA
+  licence tick. This session ran on Claude Opus 5.5, before the rule of 25 October 2026 that research is done
+  on Fable, so its licence readings, source appraisals and the ratios read for 9.91 and 9.94 need the Fable
+  recheck that rule asks for. A handover note is in the project as `claude/session_2026-10-22_to_24.md`.
 
 ## Conventions
 
