@@ -89,12 +89,21 @@ against them before it is acted on.
 - **A refusal by the site is respected.** A page behind a robots rule or a check that the visitor is human is not
   read through a cache, a mirror or a solved challenge. Record the refusal and use the provider's other
   publications.
-- **EBI's FTP host is the one exception to the robots rule.** "don't refuse FTP from EBI" (the owner, 22 October
+- **EBI's FTP host is an exception to the robots rule.** "don't refuse FTP from EBI" (the owner, 22 October
   2026). The robots file of `ftp.ebi.ac.uk` reads "User-agent: *" and "Disallow: /" (read 22 October 2026), which
   would close the releases the project fetches from that host (IntAct's negative interactions, IMPC).
   `experiments/read_public_page.py` reads that host alone past its robots file, over https, and records the robots
   answer beside the page; `scripts/fetch_raw_sources.sh` keeps its fetches from it. Every other EBI host, such as
   `www.ebi.ac.uk`, keeps its own robots rules, and the reader's other limits hold on the FTP host as everywhere else.
+- **A data file its provider published for download is fetched past a robots rule** (the owner, 26 October 2026,
+  asking "But it's just a convention that it means no robots?" and, on the reply that a robots file is a convention
+  aimed at crawlers and not a form of access control, "Ok. Change the rule then"). The exception covers a script's
+  download of one specific data file whose address the authors or the provider published for downloading it (in the
+  dataset's README, the paper or its data availability statement), pinned by SHA-256 in the fetching script, with a
+  comment beside the fetch naming this exception. It does not cover reading or crawling pages, which keep the robots
+  rule and `experiments/read_public_page.py`, and a check that the visitor is human or a login stays a refusal. The
+  first case is the Siletti et al. 2023 cluster aggregate: the authors' README links it at a Dropbox address under
+  `/scl/`, which Dropbox's robots file disallows for every reader (read 26 October 2026).
 
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.

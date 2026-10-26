@@ -119,6 +119,8 @@ fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_clust
 # from the README of github.com/linnarsson-lab/adult-human-brain): mean UMI per nucleus for 59,480 genes in the 461
 # clusters, the source of the noradrenergic_neuron class (cluster 398; graph/siletti_cluster_classes.py, decision 9.76).
 # 307,900,862 bytes. The file states no licence of its own; the same data on CZ CELLxGENE is CC BY 4.0 (docs/data_sources.md).
+# Dropbox's robots file disallows /scl/ for every reader (read 26 October 2026); the file is fetched under the
+# exception in CLAUDE.md "Reading sources" for a data file its provider published for download.
 fetch "$raw_directory/siletti_cluster_aggregate/adult_human_20221007_Pool_Clean.agg.loom" "https://www.dropbox.com/scl/fi/tptj8x85e2cxqeycfiuv2/adult_human_20221007_Pool_Clean.agg.loom?rlkey=ou88fbu0exgn6okh4h3hrqfub&st=4p0jfd91&dl=1" 98e60952faecbdefd9d3461fef9930b1f158be2c8dc3dd0d8887243d213ae129
 
 # Orphadata product 6: gene-disease association types.
