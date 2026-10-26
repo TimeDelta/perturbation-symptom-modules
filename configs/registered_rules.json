@@ -7,22 +7,34 @@
    "value": "none",
    "means": "No magnitude floor. The decision rests on the paired interval on model minus best baseline; effect sizes are reported in standard errors of the available precision. Registered 15 October 2026 (the owner: \"no floor. paired interval\").",
    "code_location": "experiments/score_confirmatory.py --floor-rule default",
-   "superseded": ["0.05 fixed", "0.041 macro and 0.028 micro fixed", "realised half-width plus 0.005"]
+   "superseded": [
+    "0.05 fixed",
+    "0.041 macro and 0.028 micro fixed",
+    "realised half-width plus 0.005"
+   ]
   },
   "alpha_one_sided": {
    "value": 0.05,
    "means": "The tested model is a candidate at one-sided 0.05: H1 first, then its second-stage family by Holm at the same level, so the smaller of H2 and P1 faces 0.025 and the larger faces 0.05. Holm over eight hypotheses was withdrawn on 8 October 2026. The level was halved to 0.025 while two models were tested, where the union bound over two uncorrected tests put the familywise chance of a lucky pass at 2 x 0.025 = 0.05. With tested_models holding one model from 22 October 2026 there is no across-model multiplicity left, the familywise level is this level itself, and the halving no longer buys anything, so it was returned to 0.05 (the owner, 22 October 2026: \"Move it back to the .05 alpha please with just one model now\"; decision 9.78). This is the more permissive of the two readings of the same registered familywise 0.05 and it was taken before any lockbox was drawn.",
    "code_location": "experiments/score_confirmatory.py --alpha default",
-   "superseded": ["0.025, one-sided, per model while two models were tested"]
+   "superseded": [
+    "0.025, one-sided, per model while two models were tested"
+   ]
   },
   "tested_models": {
-   "value": ["confirmatory_v2_linear_response_noisy_or"],
+   "value": [
+    "confirmatory_v2_linear_response_noisy_or"
+   ],
    "means": "One model: the noisy-OR configuration of the linear-response encoder. The sigmoid head was dropped on 15 October 2026 because only noisy-OR has modules that can be read as pathways; the message-passing encoder moved to robustness_models on 22 October 2026 (the owner: \"Defer it to robustness. I don't want it constraining things because this is more about mechanistically identifiably predictive nosology\"). The registered reason is that only the linear-response encoder has a closed-form steady state, so only there can the sensitivity of a label to a sign-disputed edge, and hence whether a disputed sign is identifiable at all, be read without a training run. With one tested model the familywise chance of a lucky pass is the level the model is tested at, which is why alpha_one_sided returned to 0.05 in the same session (decision 9.78): the registered familywise 0.05 is unchanged and is now carried by one test rather than split across two.",
    "code_location": "configs/head_choice.json chosen values",
-   "superseded": ["confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or, each at one-sided 0.025"]
+   "superseded": [
+    "confirmatory_v2_message_passing_noisy_or and confirmatory_v2_linear_response_noisy_or, each at one-sided 0.025"
+   ]
   },
   "robustness_models": {
-   "value": ["confirmatory_v2_message_passing_noisy_or"],
+   "value": [
+    "confirmatory_v2_message_passing_noisy_or"
+   ],
    "means": "Read and reported with their intervals outside the tested family, spending no alpha, as the two permutation readings have since 8 October 2026. The message-passing encoder sits here from 22 October 2026 so a conclusion of the tested model can be checked against a second encoder of a different inductive bias without that check constraining the registered family. A robustness reading that disagrees is reported as a disagreement and cannot withdraw the tested model's result; the corroboration a second tested model would have given is therefore given up, which is the cost the owner accepted.",
    "code_location": "configs/head_choice.json robustness values, scored by experiments/score_confirmatory.py --models"
   },
@@ -60,7 +72,14 @@
    "value": "positive_unlabelled",
    "means": "Every pair the label selection keeps is counted once, at its code length under a positive-unlabelled likelihood (models/positive_unlabelled_likelihood.py): a labelled positive -log(b + (1 - b) pi f), an unlabelled pair -log(1 - b) - log(1 - pi f) and an evidenced negative -log(1 - a f), f the probability that the link is real. The labelling propensity pi at the median literature popularity is w + (1 - w) r(t, s) per perturbation type and symptom, w the registered negative weight 0.2 and r(t, s) the cell's labelled share on the fit rows, which keeps every cell's registered constant optimum and is above every share; one popularity slope is learned when a literature table is named. The false-report rate b is 0; the power a of a never-above-placebo negative is amendment item 3's n_effective / (n_effective + 214.39), 0.5 where the label states no arm sizes. Replaces the weighted cross-entropy of amendment item 3 (a silent pair at 0.2, an evidenced negative at its placebo weight, a positive at its evidence weight); decision 9.90.",
    "code_location": "experiments/run_main_model.py --label-likelihood default",
-   "superseded": ["weighted: a positive at its evidence weight, an unlabelled pair at 0.2, a never-above-placebo negative at 0.5 or n_effective / (n_effective + 214.39) (amendment item 3)"]
+   "superseded": [
+    "weighted: a positive at its evidence weight, an unlabelled pair at 0.2, a never-above-placebo negative at 0.5 or n_effective / (n_effective + 214.39) (amendment item 3)"
+   ]
+  },
+  "membrane_potential_build": {
+   "value": "computed_from_the_pools",
+   "means": "VM_c is computed from the six ion pools with the weights of the linearised parallel-conductance (Millman) equation, and the changes_membrane_potential edges from the charge-moving reactions are not made, so the divisor at VM_c is 1 and the law arrives whole. Amendment item 35, the owner's ruling of 26 October 2026 in decision 9.87; it replaces item 13's computed_beside_the_reactions, under which the law arrived at 1 / (1 + R) of itself.",
+   "code_location": "scripts/rebuild_data_layer.sh --membrane-potential, on both build_neuronal_graph_variant.py calls"
   }
  }
 }

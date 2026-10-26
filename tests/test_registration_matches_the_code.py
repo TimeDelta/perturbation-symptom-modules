@@ -1,6 +1,6 @@
 """Every registered rule, asserted against the implementation (the owner's diagnosis, 15 October 2026).
 
-Why this exists. He observed that sessions "keep getting tripped up by stale things" and proposed overwriting the
+Why this exists. They observed that sessions "keep getting tripped up by stale things" and proposed overwriting the
 registration rather than appending amendments, with the history generated from marked commits. Both help, and neither
 catches the half of the problem that bit hardest: a rule changed in **code** with no amendment written leaves no trace
 in the document at all. On 15 October the registration said the early-stopping validation set was "fold 0" while
@@ -119,6 +119,27 @@ def test_the_minimum_positives_to_score_agree_between_the_rule_and_the_scorer(re
     scorer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(scorer)
     assert registered_rules["minimum_positives_to_score"]["value"] == scorer.MINIMUM_POSITIVES_TO_SCORE
+
+
+def test_the_membrane_potential_is_computed_from_the_pools_in_the_rebuild(registered_rules):
+    """Amendment item 35, the owner's ruling of 26 October 2026 in decision 9.87.
+
+    The rule the registration lost before: item 13 registered `computed_beside_the_reactions` while the data layer
+    built `learned_from_reactions`, and no rule named the build, so nothing here could see the drift (9.87). This
+    asserts the registered value against the flag the data layer actually passes.
+    """
+    import re
+
+    from mechanistic_pathway_learning.graph.reactome_import import MEMBRANE_POTENTIAL_BUILDS
+
+    registered = registered_rules["membrane_potential_build"]["value"]
+    assert registered == "computed_from_the_pools"
+    assert registered in MEMBRANE_POTENTIAL_BUILDS
+    rebuild_script = (REPOSITORY_ROOT / "scripts" / "rebuild_data_layer.sh").read_text()
+    builds_passed = re.findall(r"--membrane-potential\s+(\S+)", rebuild_script)
+    assert set(builds_passed) == {registered}
+    # every neuronal variant build takes the flag, or one of them silently keeps the module default
+    assert len(builds_passed) == rebuild_script.count("build_neuronal_graph_variant.py")
 
 
 def test_the_normalisation_is_the_per_seed_forward_cone_divisor(registered_rules):

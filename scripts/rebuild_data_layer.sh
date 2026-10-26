@@ -65,7 +65,7 @@ step "$processed/literature/gene_identifier_map.parquet" "gene identifier map" p
 step "$processed/graph_full_manganese/nodes.parquet" "manganese variant" python experiments/build_manganese_graph_variant.py --graph-dirs "$processed/graph_full"
 step "$processed/graph_full_neuronal/nodes.parquet" "neuronal and oxidative variant" \
   python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_full_manganese" --output-dir "$processed/graph_full_neuronal" \
-    --membrane-potential computed_beside_the_reactions
+    --membrane-potential computed_from_the_pools
 if [ "$stage" = "graphs" ]; then
   # without the descriptor tables; the descriptors stage builds the split again with them, and its nodes and edges are the same
   step "$processed/graph_full_neuronal_split/nodes.parquet" "gene and protein split" \
@@ -172,7 +172,7 @@ if [ "$stage" = "slice" ]; then
   step "$processed/graph_manganese/nodes.parquet" "manganese variant of the slice" python experiments/build_manganese_graph_variant.py --graph-dirs "$processed/graph"
   step "$processed/graph_neuronal/nodes.parquet" "neuronal and oxidative variant of the slice" \
     python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_manganese" --output-dir "$processed/graph_neuronal" \
-    --membrane-potential computed_beside_the_reactions
+    --membrane-potential computed_from_the_pools
   step "$processed/graph_split/nodes.parquet" "gene and protein split of the slice" \
     python experiments/build_gene_protein_split.py --graph-dir "$processed/graph" --output-dir "$processed/graph_split"
 fi

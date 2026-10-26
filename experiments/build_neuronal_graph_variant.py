@@ -324,8 +324,8 @@ def main() -> None:
                              "12 October 2026): one edge from each reaction that moves net charge, which the encoder averages. "
                              "computed_from_the_pools: the six ion pools feed it with the weights of the linearised parallel-conductance "
                              "equation and the reaction edges are not made. computed_beside_the_reactions: the same six weighted pool edges "
-                             "with the reaction edges kept, which amendment item 13 registers and scripts/rebuild_data_layer.sh passes since "
-                             "26 October 2026 (decision 9.87) "
+                             "with the reaction edges kept, which amendment item 13 registered until 26 October 2026. The rebuild passes "
+                             "computed_from_the_pools, which amendment item 35 registers (decision 9.87) "
                              "(mechanistic_pathway_learning/graph/membrane_potential.py, docs/membrane_potential_constants.md)")
     arguments = parser.parse_args()
 

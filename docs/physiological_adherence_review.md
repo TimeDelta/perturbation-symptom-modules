@@ -213,6 +213,11 @@ to both neuronal variant builds, on the owner's ruling in decision 9.87 ("membra
 the v5 build", 26 October 2026), so the next rebuild carries the six weighted pool edges and the two extracellular
 pools. What the graph on disk carries is whatever build made it, and the build is named in the summary beside it.
 
+**Corrected later the same day, 26 October 2026.** The ruling above was read as the build item 13 registers; asked
+which of the three it meant, the owner ruled `computed_from_the_pools`, so the rebuild makes the six weighted pool
+edges and **not** the reaction edges, and amendment item 35 registers that. The reactions reach `VM_c` through the
+pools whose contents they move.
+
 ## 8. One species, two disconnected pools — measured, with one case undisclosed
 
 **Protons.** Human-GEM `MAM*` against Reactome `CHEBI*`, by compartment: cytosol 3,329 against 44, extracellular

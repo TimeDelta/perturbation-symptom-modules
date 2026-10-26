@@ -1533,7 +1533,8 @@ constants are Düsterwald et al. 2018, eLife 7:e39575, Table 1, under CC BY 4.0,
 because no measured permeability ratio for a mammalian central neuron could be verified and that source states ohmic
 conductances, which substituted into GHK miss its own -72.6 mV by 39 mV. The build registered is
 `computed_beside_the_reactions`: the 405 `changes_membrane_potential` edges are kept, because deleting them was measured
-to lower the field at `VM_c` and not raise it. Registered with it, as 23.3 required: the seven reactions `VM_c` gates
+to lower the field at `VM_c` and not raise it. **This sentence states the superseded rule: the
+build registered since 26 October 2026 is `computed_from_the_pools` and the reaction edges are not made (item 35).** Registered with it, as 23.3 required: the seven reactions `VM_c` gates
 all feed charge back into it, an excitable membrane is not contractive, and a model run to a fixed point under the
 contraction bound represents where the membrane settles under a sustained perturbation and not an action potential. It
 must not be read as showing excitability.
@@ -2628,6 +2629,20 @@ now supply a and are no longer loss weights. `--equal-drug-shares` stays on. Ite
 floor, the group bootstrap and its resamples, item 25's split and every threshold. Counts of confirmatory runs written
 before 22 October 2026 (the 60 of items 25 and 26) counted both encoders; whether the robustness model also runs its
 permuted and rewired variants is not settled by this item.
+
+**35. The membrane potential is computed from the ion pools and the reaction edges are not made** (the owner, 26
+October 2026: "so then definitely compute it by the pools"; decision 9.87, registered in `configs/registered_rules.json`
+as `membrane_potential_build` with an `Amends:` trailer). Item 13 registered `computed_beside_the_reactions`, which
+keeps one edge from each reaction that moves net charge beside the six weighted pool edges. Its reason was a
+measurement made under the `in_degree` divisor, where the two relations at `VM_c` split the input in half; under
+amendment item 28 and the `forward_cone` divisor of item 34a the divisor at `VM_c` is 1 + R, R being the 412
+charge-moving reactions on the v5 build of 20 October 2026, so the conductance law arrived at 1/413 of itself and every
+reaction edge outweighed every pool edge. Under `computed_from_the_pools` the divisor is 1 and the law arrives whole.
+The reactions still reach the potential, through the pools whose contents they move. Outcome-blind: no lockbox has been
+drawn, so no confirmatory result existed to see. What item 13 registers about the law itself is unchanged, including
+why it is the parallel-conductance equation and not Goldman-Hodgkin-Katz, and so is its registered claim, the
+subthreshold steady state. Still owed, and not settled by this item: the field at `VM_c` measured under item 28 and the
+cone divisor for all three builds, which decision 4.1 and decision 9.87 (b) both owe.
 
 To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
