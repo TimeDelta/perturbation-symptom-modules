@@ -1,0 +1,210 @@
+# Exploration queue
+
+Ideas parked for later so they stop taking up working memory. Nothing here is registered or required for the
+confirmatory analysis, and nothing here is started. An item names what it would change, what it would cost and the
+limits that must not be overstated when it is written up.
+
+This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`,
+under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
+were tagged; item 5 is new.
+
+Checked against `main` at `f54e3e9` on 26 October 2026.
+
+---
+
+## 1. Sensitivity-matrix rank as a bound on multiverse degrees of freedom
+
+Tagged 2026-10-22.
+
+**The idea.** Build the matrix of first-order sensitivities of each labeled outcome node to each of the 3,795
+sign-disputed edges, one adjoint solve per labeled outcome against a cached factorization of (I - A). Its numerical
+rank, with tolerance set by label noise, upper-bounds how many independent directions the entire branch multiverse
+can move predictions in. If that rank is small relative to 3,795, most of the apparent combinatorial explosion is
+bookkeeping rather than distinct scientific questions.
+
+**Two companion reductions.**
+- Rank-one update per branch: flipping one edge's sign is a rank-one change to A, so Woodbury gives the exact
+  updated steady state from the cached factorization instead of a full fixed-point run.
+- Equivalence classing: disputed edges in series affect a downstream label only through the product of their signs,
+  so many distinct assignments give identical predictions and collapse into one class.
+
+**Why it matters methodologically.** Every pair of branches the compression merges is a pair the labels cannot
+distinguish. The compression ratio and the identifiability audit are the same quantity viewed from two sides.
+
+**Known limits (do not overstate these in writing).**
+- First-order and linearized; a sign flip is a finite jump.
+- The rank depends on the chosen tolerance.
+- Bounds movement in predictions, not the count of answerable sign questions; the `class_bottleneck` min across
+  classes is not injective and will merge more branches than identifiability alone would.
+- Clean only for the linear-response encoder. No closed-form steady state for message passing. In-loop aggregators
+  (`CrossRelationAggregator`) would break all three reductions; they are off by default.
+
+**Candidate transfer to neuroscience (unverified, worth a literature pass).** The shape of this result resembles
+degeneracy in neural circuits, where many distinct parameter sets produce the same observed activity. Starting
+points to check: Prinz, Bucher and Marder on similar network activity from disparate circuit parameters; Marder and
+Goaillard on variability and homeostasis; Gutenkunst et al. on sloppy parameter sensitivities, already cited
+elsewhere in this project. Open question is whether the low-rank sensitivity structure here is the same phenomenon
+as circuit degeneracy or only an analogy.
+
+---
+
+## 2. Larger seeded recuration of disputed CollecTRI signs
+
+Tagged 2026-10-22.
+
+The current recuration rests on 11 decidable pairs, with the stored sign right on 7
+(`docs/regulation_sign_recuration.md`). The posterior interval runs roughly 0.35 to 0.85, too wide to set a
+latent-sign prior from. A larger seeded sample is cheap and would be worth more than further analysis of the
+existing 11.
+
+---
+
+## 3. Protein electrostatics and molecular interaction mechanisms as inputs
+
+Tagged 2026-10-24. Owner's idea; no literature pass yet.
+
+**The idea.** Bring protein biophysics into the physiology: electric field representations of proteins
+(Poisson-Boltzmann potentials; FFT-based long-range electrostatics as in particle-mesh Ewald) and other molecular
+interaction mechanisms, possibly with the contraction bound removed so the model carries dynamics.
+
+**Where it lands in the existing inventory.** Not new as a goal. The mechanisms it names are cases 1, 2, 4 and 5 of
+`docs/nonlinearity_inventory.md` (competition, partial agonism, desensitisation, occupancy). Removing the
+contraction bound is case 8 and open question 1 of the same file.
+
+**The readout problem.** The graph carries no rate constants, so without the fixed point there is no clock to say
+when to read. Candidates, none clean:
+- deep equilibrium (Bai, Kolter and Koltun 2019): keep the fixed point, allow saturation inside it, keep uniqueness
+  with a non-expansive map;
+- long-time average, which returns the fixed point whenever the system is stable and is the readout the
+  chronic-dosing labels imply;
+- attractor reached from the baseline attractor under the perturbation, which needs rates to define settling.
+
+**Most defensible entry point.** A prior on `binds` edges (precision 8.2% against HuRI) from structure-based
+affinity, which is a data-layer change reviewed like any other edge prior, not a change to propagation.
+
+**Known limits (do not overstate these in writing).**
+- The model is dimensionless in time; iteration count is not time.
+- `VM_c` is the only electrical node and is compartment scale; protein-scale fields do not meet it in the
+  propagation.
+- A new encoder amends the confirmatory family, which since 22 October 2026 is one tested model (the
+  linear-response encoder; decision 9.77), and with it the multiplicity budget.
+
+**Status.** Parked behind the qualifying exam.
+
+---
+
+## 4. Protein phosphorylation as an explicit relation or as site nodes
+
+Tagged 2026-10-26. Owner's question. Answered on Opus from repository files and general knowledge; no literature
+pass on Fable yet.
+
+**Where it stands in the graph.** Kinase effects enter as OmniPath `activates` and `inhibits` edges.
+`configs/go_not_edge_rules.csv`: "no relation of the graph states phosphorylation (OmniPath's activates and inhibits
+do not say how they act)". GRK and arrestin edges onto receptors are already set to -1 by decision 9.10(a)
+(`configs/curated_edge_sign_overrides.csv`).
+
+**Why not as propagation.** Under the linear-response encoder a kinase and a phosphatase acting on one substrate are
+two edges of opposite sign into one node, which the graph already has. What phosphorylation does beyond that
+(ultrasensitivity from opposed enzymes near saturation, Goldbeter and Koshland 1981; multisite thresholds;
+desensitisation) is a saturation or a product of states. `docs/steady_state_readout_alternatives.md` section 1.2
+places desensitisation outside linearity. Phosphorylation is fast, so its rate drops out of every fixed point and it
+sits in the fast set of R2's partition. Site nodes would be relays carrying the same net sign, adding path length
+and in-degree dilution.
+
+**Entry point: edge sign.** A kinase can act on one substrate at an activating site and at an inhibitory site (named
+in `docs/label_source_review.md`), and OmniPath's consensus sign collapses the two, the same failure mode as 9.72.
+Site-level function annotations (PhosphoSitePlus regulatory sites; SIGNOR residue-level entries) could supply sign
+evidence as an edge prior on the data layer, reviewed like any other edge prior.
+
+**The measurement that decides it (research, so on Fable).** On the current graph, count kinase-to-substrate edges
+whose substrate has both activating and inhibitory sites annotated for that kinase, then count how many of those
+touch perturbed genes or lie on paths to labelled symptoms. If the count is small, drop this item.
+
+**Known limits (do not overstate these in writing).**
+- Most phosphosites have no annotated function (Needham et al. 2019, Sci Signal; cited from memory, not verified).
+- Desensitisation as a mechanism waits on case 4 of `docs/nonlinearity_inventory.md`; explicit phosphorylation adds
+  nothing there until saturation enters the propagation.
+
+**Status.** Parked behind the qualifying exam, the 9.97 cyclase handoff and the decisions in `docs/status.md`.
+
+---
+
+## 5. Occupancy as the drug seed magnitude
+
+Tagged 2026-10-26. The owner's question of 26 October 2026, on reading that a drug enters at magnitude 1: "But
+complete removal seems harsh". Written on Opus from repository files; the literature below was read on Opus and is
+**not yet rechecked on Fable** (CLAUDE.md "Models").
+
+**The idea.** Replace the unit seed magnitude of a drug perturbation by the drug's occupancy at each target, so a
+drug that engages 40 percent of one target and 95 percent of another enters as 0.40 and 0.95 rather than as a unit
+split evenly between them.
+
+**Most of the data is already in the repository, which is the main reason to record this rather than scope it from
+scratch.** `experiments/measure_target_occupancy.py` writes `docs/target_occupancy_measured.md` on the 222 drugs of
+`data/processed/evidence_full_v4`, with occupancy `C / (C + K)` at each target's own site, `C` from
+`docs/drug_exposure_table.md` and `K` the larger of the DrugCentral and Guide to PHARMACOLOGY affinities. 115 drugs
+have a concentration and an affinity at one or more mechanism genes, over 305 drug-gene pairs; items 5c and 29
+calibrate an imputed concentration for a further 68 drugs
+(`mechanistic_pathway_learning/perturbation/occupancy_calibration.py`,
+`docs/occupancy_coverage_and_shift_transfer.md`), so 183 of 222 drugs already carry a mechanism-target occupancy on
+one scale.
+
+**What is not built is the wiring.** `map_drug_targets_to_graph_nodes.py` seeds each mechanism target with
+magnitude 1 spread over its graph nodes, and item 5 of the preregistration records that the occupancy anchor "binds
+nothing yet" because no registered input reads an off-target. The occupancy machinery exists for off-target scoping
+and for the `has_measured_occupancy` stratum, not for the magnitude a drug enters with.
+
+**Three measured facts that set what the change would do**, all from `docs/target_occupancy_measured.md` at the
+high end of the therapeutic range. The first is read at each target's own site; the second and third are from that
+document's unbound-plasma section, which is the one that reports them:
+- The best-bound mechanism target has a median occupancy of 0.90, quartiles 0.63 and 0.98: at or above 0.9 for 59
+  of 115 drugs and below 0.5 for 23. So the change is not a uniform shrink.
+- Within a drug, for the 75 drugs with an affinity at two or more mechanism genes, the occupancies differ by a
+  median of 0.17, and by 0.5 or more for 12 drugs. A unit input split evenly treats them as equal. Read at the
+  unbound brain concentration instead, over the 44 drugs that have one, the median difference is 0.34.
+- Summing a drug's mechanism occupancies gives a median total of 1.18 against the current total of 1, so the
+  overall scale barely moves and the change is almost entirely in how the input is distributed.
+
+**What it would cost.** A change to how a drug perturbation enters is a change to a registered perturbation model,
+so it needs an `Amends:` trailer and a dated amendment. Decision 1.3(c) already settles that occupancy is not
+required of every drug (the owner, 13 October 2026: "Don't REQUIRE occupancy though"), so the 39 drugs with no
+affinity would keep a unit seed and the arm would carry two scales in one column unless the owner rules otherwise.
+
+**The cheapest measurement, before any amendment.** The linear-response encoder's field is linear in the input, so
+rescaling a drug's seeds is a reweighting of the per-target responses and the new field can be read without a fresh
+fixed-point solve wherever per-target responses are cached. That gives the size of the change on the field for
+nothing. The head is not linear, so a prediction-level reading needs a pass.
+
+**What the literature says, read on Opus on 26 October 2026 and awaiting a Fable recheck.**
+- Occupancy at therapeutic doses is high but far from complete, and it varies within one drug: haloperidol at 1.0
+  or 2.5 mg/day gave D2 occupancies of 38 to 87 percent across 22 patients, with response, hyperprolactinaemia and
+  extrapyramidal effects becoming likely above 65, 72 and 78 percent (Kapur et al. 2000,
+  [doi:10.1176/appi.ajp.157.4.514](https://doi.org/10.1176/appi.ajp.157.4.514)).
+- Five selective serotonin reuptake inhibitors at their minimum therapeutic doses occupied 76 to 85 percent of the
+  serotonin transporter, with occupancy rising nonlinearly and plateauing at higher doses (Meyer et al. 2004,
+  [doi:10.1176/appi.ajp.161.5.826](https://doi.org/10.1176/appi.ajp.161.5.826)).
+- Dose is the wrong anchor, which is why the measured concentration is the right one: saturable presystemic
+  metabolism is "one of the more important sources of nonlinearity", named for verapamil, propranolol and
+  hydralazine, and makes concentration depend on the rate of absorption as well as the dose, though the same review
+  notes that only a few drugs in use show nonlinear behaviour with clinical implications (Ludden 1991,
+  [doi:10.2165/00003088-199120060-00001](https://doi.org/10.2165/00003088-199120060-00001)). In perfused rat liver
+  propranolol's bioavailability rose from 0.012 to 0.288 over a four-fold concentration range (Ghabrial et al. 1994,
+  [doi:10.1002/jps.2600830704](https://doi.org/10.1002/jps.2600830704)).
+
+**Known limits (do not overstate these in writing).**
+- Occupancy is not effect. For an antagonist the change in signalling depends on the endogenous tone at that
+  target, which no source in this repository constrains; that is case 2 of `docs/nonlinearity_inventory.md`.
+- It does not touch the knockout-against-inhibitor conflation of `docs/physiological_adherence_review.md` section
+  11. A drug at 0.8 and a lifelong knockout at 1 would still differ only in magnitude, not in developmental timing
+  or in which cells are reached.
+- 39 of the 222 drugs have no affinity at any mechanism gene, so no occupancy exists for them at all.
+- The brain-side concentration rests on a `Kp,uu,brain` that is available for 94 of 222 drugs and is human for 13
+  (`docs/drug_exposure_table.md`), so most per-target occupancies read in brain inherit an animal ratio.
+- EC50 and IC50 values are pooled with Ki and Kd, active metabolites are not added to the parent, and a drug that
+  is not a reversible ligand (an irreversible inhibitor such as vigabatrin, a prodrug, a releaser) is not described
+  by one-site occupancy at all.
+- Summed occupancy correlates with the number of targets counted at 0.84, so an occupancy input carries some of the
+  same degree information the drug-node flag was criticised for in `docs/drug_entry_nodes.md`.
+
+**Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
+arms R0, R1 and R5, and it cannot be scored on the 1,067 HPO pairs, which carry no drug perturbations.

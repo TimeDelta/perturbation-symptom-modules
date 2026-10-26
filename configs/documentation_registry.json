@@ -254,6 +254,12 @@
     "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
    }
   },
+  "docs/exploration_queue.md": {
+   "class": "living",
+   "reviewed": "2026-10-26",
+   "as_of_commit": "f54e3e9",
+   "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
+  },
   "docs/exposure_sources/benet2011_bddcs.md": {
    "class": "record",
    "recorded": "2026-10-11",
