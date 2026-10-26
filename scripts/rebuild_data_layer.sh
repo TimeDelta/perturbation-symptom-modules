@@ -64,7 +64,8 @@ step "$processed/graph_full/nodes.parquet" "base graph (build_physiology_graph, 
 step "$processed/literature/gene_identifier_map.parquet" "gene identifier map" python -m mechanistic_pathway_learning.evidence.gene_identifier_map
 step "$processed/graph_full_manganese/nodes.parquet" "manganese variant" python experiments/build_manganese_graph_variant.py --graph-dirs "$processed/graph_full"
 step "$processed/graph_full_neuronal/nodes.parquet" "neuronal and oxidative variant" \
-  python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_full_manganese" --output-dir "$processed/graph_full_neuronal"
+  python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_full_manganese" --output-dir "$processed/graph_full_neuronal" \
+    --membrane-potential computed_beside_the_reactions
 if [ "$stage" = "graphs" ]; then
   # without the descriptor tables; the descriptors stage builds the split again with them, and its nodes and edges are the same
   step "$processed/graph_full_neuronal_split/nodes.parquet" "gene and protein split" \
@@ -170,7 +171,8 @@ if [ "$stage" = "slice" ]; then
   step "$processed/evidence/evidence_records.parquet" "slice evidence table, from data/releases/v0.4" cp -r data/releases/v0.4/evidence_slice_sweeps "$processed/evidence"
   step "$processed/graph_manganese/nodes.parquet" "manganese variant of the slice" python experiments/build_manganese_graph_variant.py --graph-dirs "$processed/graph"
   step "$processed/graph_neuronal/nodes.parquet" "neuronal and oxidative variant of the slice" \
-    python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_manganese" --output-dir "$processed/graph_neuronal"
+    python experiments/build_neuronal_graph_variant.py --base-graph-dir "$processed/graph_manganese" --output-dir "$processed/graph_neuronal" \
+    --membrane-potential computed_beside_the_reactions
   step "$processed/graph_split/nodes.parquet" "gene and protein split of the slice" \
     python experiments/build_gene_protein_split.py --graph-dir "$processed/graph" --output-dir "$processed/graph_split"
 fi

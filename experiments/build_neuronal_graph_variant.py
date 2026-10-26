@@ -319,9 +319,13 @@ def main() -> None:
     parser.add_argument("--without-curated-layers", action="store_true",
                         help="leave out the curated receptor and oxidant edges, for the ablation that separates them from the Reactome layer")
     parser.add_argument("--membrane-potential", choices=MEMBRANE_POTENTIAL_BUILDS, default=DEFAULT_MEMBRANE_POTENTIAL_BUILD,
-                        help="how VM_c gets its value. learned_from_reactions (the default, and the build registered up to 12 October 2026): one edge "
-                             "from each of the 405 reactions that move net charge, which the encoder averages. computed_from_the_pools: the six ion "
-                             "pools feed it with the weights of the linearised parallel-conductance equation and the 405 edges are not made "
+                        help="how VM_c gets its value, one of the three builds of graph/reactome_import.py, which that module's comment "
+                             "sets out with what reaches VM_c under each. learned_from_reactions (the default, and the build registered up to "
+                             "12 October 2026): one edge from each reaction that moves net charge, which the encoder averages. "
+                             "computed_from_the_pools: the six ion pools feed it with the weights of the linearised parallel-conductance "
+                             "equation and the reaction edges are not made. computed_beside_the_reactions: the same six weighted pool edges "
+                             "with the reaction edges kept, which amendment item 13 registers and scripts/rebuild_data_layer.sh passes since "
+                             "26 October 2026 (decision 9.87) "
                              "(mechanistic_pathway_learning/graph/membrane_potential.py, docs/membrane_potential_constants.md)")
     arguments = parser.parse_args()
 

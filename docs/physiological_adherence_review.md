@@ -204,6 +204,15 @@ encoder does apply them, so the two registered encoders disagree about the physi
 carries the superseded `learned_from_reactions` build - 4 unit-weight `driving_force` edges, and neither of the two
 neuronal extracellular pools item 13 adds. Item 13 reads as describing the graph; it describes the rebuild.
 
+**Added 26 October 2026, both halves of that paragraph overtaken.** The first: `propagate_edge_weight` sends
+`edge_weight` into the propagation adjacency, so item 13's conductance shares are no longer inert in the
+linear-response encoder; it was built on 14 October 2026 under decision 4.11, the day after this section was written
+(`models/linear_response_encoder.py`, whose docstring quotes the owner: "4.11 yes: make the encoders agree like
+that"). The second: `scripts/rebuild_data_layer.sh` now passes `--membrane-potential computed_beside_the_reactions`
+to both neuronal variant builds, on the owner's ruling in decision 9.87 ("membrane potential should be included in
+the v5 build", 26 October 2026), so the next rebuild carries the six weighted pool edges and the two extracellular
+pools. What the graph on disk carries is whatever build made it, and the build is named in the summary beside it.
+
 ## 8. One species, two disconnected pools — measured, with one case undisclosed
 
 **Protons.** Human-GEM `MAM*` against Reactome `CHEBI*`, by compartment: cytosol 3,329 against 44, extracellular

@@ -132,8 +132,12 @@ HYPERPOLARISATION_ACTIVATED_PATTERN = re.compile(r"^HCN[1-4]$")
 # A pool with a driving force of 0 is still built as a node; it simply gets no edge into the potential.
 NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"): 1.0, ("Cl-", "c"): 1.0, ("Ca2+", "c"): 0.0}
 MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools", "computed_beside_the_reactions")
-# Not the build item 13 registers (computed_beside_the_reactions), and scripts/rebuild_data_layer.sh passes no
-# --membrane-potential, so the rebuilt neuronal graphs carry this one (decision 9.87)
+# Not the build item 13 registers (computed_beside_the_reactions). Since 26 October 2026 the rebuild asks for the
+# registered one: scripts/rebuild_data_layer.sh passes --membrane-potential computed_beside_the_reactions to both
+# neuronal variant builds, on the owner's ruling in decision 9.87 ("membrane potential should be included in the v5
+# build"). What every rebuild before that date carried instead is this default, four unit-weight pool edges and no
+# extracellular sodium or chloride pool. The default is left as it is, so a run that passes no flag still reproduces
+# the earlier graphs; nothing in configs/registered_rules.json names the build, which is 9.87 (c), still open
 DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"
 # The pools the computed build needs that the registered build does not: the extracellular side of sodium and of
 # chloride. Potassium already has both sides. No extracellular calcium pool is added, because calcium does not enter
