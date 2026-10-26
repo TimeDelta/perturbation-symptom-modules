@@ -2659,17 +2659,25 @@ ever taken from it. The disclosure
 item 15 registers is kept, because the fact that drives it is the project's own, and reads from today:
 
 > the values are predominantly non-human (Kp,uu,brain from human 13, non-human primate 8, other animal 73;
-> `docs/drug_exposure_table.md`), and cross-species Kp,uu,brain translation is imperfect and substrate-dependent,
-> comparable for most compounds (Langthaler et al. 2023, minipig against rat 71 percent within 2-fold, n=17; Sato et
-> al. 2021, a rat, monkey and human model predicting Kp,uu,brain within 3-fold of observed for 71, 73 and 79 percent
-> of compounds) with the largest species differences confined to transporter substrates such as risperidone, which is
-> one of the study drugs, so the species translation is an unquantified error on this input and no claim rests on its
-> absolute scale; the rat-to-human R² of 0.01 cited until 26 October 2026 is withdrawn with the preprint and no
+> `docs/drug_exposure_table.md`), and cross-species Kp,uu,brain translation is imperfect and substrate-dependent
+> (Langthaler et al. 2023: minipig against rat within 2-fold for 47 percent of 17 compounds on literature free
+> fractions, the condition this project's collated values meet, and 71 percent when both species' free fractions are
+> measured in one assay; Sato et al. 2021: a rat, monkey and human model predicting Kp,uu,brain within 3-fold of
+> observed for 71, 73 and 79 percent of compounds), with the largest species differences, 4-fold, in transporter
+> substrates such as paliperidone and buspirone, both of them study drugs, so the species translation is an
+> unquantified error on this input and no claim rests on its absolute scale; the rat-to-human R² of 0.01 cited until 26 October 2026 is withdrawn with the preprint and no
 > coefficient for rodent-to-human transfer is asserted.
 
 **This is weaker than what it replaces, and the registration says so rather than leaving the rodent values looking
-better supported than they are.** Neither replacement source reproduces a near-zero correlation, and neither measures
-rodent against human directly: Langthaler's 71 percent is minipig against rat, with the human comparison qualitative,
+better supported than they are.** (**Corrected 26 October 2026, after the owner supplied the Langthaler full text**:
+the clause above first read "comparable for most compounds (Langthaler et al. 2023, minipig against rat 71 percent
+within 2-fold, n=17)" and named risperidone as the exemplar, both taken from the abstract. The full text gives three
+figures for that pair, of which 71 percent is the best and holds only where both species' free fractions come from
+one assay, and it places risperidone among the *closest* agreements instead. "Comparable for most compounds" is not
+supportable at 47 percent and is withdrawn. Decision 9.100 holds the detail.) Neither replacement source reproduces a near-zero correlation, and neither measures
+rodent against human directly: Langthaler's figures are minipig against rat, and its only quantitative human
+comparison is of total Kp,brain on four compounds, with the Kp,uu,brain agreement against human explicitly worse
+and unquantified,
 and Sato scores a mechanistic model against observations within each species. The quotes, the routes and what each
 source does and does not support are in `docs/label_source_review.md` section 38. Outcome-blind: no lockbox has been
 drawn. Not a registered-rules change, so no `Amends:` trailer: item 15's registered rule is the set of Kp,uu

@@ -3744,7 +3744,7 @@ prohibition. Three of the files (Kühn 1996, Fukami et al. 2018, Parma et al. 19
 naming the library the owner downloaded them through; that string is the owner's own information and is kept out of
 this review, out of `docs/references.bib` and out of every other document.
 
-## 38. The Fagerholm 2022 preprint, excluded: not peer reviewed, and a potential conflict of interest (26 October 2026, decision 9.100)
+## 38. The Fagerholm 2022 preprint, excluded: not peer reviewed, and a potential conflict of interest (9.100)
 
 Section 30 of this review, and `docs/brain_exposure_data_feasibility.md` in four places, cite Fagerholm 2022
 (bioRxiv 2022.11.14.516429) for rat against monkey R2 0.74 (n=17) and rat against human R2 0.01 (n=13). The owner:
@@ -3773,9 +3773,27 @@ neither source reproduces a near-zero correlation. Quotes verified against the P
   reference set consisted of 17 compounds"; "The Kp,uu values were comparable between minipig and rat for a large
   proportion of the compounds (71% within 2-fold, n = 17)"; "the largest Kp,uu species differences were observed for
   compounds classified as transporter substrates (e.g. cimetidine, risperidone, Way-100635 and altanserin)". **The
-  71 percent is minipig against rat, not rat against human**: the human comparison in the abstract is qualitative
-  only. **Risperidone is one of this project's study drugs** and is named among the large species differences. The
-  full text is Elsevier and was not reached; only the abstract was read.
+  71 percent is minipig against rat, not rat against human**. **Read in full on 26 October 2026**, from the
+  publisher's open-access PDF the owner supplied the same day, which corrects this bullet in three places and is why
+  the bullet is kept as the record of what the abstract alone supported. (1) Section 3.5 (p. 8) gives three figures
+  for the same pair over the same 17 compounds: Kp,brain 59 percent within 2-fold, Kp,uu,brain on **literature** free
+  fractions **47 percent**, and Kp,uu,brain on free fractions "determined from the same assay set up across species"
+  71 percent. This project's values are collated from the literature across many assays, so 47 percent is its
+  condition. (2) The paper places risperidone among the **closest** minipig-rat agreements, "<2-fold for cimetidine
+  and risperidone" (p. 9); the largest differences, 4-fold, are 9-hydroxyrisperidone and metoclopramide (lower in
+  rat) and buspirone and altanserin (higher). 9-hydroxyrisperidone is **paliperidone** and buspirone is a study drug,
+  so a study drug does sit among the largest differences, but not the one the abstract's list suggested. (3) The
+  human comparison is quantitative for total Kp,brain only, "3 out of 4 compounds falling within a 1.5-fold range",
+  and is followed by "However, calculated Kp,uu,brain values revealed greater differences between humans and
+  minipigs" (p. 9); the human Kp,uu,brain of that figure uses an unbound brain fraction that is "an average value of
+  rat and minipig", so there is still no measured rodent-to-human or minipig-to-human Kp,uu,brain figure anywhere.
+  **Licence read on the paper's own first page**: "0928-0987/© 2023 The Authors. Published by Elsevier B.V. This is
+  an open access article under the CC BY-NC-ND license (http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+  corroborated by Crossref's version-of-record entry for the DOI; the file carries no per-download watermark. **Eight
+  of its 17 reference compounds are study drugs** — risperidone, paliperidone, buspirone, citalopram,
+  diphenhydramine, doxepin, fluoxetine and gabapentin — so the paper is also an unused source of minipig
+  Kp,uu,brain for eight of them. Its Supplementals were not supplied, so the per-compound values behind its figures
+  are unread.
 - **Sato et al. 2021**, AAPS J 23:81 (PMID 34085128, PMC8175309, doi 10.1208/s12248-021-00609-6, open access): "68,
   26, and 28 compounds were tested in the rat, monkey, and human models"; "Both the predicted Kp,uu,brain and
   Kp,uu,CSF values were within the 3-fold range of the observed values (71, 73, and 79%; 79, 88, and 78% ...)", the
