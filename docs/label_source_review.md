@@ -3744,12 +3744,12 @@ prohibition. Three of the files (Kühn 1996, Fukami et al. 2018, Parma et al. 19
 naming the library the owner downloaded them through; that string is the owner's own information and is kept out of
 this review, out of `docs/references.bib` and out of every other document.
 
-## 38. The Fagerholm 2022 preprint, excluded as not peer reviewed (26 October 2026, decision 9.100)
+## 38. The Fagerholm 2022 preprint, excluded: not peer reviewed, and a potential conflict of interest (26 October 2026, decision 9.100)
 
 Section 30 of this review, and `docs/brain_exposure_data_feasibility.md` in four places, cite Fagerholm 2022
 (bioRxiv 2022.11.14.516429) for rat against monkey R2 0.74 (n=17) and rat against human R2 0.01 (n=13). The owner:
 "Exclude the Fagerholm preprint unless you find a peer reviewed version" (quoted in a session note of 25 October
-2026). **A Fable pass of 26 October 2026 found none**, by three routes: the bioRxiv API record still reads
+2026), and on 26 October 2026, having been shown the exclusion as recorded: ""just say that the fagerholm paper was excluded because it was not peer-reviewed and had a potential conflict of interest"". So the reason of record has two parts, and the second needs no search: the author is at Prosilico AB, whose ANDROMEDA prediction software the preprint's own methods use, so the paper evaluates data against a product of its author's company. **On the first, a Fable pass of 26 October 2026 found no peer-reviewed version**, by three routes: the bioRxiv API record still reads
 `"published_doi": "NA"` at version 1, posted 20 November 2022; PubMed returns nothing for the author with the
 subject, nothing for the exact title; a web search for the title returns the bioRxiv page and unrelated work. The
 exclusion therefore applies and the figures are withdrawn from every claim.
