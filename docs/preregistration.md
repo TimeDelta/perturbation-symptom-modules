@@ -2654,7 +2654,8 @@ reason of record: "just say that the fagerholm paper was excluded because it was
 conflict of interest"; decision 9.100). A Fable pass of 26 October 2026 found no peer-reviewed version by three
 routes, so the condition is not met; the conflict is that the author is at Prosilico AB, whose ANDROMEDA
 prediction software the preprint's own methods use, so the paper evaluates data against a product of its
-author's company. The preprint's coefficients are withdrawn from every claim. Nothing measured changes: no value was ever taken from it. The disclosure
+author's company. The preprint's coefficients are withdrawn from every claim. Nothing measured changes: no value was
+ever taken from it. The disclosure
 item 15 registers is kept, because the fact that drives it is the project's own, and reads from today:
 
 > the values are predominantly non-human (Kp,uu,brain from human 13, non-human primate 8, other animal 73;
