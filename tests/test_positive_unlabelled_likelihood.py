@@ -5,7 +5,6 @@ with the edge priors' W equal to the number of counted pairs, and the weighted l
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from argparse import Namespace
 from pathlib import Path
@@ -14,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import torch
+from trainer_in_process import run_main_model
 
 from experiments.run_main_model import (
     LABEL_LIKELIHOOD_SETTINGS,
@@ -284,7 +284,7 @@ def run_trainer(paths: dict[str, Path], run_directory: Path, *extra: str) -> dic
                "--encoder", "linear_response", "--normalisation", "total_in_degree", "--max-epochs", "2", "--num-bootstrap", "3", "--refit-on-validation",
                "--validation-fraction", "0.3", "--no-keep-large-groups-in-training", "--fold", "0", "--seed", "0", "--batch-size", "8",
                "--placebo-negative-weights-file", str(paths["placebo"]), "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]), *extra]
-    completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
+    completed = run_main_model(command[2:])  # in-process by default; tests/trainer_in_process.py says why
     assert completed.returncode == 0, completed.stderr[-3000:]
     split_directory = next(path for path in run_directory.iterdir() if path.is_dir())
     return {"directory": split_directory, "results": json.loads((split_directory / "results.json").read_text()),

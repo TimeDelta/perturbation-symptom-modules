@@ -3,7 +3,6 @@ on only for the rows a fit trains on, recorded in the fingerprint and results.js
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from argparse import Namespace
 from pathlib import Path
@@ -11,6 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+from trainer_in_process import run_main_model
 
 from experiments.run_main_model import (
     SOFT_PRIOR_SETTINGS,
@@ -156,7 +156,7 @@ def run_trainer(paths: dict[str, Path], run_directory: Path, *extra: str) -> dic
                "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]),
                # a soft prior is defined for the weighted loss only (decision 9.90), as the soft-prior arms of the batch say
                "--label-likelihood", "weighted", *extra]
-    completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
+    completed = run_main_model(command[2:])  # in-process by default; tests/trainer_in_process.py says why
     assert completed.returncode == 0, completed.stderr[-3000:]
     split_directory = next(path for path in run_directory.iterdir() if path.is_dir())
     return {"results": json.loads((split_directory / "results.json").read_text()), "predictions": np.load(split_directory / "test_predictions.npy")}

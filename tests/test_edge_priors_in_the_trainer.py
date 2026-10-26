@@ -5,7 +5,6 @@ the rewired-graph evaluation rebuilds from its checkpoint."""
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from argparse import Namespace
 from pathlib import Path
@@ -14,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import torch
+from trainer_in_process import run_main_model
 
 from experiments.evaluate_on_rewired_graph import evaluate_fold
 from experiments.run_main_model import (
@@ -248,7 +248,7 @@ def run_trainer(paths: dict[str, Path], run_directory: Path, *extra: str) -> dic
                # the edge gates' divisor and their flip estimates are written for item 28's total_in_degree; the registered
                # forward_cone is not built for gates (decision 9.16), so a gated run names the normalisation it is run under
                "--normalisation", "total_in_degree", *extra]
-    completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
+    completed = run_main_model(command[2:])  # in-process by default; tests/trainer_in_process.py says why
     assert completed.returncode == 0, completed.stderr[-3000:]
     split_directory = next(path for path in run_directory.iterdir() if path.is_dir())
     return {"directory": split_directory, "results": json.loads((split_directory / "results.json").read_text()),
@@ -354,7 +354,7 @@ def test_the_timing_mode_runs_with_hard_gates(tmp_path):
                "--run-dir", str(tmp_path / "timing"), "--encoder", "linear_response", "--fold", "0", "--seed", "0", "--batch-size", "8",
                "--placebo-negative-weights-file", "none", "--group-by", "disease_cluster", "--label-selection", str(paths["selection"]),
                "--edge-prior-strength", "1.0", "--timing-batches", "3", "--normalisation", "total_in_degree"]
-    completed = subprocess.run(command, cwd=REPOSITORY_ROOT, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin", "OMP_NUM_THREADS": "1"})
+    completed = run_main_model(command[2:])  # in-process by default; tests/trainer_in_process.py says why
     assert completed.returncode == 0, completed.stderr[-3000:]
     timing = json.loads(next(line for line in completed.stdout.splitlines() if line.startswith("{") and "median_step_seconds" in line))
     assert timing["timing_batches"] == 3 and timing["median_step_seconds"] >= 0
