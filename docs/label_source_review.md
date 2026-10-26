@@ -3743,3 +3743,45 @@ record, so it will need the same route the nine above did.
 prohibition. Three of the files (Kühn 1996, Fukami et al. 2018, Parma et al. 1995) carry a per-download watermark
 naming the library the owner downloaded them through; that string is the owner's own information and is kept out of
 this review, out of `docs/references.bib` and out of every other document.
+
+## 38. The Fagerholm 2022 preprint, excluded as not peer reviewed (26 October 2026, decision 9.100)
+
+Section 30 of this review, and `docs/brain_exposure_data_feasibility.md` in four places, cite Fagerholm 2022
+(bioRxiv 2022.11.14.516429) for rat against monkey R2 0.74 (n=17) and rat against human R2 0.01 (n=13). The owner:
+"Exclude the Fagerholm preprint unless you find a peer reviewed version" (quoted in a session note of 25 October
+2026). **A Fable pass of 26 October 2026 found none**, by three routes: the bioRxiv API record still reads
+`"published_doi": "NA"` at version 1, posted 20 November 2022; PubMed returns nothing for the author with the
+subject, nothing for the exact title; a web search for the title returns the bioRxiv page and unrelated work. The
+exclusion therefore applies and the figures are withdrawn from every claim.
+
+**Two things the same pass established, and both matter more than the exclusion.** First, the preprint's own
+conclusion is the opposite attribution to the one this review and item 15 took from it: "Results indicate that
+available human Kp,uu,brain-data are too uncertain to be applicable for validation of predictions and understanding
+of clinical brain uptake of drugs and drug candidates" (bioRxiv record, read 26 October 2026). The repository read
+the R2 of 0.01 as rodent values failing to transfer to human; the author reads it as the human measurements being too
+noisy to validate against, and the author's company sells the prediction software the preprint uses. Under the
+project's species preference, human above primate above rodent, the author's reading would make the 13 human values
+the project prefers the uncertain ones. The preprint is too weak to settle which reading is right, which is itself a
+reason the exclusion costs nothing. Second, **item 15 attached n=13 to both coefficients**; n=13 is the rat-to-human
+comparison alone and n=17 the rat-to-monkey, so that citation was imprecise as well as unreviewed.
+
+**What replaces it**, for the species-translation disclosure of amendment item 15, and it is weaker in tone because
+neither source reproduces a near-zero correlation. Quotes verified against the PubMed records on 26 October 2026
+(according to PubMed):
+
+- **Langthaler et al. 2023**, Eur J Pharm Sci 190:106554 (PMID 37543065, doi 10.1016/j.ejps.2023.106554): "The
+  reference set consisted of 17 compounds"; "The Kp,uu values were comparable between minipig and rat for a large
+  proportion of the compounds (71% within 2-fold, n = 17)"; "the largest Kp,uu species differences were observed for
+  compounds classified as transporter substrates (e.g. cimetidine, risperidone, Way-100635 and altanserin)". **The
+  71 percent is minipig against rat, not rat against human**: the human comparison in the abstract is qualitative
+  only. **Risperidone is one of this project's study drugs** and is named among the large species differences. The
+  full text is Elsevier and was not reached; only the abstract was read.
+- **Sato et al. 2021**, AAPS J 23:81 (PMID 34085128, PMC8175309, doi 10.1208/s12248-021-00609-6, open access): "68,
+  26, and 28 compounds were tested in the rat, monkey, and human models"; "Both the predicted Kp,uu,brain and
+  Kp,uu,CSF values were within the 3-fold range of the observed values (71, 73, and 79%; 79, 88, and 78% ...)", the
+  first triple being Kp,uu,brain for rat, monkey and human. **This scores a mechanistic model's predictions against
+  observations within each species**, not a measured rodent-to-human correlation. Its abstract names no compounds.
+
+So the disclosure now rests on the project's own measured species mix, which needs no outside citation
+(`docs/drug_exposure_table.md`: "The Kp,uu,brain used is from: human 13, non-human primate 8, other animal 73"), plus
+these two fold-agreement figures, and **no coefficient for rodent-to-human transfer is asserted at all**.

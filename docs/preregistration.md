@@ -1592,7 +1592,10 @@ cerebrospinal-fluid or regional value can enter (user, 12 October: "Yes keep add
 94, none are lost and 16 values change, five beyond 2-fold; the diff is in the decision log. Registered with it, because
 it bears on every occupancy the study computes: **the values are predominantly rodent**, and Fagerholm 2022 reports a
 rat-to-monkey R² of 0.74 against a rat-to-human R² of 0.01 (n=13), so the species translation is an unquantified error
-on this input and no claim rests on its absolute scale (docs/brain_exposure_data_feasibility.md). The cerebrospinal-fluid
+on this input and no claim rests on its absolute scale (docs/brain_exposure_data_feasibility.md). **This clause is
+superseded from 26 October 2026 by item 36**: the Fagerholm citation is excluded as not peer reviewed, both coefficients
+are withdrawn, and the n=13 it attaches to the pair belongs to the rat-to-human comparison alone (n=17 is
+rat-to-monkey). The disclosure itself is kept and re-justified there. The cerebrospinal-fluid
 exclusion is kept and now has its own evidence: lumbar CSF runs more than 3-fold high for P-gp substrates and
 buprenorphine's own measured CSF range spans 46-fold.
 
@@ -2643,6 +2646,30 @@ drawn, so no confirmatory result existed to see. What item 13 registers about th
 why it is the parallel-conductance equation and not Goldman-Hodgkin-Katz, and so is its registered claim, the
 subthreshold steady state. Still owed, and not settled by this item: the field at `VM_c` measured under item 28 and the
 cone divisor for all three builds, which decision 4.1 and decision 9.87 (b) both owe.
+
+**36. The species-translation disclosure of item 15 is re-justified without the Fagerholm preprint** (the owner, 25
+October 2026: "Exclude the Fagerholm preprint unless you find a peer reviewed version", quoted in a session note, and
+26 October 2026, approving that the exclusion be recorded rather than the citations deleted; decision 9.100). A Fable
+pass of 26 October 2026 found no peer-reviewed version by three routes, so the condition is not met and the preprint's
+coefficients are withdrawn from every claim. Nothing measured changes: no value was ever taken from it. The disclosure
+item 15 registers is kept, because the fact that drives it is the project's own, and reads from today:
+
+> the values are predominantly non-human (Kp,uu,brain from human 13, non-human primate 8, other animal 73;
+> `docs/drug_exposure_table.md`), and cross-species Kp,uu,brain translation is imperfect and substrate-dependent,
+> comparable for most compounds (Langthaler et al. 2023, minipig against rat 71 percent within 2-fold, n=17; Sato et
+> al. 2021, a rat, monkey and human model predicting Kp,uu,brain within 3-fold of observed for 71, 73 and 79 percent
+> of compounds) with the largest species differences confined to transporter substrates such as risperidone, which is
+> one of the study drugs, so the species translation is an unquantified error on this input and no claim rests on its
+> absolute scale; the rat-to-human R² of 0.01 cited until 26 October 2026 is withdrawn with the preprint and no
+> coefficient for rodent-to-human transfer is asserted.
+
+**This is weaker than what it replaces, and the registration says so rather than leaving the rodent values looking
+better supported than they are.** Neither replacement source reproduces a near-zero correlation, and neither measures
+rodent against human directly: Langthaler's 71 percent is minipig against rat, with the human comparison qualitative,
+and Sato scores a mechanistic model against observations within each species. The quotes, the routes and what each
+source does and does not support are in `docs/label_source_review.md` section 38. Outcome-blind: no lockbox has been
+drawn. Not a registered-rules change, so no `Amends:` trailer: item 15's registered rule is the set of Kp,uu
+spellings the table matches, which is untouched; what changes is the disclosure registered beside it.
 
 To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the

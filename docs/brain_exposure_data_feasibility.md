@@ -5,6 +5,8 @@ address was reached through a programmatic service or a search result, pages who
 with `experiments/read_public_page.py`, no permission request was waited on, every refusal is recorded in the last
 section and none was routed around, and no licence is named that was not read as a sentence.
 
+**Added 26 October 2026.** The Fagerholm 2022 preprint (doi 10.1101/2022.11.14.516429), which this pass cites in four places as the only direct rat-to-human Kp,uu,brain comparison, is **excluded as not peer reviewed**: the owner, "Exclude the Fagerholm preprint unless you find a peer reviewed version" (quoted in a session note of 25 October 2026), and a Fable pass of 26 October 2026 found no peer-reviewed version by three routes (bioRxiv's record still reads `published_doi` "NA" at version 1 of 20 November 2022; PubMed by author, by title and a web search return nothing matching). The four mentions below stand as the record of what this pass read on 13 October 2026; its R2 figures, 0.74 rat against monkey and 0.01 rat against human, are no longer asserted anywhere in the project. Items 3 and 4 of this document's open list are moot with the exclusion: the preprint's per-drug tables are not worth retrieving and its licence needs no verification, because nothing will be quoted from it. Decision 9.100 holds the ruling and amendment item 36 the replacement disclosure.
+
 ## The question
 
 The study needs, per drug, the unbound brain-to-plasma concentration ratio Kp,uu,brain, so a measured plasma
