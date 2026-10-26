@@ -8,6 +8,14 @@ so the filter never saw an edge into them (decision 9.86, measured on v5 on 20 O
 annotated receptors into those four genes, 24 receptors into GNA14 and 2 into GNA15 from receptors annotated for
 another family).
 
+What `primary_pubmed_id` is, and is not (26 October 2026). The column holds GPCRdb's `primary_PMID` field for the
+receptor, which this expansion copies onto every row it writes. It is therefore the reference list GtoPdb gives for
+that receptor's coupling annotation as a whole, not evidence for the row it sits on. HRH2 shows why that matters: all
+six of its rows cite `8961278|2553705`, and PMID 2553705 (Mitsuhashi et al. 1989) concludes that the H2 calcium
+response is "inhibited by cholera toxin but not by pertussis toxin", which cannot support the four Gq/11 rows it is
+attached to, since Gq/11 is not a cholera toxin substrate. Read a row's reference as pointing at the receptor's
+annotation and check it against the row before citing it; decision 9.79 holds the HRH2 case.
+
 The members are read from HGNC's gene groups rather than kept by hand: group 1426 "G protein subunits alpha, group
 s", 1428 "group i", 1427 "group q" and 1429 "group 12/13", from the pinned data/raw/hgnc/hgnc_complete_set.txt. The
 table keeps its columns, its ids and its row order (receptor, then G alpha gene).
