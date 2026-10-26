@@ -8,13 +8,16 @@ so the filter never saw an edge into them (decision 9.86, measured on v5 on 20 O
 annotated receptors into those four genes, 24 receptors into GNA14 and 2 into GNA15 from receptors annotated for
 another family).
 
-What `primary_pubmed_id` is, and is not (26 October 2026). The column holds GPCRdb's `primary_PMID` field for the
-receptor, which this expansion copies onto every row it writes. It is therefore the reference list GtoPdb gives for
-that receptor's coupling annotation as a whole, not evidence for the row it sits on. HRH2 shows why that matters: all
-six of its rows cite `8961278|2553705`, and PMID 2553705 (Mitsuhashi et al. 1989) concludes that the H2 calcium
-response is "inhibited by cholera toxin but not by pertussis toxin", which cannot support the four Gq/11 rows it is
-attached to, since Gq/11 is not a cholera toxin substrate. Read a row's reference as pointing at the receptor's
-annotation and check it against the row before citing it; decision 9.79 holds the HRH2 case.
+What `primary_pubmed_id` is (the owner, 26 October 2026, decision 9.99: "have the rows cite whatever is supported").
+It is the evidence for the row it sits on: the papers that support that receptor coupling to that G-protein family in
+that role. What every run before 26 October 2026 held instead was GPCRdb's `primary_PMID` field verbatim, one list per
+receptor, which this expansion copies onto every row of that receptor, so a paper was attached to couplings it does not
+support. HRH2 was the case found: all six of its rows cited `8961278|2553705`, and PMID 2553705 (Mitsuhashi et al.
+1989) concludes that the H2 calcium response is "inhibited by cholera toxin but not by pertussis toxin", which excludes
+Gq/11, so its four Gq/11 rows now cite 8961278 alone (Kuehn et al. 1996, which reports H2 labelling of alpha q and
+alpha 11) while its two Gs rows keep both. A receptor whose list has not been checked row by row still carries
+GPCRdb's field as before: 84 of the 253 receptors share one multi-PMID list across two or more family or role groups,
+the shape of the HRH2 defect, and are owed that check (decision 9.99).
 
 The members are read from HGNC's gene groups rather than kept by hand: group 1426 "G protein subunits alpha, group
 s", 1428 "group i", 1427 "group q" and 1429 "group 12/13", from the pinned data/raw/hgnc/hgnc_complete_set.txt. The
