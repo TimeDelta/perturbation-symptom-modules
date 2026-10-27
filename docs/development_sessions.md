@@ -447,3 +447,38 @@ transcript address, then the dates of the session, then its summary.
   Fable; the Fable subagent rechecked every citation the 9.96 row uses against PubMed, Crossref or arXiv. Both 9.96
   commits name Opus 5.5 as co-author although the work was done on Fable 5.1, against the convention of the
   repository's other Fable commits.
+- https://claude.ai/share/a9eb251c-b983-46ea-81f5-e864e9232efe — 25 to 27 October 2026 (transcript address
+  recorded 27 October). The stale-documentation clean-up of the repository documents and the Project's `claude/*.md`
+  notes, begun from `main` at `be15dda` and ending at `d95eff9`. The owner chose both scopes and approved running the
+  documentation work on Opus because the Fable-only rule is for research only; the research steps ran in subagents on
+  Fable, which stopped on a usage limit and were resumed after it reset. **Done:** the 17 living documents that
+  `generate_status.py --review` listed as due were read against the repository and re-dated (`d84a760`, `cd9012d`);
+  `generate_status.py` counted the registry as one rule and now reads its `rules` key (11 registered rules,
+  `a16d55a`); preregistration item 34 records the four rules registered between 20 and 24 October 2026 (forward-cone
+  normalisation 9.16; linear-response noisy-OR as the only tested model with message passing as a robustness model
+  9.77; one-sided alpha 0.05 9.78; positive-unlabelled label likelihood 9.90), the superseded passages of items 3, 18
+  and 28 are marked with their date and left as written, and the frozen baseline is untouched (`fd65832`); dated
+  corrections to decisions 9.88 (the branch is merged, pull request #14, 24 October) and 9.90 (`positive_unlabelled`
+  is the default since 24 October; points (b) to (h) remain open) (`8aa8565`, `2443824`);
+  `experiments/make_explanatory_figures.py` reads its model facts from `configs/registered_rules.json` through
+  `registered_model_facts`, with a test that fails if superseded wording returns to the script (`758bf15`); stale
+  comments and docstrings were corrected (`c84d4b0`); all nine Project notes carry a dated status block and
+  `claude/README.md` is an index checked against `d95eff9`; the PK coverage check of 24 October and two Kp,uu,brain
+  sources came into the repository (`d60757f`, section 30.8 of `docs/label_source_review.md`). **Withdrawn:** the
+  Fenckova et al. 2019 licence reading "All rights reserved" (read on another model than Fable) was wrong; a Fable
+  recheck found CC BY-NC-ND 4.0 on the publisher's PDF (`77b87fa`). Two claims in the Project notes were also wrong
+  and are corrected there: Kalvass et al. 2007 is retrievable (decision 9.41), and the filter widening of section
+  30.6 was accepted on 12 October 2026 (section 31.1 of `docs/label_source_review.md`), not waiting. **The owner's
+  ruling:** asked to delete the old remote branches, the owner then said "just leave the branches alone. Just put a
+  note to ignore them in the future"; the deletion had been refused by the auto-mode classifier and the proxy, so
+  none was deleted, and `CLAUDE.md` ("Pushing") now says to ignore every remote branch other than `main`
+  (`2a063c2`). **Still open:** Zou et al. 2025, AAPS Journal 27(2):52, doi:10.1208/s12248-025-01035-8 (PMID
+  40021548), with its correction doi:10.1208/s12248-026-01256-5 (PMID 42209871), is not open access, is a different
+  paper from the Zou et al. 2025 of *J Chem Inf Model* (PMID 40340403) that `docs/brain_exposure_data_feasibility.md`
+  cites, and has not been read, so no value from it is recorded and whether it bears on the occupancy anchor (target
+  coverage against Kp,uu) is undecided; the class of `docs/job_harness.md` (living or record); the figure PNGs, which
+  need the v5 graph to redraw; the points (a) to (d) of row 9.88; and five living documents (`CLAUDE.md`, `README.md`,
+  `docs/documentation_process.md`, `docs/experiment_design.md`, `docs/research_summary.md`) that show as due again
+  after each commit that changes the register, because they name the register or the status page. The full suite
+  passed before each push (1479 passed, 28 skipped at `d95eff9`). The session ran on Claude Opus 5.5 and was
+  switched to Claude Sonnet 5.5 on 27 October.
