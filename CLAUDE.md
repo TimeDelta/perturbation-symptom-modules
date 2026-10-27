@@ -104,6 +104,18 @@ against them before it is acted on.
   rule and `experiments/read_public_page.py`, and a check that the visitor is human or a login stays a refusal. The
   first case is the Siletti et al. 2023 cluster aggregate: the authors' README links it at a Dropbox address under
   `/scl/`, which Dropbox's robots file disallows for every reader (read 26 October 2026).
+- **A paper with no peer review is excluded; a recent one is kept and marked for follow-up** (the owner, 27 October
+  2026: "No peer review means toss the paper unless it's recent then just mark it for follow up"). **Excluded means
+  what decision 9.100 did to the Fagerholm preprint, not deleted**: the citation stays where it is, marked excluded
+  with the date and the reason, nothing is asserted from it, and a document that cited it keeps its text with a dated
+  addition. **A recent preprint is kept** and cited only with "not peer reviewed" beside it, carrying a follow-up note
+  in `docs/references.bib` that gives its posting date and the check to repeat; a session that finds a peer-reviewed
+  version replaces the citation and strikes the note. **What counts as recent is the owner's and is not yet set**: a
+  session proposed 18 months from the posting date on 27 October 2026, against the Fagerholm preprint's four years at
+  version 1, which is plainly not recent. Until they set a number, a preprint older than that proposal is reported to
+  them with its posting date rather than excluded on a session's own threshold. A conference paper with
+  programme-committee review is peer reviewed, whatever identifier it is cited by, so an arXiv number is not itself
+  evidence that a paper failed this test.
 
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.
