@@ -110,10 +110,11 @@ against them before it is acted on.
   with the date and the reason, nothing is asserted from it, and a document that cited it keeps its text with a dated
   addition. **A recent preprint is kept** and cited only with "not peer reviewed" beside it, carrying a follow-up note
   in `docs/references.bib` that gives its posting date and the check to repeat; a session that finds a peer-reviewed
-  version replaces the citation and strikes the note. **What counts as recent is the owner's and is not yet set**: a
-  session proposed 18 months from the posting date on 27 October 2026, against the Fagerholm preprint's four years at
-  version 1, which is plainly not recent. Until they set a number, a preprint older than that proposal is reported to
-  them with its posting date rather than excluded on a session's own threshold. A conference paper with
+  version replaces the citation and strikes the note. **Recent is 18 months from the posting date** (the owner, 27
+  October 2026: "Eighteen months is good", on that proposal, made against the Fagerholm preprint's four years at
+  version 1). So a preprint posted more than 18 months ago is excluded as above, and one posted within 18 months is
+  cited with "not peer reviewed" beside it and the follow-up note; the note's recheck falls due at 18 months from the
+  posting date, when the preprint is excluded unless a peer-reviewed version has appeared. A conference paper with
   programme-committee review is peer reviewed, whatever identifier it is cited by, so an arXiv number is not itself
   evidence that a paper failed this test.
 
