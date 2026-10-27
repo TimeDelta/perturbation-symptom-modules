@@ -4,7 +4,8 @@ Ideas parked for later so they stop taking up working memory. Nothing here is re
 confirmatory analysis, and nothing here is started. An item names what it would change, what it would cost and the
 limits that must not be overstated when it is written up.
 
-This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`,
+This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
+(**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
 were tagged; items 5 and 6 are new, both added on 26 October 2026, and items 7 and 8 were added on 27 October 2026.
 

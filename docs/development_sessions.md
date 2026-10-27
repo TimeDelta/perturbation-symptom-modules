@@ -597,7 +597,7 @@ transcript address, then the dates of the session, then its summary.
   could supply an edge prior on the data layer. The measurement that decides it has not been run: a count of
   kinase-to-substrate edges whose substrate has both site types annotated for that kinase, then how many of those
   touch perturbed genes or lie on paths to labelled symptoms. **Correction:** the question had already been answered
-  and queued. Item 4 of `claude/exploration_queue.md` (tagged 26 October 2026, written on Opus by another session)
+  and queued. Item 4 of `claude/exploration_queue.md` (tagged 26 October 2026, written on Opus by another session; **that Project note was deleted on 27 October 2026** under the owner's ruling that the repository is the single source of truth, its content having moved to `docs/exploration_queue.md`, where this is item 4)
   held the same reasoning, and the file was in this session's context from the start. The session did not check the
   queue, derived the answer again and offered to file it as item 4, which repeats the kind of re-derivation the
   project notes exist to prevent. It then wrote an updated Project copy of the queue from a read that carried no
