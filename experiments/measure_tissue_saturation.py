@@ -21,8 +21,10 @@ Propagation. The recurrence is the linear-response encoder's, h(t+1) = (1 - damp
 with the registered damping of 0.5, but every relation's gain is 1 and the adjacency is the mean over incoming
 edges. This is a structural measurement of where a perturbation goes, not a model: the gains are learned and no
 model has been trained on this table, so reading peak steps off untrained gains would measure the initialisation.
-The script runs past the 8 steps the encoder then ran on purpose, because 13.8 recorded that the propagation was cut
-off before it settles and a peak can only be seen if the window reaches it.
+The script runs past the 8 steps every run before 12 October 2026 ran on purpose, because 13.8 recorded that the
+propagation was cut off before it settles and a peak can only be seen if the window reaches it. Since 02cc15b (12
+October 2026) the registered encoder iterates to a fixed point (tolerance 1e-3, at most 60 steps), so the 8-step
+readings this script prints are a comparison with the earlier window and not a statement about the registered encoder.
 
 Nothing here changes a label, a graph, a model or a model input; it writes a document and a table of curves.
 
@@ -46,7 +48,11 @@ GTEX_MEDIAN_TPM = Path("data/raw/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_media
 OUTPUT_DOCUMENT = Path("docs/tissue_saturation.md")
 OUTPUT_CURVES = Path("data/processed/tissue_saturation/curves.csv")
 RULE_TOKEN = re.compile(r"[A-Za-z0-9_.-]+")
-REGISTERED_STEPS = 8  # the linear-response encoder's num_propagation_steps
+# History: every run before 12 October 2026 propagated a fixed 8 steps. Since commit 02cc15b the registered encoder
+# iterates to DEFAULT_FIXED_POINT_TOLERANCE (1e-3) within DEFAULT_MAX_PROPAGATION_STEPS (60), both in
+# mechanistic_pathway_learning/models/linear_response_encoder.py, so the 8-step readings below are a comparison with
+# that earlier window, not with the registered encoder.
+STEPS_BEFORE_FIXED_POINT = 8
 REGISTERED_DAMPING = 0.5
 REGISTERED_CONTRACTION = 0.9  # the encoder bounds every relation gain by this, which is what makes the iteration converge
 
@@ -136,7 +142,7 @@ def main() -> None:
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph_full_neuronal_split_binders"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v4"))
     parser.add_argument("--perturbation-type", default="drug", choices=("drug", "gene", "both"))
-    parser.add_argument("--steps", type=int, default=24, help="propagation steps; the registered encoder runs 8")
+    parser.add_argument("--steps", type=int, default=24, help="propagation steps; every run before 12 October 2026 ran 8, the registered encoder iterates to a fixed point")
     parser.add_argument("--damping", type=float, default=REGISTERED_DAMPING)
     parser.add_argument("--contraction", type=float, default=REGISTERED_CONTRACTION,
                         help="the gain given to every relation; the encoder bounds its learned gains by this")
@@ -216,7 +222,7 @@ def main() -> None:
         print(f"  peak step per tissue: min {peak_step.min()}, median {int(np.median(peak_step))}, max {peak_step.max()}; "
               f"distinct peak steps {len(set(peak_step.tolist()))}")
         print(f"  tissues still rising at the last step computed ({arguments.steps}): {int((peak_step >= arguments.steps).sum())}")
-        print(f"  tissues peaking at or before the registered {REGISTERED_STEPS} steps: {int((peak_step <= REGISTERED_STEPS).sum())}")
+        print(f"  tissues peaking at or before the {STEPS_BEFORE_FIXED_POINT} steps every run before 12 October 2026 ran: {int((peak_step <= STEPS_BEFORE_FIXED_POINT).sum())}")
         print(f"  median pairwise correlation between the normalised curves: {np.median(off_diagonal):.3f}")
         order = np.argsort(peak_step)
         print("    earliest five: " + ", ".join(f"{tissues[index]} (step {peak_step[index]})" for index in order[:5]))
@@ -227,8 +233,8 @@ def main() -> None:
     # step, so every tissue peaks at step 0 and that reading says nothing. The increment is the quantity that has a
     # peak under the dynamics the study actually uses.
     settled = sustained_curves[-1]
-    filled_at_registered = sustained_curves[REGISTERED_STEPS] / np.maximum(settled, 1e-12)
-    print(f"\nshare of the settled level reached by the registered {REGISTERED_STEPS} steps: "
+    filled_at_registered = sustained_curves[STEPS_BEFORE_FIXED_POINT] / np.maximum(settled, 1e-12)
+    print(f"\nshare of the settled level reached by the {STEPS_BEFORE_FIXED_POINT} steps every run before 12 October 2026 ran: "
           f"median {np.median(filled_at_registered):.3f}, min {filled_at_registered.min():.3f} "
           f"({tissues[int(filled_at_registered.argmin())]}), max {filled_at_registered.max():.3f}")
 
@@ -248,7 +254,9 @@ def main() -> None:
              f"Graph `{arguments.graph_dir}`, {len(nodes)} nodes. Perturbations: {sustained.shape[1]} "
              f"({arguments.perturbation_type}) from `{arguments.evidence_dir}`. "
              f"{arguments.steps} propagation steps at damping {arguments.damping} with every relation gain at "
-             f"{arguments.contraction}, the encoder's contraction bound; the registered encoder runs {REGISTERED_STEPS} steps.",
+             f"{arguments.contraction}, the encoder's contraction bound. Every run before 12 October 2026 ran {STEPS_BEFORE_FIXED_POINT} steps; "
+             "since commit 02cc15b the registered encoder iterates to a fixed point (tolerance 1e-3, at most 60 steps), so the "
+             f"{STEPS_BEFORE_FIXED_POINT}-step readings below compare with that earlier window.",
              "A structural measurement: every relation's gain is 1, because the gains are learned and no model has "
              "been trained on this table. Nothing here changes a label, a graph or a model input.", "",
              "## What carries a tissue weight", "", "| route | nodes |", "| --- | --- |"]
@@ -262,13 +270,13 @@ def main() -> None:
               f"`{arguments.curves}` for anyone who wants them.", "",
               f"- peak step: min {peak_step.min()}, median {int(np.median(peak_step))}, max {peak_step.max()}, "
               f"over {len(set(peak_step.tolist()))} distinct steps",
-              f"- **tissues that fill fastest within the registered {REGISTERED_STEPS} steps: "
-              f"{int((peak_step <= REGISTERED_STEPS).sum())} of {len(tissues)}**, so "
-              f"{int((peak_step > REGISTERED_STEPS).sum())} are cut off before their fastest step",
+              f"- **tissues that fill fastest within the {STEPS_BEFORE_FIXED_POINT} steps every run before 12 October 2026 ran: "
+              f"{int((peak_step <= STEPS_BEFORE_FIXED_POINT).sum())} of {len(tissues)}**, so "
+              f"{int((peak_step > STEPS_BEFORE_FIXED_POINT).sum())} would have been cut off before their fastest step by that window",
               f"- median pairwise correlation between the normalised curves: {np.median(off_diagonal):.3f} "
               f"(quartiles {np.percentile(off_diagonal, 25):.3f} and {np.percentile(off_diagonal, 75):.3f}), so the "
               "curves separate rather than tracking one another",
-              f"- share of the settled level reached by step {REGISTERED_STEPS}: median "
+              f"- share of the settled level reached by step {STEPS_BEFORE_FIXED_POINT}: median "
               f"{np.median(filled_at_registered):.3f}, lowest {filled_at_registered.min():.3f} "
               f"({tissues[int(filled_at_registered.argmin())]})", "",
               "| tissue | step of fastest filling | increment at that step |", "| --- | --- | --- |"]

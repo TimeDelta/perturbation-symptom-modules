@@ -29,11 +29,25 @@ every node, the net direction at every both-produced-and-consumed metabolite is 
 the model cannot raise one metabolite and lower another from the same relation pair
 (`docs/membrane_potential_reach.md`).
 
+**Added 27 October 2026.** The 7,811 of 21,337 count is finding 11 of `docs/research_summary.md`, measured on 7 October
+2026 on the metabolic slice (`data/processed/graph`), not on the v4 enzymes build this review's other counts use. The
+owner ruled on 27 October 2026 that "ANY numbers from that time are to have the same treatment" as the two readout
+records retired that day: not evidence going forward. The count is history; the arithmetic (an in-degree mean of
++1 and -1 at equal gains is zero, whatever the counts) is a property of the `in_degree` normalisation and stands.
+The share of the current graph it touches has not been counted.
+
 **The price of the propagation law as a whole, and the most important number in this review.** Untrained, over
 1,067 signed gene-metabolite pairs from HPO laboratory abnormalities, the linear response predicts the **direction**
 of measured metabolite change **worse than always guessing "increased"**: sign agreement 0.615 at best against
 0.806 for the majority direction, AUROC 0.574 (`docs/linear_response_sign_check.md`). Nothing yet separates "the
 law is linear" from "the aggregation cancels" as the cause, and that separation is worth having.
+
+**Added 27 October 2026.** This is finding 10 of `docs/research_summary.md`: the 7 October 2026 sign check on 265 slice
+genes, under the fixed 8-step propagation of that time, by a script no test covers (decision 9.103). The owner ruled on
+27 October 2026 that it, with every other number of that period, is not evidence going forward ("ANY numbers from that
+time are to have the same treatment"). "The most important number in this review" is therefore a number of history;
+the question it asked, whether the untrained direction beats the majority, is unmeasured on the current graph and the
+registered encoder, and `experiments/check_linear_response_signs.py` as pinned on 13 October 2026 cannot measure it.
 
 **Stoichiometric coefficients proper are the smaller half of this.** The build reads each Human-GEM coefficient only
 for its sign and writes every edge at 1.0. Of 6,172 metabolites both produced and consumed, the production and
@@ -54,7 +68,9 @@ zero.
 **Cost, measured here for the first time.** **15,867 metabolite-reaction pairs are both substrate and product of
 the same reaction, over 5,729 distinct metabolites and 5,725 reactions.** Every one contributes an exactly
 cancelling pair under the in-degree mean. This is a large and previously unnamed share of the 7,811 exact
-cancellations in section 1, and its own consequence is sharper: **no perturbation can drive a reversible reaction
+cancellations in section 1 (added 27 October 2026: the 7,811 is the retired slice count of section 1's dated note;
+the 15,867 is this review's own count on the v4 enzymes build of 13 October 2026 and stands with its graph), and its
+own consequence is sharper: **no perturbation can drive a reversible reaction
 one way rather than the other.** Roughly two fifths of the reaction set is reversible, so this is not a corner.
 
 **How much of the graph is mute because of it.** The **median affected metabolite has 67 percent of its incoming
@@ -369,6 +385,10 @@ reaction counts (section 1), cancels reversible reactions (2), dilutes the proto
 membrane potential to the pool's in-degree (7). The study's one external check of the propagation - direction
 agreement 0.615 against a 0.806 majority baseline - is a check of that choice more than of anything else, and it
 fails it. That is the deviation to measure next, and it is more consequential than any individual item below it.
+
+**Added 27 October 2026.** "It fails it" rests on finding 10, which the owner retired as evidence on 27 October 2026
+(section 1's dated note). The pattern named here, that the costed deviations are one deviation, is an argument about
+the normalisation and stands; that the check "fails" is unmeasured on the current graph.
 
 **What is well handled.** The currency rule, the two-pool diagnosis, the complex conjunction semantics, the
 competition survey and the partial-agonism sign are all documented with counts and with the objection stated

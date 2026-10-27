@@ -61,14 +61,18 @@ unsigned random walk extracted and the signed mechanistic encoders had not been 
 that predates the decisions of 13 October and later that changed the graph and the propagation, and are not evidence
 about the current encoders. The appraisal below stands as written on 7 October; what it bears on is that dated
 result, not the current model. The appraisal chain ended that day when its cap was spent (slot log below); Q1 is open
-in the strict form stated under "State of Q1 when the cap was spent".
+in the strict form stated under "State of Q1 when the cap was spent". Added 27 October 2026: the owner extended the
+9.82 treatment to every number of that period ("ANY numbers from that time are to have the same treatment"), so the
+slice counts quoted under Q2 and in the precision notes below (7,811 of 21,337; 0.615 against 0.806) are history as
+well, named here with their graph and date and not evidence about the current graph.
 
 - **Q1.** Has signed or relation-typed propagation on a biological network been shown to
   beat unsigned diffusion for predicting a phenotype or a clinical label?
 - **Q2.** Where edge signs are reported to help, what fraction of nodes receive messages of
   both signs? (Our graph, measured 7 October 2026 on the metabolic slice graph `data/processed/graph`: 7,811 of 21,337
   destinations, 36.6%, and all of them annihilate under the encoder's cross-relation mean;
-  `docs/graph_content_null_results.md` and `docs/membrane_potential_reach.md`.)
+  `docs/graph_content_null_results.md` and `docs/membrane_potential_reach.md`. Added 27 October 2026: a slice-period
+  count retired as evidence by the owner's ruling of that day; the share on the current graph is uncounted.)
 - **Q3.** Is noisy-OR pooling over pathway modules reported against a linear or sum-pooled
   alternative anywhere, with a held-out comparison?
 
@@ -932,7 +936,9 @@ That is a published precedent for the design question raised on 7 October, what 
 incoming signs conflict. A held-out pair is scored as predicted only when all of its explanatory paths agree
 (relayed in paraphrase, not as a quote), and the rest are reported as undecided instead of being resolved toward one
 sign. On the mating subnetwork that withholds 1 to 2.7% of pairs. On our metabolic graph the same rule would
-withhold a prediction at the 36.6% of destinations that receive both signs. The precedent supports reporting
+withhold a prediction at the 36.6% of destinations that receive both signs (added 27 October 2026: the 7 October 2026
+slice count, retired as evidence by the owner's ruling of that day; the share on the current graph is uncounted). The
+precedent supports reporting
 coverage beside accuracy; it does not show that abstaining is affordable here. The low undecided rate also fits the
 earlier pattern, signed methods developed where sign conflicts are rare, though the paper as read reports no
 balance or frustration measure.
@@ -987,7 +993,9 @@ ranking, and the abstract reports neither against a sign-blind model. Its headli
 majority-direction rate beside them before they can be credited. Our sign check on the HPO laboratory labels
 (docs/linear_response_sign_check.md, generated 7 October 2026 on the slice graph of that day) has the majority
 direction at 0.806, above the untrained signed response at 0.615 (the "plain, 8 steps, pool" reading), so an accuracy
-near 80 percent is uninformative until the base rate is known. The paper is the best support so
+near 80 percent is uninformative until the base rate is known (added 27 October 2026: those two numbers are finding 10,
+retired as evidence by the owner's ruling of that day and decision 9.103; the point that a base rate is needed does
+not depend on their values). The paper is the best support so
 far for the premise behind the linear-response encoder, that topology without kinetics carries the sign of a
 perturbation's effect, and no support yet for the claim that this sign improves a phenotype prediction.
 

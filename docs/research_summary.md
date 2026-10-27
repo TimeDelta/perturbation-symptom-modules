@@ -8,6 +8,23 @@ Every slice result below is from a pilot: the monogenic slice has the metabolic 
 expression, and it decides nothing about which components are kept (amendment of 7 October in docs/preregistration.md).
 The confirmatory test is the full graph with every layer.
 
+**Status of the numbers below (the owner, 27 October 2026, 14:13): "ANY numbers from that time are to have the same
+treatment".** The treatment is the one `docs/steady_state_readout_alternatives.md` and
+`docs/fixed_point_against_pharmacological_steady_state.md` received the same day: not evidence going forward, because
+"they aren't even well controlled measurements that were ensured to be on bug-free code, etc." (the owner, 27 October
+2026). "That time" is read, pending the owner's correction, as the slice-pilot period: every measurement taken on a
+graph earlier than the v4 build (`graph_full_neuronal_split_binders_drugs_v4`, 49,796 nodes, 13 October 2026) or
+under the propagation in force before the fixed-point defaults of 12 October 2026 (`02cc15b`), which is the class
+decision 9.82 retired for the random-walk comparison. Under that reading **every one of findings 1 to 16 in section 3
+is history and not evidence about the current graph or encoders**: each was measured between 3 and 8 October 2026 on
+the metabolic slice (`data/processed/graph`, 24,185 nodes and 94,786 edges in release v0.4) or on the v0.4 full graph
+(`graph_full`, 33,964 nodes and 255,367 edges), and the propagation measurements among them ran the fixed 8-step
+encoder of that time. The rows are kept as written, with the graph and date each carries added in the list "Numbers
+retired on 27 October 2026" below section 3; the sentences in sections 2 and 5 that read a finding as a current fact
+carry a dated note. Decisions 9.103 (closed 27 October 2026) and 9.104 (open) in `docs/open_decisions.md` hold the
+ruling, the reading and what the ruling does not settle: the derivations in the two records, the arithmetic behind
+finding 11 and the registered rules that cite a retired number.
+
 ## 1. The question in one paragraph
 
 Inborn errors of metabolism and psychoactive drugs both perturb known molecular pathways and both produce psychiatric
@@ -23,7 +40,8 @@ pre-registration skeleton: docs/preregistration.md.
 ### Aim 1. A leakage-controlled benchmark for predicting psychiatric symptoms from gene and drug perturbations
 
 Status: mostly done. The full-data rewiring control has to be repeated at the mixing strength the slice showed is
-needed (findings 2 and 8).
+needed (findings 2 and 8). Added 27 October 2026: findings 2 and 8 are slice-period numbers retired as evidence by the
+owner's ruling of that day (status paragraph above); the rerun is on the current graph, with no number to beat.
 
 - Labels: monogenic gene-symptom pairs from HPO with provenance-based grades and a reliability model; drug-symptom
   pairs from SIDER 4.1 and OnSIDES labels. The drug admission rule in release v0.4 was a single mechanism target and
@@ -39,7 +57,9 @@ needed (findings 2 and 8).
 - The disease-cluster grouping blocks leakage inside a disease but not across diseases that share a pathway or a
   complex. Measured on the slice (finding 12): the split divides almost every pathway between training and test, and a
   held-out gene's symptoms resemble those of its same-pathway training genes more than its baseline, while complex
-  partners carry no such excess. Whether that is leakage depends on the claim: a new gene in a pathway with known
+  partners carry no such excess (added 27 October 2026: finding 12 is a 7 October 2026 count on the slice,
+  `data/processed/graph`, retired as evidence by the ruling of 27 October 2026 and kept here as history; the argument
+  about what the split can and cannot show stands as an argument). Whether that is leakage depends on the claim: a new gene in a pathway with known
   members is the realistic use, but a claim about learning mechanism needs the subsystem hold-out (finding 3) or a
   pathway-grouped split. Reported separately (finding 13), the trained models trail the random walk only on genes
   whose pathway is split, and tie it on the rest.
@@ -72,10 +92,17 @@ for the owner's go-ahead (decision 1.1) and the v4 rebuild and redraw (decision 
   Ruled 21 October 2026 (decision 9.82): findings 5, 13 and 14 are the record of the slice pilot on the graph and
   propagation of 6 to 8 October, before the changes of 13 October and later, and are not evidence about the current
   graph or encoders (the owner: "it's on like v.1 or v.2 graph when it barely matched the physiology").
+  Added 27 October 2026: the owner extended that treatment to every number of the slice-pilot period ("ANY numbers
+  from that time are to have the same treatment"), so the slice result and finding 6 below are history too.
 - Module diagnosis: done (finding 6). The modules were unused because training stopped while the gates were still
   shrinking. With their own learning rate they carry links, but no module passes the sufficiency test yet.
 - Open question: the graph carries signal the random walk reads (finding 8), so the question is why a signed,
   relation-typed propagation extracts no more of it than unsigned diffusion. Finding 11 is a candidate cause.
+  Added 27 October 2026: this question was posed on slice-pilot numbers (findings 8 and 11, 7 and 8 October 2026,
+  `data/processed/graph`) that the owner's ruling of 27 October 2026 retires as evidence; whether the current graph
+  carries signal the registered encoder misses is unmeasured. The arithmetic behind finding 11 (an in-degree mean
+  cancels production against consumption at equal gains) is a property of the `in_degree` normalisation and stands as
+  arithmetic; `total_in_degree` and `forward_cone` were registered on it (amendment item 28, decision 9.16).
 
 ### Aim 3 (conditional on Aim 2)
 
@@ -85,6 +112,10 @@ for the owner's go-ahead (decision 1.1) and the v4 rebuild and redraw (decision 
   lacks, first as the flux-feature logistic regression baseline (B4), then a revised architecture.
 
 ## 3. Results so far
+
+Added 27 October 2026: every row of this table is a measurement of 3 to 8 October 2026 on the slice or the v0.4 full
+graph and is history under the owner's ruling of 27 October 2026 (status paragraph at the top); the graph and date of
+each row are in the list "Numbers retired on 27 October 2026" below. No row is edited or renumbered.
 
 | # | Finding | Numbers | Source (date read) |
 |---|---|---|---|
@@ -133,6 +164,53 @@ Superseded numbers to avoid:
   the protein descriptors is withdrawn for the same reason and for the 20 comparisons.
 - "Rewiring leaves the slice score unchanged" came from the 2-swaps-per-edge control and is withdrawn (row 8).
 
+Numbers retired on 27 October 2026 (the owner, 14:13: "ANY numbers from that time are to have the same treatment";
+the treatment is that of the two readout records, not evidence going forward, "they aren't even well controlled
+measurements that were ensured to be on bug-free code, etc."). Each row of section 3 stays as written; this list
+gives the graph and date each was measured on, read from the generated document's own header and its git history, so
+that CLAUDE.md "A measurement carries the graph it was taken on" holds for it. "Slice" is `data/processed/graph`, the
+metabolic slice (24,185 nodes and 94,786 edges in release v0.4, 451 genes); "v0.4 full" is that release's `graph_full`
+(33,964 nodes and 255,367 edges, 1,417 perturbations). Every propagation measurement among them ran the fixed-step
+encoder of before 12 October 2026 (`02cc15b` made the fixed point the default). None was taken on the current graph.
+
+- Finding 1: slice (`docs/phase2_baselines_disease_cluster.md`, 3 October 2026) and v0.4 full
+  (`docs/phase2_baselines_full_gene.md`, `docs/phase2_baselines_full_disease_cluster.md`, 5 to 6 October 2026).
+- Finding 2: v0.4 full, 6 October 2026 (the 2-swaps-per-edge control), and the slice reading of 7 October 2026.
+- Finding 3: v0.4 full and slice, 6 October 2026 (`docs/phase2_baselines_full_disease_cluster.md`).
+- Finding 4: v0.4 full, 6 October 2026 (`docs/phase2_baselines_full_disease_cluster.md`, time split); the random
+  walk, not an encoder. Its graph is named by neither document; the release is inferred from the perturbation count.
+- Finding 5: slice, 6 to 8 October 2026 (`docs/phase3_main_model.md`); already history under decision 9.82.
+- Finding 6: slice, 6 to 7 October 2026 (`docs/b6_module_diagnosis.md`; the module tables were regenerated 9 October
+  2026 from the same runs).
+- Finding 7: a count over Human-GEM 2.0.1 gene-reaction rules on the slice's 451 genes and the v0.4 full table's
+  1,282 genes and 142 drugs, 6 October 2026, in no generated document; a coverage count, not a propagation
+  measurement, retired with the rest under the reading above and named here so the owner can keep it if they wish.
+- Finding 8: slice, 7 October 2026 (`docs/rewiring_null_distribution.md`, header "Graph data/processed/graph") and
+  8 October 2026 (`docs/rewiring_null_distribution_walk_graph.md`, same header).
+- Finding 9: slice, 7 to 8 October 2026 (`docs/twin_comparisons.md`, "Every two slice configurations";
+  `docs/neuronal_variant_comparison.md`).
+- Finding 10: slice, 7 October 2026 (`docs/linear_response_sign_check.md`, "1124 label rows for 265 slice genes";
+  commits `e9aef4b` and `e780239`), by a script no test covers, pinned since 13 October 2026 (`9dacc78`) to the
+  regime it measured; verified at `ba1f051` in decision 9.103.
+- Finding 11: slice, 7 October 2026 (`docs/membrane_potential_reach.md`, "generated from the measurement in this
+  file's history, 7 October 2026"; `docs/graph_content_null_results.md`) and the twin arms of 8 October 2026
+  (`docs/twin_comparisons.md`). The count (7,811 of 21,337) is retired; the arithmetic it illustrates stands, see the
+  note under Aim 2.
+- Finding 12: slice, 7 October 2026 (`docs/fold_mechanism_sharing.md`, header "graph data/processed/graph").
+- Finding 13: slice, 7 October 2026 (`docs/score_by_pathway_split.md`); already history under decision 9.82.
+- Finding 14: slice, 7 October 2026 (`docs/score_by_module_coverage.md`); already history under decision 9.82.
+- Finding 15: slice, 7 October 2026 (`docs/directed_random_walk.md`, "451 perturbations, 5 disease-cluster folds")
+  and the sign ablation of 8 October 2026 (`docs/twin_comparisons.md`).
+- Finding 16: slice, 7 October 2026 (`docs/trained_diffusion_readout.md`, "451 perturbations, 5 disease-cluster
+  folds").
+
+Documents outside this table that state the same numbers carry a dated note of the same day:
+`docs/physiological_adherence_review.md` (sections 1 and 7), `docs/literature_appraisal_staging.md` (Q1 and the
+precision notes), `docs/preregistration.md` (the walk's rewiring correction of 8 October and item 28's cancellation
+count), `docs/experiment_design.md` (sections 5.2, 6.1 and 12), `docs/graph_content_null_results.md` and
+`docs/membrane_potential_reach.md` (status lines). The generated documents named above are not edited; they are the
+records of what they measured, with the dates git gives them (`docs/status.md`, "generated before the stamp existed").
+
 ## 4. Figures
 
 | Figure | Content | Status |
@@ -148,6 +226,9 @@ Superseded numbers to avoid:
 
 This table is the plan for the write-up and its statuses were read on 7 October 2026, on the slice pilot. The figures
 that exist, with what each shows and the graph it was drawn on, are in docs/figures.md (`docs/figures/`).
+Added 27 October 2026: every "ready" status above names a slice-period number (findings 1, 4, 5, 6, 8 and 10), which
+the owner's ruling of 27 October 2026 retires as evidence; a figure of it is a figure of history and is labelled so
+(docs/figures.md already marks figures 5 and 6 this way). The write-up's figures are drawn on the current graph.
 
 ## 5. Likely objections and current answers
 
@@ -159,12 +240,17 @@ that exist, with what each shows and the graph it was drawn on, are in docs/figu
 | Why noisy-OR? | it encodes equifinality without interaction terms (design 5.3) |
 | Why not flux balance analysis? | the brain has no defensible single objective; sampling is the planned route, with the coverage limits of finding 7 |
 | Why these symptoms and not diagnoses? | assumption A7 and the symptom crosswalk (docs/symptom_crosswalk.csv) |
-| Why does degree explain so much? | hub structure in the graph and in the labels (design assumption A9); on the slice the wiring adds signal beyond degree (finding 8), and the full-data control needs rerunning (finding 2) |
-| Why were the modules unused, and are they used now? | the gates were still shrinking when early stopping ended training; a separate gate learning rate fixes that, and the modules now carry links but none passes the sufficiency test (finding 6) |
-| The graph carries signal, so why does the mechanistic encoder not beat diffusion? | a question of the slice pilot of 6 to 8 October 2026, which decision 9.82 rules is not evidence about the current graph or encoders; on the slice, finding 11 was the candidate cause, tested by the spectral normalisation, total-in-degree and sign-ablation arms (findings 11 and 15). The literature search has not yet found a published case of signed propagation on a mechanistic network beating unsigned diffusion for a phenotype (docs/literature_appraisal_staging.md, question Q1) |
-| Does the graph give the right direction of change? | untrained, no better than the majority direction (finding 10) |
+| Why does degree explain so much? | hub structure in the graph and in the labels (design assumption A9); on the slice the wiring adds signal beyond degree (finding 8), and the full-data control needs rerunning (finding 2). Added 27 October 2026: findings 8 and 2 are slice-period numbers retired as evidence by the owner's ruling of that day; the answer on the current graph is unmeasured |
+| Why were the modules unused, and are they used now? | the gates were still shrinking when early stopping ended training; a separate gate learning rate fixes that, and the modules now carry links but none passes the sufficiency test (finding 6). Added 27 October 2026: finding 6 is a slice-period measurement retired as evidence by the ruling of that day; `--gate-learning-rate` stays as built, and whether the modules pass on the current graph is unmeasured |
+| The graph carries signal, so why does the mechanistic encoder not beat diffusion? | a question of the slice pilot of 6 to 8 October 2026, which decision 9.82 rules is not evidence about the current graph or encoders (and, since the owner's ruling of 27 October 2026, so are findings 8, 11 and 15 themselves); on the slice, finding 11 was the candidate cause, tested by the spectral normalisation, total-in-degree and sign-ablation arms (findings 11 and 15). The literature search has not yet found a published case of signed propagation on a mechanistic network beating unsigned diffusion for a phenotype (docs/literature_appraisal_staging.md, question Q1) |
+| Does the graph give the right direction of change? | untrained, no better than the majority direction (finding 10). Added 27 October 2026: finding 10 is the 7 October 2026 slice sign check, retired as evidence by the owner's ruling of that day (decision 9.103); on the current graph the question is unmeasured, and `experiments/check_linear_response_signs.py` as pinned cannot measure the registered encoder |
 
 ## 6. Decisions and provenance
+
+Added 27 October 2026: the rows dated before 13 October 2026 quote numbers measured on the slice or on the v0.4 and
+pre-v4 graphs under the fixed-step propagation of that time. They stay as the record of why each decision was taken
+then; under the owner's ruling of 27 October 2026 (status paragraph at the top) none of those numbers is evidence
+about the current graph or encoders.
 
 | Date | Decision | Reason |
 |---|---|---|

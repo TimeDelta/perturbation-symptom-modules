@@ -564,6 +564,11 @@ day). Each is a defect against text already in this specification, not a change 
   with the new one (docs/rewiring_null_distribution_walk_graph.md), the 20 rewirings give 0.264 ± 0.011 (best 0.285)
   against 0.293 on the real graph, again none as good (p = 0.048), so the reading stands. No confirmatory reading uses
   the walk's rewiring.
+  Added 27 October 2026: the numbers in this bullet (0.264, 0.285, 0.293, p = 0.048) are finding 8 of
+  `docs/research_summary.md`, measured on 7 and 8 October 2026 on the metabolic slice `data/processed/graph`. The owner
+  ruled on 27 October 2026 that every number of that period is not evidence going forward ("ANY numbers from that time
+  are to have the same treatment"). The correction of the null itself (`--rewiring-method walk_graph`) is a code fix
+  and stands; "the reading stands" is history. Not a registered-rules change, so no `Amends:` trailer.
 - The grade-shuffle and peripheral-event controls the skeleton lists under negative controls (design section 6.3)
   were never implemented and are not run; the confirmatory test has the two controls of its specification (permuted
   labels, a secondary reading, and the rewired graph of H2). The peripheral-event control needs adverse events without
@@ -2170,6 +2175,14 @@ feeding it, so five producing reactions against one consuming reaction become on
 exactly zero. That is why **7,811 of the 21,337 destinations with any input have an aggregate row sum of zero and
 every one is a metabolite**, 92.3 percent of them, and why the direction at a both-produced-and-consumed metabolite
 is fixed by the one gain ratio every metabolite shares rather than by its own stoichiometry.
+
+Added 27 October 2026: the 7,811 of 21,337 count is finding 11 of `docs/research_summary.md`, measured on 7 October
+2026 on the metabolic slice `data/processed/graph`, and the owner's ruling of that day ("ANY numbers from that time
+are to have the same treatment") retires it as evidence. The arithmetic this paragraph states (5/10 - 1/2 = 0 under
+`in_degree`; (5 - 1)/6 under `total_in_degree`) does not depend on the count and stands. The registered value
+(`normalisation`, item 28, narrowed by decision 9.16) is not changed by this note; whether the owner wants the count
+remeasured on the current graph before the registration is relied on is decision 9.104. Not a registered-rules change,
+so no `Amends:` trailer.
 
 `total_in_degree` divides by the destination's in-degree **summed over every relation**. The unsigned row sums are
 one exactly as before, so the contraction is unchanged and there is no global shrink, while the same node gives

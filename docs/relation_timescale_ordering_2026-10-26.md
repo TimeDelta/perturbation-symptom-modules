@@ -407,3 +407,15 @@ the abstract, so [15] of 1.2 stands as the lipid citation.
 Pages saved by `experiments/read_public_page.py` this session: one attempt at
 https://pubmed.ncbi.nlm.nih.gov/21506553/ (HTTP 203 through the proxy, not read), record in the session scratchpad
 directory, not in the repository.
+
+**Added 27 October 2026 (a dated addition to this append-only record).** On 27 October 2026 the owner retired the two
+readout records this one builds on (`docs/fixed_point_against_pharmacological_steady_state.md`,
+`docs/steady_state_readout_alternatives.md`) as evidence, and then ruled that "ANY numbers from that time are to have
+the same treatment", meaning the slice-pilot measurements of 3 to 8 October 2026 (findings 1 to 16 of
+`docs/research_summary.md`; decisions 9.103 and 9.104). Checked against this record on that day: it cites none of
+those numbers. Its one slice-derived figure, "GCH1 and 13 other slice genes" (section on the carrier treatment), is a
+count of genes in the slice's label table, not a measurement of the pilot, and is kept with that description. What it
+does build on is the derivations of section 3.4 of the companion record (the Tikhonov partition, "Rates enter only
+through membership in F and S"), which the owner's words retire as numbers do not reach; whether the derivations are
+retired too is left to the owner in decision 9.104, and until it is answered this record is read as resting on an
+unretired derivation and on its own sourcing.

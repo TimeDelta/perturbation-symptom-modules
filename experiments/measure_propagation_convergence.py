@@ -1,5 +1,9 @@
 """How many propagation steps the linear response needs to settle, which is the number that would replace 8.
 
+History: written on 12 October 2026, when every run propagated a fixed 8 steps. The same day commit 02cc15b made the
+fixed point the registered default (DEFAULT_FIXED_POINT_TOLERANCE 1e-3 within DEFAULT_MAX_PROPAGATION_STEPS 60 in
+mechanistic_pathway_learning/models/linear_response_encoder.py), so "registered" below means that earlier window.
+
 The owner, 12 October 2026: "Don't make it a third encoder. Use the convergence instead of 8 steps. 8 steps is
 arbitrary, not physiological."
 
@@ -29,7 +33,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-REGISTERED_STEPS = 8
+STEPS_BEFORE_FIXED_POINT = 8  # what every run before 12 October 2026 did; see the history note in the docstring
 REGISTERED_DAMPING = 0.5
 REGISTERED_CONTRACTION = 0.9
 GAINS = (0.9, 0.7, 0.5, 0.3)
@@ -88,7 +92,7 @@ def main() -> None:
             for tolerance in TOLERANCES:
                 if tolerance not in steps_to and change < tolerance:
                     steps_to[tolerance] = step
-            if step == REGISTERED_STEPS:
+            if step == STEPS_BEFORE_FIXED_POINT:
                 reached_at_registered = state.copy()
             if len(steps_to) == len(TOLERANCES):
                 break
@@ -96,11 +100,11 @@ def main() -> None:
         share = (np.linalg.norm(reached_at_registered) / max(np.linalg.norm(settled), 1e-12)
                  if reached_at_registered is not None else float("nan"))
         summary[str(gain)] = {"steps_to_tolerance": {str(tolerance): steps_to.get(tolerance) for tolerance in TOLERANCES},
-                              "norm_at_registered_steps_over_settled": float(share)}
+                              "norm_at_8_steps_over_settled": float(share)}
         print(f"\ngain {gain}{' (the contraction bound)' if gain == REGISTERED_CONTRACTION else ''}:")
         for tolerance in TOLERANCES:
             print(f"  relative change below {tolerance:g} at step {steps_to.get(tolerance, f'>{arguments.maximum_steps}')}")
-        print(f"  the field at the registered {REGISTERED_STEPS} steps is {share:.3f} of the settled field by norm")
+        print(f"  the field at the {STEPS_BEFORE_FIXED_POINT} steps every run before 12 October 2026 ran is {share:.3f} of the settled field by norm")
 
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     arguments.output.write_text(json.dumps(summary, indent=1, sort_keys=True))

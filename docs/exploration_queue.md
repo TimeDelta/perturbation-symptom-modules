@@ -10,6 +10,17 @@ were tagged; items 5 and 6 are new, both added on 26 October 2026, and items 7 a
 
 Checked against `main` at `0b976bf` on 26 October 2026.
 
+Added 27 October 2026: the owner retired the two readout records (`docs/steady_state_readout_alternatives.md`,
+`docs/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
+to have the same treatment", the slice-pilot measurements of 3 to 8 October 2026 (decisions 9.103 and 9.104). Checked
+against every item on this page that day: items 4 and 6 build on those records' derivations (item 4 on section 1.2's
+state dependence, item 6 on section 3.4's Tikhonov partition), which the ruling's words, being about numbers, do not reach; whether
+they do is the owner's to say (9.104). One item cites a count on the v0.4 slice graph: item 6's "49 de novo edges
+against 1,030 redistribution edges on the v0.4 slice" (`docs/coproduct_of_de_novo_split_2026-10-26.md`), measured on
+26 October 2026, so outside the period by date and on an earlier graph; it is kept with its graph named, as CLAUDE.md
+"Modelling" requires, and the owner may extend the ruling to it. No item cites finding 10 or any other number of the
+retired table.
+
 ---
 
 ## 1. Sensitivity-matrix rank as a bound on multiverse degrees of freedom

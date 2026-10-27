@@ -1,5 +1,8 @@
 # On the slice the wiring carries signal, and the mechanistic encoders have not been shown to add to diffusion (7 October 2026)
 
+**Status, added 27 October 2026: history, not evidence.** Every number in this record was measured on the metabolic slice (`data/processed/graph`, 24,185 nodes and 94,786 edges in release v0.4) between 6 and 8 October 2026, under the fixed-step propagation in force before 12 October 2026. The owner ruled on 27 October 2026 that "ANY numbers from that time are to have the same treatment" as the two readout records retired that day: not evidence going forward, "they aren't even well controlled measurements that were ensured to be on bug-free code, etc." The text below is unchanged and is read as the record of what was measured then (decisions 9.82, 9.103 and 9.104 in `docs/open_decisions.md`; the inventory is in `docs/research_summary.md`, "Numbers retired on 27 October 2026").
+
+
 The monogenic slice is a pilot (amendment of 7 October in docs/preregistration.md): one layer, 451 genes, no brain
 expression. Nothing here decides whether a component of the model is kept; the full-graph test does.
 
