@@ -18,7 +18,20 @@ so a gene's own top class gets nearly 1 (TH in dopaminergic neurons: 388 / 389),
 about 0.02 (MBP in dopaminergic neurons, where its 112 nCPM is likely ambient RNA against 5,606 in oligodendrocytes), and
 a gene at a few nCPM everywhere stays below 1 everywhere (2 nCPM in every class gives 2 / 3). The relative form follows
 the specificity of a gene across classes rather than its absolute level, because pseudobulk single-nucleus profiles
-carry ambient RNA that gives most genes a few nCPM in every class.
+carry ambient RNA that gives most genes a few nCPM in every class. Ambient RNA in brain single-nucleus data is
+documented by Caglayan et al. 2022 ("pervasive neuronal ambient RNA contamination in all glial cell types unless glia
+and neurons are physically separated prior to sequencing"; doi:10.1016/j.neuron.2022.09.010) and its size by Janssen
+et al. 2023 ("on average 3-35% of the total counts (UMIs) per cell", mouse kidney; doi:10.1186/s13059-023-02978-x);
+both in docs/references.bib. In the HPA table, measured on 24 October 2026 by experiments/measure_ambient_rna_hpa.py,
+SNAP25 reads 43 to 118 nCPM in oligodendrocytes, astrocytes and microglia, and 62.9 percent of expressed genes are at
+1 nCPM or more in all 34 cluster types (which does not by itself separate ambient RNA from broad expression).
+
+A class's value for a gene is its largest nCPM over the class's cluster types (brain_expression_descriptors
+.hpa_cell_class_table), taken gene by gene. A ratio of two genes' class values can therefore pair different cluster
+types: the excitatory VAMP1 share reads 0.166 that way (VAMP1 from the lower rhombic lip, VAMP2 from thalamic
+neurons), against a median of 0.047 over the forebrain excitatory cluster types (decision 9.68). Complex gates are
+barely affected: the minimum over subunits of class maxima exceeds the maximum over cluster types of the minimum by
+more than 1.5 times in 0.4 percent of Human-GEM "and"-rule and class pairs (24 October 2026, on a scratch graph).
 
 Reactions take their class expression from the Human-GEM gene rule (minimum over "and", maximum over "or", as for the
 descriptors: brain_expression_descriptors.evaluate_gene_rule) on the raw nCPM, then the same relative weight. Nodes

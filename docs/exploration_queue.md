@@ -6,7 +6,7 @@ limits that must not be overstated when it is written up.
 
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`,
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026, and item 7 was added on 27 October 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, and items 7 and 8 were added on 27 October 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026.
 
@@ -317,3 +317,38 @@ registered-model matter.
 
 **Status.** Parked. Measure first, on the current graph: SLC9A6's and SLC9A9's edges out and reach, and whether a
 perturbation of either gets past its own protein.
+
+---
+
+## 8. A measured per-cell-type VAMP1 share
+
+Tagged 2026-10-27, from the review of decision 9.68 on 25 October 2026.
+
+**The idea.** VAMP1 joins VAMP2's 16 synaptic vesicle entities with one share, 0.145, the ratio of the two genes'
+mean GTEx brain median TPM (human, whole tissue). The physiology is cell-type dependent: in mouse, VAMP1 protein is
+in inhibitory and not excitatory terminals (`vuong2018rbfox1`), and the 16 entities are already split by transmitter,
+so a per-transmitter share could carry that. It is parked because no measured human per-cell-type share exists:
+HPA's nuclear per-cluster-type shares are nearly uniform (0.03 to 0.11), and human whole-cell in situ data put
+non-PV cortical neurons at about half the PV level of VAMP1 mRNA (`chung2024rbfox1`).
+
+**The cheapest checks.**
+- The Allen mouse cortex and hippocampus whole-cell 10x atlas (Yao et al. 2021): Vamp1 and Vamp2 by subclass
+  (Pvalb, Sst, Vip, Lamp5 against L2/3 IT, L5 IT, L6 CT). Set beside the HPA nuclear shares, it tests whether nuclear
+  data understate the interneuron share in the species the protein evidence comes from.
+- A human regional brain proteome (for example Carlyle et al. 2017): a VAMP1 to VAMP2 protein share for cortex,
+  which is the quantity the membership weight stands for.
+- The supplement of Siletti et al. 2023 (`siletti2023transcriptomic`), still unread: whether the HPA input was
+  corrected for ambient RNA.
+
+**Known limits (do not overstate these in writing).**
+- A knockdown effect size is not a share: the same VAMP1 knockdown lowered mIPSC and mEPSC frequency by about 50%
+  each (`vuong2018rbfox1`).
+- An mRNA share does not carry VAMP1's lower efficiency (`zimmermann2014synaptobrevin`).
+- The idea that cytoplasmic Rbfox1 makes nuclear RNA understate interneuron VAMP1 is a hypothesis, and its one
+  source (`lee2015cytoplasmic`) was read on Opus and is not yet rechecked on Fable.
+
+**What would need an owner ruling.** Whether a per-transmitter share replaces the single share, once one is measured.
+The owner's call on keeping 0.145 is open in decision 9.68.
+
+**Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
+arms.
