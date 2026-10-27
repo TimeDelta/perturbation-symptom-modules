@@ -539,3 +539,45 @@ transcript address, then the dates of the session, then its summary.
   `claude/README.md` has since fixed. **Still open:** the saturation half of 9.81, and a Fable recheck of the
   TMEM175 sourcing if anything ever relies on it. The session ran on Claude Opus 5 and Claude Opus 5.5, across four
   containers.
+- https://claude.ai/share/37e38d55-13bd-48f3-a337-ad188ddc8f1c — 26 to 27 October 2026. The owner asked for only the
+  tests that depend on changed files to run. Because CLAUDE.md "Pushing" requires the full suite before every push,
+  Claude put the choice to the owner before building: changed-file runs as a fast local loop with the full suite still
+  gating the push, or changed-file tests gating the push as well, which would amend the rule. It recommended the first
+  and described the build: pytest-testmon for Python dependencies, a mapping from config and doc paths to the tests
+  that read them, and a fallback to the full suite for any changed file that matches no rule. Its stated reason
+  against relying on coverage alone was that import-graph tools do not see reads of JSON, CSV or markdown files, so an
+  edited config could select no tests and pass. The owner accepted that build, then dropped it ("Maybe not worth it.
+  The full suite itself is the real blocker") and asked whether the suite could be made faster. Claude proposed
+  measuring first with `--durations=30`. The report the owner brought back, from a 4-core container at `4d3700c`, was
+  1,482 passed and 25 skipped in 259 s, with six end-to-end trainer tests taking 170 s of it, and earlier runs with
+  `OMP_NUM_THREADS=2` at 161 to 185 s. Claude offered three levers (thread count, `pytest-xdist`, smaller trainer
+  tests) and the owner chose the thread count and the smaller tests first. Neither was the cause. In a two-core
+  container the six tests took 98 s at one thread and 95 s at two, because the tests already set one thread in their
+  subprocesses. A profile of one toy trainer run showed about 1 s of training and about 5 s of starting an interpreter
+  and importing torch, scikit-learn and scipy, and the three files that hold five of the six slow tests start 20 such
+  runs (the commit message of `b721b04` and Claude's reply said 21, a miscount of grep lines; 20 was counted by
+  running the files). Claude added `tests/trainer_in_process.py`, which calls the trainer's `main()` inside the test
+  process and restores the working directory, the torch thread count, the checkpoint flag and the SIGUSR1 handler, and
+  changed one line in each of `test_soft_priors_in_the_trainer.py`, `test_edge_priors_in_the_trainer.py` and
+  `test_positive_unlabelled_likelihood.py` to call it. `TRAINER_TESTS_IN_SUBPROCESS=1` restores the subprocess runs.
+  Measured in that container: the three files took 97.7 s before and 15.8 s after (38 passed both ways); a toy run
+  gives bit-identical predictions and an equal configuration fingerprint in both modes; 1,507 tests are collected
+  before and after. The full suite took 56.4 s after the change (1,479 passed, 28 skipped) and 92 s after the rebase
+  onto `main`, on a shared container. It was not timed before the change in that container, so 259 s against 56 s is
+  not a like-for-like comparison; the like-for-like figure is the three files' 97.7 s to 15.8 s, and the owner has not
+  re-timed the suite on their own machine. The container skipped three more tests than the report did (28 against 25,
+  the same 1,507 in all); the cause was not looked for. Left open: `test_edge_gate_simulation.py` took 15.5 s in the
+  owner's report and 2.7 s in the container, and runs with no thread limit, so it is the test to time with and without
+  `OMP_NUM_THREADS=1` where the 4-core figures came from. Four other files that start the trainer in a subprocess
+  (`test_weighted_optimum_start.py`, `test_early_stopping_validation.py`, `test_equal_drug_shares.py` and
+  `test_run_provenance.py`) were left as they were. The trainer's own two warnings (sparse invariant checks, and a
+  scalar taken from a tensor that needs gradients at `relational_message_passing_encoder.py` line 839) now show in
+  pytest's summary. Getting the change onto `main` took three steps. The owner declined Claude's first attempt to
+  attach the repository with push access. Its second attempt was refused by the app's Auto mode classifier, so Claude
+  cloned the public repository read-only, committed locally (`2d0e4fc`), could not push, and sent the change as a
+  patch file. A stop hook then reported one unpushed commit, and Claude did not push by another route. The owner
+  replied "Try pushing anyways"; the attach with push access then succeeded. `main` had moved by two commits
+  (`b704f9c` and `0b976bf`), so Claude rebased, ran the full suite (1,479 passed, 28 skipped) and pushed `b721b04`. A
+  search for comments or documents that still describe these tests as subprocess runs found none. The session ran on
+  Claude Opus 5.5 and, for its last turns on 27 October, Claude Sonnet 5.5. It did engineering only, with no research,
+  so no Fable recheck is owed from it.
