@@ -182,3 +182,35 @@ def test_the_labels_are_counted_once_under_the_positive_unlabelled_likelihood(re
     assert '"--false-report-rate", nargs="*", default=[]' in source, "the false-report rate is 0 for every type by default"
     assert argument_parser_default("run_main_model", "--negative-weight") == 0.2, "w, the propensity of rare labels"
     assert '"--negative-weight", "0.2",' in batch_source
+
+
+def test_every_rule_names_code_that_exists(registered_rules):
+    """`code_location` is the path a reader follows to see the value in force, so a location that names nothing is a
+    dead end dressed as provenance. Added 27 October 2026 with docs/registered_core.md, which prints the same check."""
+    from generate_registered_core import resolved_path
+
+    missing = {name: resolved_path(rule["code_location"])[0] for name, rule in registered_rules.items()
+               if not resolved_path(rule["code_location"])[1]}
+    assert not missing, f"registered rules naming code that is not in the repository: {missing}"
+
+
+def test_every_rule_names_decisions_and_items_that_exist(registered_rules):
+    """CLAUDE.md: "A comment that names a symbol, flag, file or decision id names one that exists." The rule texts are
+    where the registration's reasons are written, so a reference in one that resolves to nothing is the stale pointer
+    the documentation process exists to stop. Added 27 October 2026."""
+    from mechanistic_pathway_learning.documentation import (
+        decision_ids_in_log,
+        item_ids_in_registration,
+        unresolved_decision_references,
+        unresolved_item_references,
+    )
+
+    known_decision_ids = set(decision_ids_in_log((REPOSITORY_ROOT / "docs" / "open_decisions.md").read_text(encoding="utf-8")))
+    known_items = item_ids_in_registration((REPOSITORY_ROOT / "docs" / "preregistration.md").read_text(encoding="utf-8"))
+    dangling = {}
+    for name, rule in registered_rules.items():
+        decisions = unresolved_decision_references(rule["means"], known_decision_ids)
+        items = unresolved_item_references(rule["means"], known_items)
+        if decisions or items:
+            dangling[name] = {"decisions": decisions, "items": items}
+    assert not dangling, f"registered rules naming decisions or items that do not exist: {dangling}"

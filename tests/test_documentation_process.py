@@ -202,6 +202,14 @@ def test_the_status_page_and_the_readme_block_are_current():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_the_registered_core_page_is_current():
+    """The digest of docs/registered_core.md is generated, so a committed copy that no longer matches
+    configs/registered_rules.json is the stale artifact the generator exists to stop. Added 27 October 2026."""
+    result = subprocess.run(["python3", "experiments/generate_registered_core.py", "--check"], cwd=REPOSITORY_ROOT,
+                            capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_the_status_page_describes_no_machine():
     text = (REPOSITORY_ROOT / "docs" / "status.md").read_text(encoding="utf-8")
     body = text.split("Nothing here describes a container", 1)[1]

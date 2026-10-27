@@ -719,6 +719,11 @@
    "recorded": "2026-10-07",
    "append_only": true
   },
+  "docs/registered_core.md": {
+   "class": "generated",
+   "generator": "experiments/generate_registered_core.py",
+   "what": "every registered rule with its value, the reason the configuration gives, the decisions and items its text names and the code that holds it; the short way into the registration"
+  },
   "docs/relation_timescale_ordering_2026-10-26.md": {
    "class": "record",
    "recorded": "2026-10-26",
