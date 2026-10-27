@@ -213,8 +213,9 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   renumbers its own, as the rule for branches merging second says.
 - **The old remote branches are left alone** (the owner, 25 October 2026: "just leave the branches alone. Just put a
   note to ignore them in the future"). Every remote branch other than `main` predates direct pushing; on 25 October
-  2026 all but `entmax-mixture-weighting` were checked to change nothing on `main` if merged, and that one holds an
-  entmax weighting of the cross-relation mixture that was never merged. Do not read them for current state, merge
+  2026 all but `entmax-mixture-weighting` were checked to change nothing on `main` if merged, and that one held an
+  entmax weighting of the cross-relation mixture that was not merged until its two commits were replayed onto `main`
+  on 27 October 2026 (the branch itself is left as it is). Do not read them for current state, merge
   them, rebase onto them or delete them; `main` is the state of the project.
 - **Parallel work** (an agent, a second session) is done in its own worktree on a local branch and lands by rebasing
   onto `origin/main` and pushing to `main`, under the same rules; it does not open a pull request.

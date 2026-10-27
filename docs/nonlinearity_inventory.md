@@ -61,7 +61,7 @@ statistic taken across the messages into a node. A map applied pointwise to a no
 f(0) = 0 is what keeps the unperturbed field at zero there.
 
 The mixture's weighting is sparsemax by default (exact zeros, so a node type's use of a statistic can be read off),
-and entmax, built 21 October 2026, interpolates from softmax to sparsemax and can be annealed to it during training.
+and entmax, built 21 October 2026 and on `main` since 27 October 2026, interpolates from softmax to sparsemax and can be annealed to it during training.
 The command-line value `softmax_mixture` is a historical name. The mixture is not in the registered model.
 
 ## 4. Decision 4.2 and the conjunction question
