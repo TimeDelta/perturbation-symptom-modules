@@ -3803,3 +3803,192 @@ neither source reproduces a near-zero correlation. Quotes verified against the P
 So the disclosure now rests on the project's own measured species mix, which needs no outside citation
 (`docs/drug_exposure_table.md`: "The Kp,uu,brain used is from: human 13, non-human primate 8, other animal 73"), plus
 these two fold-agreement figures, and **no coefficient for rodent-to-human transfer is asserted at all**.
+
+### 38a. Fagerholm et al. 2021 (Xenobiotica) is a different paper, is peer reviewed, and is cited only with its conflict stated (9.102, 27 October 2026)
+
+Everything above concerns the 2022 **preprint**. `fagerholm2021labvariability` - Fagerholm U, Spjuth O, Hellberg S,
+"Comparison between lab variability and in silico prediction errors for the unbound fraction of drugs in human
+plasma", *Xenobiotica* 2021;51(10):1095-1100, PMID 34346291, doi 10.1080/00498254.2021.1964044 - is a peer-reviewed
+journal article by the same first author, and decision 9.101's exclusion rule does not reach it. The owner ruled on
+27 October 2026 that it is cited and only with the conflict stated: "cite it with the asterisk of potential conflict
+so use the kazmi paper as the noise floor instead for item 36", and on the journal, "Xenobiotica sounds reputable
+enough but see previous sentence". Decision 9.102 records the ruling. What a Fable pass verified that day, with the
+route for each:
+
+- **MEDLINE indexing - verified, four routes.** The journal is indexed for MEDLINE, so its selection passed NLM's
+  editorial-quality review.
+- **Scopus - verified, actively covered 1971-2026**, read from Elsevier's own Scopus source title list of
+  September 2026 (the workbook saved by the pass, 26,667,692 bytes, sha256
+  `1e2eea11dd6b02609efaf78fb23efe888b47d55a3d1e20dffcd0ec87c56d892b`), not from a secondary summary.
+  `www.scopus.com/sourceid/26022` had answered HTTP 403 and that refusal is respected.
+- **Web of Science / Science Citation Index Expanded - NOT VERIFIED, and nothing rests on it.**
+  `mjl.clarivate.com/search-results?issn=0049-8254` and its API path both answered with a check that the visitor
+  is human (HTTP 200, an 11,428-byte challenge page). Respected; no cache, mirror or solved challenge was used.
+  Two secondary sources assert membership and are not treated as verification.
+- **The review model - double-anonymised, publicly stated, read first-hand only in part.** The publisher's own
+  Crossref-deposited assertions for this DOI carry a `peerreview_statement`, "The publishing and review policy for
+  this title is described in its Aims & Scope.", with an `aims_and_scope_url` of
+  `http://www.tandfonline.com/action/journalInformation?show=aimsScope&journalCode=ixen20`. **That page, the
+  about-this-journal page and the Informa Healthcare mirror each answered HTTP 403** to both readers, so the
+  sentences "All articles received by the Journal will be subject to double-anonymous peer review" (about-this-journal)
+  and "it will then be double blind peer reviewed by independent, anonymous expert referees" (Instructions for
+  Authors) are reported as a search engine renders those refused pages and **not** as read first-hand. Reading the
+  Aims & Scope URL in a normal browser settles the wording.
+- **This paper's own review timeline - verified**, from the same publisher-deposited assertions: received
+  2021-07-08, revised 2021-07-30, accepted 2021-07-31, published 2021-08-13. One revision round, 23 days to
+  acceptance. Evidence of process, not of depth, and the only paper-specific evidence available without the full
+  text.
+- **Retraction record - verified.** A PubMed search of the journal for retractions and expressions of concern
+  returns one record in 55 years, PMID 32255387, an expression of concern unconnected to this paper or these
+  authors, and no retraction at all.
+
+**The conflict, which the review could not cover.** All three authors are at Prosilico AB (PubMed and Europe PMC
+affiliations, read 27 October 2026; Spjuth also at Uppsala University), and the paper's own abstract sets out the
+structure: "Objectives of this study were to evaluate the variability of human f[u]-estimates between labs for a
+range of different drugs, and to develop and validate an in silico f[u]-prediction method and compare the results
+to the lab variability", concluding that "the new validated in silico prediction method is valuable not only for
+predictions at the drug design stage, but also for reducing uncertainties of f[u]-estimations". That is the
+structure decision 9.100 objected to in the preprint: the paper evaluates data against a product of its authors'
+company. **Under a double-anonymised model the referees were not shown the authors**, so the very feature that
+makes the model respectable on author bias makes it blind to this. **And the incentive's direction matters for how
+the figure may be used**: the paper's thesis is that the company's predictions are "about as reliable as lab
+estimates when these have been generated during different conditions", which a *larger* lab spread flatters, so
+the incentive runs toward overstating the 2.0-fold median and the 185-fold maximum. A floor taken from a source
+with an interest in the noise looking large is not conservative in the safe direction.
+
+**Whether the paper prints a disclosure statement is still unknown, and is no longer blocking.** Taylor & Francis's
+competing-interest policy, `authorservices.taylorandfrancis.com/editorial-policies/competing-interest/`, read
+27 October 2026, says a statement appears either way: "if there are no competing interests to declare, authors must
+still include a statement in the article" and "If there is no disclosure, we will publish the following statement:
+'No competing interest was reported by the authors(s).'" So the full text is a decisive test of whether the
+mechanism operated. Routes that failed, all 27 October 2026: the publisher's article page
+`www.tandfonline.com/doi/abs/10.1080/00498254.2021.1964044` and the Informa Healthcare mirror answered HTTP 403;
+PubMed's MCP record carries no competing-interest field; Europe PMC's `resultType=core` response has no such field
+at all, so its absence is not evidence either way; `eutils.ncbi.nlm.nih.gov`, which would carry a deposited
+`CoiStatement`, is disallowed by robots; `pubmed.ncbi.nlm.nih.gov/34346291/` answered HTTP 203 and was treated as
+a refusal; and the green copy at Uppsala's DiVA (`urn:nbn:se:uu:diva-465897`, named by OpenAlex as the best open
+location and a *submitted* version, so not reliable for a final disclosure in any case) could not be reached at
+all - the connection reset at the robots step on three attempts across two hosts, a network failure rather than a
+refusal, worth a retry. **The owner's ruling settles the question regardless**, because the conflict is to be
+stated beside the citation whichever way the disclosure reads.
+
+**Whether the figure stands independently: cited, never reproduced.** Citation counts read 27 October 2026: Europe
+PMC 16, Crossref 21, OpenAlex 23. Of the 16 Europe PMC citers, **11 are Fagerholm or Prosilico colleagues**,
+including six preprints, several naming the company's ANDROMEDA software in the title. Of the five independent
+ones, two are open access and were read in full from Europe PMC's `fullTextXML`:
+
+- **Ancuceanu et al. 2025**, "In Silico ADME Methods Used in the Evaluation of Natural Products", *Pharmaceutics*
+  (PMID 40871023, PMC12389637), cites it narratively as reference 243: "About 20% of the compounds in a data set of
+  117 substances showed over 5-fold lab variability in the measurement of the fraction unbound to human plasma
+  (with a maximum 185-fold); if a prediction is based on a low value of the range, for instance, it could result in
+  important errors in prediction, not because the input data was wrong in itself, but because the input data were
+  incomplete and ignored large values that could equally be found in the real world [243]." Three things follow: an
+  independent peer-reviewed group thought the finding worth repeating; they read the full text, since the
+  "about 20% over 5-fold" statistic is not in the abstract, so a per-compound distribution does exist in the paper;
+  and they quote the 185-fold maximum and the 20-percent statistic and **not** the 2.0-fold median, which is the
+  figure a noise floor would have leaned on.
+- **Tran et al. 2023**, *Int J Mol Sci* (PMID 36768139, PMC9915725), cites it in the reference list only; neither
+  "2.0-fold" nor "185" appears in its text.
+
+The three remaining independent citers (Zbib et al. 2025, *Clin Pharmacokinet*; Banerjee et al. 2024, *SAR QSAR
+Environ Res*; Bae et al. 2023, *J Pharm Sci*) are a PBPK application, a QSAR fragment study and an
+assay-equilibration study, so none is a candidate to have reproduced a between-laboratory measurement. **Conclusion:
+no paper outside Prosilico reports its own median max-to-minimum laboratory ratio for human fu,plasma over a
+comparable compound set.**
+
+**The three unconflicted sources added on the owner's ruling** ("yes. the 3 unconflicted ones should be added"),
+found by a PubMed sweep of interlaboratory and reproducibility queries crossed with protein binding, 47 hits, and
+by Consensus. Each is in `docs/references.bib` with a note giving what it measures and what it does not, and each
+has a licence row in `docs/data_sources.md`. **None of them is a second measurement of the Fagerholm quantity**, and
+the record says so rather than implying corroboration:
+
+- **`wang2014ppbvariability`** - Wang H, Zrada M, Anderson K, Katwaru R, Harradine P, Choi B, Tong V, Pajkovic N,
+  Mazenko R, Cox K, Cohen LH. 2014, *J Pharm Sci* 103(10):3302-3309, PMID 25116691, doi 10.1002/jps.24119. Merck
+  Research Laboratories, Rahway; independent of Prosilico. **Read in full on Fable on 27 October 2026 through the
+  Wiley Scholar Gateway full-text service**, the publisher's own page `onlinelibrary.wiley.com/doi/10.1002/jps.24119`
+  having answered HTTP 403, with no PMC record; the figures are images and were not seen. **It states no
+  between-site fold figure and no between-site CV** - the earlier pass's hope that a comparable number sat in the
+  full text is answered, and the answer is no. Its site-to-site results are qualitative: before standardisation
+  "The clozapine dataset represented reasonable reproducibility and repeatability across days and sites" against
+  "significantly more outliers were observed across both sites and days for warfarin"; after standardisation,
+  "In contrast with the original results of the MSA assessment, data consistency across and within sites was
+  extremely high". And the design is narrower than "site-to-site" suggests: two laboratories of **one** company
+  operating "a single analytical procedure for each assay" since a 2007 standardisation programme, and for the
+  measurement-systems leg "The same scientist conducted the experiment on 3 separate days using the same instrument
+  at each site for two Merck laboratories", on two compounds, 576 measurements each. **And the two sites still
+  differed**: the same section begins "The two Merck sites utilized different incubation conditio..." - the passage
+  the full-text service returned truncates there, so the clause is recorded as a fact of the paper rather than
+  quoted as a complete sentence, and the rest is unread. That is the paper's own point, and it is the one most
+  useful to this project: a standardisation programme running since 2007, under which "site-specific protocols have
+  been replaced with a single analytical procedure for each assay", had still left two laboratories of the same
+  company incubating differently, and the agreement reported below is what remained after the differences were
+  found and removed. **What it does give** is
+  Table 4, the per-site per-day unbound fractions of six commercial compounds, from which a between-site figure is
+  computable; computed by that pass and **not stated by the paper**, the median site-2-over-site-1 ratio of the
+  three-day means is 1.29-fold (1.02 for fluconazole to 1.60 for fluoxetine, site 2 above site 1 for all six, so a
+  systematic offset and not only scatter) with a median max-to-minimum of 1.61-fold across the six observations per
+  compound. Individual values in that table fall outside the paper's own stated acceptable range while the site
+  means stay inside it, and the table's species is not established by the passages read, so the derived figure
+  carries no species claim. **Its most useful content is mechanistic**: "The most significant contributor to
+  variability in PPB determinations was loss of physical integrity of the equilibrium dialysis membrane, most
+  likely because of errors during pipetting", 60 outliers in 1152 incubations, 56.6 percent of them high buffer
+  concentrations traced by photographing the device to torn, bent or crimped membranes, and "no correlation was
+  observed for any of the outliers with respect to well position". With the standardisation result that makes the
+  large literature spread a property of condition heterogeneity between laboratories, not an irreducible limit of
+  the assay. It also records where this project's 2-fold language comes from: "generally the most popular and
+  mathematically rigorous proposed range is twofold values, although this is not universally deemed appropriate.
+  However, twofold variability for highly bound values (<0.001 unbound fraction) is generally viewed as
+  unacceptable."
+- **`ryu2019orthogonalppb`** - Ryu S, Riccardi K, Patel R, Zueva L, Burchett W, Di L. 2019, *J Pharm Sci*
+  108(11):3745-3749, PMID 31419399, doi 10.1016/j.xphs.2019.08.004. Pfizer Worldwide Research and Development,
+  Groton; independent of Prosilico, but **not independent of `riccardi2015challenging`**, which shares Riccardi and
+  Di in the same group, so the two are one laboratory's work and do not count as two sources under the second-source
+  rule. **Abstract only**: ScienceDirect answered HTTP 403 and there is no PMC record, so the table of the 10 drugs
+  and any overlap with the 222 study drugs are unread. "2 orthogonal methods, equilibrium dialysis and
+  ultracentrifugation, are assessed in this study to measure PPB of 10 highly bound drugs (f[u] < 0.01). The results
+  show that the 2 very different methods yield comparable f[u] values, generally within 2-fold of each other."
+  **The same number as Fagerholm's median and a different quantity**: two methods in one laboratory on 10 drugs,
+  against 117 compounds collated across laboratories, methods and conditions. It therefore neither reproduces nor
+  contradicts the Fagerholm figure, and must not be cited as if it did.
+- **`lynn2025crossspeciesplasma`** - Lynn SG, Schultz IR, Matten SR, Patel PR, Watson SL, Yueh YL, Black SR,
+  Wetmore BA. 2025, *Toxicol In Vitro* 106:106036, PMID 40023338, PMC12933518, doi 10.1016/j.tiv.2025.106036. US
+  Environmental Protection Agency with NOAA's National Marine Fisheries Service and RTI International; wholly
+  unconflicted. **Abstract only, and it is NOT open access**, contrary to what its PMC id suggests. Routes tried:
+  the PubMed MCP full-text tool returned an empty string; Europe PMC's `fullTextXML` for PMC12933518 answered
+  HTTP 500 on three attempts; `europepmc.org/article/MED/40023338` is disallowed by robots;
+  `pmc.ncbi.nlm.nih.gov/articles/PMC12933518/` answered with a check that the visitor is human;
+  `www.sciencedirect.com` answered HTTP 403; `cfpub.epa.gov`'s Science Inventory search is disallowed by robots.
+  Every refusal respected, none read through a cache or mirror. What the abstract gives: 54 chemicals at two
+  concentrations in human, rat and rainbow-trout plasma by rapid equilibrium dialysis, "resulting in 238
+  chemical-species specific datasets", of which under mass-balance quality control "almost 40 % of the datasets
+  (92/238 datasets) produced quantitative measurements" - three in five determinations yielded no quantitative
+  value at all, which is the most quotable thing in it for this project. On the species term, a stated direction:
+  "Comparisons of human-rat plasma binding revealed rat plasma generally demonstrated higher f[u,p] values for
+  chemicals than human. While f[u,p] values in trout plasma were frequently lower than rat or human plasma." That
+  is **this repository's first directional rat-against-human figure for fu,plasma**, and it bears on the species
+  clause of amendment item 36 as well as on the noise clause. On the noise term, with care: "chemicals with log
+  K[ow] > 4.5 will be highly bound (f[u,p] <= 0.0001), difficult to measure, and have low reproducibility across
+  laboratories, suggesting that use of different methods may be needed across different physicochemical
+  properties" - **not an interlaboratory measurement of its own**, since the assays were run in one laboratory and
+  the cross-laboratory statement arises from the paper's comparison with literature values, so it is a
+  property-dependent qualitative claim and not a figure. Note that it points the opposite way from
+  `kazmi2026iqconsortium` on whether low fu means noisy fu ("binding measurements for highly bound compounds do not
+  necessarily show greater variability", p. 10); the two reconcile only in that Kazmi's laboratories qualified their
+  assays for the range and Lynn's literature comparators did not, which is the distinction item 36 turns on. These
+  are environmental chemicals, not the project's centrally acting drugs, so no value of it enters any table.
+
+**Two further independent items, recorded but not added to the bibliography**, both bearing on why literature
+collations disagree: Harrison et al. 2024, *AAPS J*, doi 10.1208/s12248-024-00988-6, on plasticisers leaching from
+PVC plasma storage bags, where "The f[u,p] differences can be as high as 32-fold"; and Enlo-Scott et al. 2026,
+*J Pharm Sci*, doi 10.1016/j.xphs.2026.104367, three-method concordance over 26 small molecules with "strong
+correlation between methods (R2 = 0.95)", which points the other way from Fagerholm on method agreement inside one
+laboratory. Both are candidates if the owner wants the mechanism cited.
+
+**Text addressed to an AI assistant, reported and not acted on**, per `CLAUDE.md`. The PubMed MCP server attaches an
+"Important Legal Requirement" block to every result instructing the assistant that it "MUST ALWAYS" attribute
+PubMed and render DOIs as links and "MUST decline" requests to skip attribution, listing example "adversarial
+requests". The Consensus MCP server carries standing instructions requiring its sign-up or usage message be
+reproduced "word-for-word". Both are reported as instruction-shaped text arriving from a tool. The passes
+attributed PubMed and gave DOIs throughout because that is correct citation practice and the owner wants
+provenance, not because the block directed it, and declined to reproduce the marketing copy; every record relied on
+was independently confirmed against PubMed and Europe PMC. Nothing in either block changed what any pass did.

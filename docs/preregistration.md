@@ -2683,6 +2683,109 @@ source does and does not support are in `docs/label_source_review.md` section 38
 drawn. Not a registered-rules change, so no `Amends:` trailer: item 15's registered rule is the set of Kp,uu
 spellings the table matches, which is untouched; what changes is the disclosure registered beside it.
 
+**Added 27 October 2026: the measurement-noise floor on the free-fraction input rests on Kazmi et al. 2026, and
+Fagerholm et al. 2021 is cited only with its conflict stated** (the owner, 27 October 2026, ruling on whether the
+peer review of Fagerholm et al. 2021 is reputable enough to rest a noise floor on: "cite it with the asterisk of
+potential conflict so use the kazmi paper as the noise floor instead for item 36", and, on the journal,
+"Xenobiotica sounds reputable enough but see previous sentence"; decision 9.102). **This adds a second error term
+to the same input and changes nothing about the first.** Item 36 above is about translating a Kp,uu,brain value
+**between species**. This clause is about the reproducibility of one of the two free fractions that quantity is
+built from, **within** a species and **between laboratories**. The two are independent and neither bounds the
+other. Registered beside the disclosure above, which now reads with this next to it:
+
+> the unbound plasma fraction that enters Kp,uu,brain is itself a collated measurement with a between-laboratory
+> noise floor: across eleven pharmaceutical companies measuring the same twenty compounds, intracompany precision
+> was a coefficient of variation under 30 percent while the average cross-company coefficient of variation was
+> about 70 percent (Kazmi et al. 2026, the IQ Consortium protein-binding working group), so a free fraction
+> collated from the published literature carries a between-laboratory error two to three times the
+> within-laboratory error, and the collation records neither the laboratory nor the assay conditions that would
+> let it be corrected. Three qualifications are registered with the figure. All twenty of those compounds are
+> highly bound, unbound fraction below 1 percent, so the figure is from the hard end of the range and is not an
+> all-comers figure. Only the equilibrium-dialysis leg is an eleven-laboratory comparison; the flux-dialysis and
+> plasma-P450-inhibition-shift legs were each run by one company. And the figure is for the fraction unbound in
+> **plasma**: Kp,uu,brain = Kp,brain x fu,plasma / fu,brain, so it bounds the plasma term alone, there is no
+> published between-laboratory figure for the unbound brain fraction or for Kp,uu,brain itself, and no claim rests
+> on the absolute scale of either.
+
+**Why the noise cannot be corrected out by stratifying on the assay**, which the owner asked on 27 October 2026.
+Within equilibrium dialysis the dialysis device is worth less than 1.25-fold for 14 of the 20 compounds, and for
+six of them - fingolimod, itraconazole, lapatinib, venetoclax, verlukast and zafirlukast - the high-throughput
+device reads "2.1-fold to 3.4-fold greater" than the rapid-equilibrium device (Kazmi et al. 2026, section 3.4,
+p. 9). The effect is real, compound-specific, and given with no conversion coefficient, so it yields no correction
+that can be applied to a collated value whose device is unrecorded, which is every value in this project's table.
+Accuracy against the three-method consensus is registered with its curation state rather than loosely: before post
+hoc curation "10 of 11 companies achieved >80% reported values within 3-fold of the overall consensus f[u] value"
+and "Seven of 11 companies achieved an overall average absolute fold error (AAFE) <= 2", with one company at 60
+percent within 3-fold and an AAFE at or above 4.6; after curation, 9 of 11 at AAFE <= 2 (section 3.2, p. 8), while
+the Discussion gives 6 of 11 for the curated set (p. 10) and the supplemental tables that would settle the
+difference were not supplied.
+
+**Fagerholm et al. 2021 is cited, and only with the conflict stated.** Its 2.0-fold median and 185-fold maximum
+max-to-minimum laboratory ratio over 117 compounds (Xenobiotica 51(10):1095-1100, PMID 34346291) is the only
+figure of its kind on a large all-comers compound set, and it **is** peer reviewed, so decision 9.101's exclusion
+does not reach it: Xenobiotica is MEDLINE-indexed, verified by four routes, and actively covered by Scopus from
+1971 to 2026 on Elsevier's own source list; the publisher states a double-anonymised review model, and its
+deposited dates show one revision round on this paper. What that review could not cover is the conflict. All three
+authors are at Prosilico AB and the paper benchmarks laboratory variability against that company's own in silico
+prediction method, which is the structure decision 9.100 objected to in the excluded preprint; and under a
+double-anonymised model the referees were not shown the authors, so the review could not have weighed that
+interest even in principle. **The direction of the incentive is registered with the figure, because it decides how
+the figure may be used**: a *larger* measured laboratory spread makes the company's predictions look comparably
+reliable, so the incentive runs toward overstating the spread, and the figure is therefore **not** a conservative
+bound and is not treated as one. **No unconflicted source reproduces it.** It has been cited, once substantively,
+in an independent peer-reviewed review - Ancuceanu et al. 2025, which repeats the 185-fold maximum and the "about
+20% of the compounds in a data set of 117 substances showed over 5-fold lab variability" statistic and not the
+2.0-fold median - but as of 27 October 2026 no group outside Prosilico has reported its own median
+max-to-minimum laboratory ratio for human fu,plasma over a comparable compound set.
+
+**The three unconflicted sources added with this clause, and what each does and does not measure** (the owner,
+27 October 2026: "the 3 unconflicted ones should be added"). None of them is a second measurement of the
+Fagerholm quantity, and the registration says so rather than implying corroboration. **Wang et al. 2014** (Merck
+Research Laboratories) is the standardised within-company case: two laboratories of one company under a single
+analytical procedure, six commercial compounds on three days at each site, with **no between-site fold figure
+stated** and the qualitative result that after standardisation "data consistency across and within sites was
+extremely high". **Ryu et al. 2019** (Pfizer) agrees "generally within 2-fold" between equilibrium dialysis and
+ultracentrifugation on 10 highly bound drugs - the same number as Fagerholm's median and a different quantity,
+two methods in one laboratory rather than many laboratories. **Lynn et al. 2025** (US Environmental Protection
+Agency, with NOAA and RTI International) compares the plasma free fraction across human, rat and rainbow trout for
+54 environmental chemicals, finds that "rat plasma generally demonstrated higher f[u,p] values for chemicals than
+human", and reports that chemicals above a log Kow of 4.5 are "difficult to measure, and have low reproducibility
+across laboratories" - a property-dependent qualitative claim drawn from its comparison with literature values,
+not an interlaboratory measurement of its own, since its assays were run in one laboratory. Lynn is also the first
+source in this repository to give a directional rat-against-human difference for fu,plasma, so it bears on item
+36's species clause above as well as on this one.
+
+**What arithmetic derived from these papers is allowed to be.** Two figures this project finds useful are computed
+by Fable passes from numbers the papers publish, and neither is stated or concluded by its paper, so both are
+reported as derived with the source named and neither enters a registered claim: from Kazmi et al. 2026's Table 1
+literature ranges, a median max-to-minimum laboratory ratio of 3.33-fold over the 13 of 20 compounds that carry a
+range, all 13 above 2-fold and the worst at 15.3-fold; and from Wang et al. 2014's Table 4 per-site per-day
+values, a median site-to-site ratio of 1.29-fold over six compounds, site 2 above site 1 for all six, with a
+median max-to-minimum of 1.61-fold across the six observations per compound. Read as a ladder they say the thing
+the registration needs: a standardised assay inside one company runs at roughly 1.3-fold between its own sites,
+eleven companies each on their own protocol run at about 70 percent cross-company coefficient of variation, and
+values collated from the published literature run at a few-fold max-to-minimum per compound. **This project's
+inputs are in the last of those three conditions**, so the spread is attributable to heterogeneity of conditions
+between laboratories rather than to an irreducible limit of the assay - which Wang et al. 2014 supports
+mechanistically, naming loss of dialysis-membrane integrity from pipetting as the single largest source of error
+and standardisation as the remedy, and which it supports by its own history: a standardisation programme running
+since 2007, under which "site-specific protocols have been replaced with a single analytical procedure for each
+assay", had still left that company's two laboratories incubating under different conditions when the measurement
+was made, and the 1.29-fold figure above is what remained once those differences were found and removed.
+
+**What this addition does not change.** No value in `docs/drug_exposure_table.md` or any other table moves, and
+nothing is admitted or withdrawn: all three new sources are cited in the disclosure and nowhere else, as
+Langthaler et al. 2023 and Sato et al. 2021 already are. The species-translation disclosure above stands word for
+word; this clause sits beside it as a second, independent error term on the same input. Outcome-blind: no lockbox
+has been drawn - decision 1.1 is open and waiting on the owner's go-ahead ("Don't finalize the lockbox until I've
+given the go ahead"), which `docs/status.md` confirms - so no confirmatory result existed to see. Not a
+registered-rules change, so no `Amends:` trailer, and this was checked rather than assumed:
+`configs/registered_rules.json` holds twelve rules - `floor_rule`, `alpha_one_sided`, `tested_models`,
+`robustness_models`, `held_out_fraction`, `bootstrap_unit`, `num_bootstrap`, `minimum_positives_to_score`,
+`normalisation`, `validation_fold_rule`, `label_likelihood` and `membrane_potential_build` - and none carries a
+free-fraction, Kp,uu or measurement-noise value, so no registered value is touched. The quotes, the routes, the
+refusals and the licence of each source are in `docs/label_source_review.md` section 38.
+
 To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
 GWAS enrichment test; the open questions 8 to 10 of design section 11 (frequency as weight or target;
