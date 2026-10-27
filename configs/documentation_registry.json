@@ -323,7 +323,7 @@
    "class": "record",
    "recorded": "2026-10-21",
    "append_only": false,
-   "what": "a reading of 21 October 2026 separating the pharmacokinetic clock, the network's relaxation rates and each label's observation time: no relaxation rate changes any fixed point once the gains are read as dimensionless steady-state sensitivities, so the 0.615 of finding 10 is an 8-round transient against a converged 0.593, and the acute labels read the quasi-steady state of the fast subsystem"
+   "what": "a reading of 21 October 2026 separating the pharmacokinetic clock, the network's relaxation rates and each label's observation time, deriving that no relaxation rate changes a fixed point once the gains are read as dimensionless steady-state sensitivities; not evidence (the owner, 27 October 2026): its requoting of the 7 October slice sign check (finding 10) falls by its dated status section, and the derivations stand untested on the real loop"
   },
   "docs/fold_mechanism_sharing.md": {
    "class": "generated",
@@ -787,7 +787,7 @@
    "class": "record",
    "recorded": "2026-10-20",
    "append_only": false,
-   "what": "a reading of 20 October 2026 of what a fixed-point readout of the linear-response encoder cannot represent, with twelve alternatives ranked by cost; its claim that the rates dropping out is the whole problem is corrected by the record of 21 October"
+   "what": "a reading of 20 October 2026 of what a fixed-point readout of the linear-response encoder cannot represent, with twelve alternatives ranked by cost; not evidence (the owner, 27 October 2026): its uses of the 7 October slice sign check (finding 10) and of the slice-pilot findings fall by its dated status section, and what stands is derivation and proposal"
   },
   "docs/superfluous_physiology_review.md": {
    "class": "record",
