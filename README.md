@@ -413,6 +413,55 @@ behind them.
   the bibliography research done by Fable 5.1 subagents. Still the owner's: supply Mondillo 2005,
   Wellner-Kienitz 2003, Wang 1996, Mitsuhashi 1989 and Zhu 1994; Zhu is the paper 9.79 calls "the
   highest-value outstanding item".
+- https://claude.ai/share/351b6aff-85f0-483a-9c2b-cd06855af866 — 20 to 27 October 2026. SERPINA6 as a carrier,
+  and what sign 0 means. Pull request #5 had left one of decision 9.68's named mechanisms out, with the note that
+  "whether a carrier's loss changes free cortisol at steady state needs sources on the adrenal axis's feedback
+  first". The answer is that the axis defends the free **concentration** and what a carrier moves is the free
+  **fraction**, which the graph has no representation for: homozygotes for a CBG variant that lacks steroid binding
+  have "very low baseline and stimulated total serum cortisol levels but normal free serum and salivary cortisol and
+  plasma ACTH" (Perogamvros et al. 2010, doi:10.1210/jc.2010-0746), and a normal ACTH beside a near-absent total
+  cortisol is what separates the two candidate feedback variables. The theory reaches the same place without the
+  feedback doing any work (Mendel 1989, doi:10.1210/edrv-10-3-232). So the quantity the graph could carry is the
+  pool, and the pool is the one measured not to move; `sequesters` (sign -1) was already built, so the edge could
+  have been written and would have asserted a change the sources refuse. Recorded as a resolved negative in 9.68
+  (`bb18461`) with seven entries in `docs/references.bib`, rather than as a gap to re-derive. **Four claims were
+  withdrawn or corrected in the session.** Free cortisol values attributed to Torpy et al. 2001 by the research pass
+  (0.1, 0.3 and 0.5 microg/dl, free fraction 23 to 28 percent, quoted "comparable to those in normal subjects") do
+  not appear in that abstract, whose only sentence of that shape is about compound heterozygotes; they are not
+  relied on and the row says so, leaving Perogamvros 2010 the single human anchor. The session's own statement that
+  the literature is contested was corrected once concentration and fraction were kept apart: OMIM 611489's raised
+  free cortisol traces to Buss et al. 2007 (doi:10.1007/s00702-006-0620-5), one heterozygote measured after a
+  standardized stress test, not at rest. Its statement that `sequesters` was designed but unbuilt was wrong, the
+  relation carrying 101 edges. And its recommended alternative, the adrenal route of Gulfo et al. 2019
+  (doi:10.1038/s41598-019-50355-1), was withdrawn on finding rat adrenal *SerpinA6* transcript very low or
+  undetectable with the dimorphism attributed to liver-derived CBG (Toews et al. 2022, doi:10.1210/endocr/bqac152).
+  **Decision 9.98**, taken from the same work: sign 0 is the only wholly unsigned relation and carries two
+  incompatible readings, "the right reading for a carrier, since it moves a substrate without acting on it"
+  (`graph/plasma_binding.py`) against "sign 0, meaning unknown" (`graph/brenda_enzyme_regulation.py`), so a measured
+  null and an unestablished sign are one symbol; three options for the owner, with dropping the sign-0 edges refused
+  because 9.69 records channels that reach the graph only through `binds`. Named at all seven sites that state a
+  reading (`93f0a4b`). **The session's own waived research made a rule stale**: CLAUDE.md's "Models" section ended
+  "No case flagged under this rule remains open", which a reader takes as no research on `main` awaiting a Fable
+  recheck, and the 9.68 record was written on a non-Fable pass under the owner's permission for that work ("Don't
+  worry about fable this time", 26 October 2026). A bullet now names the waived case and leaves waiver policy to the
+  owner (`59e98d1`). **A stale document found while checking the work**: `docs/plasma_binder_graph.md` carried a
+  hand-written "Known limitation: no drug reaches its plasma carrier in the graph" from 9 October whose three
+  obstacles had all been removed, drug nodes existing (154 measured, 222 on the v4 audit), `sequesters` existing (71
+  edges for 49 drugs; 101 on the audit) and ORM1 and ORM2 holding 16 each rather than one edge to progesterone. On
+  the owner's "recommendation accepted" the resolution went to `docs/drug_entry_nodes.md`, record class and the
+  document the section itself points at, with the 9 October fentanyl reasoning kept as history and the caveat
+  recorded that whether fentanyl **in particular** holds one of those edges is written down nowhere, both
+  measurements giving counts by carrier gene rather than the drug list. The section was not hand-cut: the register
+  makes that file generated and `docs/documentation_process.md` says a generated document is "never edited by hand",
+  so the cut belongs to `carriage_report()`, which emits no such heading and rewrites the file on its next run, and
+  that generator was given the provenance stamp it lacked (`27f7c51`). The attempt to hand-cut it failed
+  `test_generated_documents_regenerated_after_the_policy_date_carry_a_stamp`, and because that test reads the git
+  log rather than the file, the edit had to leave history, so the unpushed commits were rebuilt without it. The
+  session ran on Claude Opus 5; which model served its research passes is not known to it, the first having run
+  before the waiver and the second under it. Also recorded: 9.68's cortisol -> `NR3C1` recheck (`3ecf528`), unmeasured
+  on a current build, the one record being 14 October 2026 on a 266,966-edge graph. **Still owed**: a Fable recheck
+  of the 9.68 record; the owner's ruling on 9.98 and on how a waiver works; and three counts needing a built graph,
+  cortisol -> `NR3C1`, fentanyl's `sequesters` edge and the plasma-binder variant build that performs the cut.
 
 ## Conventions
 
