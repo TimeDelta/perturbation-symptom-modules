@@ -27,6 +27,10 @@ LOG_PATH = REPOSITORY_ROOT / "docs" / "open_decisions.md"
 # 9.100. Raising it is a decision to take knowingly.
 LINE_LENGTH_CEILING = 19_000
 
+# A code span becomes one placeholder character rather than nothing. Stripping it to nothing was a bug in this
+# counter on 27 October 2026: a bold run ending in a code span, "**Built as <code>** with", collapsed to "as ** with",
+# a space-flanked marker the operator rule below then discarded, which made five rows dense with code spans look
+# unpaired when none of them was damaged.
 INLINE_CODE = re.compile(r"`[^`]*`")
 # "min(n, 2) ** 0.5" in row 9.50 is arithmetic, not emphasis. Markdown emphasis never carries a space on the inside
 # of its markers, so a space on both sides means an operator.
@@ -35,7 +39,7 @@ ROW = re.compile(r"^\|\s*(~~)?(?P<id>\d+\.\d+[a-z]?)(~~)?\s*\|")
 
 
 def emphasis_marker_count(line: str) -> int:
-    return EXPONENT_OPERATOR.sub(" ", INLINE_CODE.sub("", line)).count("**")
+    return EXPONENT_OPERATOR.sub(" ", INLINE_CODE.sub("x", line)).count("**")
 
 
 def decision_rows() -> list[tuple[int, str, str]]:
@@ -52,25 +56,21 @@ def test_the_log_still_presents_rows_to_check():
     assert len(decision_rows()) > 100
 
 
-# Five rows already carried an odd number of markers when this guard was written on 27 October 2026. Each needs a
-# human read before it is touched: in a row this dense a lone marker can be a real loss, or an artefact of a code
-# span this counter strips, and guessing at the wording of a decision row is worse than leaving it visibly odd.
-# The list is a ratchet in both directions - a sixth row joining it fails the test, and so does repairing one of
-# these without striking it from the list - so it cannot quietly become permanent.
-ROWS_UNPAIRED_BEFORE_THE_GUARD = {"9.16", "9.47", "9.55", "9.75", "9.102"}
-
-
-def test_no_new_decision_row_has_an_unmatched_emphasis_marker():
-    unmatched = {identifier for _, identifier, line in decision_rows() if emphasis_marker_count(line) % 2}
-    appeared = sorted(unmatched - ROWS_UNPAIRED_BEFORE_THE_GUARD)
-    repaired = sorted(ROWS_UNPAIRED_BEFORE_THE_GUARD - unmatched)
-    assert not appeared, (
+def test_no_decision_row_has_an_unmatched_emphasis_marker():
+    """Strict, with no baseline. Five rows were held as one until 27 October 2026, when the counter above was
+    corrected and all five turned out to pair; no row in the log carries an unmatched marker."""
+    unmatched = sorted({identifier for _, identifier, line in decision_rows() if emphasis_marker_count(line) % 2})
+    assert not unmatched, (
         "a lost '**' is exactly the two-character loss that damaged row 9.100, and it renders the rest of the row "
-        f"bold. Rows that newly have an odd number of markers: {appeared}"
+        f"bold. Rows with an odd number of markers: {unmatched}"
     )
-    assert not repaired, (
-        f"these rows now pair and should be struck from ROWS_UNPAIRED_BEFORE_THE_GUARD: {repaired}"
-    )
+
+
+def test_the_counter_keeps_a_bold_run_that_ends_in_a_code_span():
+    """The bug that made five undamaged rows look unpaired: the code span was stripped to nothing, leaving a
+    space-flanked marker that the arithmetic rule then discarded."""
+    assert emphasis_marker_count("| 9.16 | **Built as `models/forward_cone_divisor.py`** with both kept. |") == 2
+    assert emphasis_marker_count("| 9.50 | a weight (strength x min(n, 2) ** 0.5) decides it |") == 0
 
 
 def test_no_line_is_longer_than_the_recorded_ceiling():
