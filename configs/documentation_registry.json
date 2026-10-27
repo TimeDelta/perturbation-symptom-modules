@@ -1,871 +1,877 @@
 {
- "_what_this_is": "The register of every tracked Markdown document and its class, which decides what tests/test_documentation_process.py checks for it. Classes: generated (a script writes it; must name the script and, once regenerated after 2026-10-16, carry the provenance stamp), living (hand-written, kept current by overwriting; reviewed and as_of_commit say when it was last read against the repository), record (dated, corrected by a dated addition; append_only means the committed text must be a prefix of the working tree), frozen (sha256 pinned), draft (no claim about the current state). docs/documentation_process.md states the rules; experiments/register_documents.py adds and prunes entries.",
- "_how_it_is_enforced": "tests/test_documentation_process.py fails for a tracked document that is not registered, an entry whose file is not tracked, an entry with confirmed: false, a frozen document whose sha256 moved, a generated document regenerated after the policy date without a stamp, a living document that describes a container or a session, an append-only record whose committed text was edited, and a decision id that was dropped or renumbered.",
- "policy_date": "2026-10-16",
- "documents": {
-  "CLAUDE.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "README.md": {
-   "class": "living",
-   "reviewed": "2026-10-27",
-   "as_of_commit": "2622ed0"
-  },
-  "docs/README.md": {
-   "class": "generated",
-   "generator": "experiments/generate_docs_index.py",
-   "what": "the landing page of docs/: where to start, and every registered document by topic with its class"
-  },
-  "docs/allele_perturbations.md": {
-   "class": "record",
-   "recorded": "2026-10-16",
-   "append_only": true,
-   "what": "the allele as the perturbation (decision 9.54 (d)): the rule, the four sources of a disease's mechanism in order (Orphanet, its OMIM alignments, Gene2Phenotype, cited adjudications), the curated neomorph, what it changed in the v5 tables and what is still wrong"
-  },
-  "docs/alternative_sources.md": {
-   "class": "record",
-   "recorded": "2026-10-03",
-   "append_only": false,
-   "what": "the inventory of substitute sources fetched on 2026-10-03 while the primary hosts were denied, and the decisions taken on them"
-  },
-  "docs/amendment_history.md": {
-   "class": "generated",
-   "generator": "experiments/generate_amendment_history.py"
-  },
-  "docs/b6_default_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_cofactors_neuronal_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_gate_time_scales_cofactors_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_time_scales_cofactors_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_time_scales_cofactors_log_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_linear_response_time_scales_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_mechanistic_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_mechanistic_expected_gate_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_mechanistic_gate_time_scales_disease_cluster_modules.md": {
-   "class": "generated",
-   "generator": "experiments/analyze_pathway_modules.py"
-  },
-  "docs/b6_module_diagnosis.md": {
-   "class": "generated",
-   "generator": "experiments/diagnose_noisy_or_modules.py"
-  },
-  "docs/best_epoch_zero.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/binds_resource_precision.md": {
-   "class": "generated",
-   "generator": "experiments/measure_binds_resource_precision.py",
-   "what": "the precision of each OmniPath resource supplying binds edges against HuRI's tested space, by the method of Venkatesan et al. 2009 (decision 9.91); a report that sets no weight"
-  },
-  "docs/brain_exposure_data_feasibility.md": {
-   "class": "record",
-   "recorded": "2026-10-12",
-   "append_only": false
-  },
-  "docs/brain_expression_descriptors.md": {
-   "class": "record",
-   "recorded": "2026-10-07",
-   "append_only": false
-  },
-  "docs/cell_state_representation.md": {
-   "class": "living",
-   "reviewed": "2026-10-13",
-   "as_of_commit": "e66ebc6"
-  },
-  "docs/central_action_rule.md": {
-   "class": "generated",
-   "generator": "experiments/apply_central_action_rule.py"
-  },
-  "docs/clinical_trial_arm_evidence.md": {
-   "class": "generated",
-   "generator": "experiments/fetch_clinicaltrials_adverse_events.py"
-  },
-  "docs/clinical_trial_outcome_evidence.md": {
-   "class": "generated",
-   "generator": "experiments/fetch_clinicaltrials_outcomes.py"
-  },
-  "docs/combined_perturbations.md": {
-   "class": "generated",
-   "generator": "experiments/build_combined_perturbations.py"
-  },
-  "docs/comparative_checks.md": {
-   "class": "generated",
-   "generator": "experiments/run_comparative_checks.py"
-  },
-  "docs/complex_conjunction_semantics.md": {
-   "class": "generated",
-   "generator": "experiments/measure_complex_conjunction_semantics.py"
-  },
-  "docs/complex_descriptors.md": {
-   "class": "generated",
-   "generator": "experiments/build_complex_descriptors.py"
-  },
-  "docs/complex_limiting_member_weight.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/complex_limiting_member_weight.py"
-  },
-  "docs/confirmatory_architecture_review.md": {
-   "class": "record",
-   "recorded": "2026-10-10",
-   "append_only": false
-  },
-  "docs/confirmatory_pilots_development.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/confirmatory_runbook.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b",
-   "names_absent_paths": {
-    "docs/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
-    "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
-   }
-  },
-  "docs/coproduct_of_de_novo_split_2026-10-26.md": {
-   "class": "record",
-   "recorded": "2026-10-26",
-   "append_only": true,
-   "what": "the carrier relation coproduct_of mixes regeneration with de novo synthesis under one learned gain: 49 de novo against 1,030 redistribution edges on the v0.4 slice, 2 against 37 in the biopterin family, and the whole de novo biopterin route passing through one carrier-gained edge at SPR"
-  },
-  "docs/ctd_notice_draft.md": {
-   "class": "draft",
-   "recorded": "2026-10-11"
-  },
-  "docs/data_layer_rebuild.md": {
-   "class": "record",
-   "recorded": "2026-10-10",
-   "append_only": true
-  },
-  "docs/data_sources.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/decision_history.md": {
-   "class": "generated",
-   "generator": "experiments/generate_decision_history.py",
-   "what": "when each decision was recorded and closed, from the git history of the log"
-  },
-  "docs/descriptor_rule.md": {
-   "class": "generated",
-   "generator": "experiments/compare_twin_runs.py"
-  },
-  "docs/descriptor_treatments.md": {
-   "class": "generated",
-   "generator": "experiments/compare_twin_runs.py"
-  },
-  "docs/design_review_v04.md": {
-   "class": "record",
-   "recorded": "2026-10-03",
-   "append_only": false
-  },
-  "docs/directed_random_walk.md": {
-   "class": "generated",
-   "generator": "experiments/score_directed_random_walk.py"
-  },
-  "docs/development_sessions.md": {
-   "class": "record",
-   "recorded": "2026-10-27",
-   "append_only": false,
-   "what": "the public transcripts of the sessions that developed the repository, one entry per session with what it settled, withdrew and left open; moved from the README's Development sessions section on 2026-10-27, and a new session is added at the end"
-  },
-  "docs/documentation_process.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/drug_administration_routes.md": {
-   "class": "generated",
-   "generator": "experiments/tabulate_drug_routes.py"
-  },
-  "docs/drug_administration_routes_v4.md": {
-   "class": "generated",
-   "generator": "experiments/tabulate_drug_routes.py"
-  },
-  "docs/drug_entry_nodes.md": {
-   "class": "record",
-   "recorded": "2026-10-09",
-   "append_only": false
-  },
-  "docs/drug_entry_nodes_measured.md": {
-   "class": "generated",
-   "generator": "experiments/measure_drug_entry_nodes.py"
-  },
-  "docs/drug_exposure_table.md": {
-   "class": "generated",
-   "generator": "experiments/build_drug_exposure_table.py"
-  },
-  "docs/drug_target_leakage.md": {
-   "class": "generated",
-   "generator": "experiments/check_drug_target_leakage.py"
-  },
-  "docs/drug_targets_any_type.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/edge_gate_simulation.md": {
-   "class": "record",
-   "recorded": "2026-10-16",
-   "append_only": true,
-   "what": "planted-truth simulations of the hard edge gates (decision 9.62): what the read-out, the exact closure evidence and stability selection recover, under which assumptions, and what that says for a fit on v5"
-  },
-  "docs/edge_priors.md": {
-   "class": "record",
-   "recorded": "2026-10-16",
-   "append_only": true,
-   "what": "the design of the edge priors (evidence strength as a prior on whether an edge is there, learnable gates pulled toward it), how each encoder reads a gate, the controls and what is provisional; decision 9.57"
-  },
-  "docs/effect_site_data_coverage.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/effect_site_coverage.py"
-  },
-  "docs/evidence_reports_spec.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/experiment_design.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b",
-   "names_absent_paths": {
-    "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
-   }
-  },
-  "docs/exploration_queue.md": {
-   "class": "living",
-   "reviewed": "2026-10-26",
-   "as_of_commit": "0b976bf",
-   "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
-  },
-  "docs/exposure_sources/benet2011_bddcs.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/exposure_sources/blood_to_plasma.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/exposure_sources/hiemke2018_agnp.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/exposure_sources/hosey2016_bddcs.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/exposure_sources/lombardo2018.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/exposure_sources/schulz2020.md": {
-   "class": "record",
-   "recorded": "2026-10-11",
-   "append_only": true,
-   "what": "a reading of one source"
-  },
-  "docs/faers_disproportionality_evidence.md": {
-   "class": "generated",
-   "generator": "experiments/fetch_faers_disproportionality.py"
-  },
-  "docs/family_in_graph.md": {
-   "class": "generated",
-   "generator": "experiments/measure_family_in_graph.py"
-  },
-  "docs/figures.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/fine_symptom_constructs.md": {
-   "class": "generated",
-   "generator": "experiments/build_fine_symptom_crosswalk.py"
-  },
-  "docs/fixed_point_against_pharmacological_steady_state.md": {
-   "class": "record",
-   "recorded": "2026-10-21",
-   "append_only": false,
-   "what": "a reading of 21 October 2026 separating the pharmacokinetic clock, the network's relaxation rates and each label's observation time, deriving that no relaxation rate changes a fixed point once the gains are read as dimensionless steady-state sensitivities; not evidence (the owner, 27 October 2026): its requoting of the 7 October slice sign check (finding 10) falls by its dated status section, and the derivations stand untested on the real loop"
-  },
-  "docs/fold_mechanism_sharing.md": {
-   "class": "generated",
-   "generator": "experiments/measure_fold_mechanism_sharing.py"
-  },
-  "docs/four_held_drugs_search.md": {
-   "class": "record",
-   "recorded": "2026-10-13",
-   "append_only": false
-  },
-  "docs/fraction_unbound_coverage.md": {
-   "class": "generated",
-   "generator": "experiments/measure_fraction_unbound_coverage.py"
-  },
-  "docs/gene_protein_split.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b",
-   "names_absent_paths": {
-    "docs/split_slice_comparisons.md": "a slice comparison table the document says exists; no commit has held it",
-    "docs/split_slice_comparisons_merged_strata.md": "as above"
-   }
-  },
-  "docs/gene_protein_split_results.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/graph_content_null_results.md": {
-   "class": "record",
-   "recorded": "2026-10-07",
-   "append_only": false
-  },
-  "docs/graph_reliance.md": {
-   "class": "generated",
-   "generator": "experiments/evaluate_on_rewired_graph.py"
-  },
-  "docs/graph_summary.md": {
-   "class": "generated",
-   "generator": "experiments/summarise_graph.py"
-  },
-  "docs/gtopdb_leakage_cost.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/gtopdb_leakage_cost.py"
-  },
-  "docs/gtopdb_target_rederivation.md": {
-   "class": "generated",
-   "generator": "experiments/measure_gtopdb_target_rederivation.py"
-  },
-  "docs/hpo_term_audit.md": {
-   "class": "generated",
-   "generator": "experiments/audit_hpo_term_expansion.py"
-  },
-  "docs/impc_knockout_evidence.md": {
-   "class": "generated",
-   "generator": "experiments/build_impc_reports.py"
-  },
-  "docs/job_harness.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/label_central_action.md": {
-   "class": "generated",
-   "generator": "experiments/read_label_central_action.py"
-  },
-  "docs/label_central_action_reading.md": {
-   "class": "record",
-   "recorded": "2026-10-13",
-   "append_only": false
-  },
-  "docs/label_negative_sources_measured.md": {
-   "class": "generated",
-   "generator": "experiments/measure_label_negative_sources.py",
-   "what": "the three label-negative sources of decision 9.92 measured against an evidence table: Phenopacket Store exclusions, trial-arm absences by assessment type, the statin-placebo negatives"
-  },
-  "docs/label_plasma_binders.md": {
-   "class": "generated",
-   "generator": "experiments/scope_label_plasma_binder_coverage.py"
-  },
-  "docs/label_plasma_binders_v4.md": {
-   "class": "generated",
-   "generator": "experiments/scope_label_plasma_binder_coverage.py"
-  },
-  "docs/label_source_review.md": {
-   "class": "record",
-   "recorded": "2026-10-10",
-   "append_only": false,
-   "what": "dated review sections, extended by new sections"
-  },
-  "docs/laboratory_label_coverage.md": {
-   "class": "generated",
-   "generator": "experiments/check_laboratory_label_coverage.py"
-  },
-  "docs/leakage_group_rules.md": {
-   "class": "generated",
-   "generator": "experiments/measure_leakage_group_rules.py"
-  },
-  "docs/leakage_group_rules_evidence_full_v2.md": {
-   "class": "generated",
-   "generator": "experiments/measure_leakage_group_rules.py"
-  },
-  "docs/leakage_only_adversary.md": {
-   "class": "generated",
-   "generator": "experiments/measure_leakage_only_adversary.py"
-  },
-  "docs/linear_response_sign_check.md": {
-   "class": "generated",
-   "generator": "experiments/check_linear_response_signs.py"
-  },
-  "docs/literature_appraisal_staging.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/literature_survey.md": {
-   "class": "generated",
-   "generator": "experiments/survey_literature.py"
-  },
-  "docs/literature_survey_spec.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/anxiety.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/cognitive_impairment.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/depressed_mood.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/elevated_mood_or_mania.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/fatigue.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/insomnia.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/irritability_or_aggression.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/psychomotor_agitation.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/psychosis.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/mechanism_cards/b6_default_disease_cluster/somnolence_or_hypersomnia.md": {
-   "class": "generated",
-   "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
-   "family": "mechanism_cards",
-   "names_generator": false,
-   "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
-  },
-  "docs/membrane_potential_constants.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/membrane_potential_reach.md": {
-   "class": "record",
-   "recorded": "2026-10-07",
-   "append_only": false
-  },
-  "docs/message_passing_depth_probe.md": {
-   "class": "generated",
-   "generator": "experiments/probe_message_passing_depth.py"
-  },
-  "docs/missing_physiology_review.md": {
-   "class": "record",
-   "recorded": "2026-10-14",
-   "append_only": false
-  },
-  "docs/module_health.md": {
-   "class": "living",
-   "reviewed": "2026-10-08",
-   "as_of_commit": "517d5c5"
-  },
-  "docs/module_health_fast_leak_results.md": {
-   "class": "generated",
-   "generator": "experiments/module_health.py"
-  },
-  "docs/module_health_results.md": {
-   "class": "generated",
-   "generator": "experiments/module_health.py"
-  },
-  "docs/module_names.md": {
-   "class": "generated",
-   "generator": "experiments/measure_module_name_availability.py"
-  },
-  "docs/neuronal_variant_comparison.md": {
-   "class": "generated",
-   "generator": "experiments/report_neuronal_variant_comparison.py"
-  },
-  "docs/node_descriptor_columns.md": {
-   "class": "generated",
-   "generator": "experiments/write_descriptor_column_doc.py"
-  },
-  "docs/nosology_discovery_options.md": {
-   "class": "draft",
-   "recorded": "2026-10-17",
-   "what": "options for deriving a nosology from the fitted model after the experiment, with what auto-psych-nosology can and cannot contribute; decision 9.64"
-  },
-  "docs/occupancy_coverage_and_shift_transfer.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/occupancy_coverage_and_shift_transfer.py"
-  },
-  "docs/off_target_scoping.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/off_targets_under_the_target_split.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/off_targets_under_the_target_split.py"
-  },
-  "docs/onsides_label_slice.md": {
-   "class": "generated",
-   "generator": "experiments/build_onsides_reports.py"
-  },
-  "docs/onsides_label_slice_spec.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/open_decisions.md": {
-   "class": "record",
-   "recorded": "2026-10-12",
-   "append_only": false,
-   "decision_log": true,
-   "what": "the decision log: rows are edited when a decision closes (the id is struck through), ids are never dropped or renumbered"
-  },
-  "docs/open_targets_class_composition.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/open_targets_class_composition.py"
-  },
-  "docs/orosomucoid_label_stake.md": {
-   "class": "generated",
-   "generator": "experiments/measure_orosomucoid_label_stake.py"
-  },
-  "docs/parkinsonism_symptom.md": {
-   "class": "generated",
-   "generator": "experiments/compare_parkinsonism_evidence.py"
-  },
-  "docs/pathway_test_options.md": {
-   "class": "record",
-   "recorded": "2026-10-08",
-   "append_only": false
-  },
-  "docs/perturbation_type_offset.md": {
-   "class": "generated",
-   "generator": "experiments/measure_perturbation_type_offset.py"
-  },
-  "docs/pet_occupancy_feasibility.md": {
-   "class": "record",
-   "recorded": "2026-10-12",
-   "append_only": false
-  },
-  "docs/pk_coverage_check_2026-10-24.md": {
-   "class": "record",
-   "recorded": "2026-10-25",
-   "append_only": false,
-   "what": "the PK coverage measurement of 24 October 2026 at a9503af, whose scripts were lost; brought into the repository on 25 October 2026"
-  },
-  "docs/phase1_counts.md": {
-   "class": "generated",
-   "generator": "experiments/run_phase1_counts.py"
-  },
-  "docs/phase2_baselines.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase2_baselines_disease_cluster.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase2_baselines_full_disease_cluster.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase2_baselines_full_gene.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase2_baselines_full_v2.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase2_baselines_full_v2_development.md": {
-   "class": "generated",
-   "generator": "experiments/run_baselines.py"
-  },
-  "docs/phase3_main_model.md": {
-   "class": "generated",
-   "generator": "experiments/aggregate_main_model_runs.py"
-  },
-  "docs/physiological_adherence_review.md": {
-   "class": "record",
-   "recorded": "2026-10-13",
-   "append_only": false
-  },
-  "docs/physiology_audit.md": {
-   "class": "generated",
-   "generator": "experiments/audit_physiology.py"
-  },
-  "docs/placeholder_concentration_calibration.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/placeholder_concentration_calibration.py"
-  },
-  "docs/plasma_binder_confirmatory_effect.md": {
-   "class": "generated",
-   "generator": "experiments/measure_carriage_graph_effect.py"
-  },
-  "docs/plasma_binder_graph.md": {
-   "class": "generated",
-   "generator": "experiments/build_plasma_binder_variant.py"
-  },
-  "docs/plasma_protein_binding.md": {
-   "class": "record",
-   "recorded": "2026-10-09",
-   "append_only": false
-  },
-  "docs/preregistration.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/preregistration_amendment_draft.md": {
-   "class": "draft",
-   "recorded": "2026-10-11"
-  },
-  "docs/preregistration_baseline_2026-10-15.md": {
-   "class": "frozen",
-   "sha256": "08b02e8d303b61b4ebb4452266e54241c153b2600d58039bb5bb70dbb5e14104",
-   "frozen_on": "2026-10-15",
-   "why": "the registration exactly as it stood at the freeze; experiments/generate_amendment_history.py records every change since"
-  },
-  "docs/protein_descriptor_report.md": {
-   "class": "generated",
-   "generator": "experiments/build_protein_descriptors.py"
-  },
-  "docs/psychiatric_drug_additions.md": {
-   "class": "record",
-   "recorded": "2026-10-14",
-   "append_only": false
-  },
-  "docs/rebuild_leakage_cost.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/rebuild_leakage_cost.py"
-  },
-  "docs/reconstruction_errata.md": {
-   "class": "record",
-   "recorded": "2026-10-07",
-   "append_only": true
-  },
-  "docs/registered_core.md": {
-   "class": "generated",
-   "generator": "experiments/generate_registered_core.py",
-   "what": "every registered rule with its value, the reason the configuration gives, the decisions and items its text names and the code that holds it; the short way into the registration"
-  },
-  "docs/relation_timescale_ordering_2026-10-26.md": {
-   "class": "record",
-   "recorded": "2026-10-26",
-   "append_only": true,
-   "what": "which side of an observation time each relation falls on, binned against about 2 hours, 6 weeks and 1 year, with the straddling set reported as a finding; researched on Fable, seven sources Consensus-only and marked as such"
-  },
-  "docs/research_summary.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/rewiring_null_distribution.md": {
-   "class": "generated",
-   "generator": "experiments/run_rewiring_null_distribution.py"
-  },
-  "docs/rewiring_null_distribution_walk_graph.md": {
-   "class": "generated",
-   "generator": "experiments/run_rewiring_null_distribution.py"
-  },
-  "docs/rodent_readout_human_evidence.md": {
-   "class": "generated",
-   "generator": "experiments/map_rodent_readout_human_evidence.py"
-  },
-  "docs/score_by_layer_contact_neuronal.md": {
-   "class": "generated",
-   "generator": "experiments/score_by_layer_contact.py"
-  },
-  "docs/score_by_module_coverage.md": {
-   "class": "generated",
-   "generator": "experiments/score_by_module_coverage.py"
-  },
-  "docs/score_by_pathway_split.md": {
-   "class": "generated",
-   "generator": "experiments/score_by_pathway_split.py"
-  },
-  "docs/set_aside_pair_sensitivity.md": {
-   "class": "generated",
-   "generator": "experiments/measure_set_aside_pair_sensitivity.py"
-  },
-  "docs/sign_and_typing_ablations.md": {
-   "class": "record",
-   "recorded": "2026-10-07",
-   "append_only": false
-  },
-  "docs/soft_priors.md": {
-   "class": "record",
-   "recorded": "2026-10-16",
-   "append_only": true,
-   "what": "the design of the soft priors (evidence below the label bar as targets and weights), its reasons, the controls and what is provisional; decision 9.50"
-  },
-  "docs/special_population_carrier_signal.md": {
-   "class": "generated",
-   "generator": "experiments/measure_special_population_carrier_signal.py"
-  },
-  "docs/status.md": {
-   "class": "generated",
-   "generator": "experiments/generate_status.py",
-   "what": "the one page that says what is current"
-  },
-  "docs/steady_state_readout_alternatives.md": {
-   "class": "record",
-   "recorded": "2026-10-20",
-   "append_only": false,
-   "what": "a reading of 20 October 2026 of what a fixed-point readout of the linear-response encoder cannot represent, with twelve alternatives ranked by cost; not evidence (the owner, 27 October 2026): its uses of the 7 October slice sign check (finding 10) and of the slice-pilot findings fall by its dated status section, and what stands is derivation and proposal"
-  },
-  "docs/superfluous_physiology_review.md": {
-   "class": "record",
-   "recorded": "2026-10-14",
-   "append_only": false
-  },
-  "docs/target_occupancy_measured.md": {
-   "class": "generated",
-   "generator": "experiments/measure_target_occupancy.py"
-  },
-  "docs/target_split_options.md": {
-   "class": "generated",
-   "generator": "experiments/label_review/target_split_options.py"
-  },
-  "docs/technology_audit.md": {
-   "class": "generated",
-   "generator": "experiments/audit_technology.py"
-  },
-  "docs/tissue_saturation.md": {
-   "class": "generated",
-   "generator": "experiments/measure_tissue_saturation.py"
-  },
-  "docs/trained_diffusion_readout.md": {
-   "class": "generated",
-   "generator": "experiments/score_trained_diffusion_readout.py"
-  },
-  "docs/transporter_connectivity_audit.md": {
-   "class": "generated",
-   "generator": "experiments/audit_transporter_connectivity.py"
-  },
-  "docs/twin_comparisons.md": {
-   "class": "generated",
-   "generator": "experiments/compare_twin_runs.py"
-  },
-  "docs/knowledge_graph_practices_review.md": {
-   "class": "record",
-   "recorded": "2026-10-17",
-   "append_only": true,
-   "what": "published practice for building a signed causal knowledge graph read against this build, with measurements on v5 and ten ranked changes; decision 9.70"
-  },
-  "docs/channel_conduction_audit.md": {
-   "class": "generated",
-   "generator": "experiments/audit_channel_conduction.py",
-   "what": "which ion channel genes of the graph catalyse a reaction that reaches the membrane potential, by family; decision 9.71"
-  },
-  "docs/regulation_sign_recuration.md": {
-   "class": "record",
-   "recorded": "2026-10-17",
-   "append_only": true,
-   "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
-  },
-  "docs/open_decision_triage_2026-10-21.md": {
-   "class": "record",
-   "recorded": "2026-10-21",
-   "append_only": true,
-   "what": "every id docs/open_decisions.md left open at 2f21e2b, classified against the git history and the pull requests, with the generator's open/closed rule; the companion to decision 9.85 for the count"
-  },
-  "docs/monogenic_negative_report_pairs_2026-10-21.md": {
-   "class": "record",
-   "recorded": "2026-10-21",
-   "append_only": true,
-   "what": "the monogenic records carrying a negative report, pair by pair: the disease entries behind each positive and each negative annotation, and whether the pair is a contradiction, a different allele direction or a crosswalk artefact; decision 9.85"
-  },
-  "docs/nonlinearity_inventory.md": {
-   "class": "living",
-   "reviewed": "2026-10-25",
-   "as_of_commit": "697f59b"
-  },
-  "docs/mouse_sources_measured_v5.md": {
-   "class": "generated",
-   "generator": "experiments/measure_mouse_sources.py",
-   "what": "the animal report sources of decisions 9.93 and 9.94 (mouse: IMPC, MGI-literature, MGI-screen, SFARI-mouse-models; rat, fly, zebrafish and worm) measured on the v5 tables: calls, absences, label-positive rates given each, the calibrated regression's species, source and source x direction terms, and each species' route (pooled or its own fit)"
+  "_what_this_is": "The register of every tracked Markdown document and its class, which decides what tests/test_documentation_process.py checks for it. Classes: generated (a script writes it; must name the script and, once regenerated after 2026-10-16, carry the provenance stamp), living (hand-written, kept current by overwriting; reviewed and as_of_commit say when it was last read against the repository), record (dated, corrected by a dated addition; append_only means the committed text must be a prefix of the working tree), frozen (sha256 pinned), draft (no claim about the current state). docs/documentation_process.md states the rules; experiments/register_documents.py adds and prunes entries.",
+  "_how_it_is_enforced": "tests/test_documentation_process.py fails for a tracked document that is not registered, an entry whose file is not tracked, an entry with confirmed: false, a frozen document whose sha256 moved, a generated document regenerated after the policy date without a stamp, a living document that describes a container or a session, an append-only record whose committed text was edited, and a decision id that was dropped or renumbered.",
+  "policy_date": "2026-10-16",
+  "documents": {
+    "CLAUDE.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "README.md": {
+      "class": "living",
+      "reviewed": "2026-10-27",
+      "as_of_commit": "2622ed0"
+    },
+    "docs/README.md": {
+      "class": "generated",
+      "generator": "experiments/generate_docs_index.py",
+      "what": "the landing page of docs/: where to start, and every registered document by topic with its class"
+    },
+    "docs/allele_perturbations.md": {
+      "class": "record",
+      "recorded": "2026-10-16",
+      "append_only": true,
+      "what": "the allele as the perturbation (decision 9.54 (d)): the rule, the four sources of a disease's mechanism in order (Orphanet, its OMIM alignments, Gene2Phenotype, cited adjudications), the curated neomorph, what it changed in the v5 tables and what is still wrong"
+    },
+    "docs/alternative_sources.md": {
+      "class": "record",
+      "recorded": "2026-10-03",
+      "append_only": false,
+      "what": "the inventory of substitute sources fetched on 2026-10-03 while the primary hosts were denied, and the decisions taken on them"
+    },
+    "docs/amendment_history.md": {
+      "class": "generated",
+      "generator": "experiments/generate_amendment_history.py"
+    },
+    "docs/b6_default_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_cofactors_neuronal_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_gate_time_scales_cofactors_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_time_scales_cofactors_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_time_scales_cofactors_log_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_linear_response_time_scales_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_mechanistic_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_mechanistic_expected_gate_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_mechanistic_gate_time_scales_disease_cluster_modules.md": {
+      "class": "generated",
+      "generator": "experiments/analyze_pathway_modules.py"
+    },
+    "docs/b6_module_diagnosis.md": {
+      "class": "generated",
+      "generator": "experiments/diagnose_noisy_or_modules.py"
+    },
+    "docs/best_epoch_zero.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/binds_resource_precision.md": {
+      "class": "generated",
+      "generator": "experiments/measure_binds_resource_precision.py",
+      "what": "the precision of each OmniPath resource supplying binds edges against HuRI's tested space, by the method of Venkatesan et al. 2009 (decision 9.91); a report that sets no weight"
+    },
+    "docs/brain_exposure_data_feasibility.md": {
+      "class": "record",
+      "recorded": "2026-10-12",
+      "append_only": false
+    },
+    "docs/brain_expression_descriptors.md": {
+      "class": "record",
+      "recorded": "2026-10-07",
+      "append_only": false
+    },
+    "docs/brenda_regeneration_handoff_2026-10-26.md": {
+      "class": "record",
+      "recorded": "2026-10-27",
+      "append_only": false,
+      "what": "the BRENDA regeneration handoff of 26 October 2026 for decision 9.88: the 47 activator notes' first-pass reading, the note-class counts, file hashes, the no_activation implementation shape and the mapping procedure; moved from a Project note on 27 October 2026"
+    },
+    "docs/cell_state_representation.md": {
+      "class": "living",
+      "reviewed": "2026-10-13",
+      "as_of_commit": "e66ebc6"
+    },
+    "docs/central_action_rule.md": {
+      "class": "generated",
+      "generator": "experiments/apply_central_action_rule.py"
+    },
+    "docs/channel_conduction_audit.md": {
+      "class": "generated",
+      "generator": "experiments/audit_channel_conduction.py",
+      "what": "which ion channel genes of the graph catalyse a reaction that reaches the membrane potential, by family; decision 9.71"
+    },
+    "docs/clinical_trial_arm_evidence.md": {
+      "class": "generated",
+      "generator": "experiments/fetch_clinicaltrials_adverse_events.py"
+    },
+    "docs/clinical_trial_outcome_evidence.md": {
+      "class": "generated",
+      "generator": "experiments/fetch_clinicaltrials_outcomes.py"
+    },
+    "docs/combined_perturbations.md": {
+      "class": "generated",
+      "generator": "experiments/build_combined_perturbations.py"
+    },
+    "docs/comparative_checks.md": {
+      "class": "generated",
+      "generator": "experiments/run_comparative_checks.py"
+    },
+    "docs/complex_conjunction_semantics.md": {
+      "class": "generated",
+      "generator": "experiments/measure_complex_conjunction_semantics.py"
+    },
+    "docs/complex_descriptors.md": {
+      "class": "generated",
+      "generator": "experiments/build_complex_descriptors.py"
+    },
+    "docs/complex_limiting_member_weight.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/complex_limiting_member_weight.py"
+    },
+    "docs/confirmatory_architecture_review.md": {
+      "class": "record",
+      "recorded": "2026-10-10",
+      "append_only": false
+    },
+    "docs/confirmatory_pilots_development.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/confirmatory_runbook.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b",
+      "names_absent_paths": {
+        "docs/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
+        "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
+      }
+    },
+    "docs/coproduct_of_de_novo_split_2026-10-26.md": {
+      "class": "record",
+      "recorded": "2026-10-26",
+      "append_only": true,
+      "what": "the carrier relation coproduct_of mixes regeneration with de novo synthesis under one learned gain: 49 de novo against 1,030 redistribution edges on the v0.4 slice, 2 against 37 in the biopterin family, and the whole de novo biopterin route passing through one carrier-gained edge at SPR"
+    },
+    "docs/ctd_notice_draft.md": {
+      "class": "draft",
+      "recorded": "2026-10-11"
+    },
+    "docs/data_layer_rebuild.md": {
+      "class": "record",
+      "recorded": "2026-10-10",
+      "append_only": true
+    },
+    "docs/data_sources.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/decision_history.md": {
+      "class": "generated",
+      "generator": "experiments/generate_decision_history.py",
+      "what": "when each decision was recorded and closed, from the git history of the log"
+    },
+    "docs/descriptor_rule.md": {
+      "class": "generated",
+      "generator": "experiments/compare_twin_runs.py"
+    },
+    "docs/descriptor_treatments.md": {
+      "class": "generated",
+      "generator": "experiments/compare_twin_runs.py"
+    },
+    "docs/design_review_v04.md": {
+      "class": "record",
+      "recorded": "2026-10-03",
+      "append_only": false
+    },
+    "docs/development_sessions.md": {
+      "class": "record",
+      "recorded": "2026-10-27",
+      "append_only": false,
+      "what": "the public transcripts of the sessions that developed the repository, one entry per session with what it settled, withdrew and left open; moved from the README's Development sessions section on 2026-10-27, and a new session is added at the end"
+    },
+    "docs/directed_random_walk.md": {
+      "class": "generated",
+      "generator": "experiments/score_directed_random_walk.py"
+    },
+    "docs/documentation_process.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/drug_administration_routes.md": {
+      "class": "generated",
+      "generator": "experiments/tabulate_drug_routes.py"
+    },
+    "docs/drug_administration_routes_v4.md": {
+      "class": "generated",
+      "generator": "experiments/tabulate_drug_routes.py"
+    },
+    "docs/drug_entry_nodes.md": {
+      "class": "record",
+      "recorded": "2026-10-09",
+      "append_only": false
+    },
+    "docs/drug_entry_nodes_measured.md": {
+      "class": "generated",
+      "generator": "experiments/measure_drug_entry_nodes.py"
+    },
+    "docs/drug_exposure_table.md": {
+      "class": "generated",
+      "generator": "experiments/build_drug_exposure_table.py"
+    },
+    "docs/drug_target_leakage.md": {
+      "class": "generated",
+      "generator": "experiments/check_drug_target_leakage.py"
+    },
+    "docs/drug_targets_any_type.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/edge_gate_simulation.md": {
+      "class": "record",
+      "recorded": "2026-10-16",
+      "append_only": true,
+      "what": "planted-truth simulations of the hard edge gates (decision 9.62): what the read-out, the exact closure evidence and stability selection recover, under which assumptions, and what that says for a fit on v5"
+    },
+    "docs/edge_priors.md": {
+      "class": "record",
+      "recorded": "2026-10-16",
+      "append_only": true,
+      "what": "the design of the edge priors (evidence strength as a prior on whether an edge is there, learnable gates pulled toward it), how each encoder reads a gate, the controls and what is provisional; decision 9.57"
+    },
+    "docs/effect_site_data_coverage.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/effect_site_coverage.py"
+    },
+    "docs/evidence_reports_spec.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/experiment_design.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b",
+      "names_absent_paths": {
+        "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
+      }
+    },
+    "docs/exploration_queue.md": {
+      "class": "living",
+      "reviewed": "2026-10-26",
+      "as_of_commit": "0b976bf",
+      "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
+    },
+    "docs/exposure_sources/benet2011_bddcs.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/exposure_sources/blood_to_plasma.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/exposure_sources/hiemke2018_agnp.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/exposure_sources/hosey2016_bddcs.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/exposure_sources/lombardo2018.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/exposure_sources/schulz2020.md": {
+      "class": "record",
+      "recorded": "2026-10-11",
+      "append_only": true,
+      "what": "a reading of one source"
+    },
+    "docs/faers_disproportionality_evidence.md": {
+      "class": "generated",
+      "generator": "experiments/fetch_faers_disproportionality.py"
+    },
+    "docs/family_in_graph.md": {
+      "class": "generated",
+      "generator": "experiments/measure_family_in_graph.py"
+    },
+    "docs/figures.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/fine_symptom_constructs.md": {
+      "class": "generated",
+      "generator": "experiments/build_fine_symptom_crosswalk.py"
+    },
+    "docs/fixed_point_against_pharmacological_steady_state.md": {
+      "class": "record",
+      "recorded": "2026-10-21",
+      "append_only": false,
+      "what": "a reading of 21 October 2026 separating the pharmacokinetic clock, the network's relaxation rates and each label's observation time, deriving that no relaxation rate changes a fixed point once the gains are read as dimensionless steady-state sensitivities; not evidence (the owner, 27 October 2026): its requoting of the 7 October slice sign check (finding 10) falls by its dated status section, and the derivations stand untested on the real loop"
+    },
+    "docs/fold_mechanism_sharing.md": {
+      "class": "generated",
+      "generator": "experiments/measure_fold_mechanism_sharing.py"
+    },
+    "docs/four_held_drugs_search.md": {
+      "class": "record",
+      "recorded": "2026-10-13",
+      "append_only": false
+    },
+    "docs/fraction_unbound_coverage.md": {
+      "class": "generated",
+      "generator": "experiments/measure_fraction_unbound_coverage.py"
+    },
+    "docs/gene_protein_split.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b",
+      "names_absent_paths": {
+        "docs/split_slice_comparisons.md": "a slice comparison table the document says exists; no commit has held it",
+        "docs/split_slice_comparisons_merged_strata.md": "as above"
+      }
+    },
+    "docs/gene_protein_split_results.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/graph_content_null_results.md": {
+      "class": "record",
+      "recorded": "2026-10-07",
+      "append_only": false
+    },
+    "docs/graph_reliance.md": {
+      "class": "generated",
+      "generator": "experiments/evaluate_on_rewired_graph.py"
+    },
+    "docs/graph_summary.md": {
+      "class": "generated",
+      "generator": "experiments/summarise_graph.py"
+    },
+    "docs/gtopdb_leakage_cost.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/gtopdb_leakage_cost.py"
+    },
+    "docs/gtopdb_target_rederivation.md": {
+      "class": "generated",
+      "generator": "experiments/measure_gtopdb_target_rederivation.py"
+    },
+    "docs/hpo_term_audit.md": {
+      "class": "generated",
+      "generator": "experiments/audit_hpo_term_expansion.py"
+    },
+    "docs/impc_knockout_evidence.md": {
+      "class": "generated",
+      "generator": "experiments/build_impc_reports.py"
+    },
+    "docs/job_harness.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/knowledge_graph_practices_review.md": {
+      "class": "record",
+      "recorded": "2026-10-17",
+      "append_only": true,
+      "what": "published practice for building a signed causal knowledge graph read against this build, with measurements on v5 and ten ranked changes; decision 9.70"
+    },
+    "docs/label_central_action.md": {
+      "class": "generated",
+      "generator": "experiments/read_label_central_action.py"
+    },
+    "docs/label_central_action_reading.md": {
+      "class": "record",
+      "recorded": "2026-10-13",
+      "append_only": false
+    },
+    "docs/label_negative_sources_measured.md": {
+      "class": "generated",
+      "generator": "experiments/measure_label_negative_sources.py",
+      "what": "the three label-negative sources of decision 9.92 measured against an evidence table: Phenopacket Store exclusions, trial-arm absences by assessment type, the statin-placebo negatives"
+    },
+    "docs/label_plasma_binders.md": {
+      "class": "generated",
+      "generator": "experiments/scope_label_plasma_binder_coverage.py"
+    },
+    "docs/label_plasma_binders_v4.md": {
+      "class": "generated",
+      "generator": "experiments/scope_label_plasma_binder_coverage.py"
+    },
+    "docs/label_source_review.md": {
+      "class": "record",
+      "recorded": "2026-10-10",
+      "append_only": false,
+      "what": "dated review sections, extended by new sections"
+    },
+    "docs/laboratory_label_coverage.md": {
+      "class": "generated",
+      "generator": "experiments/check_laboratory_label_coverage.py"
+    },
+    "docs/leakage_group_rules.md": {
+      "class": "generated",
+      "generator": "experiments/measure_leakage_group_rules.py"
+    },
+    "docs/leakage_group_rules_evidence_full_v2.md": {
+      "class": "generated",
+      "generator": "experiments/measure_leakage_group_rules.py"
+    },
+    "docs/leakage_only_adversary.md": {
+      "class": "generated",
+      "generator": "experiments/measure_leakage_only_adversary.py"
+    },
+    "docs/linear_response_sign_check.md": {
+      "class": "generated",
+      "generator": "experiments/check_linear_response_signs.py"
+    },
+    "docs/literature_appraisal_staging.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/literature_survey.md": {
+      "class": "generated",
+      "generator": "experiments/survey_literature.py"
+    },
+    "docs/literature_survey_spec.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/anxiety.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/cognitive_impairment.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/depressed_mood.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/elevated_mood_or_mania.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/fatigue.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/insomnia.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/irritability_or_aggression.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/psychomotor_agitation.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/psychosis.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/mechanism_cards/b6_default_disease_cluster/somnolence_or_hypersomnia.md": {
+      "class": "generated",
+      "generator": "mechanistic_pathway_learning/evaluation/mechanism_cards.py",
+      "family": "mechanism_cards",
+      "names_generator": false,
+      "why": "written on 2026-10-03 from runs/b6_default_disease_cluster (the monogenic slice pilot) before the cards named their script; the next run writes the stamp"
+    },
+    "docs/membrane_potential_constants.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/membrane_potential_reach.md": {
+      "class": "record",
+      "recorded": "2026-10-07",
+      "append_only": false
+    },
+    "docs/message_passing_depth_probe.md": {
+      "class": "generated",
+      "generator": "experiments/probe_message_passing_depth.py"
+    },
+    "docs/missing_physiology_review.md": {
+      "class": "record",
+      "recorded": "2026-10-14",
+      "append_only": false
+    },
+    "docs/module_health.md": {
+      "class": "living",
+      "reviewed": "2026-10-08",
+      "as_of_commit": "517d5c5"
+    },
+    "docs/module_health_fast_leak_results.md": {
+      "class": "generated",
+      "generator": "experiments/module_health.py"
+    },
+    "docs/module_health_results.md": {
+      "class": "generated",
+      "generator": "experiments/module_health.py"
+    },
+    "docs/module_names.md": {
+      "class": "generated",
+      "generator": "experiments/measure_module_name_availability.py"
+    },
+    "docs/monogenic_negative_report_pairs_2026-10-21.md": {
+      "class": "record",
+      "recorded": "2026-10-21",
+      "append_only": true,
+      "what": "the monogenic records carrying a negative report, pair by pair: the disease entries behind each positive and each negative annotation, and whether the pair is a contradiction, a different allele direction or a crosswalk artefact; decision 9.85"
+    },
+    "docs/mouse_sources_measured_v5.md": {
+      "class": "generated",
+      "generator": "experiments/measure_mouse_sources.py",
+      "what": "the animal report sources of decisions 9.93 and 9.94 (mouse: IMPC, MGI-literature, MGI-screen, SFARI-mouse-models; rat, fly, zebrafish and worm) measured on the v5 tables: calls, absences, label-positive rates given each, the calibrated regression's species, source and source x direction terms, and each species' route (pooled or its own fit)"
+    },
+    "docs/neuronal_variant_comparison.md": {
+      "class": "generated",
+      "generator": "experiments/report_neuronal_variant_comparison.py"
+    },
+    "docs/node_descriptor_columns.md": {
+      "class": "generated",
+      "generator": "experiments/write_descriptor_column_doc.py"
+    },
+    "docs/nonlinearity_inventory.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/nosology_discovery_options.md": {
+      "class": "draft",
+      "recorded": "2026-10-17",
+      "what": "options for deriving a nosology from the fitted model after the experiment, with what auto-psych-nosology can and cannot contribute; decision 9.64"
+    },
+    "docs/occupancy_coverage_and_shift_transfer.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/occupancy_coverage_and_shift_transfer.py"
+    },
+    "docs/off_target_scoping.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/off_targets_under_the_target_split.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/off_targets_under_the_target_split.py"
+    },
+    "docs/onsides_label_slice.md": {
+      "class": "generated",
+      "generator": "experiments/build_onsides_reports.py"
+    },
+    "docs/onsides_label_slice_spec.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/open_decision_triage_2026-10-21.md": {
+      "class": "record",
+      "recorded": "2026-10-21",
+      "append_only": true,
+      "what": "every id docs/open_decisions.md left open at 2f21e2b, classified against the git history and the pull requests, with the generator's open/closed rule; the companion to decision 9.85 for the count"
+    },
+    "docs/open_decisions.md": {
+      "class": "record",
+      "recorded": "2026-10-12",
+      "append_only": false,
+      "decision_log": true,
+      "what": "the decision log: rows are edited when a decision closes (the id is struck through), ids are never dropped or renumbered"
+    },
+    "docs/open_targets_class_composition.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/open_targets_class_composition.py"
+    },
+    "docs/orosomucoid_label_stake.md": {
+      "class": "generated",
+      "generator": "experiments/measure_orosomucoid_label_stake.py"
+    },
+    "docs/parkinsonism_symptom.md": {
+      "class": "generated",
+      "generator": "experiments/compare_parkinsonism_evidence.py"
+    },
+    "docs/pathway_test_options.md": {
+      "class": "record",
+      "recorded": "2026-10-08",
+      "append_only": false
+    },
+    "docs/perturbation_type_offset.md": {
+      "class": "generated",
+      "generator": "experiments/measure_perturbation_type_offset.py"
+    },
+    "docs/pet_occupancy_feasibility.md": {
+      "class": "record",
+      "recorded": "2026-10-12",
+      "append_only": false
+    },
+    "docs/phase1_counts.md": {
+      "class": "generated",
+      "generator": "experiments/run_phase1_counts.py"
+    },
+    "docs/phase2_baselines.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase2_baselines_disease_cluster.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase2_baselines_full_disease_cluster.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase2_baselines_full_gene.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase2_baselines_full_v2.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase2_baselines_full_v2_development.md": {
+      "class": "generated",
+      "generator": "experiments/run_baselines.py"
+    },
+    "docs/phase3_main_model.md": {
+      "class": "generated",
+      "generator": "experiments/aggregate_main_model_runs.py"
+    },
+    "docs/physiological_adherence_review.md": {
+      "class": "record",
+      "recorded": "2026-10-13",
+      "append_only": false
+    },
+    "docs/physiology_audit.md": {
+      "class": "generated",
+      "generator": "experiments/audit_physiology.py"
+    },
+    "docs/pk_coverage_check_2026-10-24.md": {
+      "class": "record",
+      "recorded": "2026-10-25",
+      "append_only": false,
+      "what": "the PK coverage measurement of 24 October 2026 at a9503af, whose scripts were lost; brought into the repository on 25 October 2026"
+    },
+    "docs/placeholder_concentration_calibration.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/placeholder_concentration_calibration.py"
+    },
+    "docs/plasma_binder_confirmatory_effect.md": {
+      "class": "generated",
+      "generator": "experiments/measure_carriage_graph_effect.py"
+    },
+    "docs/plasma_binder_graph.md": {
+      "class": "generated",
+      "generator": "experiments/build_plasma_binder_variant.py"
+    },
+    "docs/plasma_protein_binding.md": {
+      "class": "record",
+      "recorded": "2026-10-09",
+      "append_only": false
+    },
+    "docs/preregistration.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/preregistration_amendment_draft.md": {
+      "class": "draft",
+      "recorded": "2026-10-11"
+    },
+    "docs/preregistration_baseline_2026-10-15.md": {
+      "class": "frozen",
+      "sha256": "08b02e8d303b61b4ebb4452266e54241c153b2600d58039bb5bb70dbb5e14104",
+      "frozen_on": "2026-10-15",
+      "why": "the registration exactly as it stood at the freeze; experiments/generate_amendment_history.py records every change since"
+    },
+    "docs/protein_descriptor_report.md": {
+      "class": "generated",
+      "generator": "experiments/build_protein_descriptors.py"
+    },
+    "docs/psychiatric_drug_additions.md": {
+      "class": "record",
+      "recorded": "2026-10-14",
+      "append_only": false
+    },
+    "docs/rebuild_leakage_cost.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/rebuild_leakage_cost.py"
+    },
+    "docs/reconstruction_errata.md": {
+      "class": "record",
+      "recorded": "2026-10-07",
+      "append_only": true
+    },
+    "docs/registered_core.md": {
+      "class": "generated",
+      "generator": "experiments/generate_registered_core.py",
+      "what": "every registered rule with its value, the reason the configuration gives, the decisions and items its text names and the code that holds it; the short way into the registration"
+    },
+    "docs/regulation_sign_recuration.md": {
+      "class": "record",
+      "recorded": "2026-10-17",
+      "append_only": true,
+      "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
+    },
+    "docs/relation_timescale_ordering_2026-10-26.md": {
+      "class": "record",
+      "recorded": "2026-10-26",
+      "append_only": true,
+      "what": "which side of an observation time each relation falls on, binned against about 2 hours, 6 weeks and 1 year, with the straddling set reported as a finding; researched on Fable, seven sources Consensus-only and marked as such"
+    },
+    "docs/research_summary.md": {
+      "class": "living",
+      "reviewed": "2026-10-25",
+      "as_of_commit": "697f59b"
+    },
+    "docs/rewiring_null_distribution.md": {
+      "class": "generated",
+      "generator": "experiments/run_rewiring_null_distribution.py"
+    },
+    "docs/rewiring_null_distribution_walk_graph.md": {
+      "class": "generated",
+      "generator": "experiments/run_rewiring_null_distribution.py"
+    },
+    "docs/rodent_readout_human_evidence.md": {
+      "class": "generated",
+      "generator": "experiments/map_rodent_readout_human_evidence.py"
+    },
+    "docs/score_by_layer_contact_neuronal.md": {
+      "class": "generated",
+      "generator": "experiments/score_by_layer_contact.py"
+    },
+    "docs/score_by_module_coverage.md": {
+      "class": "generated",
+      "generator": "experiments/score_by_module_coverage.py"
+    },
+    "docs/score_by_pathway_split.md": {
+      "class": "generated",
+      "generator": "experiments/score_by_pathway_split.py"
+    },
+    "docs/set_aside_pair_sensitivity.md": {
+      "class": "generated",
+      "generator": "experiments/measure_set_aside_pair_sensitivity.py"
+    },
+    "docs/sign_and_typing_ablations.md": {
+      "class": "record",
+      "recorded": "2026-10-07",
+      "append_only": false
+    },
+    "docs/soft_priors.md": {
+      "class": "record",
+      "recorded": "2026-10-16",
+      "append_only": true,
+      "what": "the design of the soft priors (evidence below the label bar as targets and weights), its reasons, the controls and what is provisional; decision 9.50"
+    },
+    "docs/special_population_carrier_signal.md": {
+      "class": "generated",
+      "generator": "experiments/measure_special_population_carrier_signal.py"
+    },
+    "docs/status.md": {
+      "class": "generated",
+      "generator": "experiments/generate_status.py",
+      "what": "the one page that says what is current"
+    },
+    "docs/steady_state_readout_alternatives.md": {
+      "class": "record",
+      "recorded": "2026-10-20",
+      "append_only": false,
+      "what": "a reading of 20 October 2026 of what a fixed-point readout of the linear-response encoder cannot represent, with twelve alternatives ranked by cost; not evidence (the owner, 27 October 2026): its uses of the 7 October slice sign check (finding 10) and of the slice-pilot findings fall by its dated status section, and what stands is derivation and proposal"
+    },
+    "docs/superfluous_physiology_review.md": {
+      "class": "record",
+      "recorded": "2026-10-14",
+      "append_only": false
+    },
+    "docs/target_occupancy_measured.md": {
+      "class": "generated",
+      "generator": "experiments/measure_target_occupancy.py"
+    },
+    "docs/target_split_options.md": {
+      "class": "generated",
+      "generator": "experiments/label_review/target_split_options.py"
+    },
+    "docs/technology_audit.md": {
+      "class": "generated",
+      "generator": "experiments/audit_technology.py"
+    },
+    "docs/tissue_saturation.md": {
+      "class": "generated",
+      "generator": "experiments/measure_tissue_saturation.py"
+    },
+    "docs/trained_diffusion_readout.md": {
+      "class": "generated",
+      "generator": "experiments/score_trained_diffusion_readout.py"
+    },
+    "docs/transporter_connectivity_audit.md": {
+      "class": "generated",
+      "generator": "experiments/audit_transporter_connectivity.py"
+    },
+    "docs/twin_comparisons.md": {
+      "class": "generated",
+      "generator": "experiments/compare_twin_runs.py"
+    }
   }
- }
 }
