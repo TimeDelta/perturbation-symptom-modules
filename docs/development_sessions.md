@@ -421,3 +421,29 @@ transcript address, then the dates of the session, then its summary.
   alone needs only the documentation tests. The owner has not answered that offer. The session attached the repository
   with push access through `add_repo` to do the work, a step the owner did not approve separately. It ran on Claude
   Sonnet 5.5 and did no research, so no Fable recheck is owed from it.
+- https://claude.ai/share/6f602842-f08b-4986-9ef2-bda76ab571b4 — 21 to 27 October 2026. The owner considered
+  extending the symptom set to all of neurology, since "there's no guarantee that the existing neuro and psych
+  nosologies won't overlap in the one i'm developing". The session argued against importing a whole chapter, which
+  is another inherited boundary and includes lesional neurology the graph cannot represent without anatomy, and
+  cited Crossley et al. 2015 and the Brainstorm Consortium 2018, both of which find the two classes more distinct
+  than overlapping while starting from existing diagnoses. The owner ruled that the bound "has to be data-defined.
+  that's the only acceptable way", then ruled on five pre-specified choices: every symptom term of every label
+  source is a candidate; no seed; the null keeps both node degrees, holding each perturbation's label count and
+  each symptom's report count; the only correction is removing labels that match the drug's own indication, with a
+  gene-perturbation-only stratum reported as a check; nothing is excluded. Marking moved from poorly fit terms to
+  terms "related to tumors, etc.", adjudicated case by case before any fit by two independent adjudicators, with
+  justifications that cannot reference psychiatry. The owner kept inflammation and autoimmunity unmarked, kept
+  parkinsonism unmarked if region data can be sourced and noted that malformation can have a monogenic cause. A
+  second research pass on how to represent tumours, vascular events, trauma, malformation, degeneration and
+  autoimmunity proposed regional, perfusion and pressure layers; on being told the labels cannot fit their
+  parameters, the owner ruled "Just keep the term making I guess" and moved the non-steady-state regime to its own
+  session. **Recorded:** decision 9.96, written by a Fable subagent (`aa24e7a`, pages regenerated in `be15dda`),
+  with four items left to the owner: malformation terms, the count of marked terms, parkinsonism region data (the
+  pipeline already fetches two Siletti substantia nigra dissections) and the method that sets the boundary.
+  **Corrections:** the session first said the decision entry had been written when only a research draft existed;
+  the second research report gives two different Fearnley and Lees 1991 figures for nigral loss at onset (68 percent
+  of the lateral ventral tier and 31 percent) and was not checked, so it is not relied on. The session ran on
+  Claude Opus 5.5. Its citation checks of 21 October and both research passes were research on another model than
+  Fable; the Fable subagent rechecked every citation the 9.96 row uses against PubMed, Crossref or arXiv. Both 9.96
+  commits name Opus 5.5 as co-author although the work was done on Fable 5.1, against the convention of the
+  repository's other Fable commits.
