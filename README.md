@@ -315,6 +315,40 @@ behind them.
   2026 that research is done on Fable: 9.79's was rechecked on Fable on 26 October (9.99), and the cyclase
   reading still awaits that recheck. A handover note is in the project as
   `claude/handoff_g_alpha_cyclase_2026-10-25.md`.
+- https://claude.ai/share/43da3596-a160-4bbd-882a-d0752d8f296a — 21 to 27 October 2026. Where linearity binds,
+  entmax, and the working rules for comments and modelling. The owner asked whether to merge the two encoders,
+  nonlinear pieces by message passing and linear pieces by linear propagation, because pull request #7's pH ceiling
+  "is modeling an asymptote". A research report argued for keeping both encoders and fixing the pH ceiling locally;
+  the owner answered that the problem had come up many times, and it had: `docs/physiological_adherence_review.md`
+  already listed competition, partial agonism, complex conjunction, receptor adaptation, occupancy and the pH
+  ceiling, and the session added dosage asymmetry and multistability. That list is now `docs/nonlinearity_inventory.md`
+  (living). Every nonlinearity of the registered linear encoder is applied after the fixed point, so none of them
+  carries along a route. Asked why the mixture statistics were forced odd, the record gave the reason: a non-odd
+  statistic is sign-biased and silences the falling branch of the response. The mirror property the comment also
+  cited had been withdrawn on 13 October, and the constraint binds a statistic taken across messages, not a map
+  applied pointwise to a node's own state. The owner's rulings: the tested models may change by amendment; a
+  minimum over the signed field (a "signed AND") is "better handled by a different control"; the random-walk
+  findings 5, 13 and 14 are rejected as evidence about the current model (9.82: "it's on like v.1 or v.2 graph");
+  9.68's VAMP1 membership is related to 9.81 and decided apart from it, because "the closest version to physiology
+  is used since that is always the top priority". 9.81 stays open for saturation inside the fixed point; the
+  encoder's place was settled on 22 October by 9.77 in another session. Built: the entmax weighting of the
+  cross-relation mixture, annealed to sparsemax so the kept model has exact zeros (on main 27 October 2026 as
+  `4d2f723` and `e9181f4`; not in the registered model); CLAUDE.md's "Start here", "Modelling" and "Code" sections,
+  the cross-branch decision-id command, the two-commit rule for the decision log and `PYTHONPATH=.` for scripts; and,
+  by an agent, 24 stale comments corrected in 12 files. That cleanup found that the message-passing encoder adds
+  its perturbation only to the initial state, so at its registered fixed point a gene perturbation decays away. The
+  owner had known this since 10 October; it is now 9.83, deferred, and preregistration item 7's "The perturbation is
+  held on at every round" is not true of that encoder. An organisation review of the repository found the status
+  page counting 1 registered rule (since fixed) and decision ids 9.77 and 9.78 taken twice (since renumbered).
+  Claims withdrawn in the session: that the asymptote was a local, one-off problem; that decision 4.2 was open (it
+  closed on 13 October, and the 413 count of complexes reproduces under no reading); that the message-passing
+  encoder had a softmax mixture; and that the mirror property still constrained the encoder. It ran on Claude
+  Opus 5 and then Opus 5.5. Under the rule of 25 October 2026 two things need a Fable pass: the research
+  report on hybrid encoders, whose findings were not committed; and the two citations in the entmax comments of
+  `mechanistic_pathway_learning/models/linear_response_encoder.py` (Peters, Niculae and Martins 2019,
+  doi:10.18653/v1/P19-1146, including the claim that 1.5 is their main setting; Blondel, Martins and Niculae 2019,
+  arXiv:1901.02324). Both were written from memory, were not read in the session and are not in
+  `docs/references.bib`.
 
 ## Conventions
 
