@@ -462,6 +462,23 @@ behind them.
   on a current build, the one record being 14 October 2026 on a 266,966-edge graph. **Still owed**: a Fable recheck
   of the 9.68 record; the owner's ruling on 9.98 and on how a waiver works; and three counts needing a built graph,
   cortisol -> `NR3C1`, fentanyl's `sequesters` edge and the plasma-binder variant build that performs the cut.
+- https://claude.ai/share/b23b5367-01d7-4fec-923c-8ff6a26aacec — 21 to 27 October 2026. The owner asked what
+  concern about SLC9A6 (NHE6) pull request #7 had set out of scope. Its write-up of 20 October named the gene but
+  was never committed, so the reasoning was not recoverable from the repository, decision 9.75 or past chats; the
+  session reconstructed the gap instead, marked as its own inference: NHE6 changes endosomal pH rather than calcium
+  store content, the 9.75 endolysosome store lumps endosome and lysosome and takes no input, and the compartment pH
+  weight is inert because `calibrate_ph_sensitivity` is called only by tests. On 24 October it wrote the handoff
+  for a session holding the v5 graph (`claude/handoff_v5_session_2026-10-24.md` in the project): the name `v5`
+  covers two builds (20 October from `344d211`, 268,876 edges; 22 October, 274,917), v5 predates the graph changes
+  of pull requests #5, #7, #9, #11, #14, #16, #17 and #18, and `scripts/rebuild_data_layer.sh` skips every step
+  whose output exists, so a rerun beside v5 rebuilds nothing. On 27 October, asked what to do before retiring it,
+  it found the NHE6 point recorded nowhere in the repository and added it as item 7 of
+  `docs/exploration_queue.md`, with Kondapalli et al. 2014 and Gilfillan et al. 2008 in `docs/references.bib`.
+  The session ran on Claude Opus 5.5. Its 21 October reading of Kondapalli 2014 was research done on another
+  model; the sourcing of item 7 was done by a Fable subagent, which confirmed each quote against the abstract and
+  found that the review does not itself name SLC9A6 as the Christianson syndrome gene, so that claim cites the
+  2008 gene identification instead. One correction from the session: it first called item 7 documentation
+  outside the Fable rule, which CLAUDE.md's definition of research contradicts.
 
 ## Conventions
 
