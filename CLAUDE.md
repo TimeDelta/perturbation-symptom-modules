@@ -89,6 +89,13 @@ against them before it is acted on.
 - **A refusal by the site is respected.** A page behind a robots rule or a check that the visitor is human is not
   read through a cache, a mirror or a solved challenge. Record the refusal and use the provider's other
   publications.
+- **Two hosts are exceptions to the robots rule, each on its own ruling.** The second is `dblp.org`, the computer
+  science bibliography: its search interface refused `experiments/read_public_page.py` on 27 October 2026 during the
+  bibliography sweep of decision 9.101, where it was the one route that would have settled whether two entries
+  claiming ICLR are peer-reviewed conference papers, ICLR registering no DOIs. The pass reported the refusal rather
+  than assuming an exception; asked whether to extend it, the owner answered "Yes" (27 October 2026). As with EBI, the
+  exception is that exact host name, over https, the robots file is still read and its answer recorded beside the
+  page, and the reader's other limits hold. The first:
 - **EBI's FTP host is an exception to the robots rule.** "don't refuse FTP from EBI" (the owner, 22 October
   2026). The robots file of `ftp.ebi.ac.uk` reads "User-agent: *" and "Disallow: /" (read 22 October 2026), which
   would close the releases the project fetches from that host (IntAct's negative interactions, IMPC).

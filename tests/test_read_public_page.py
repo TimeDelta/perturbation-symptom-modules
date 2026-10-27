@@ -100,10 +100,24 @@ def test_ebi_ftp_host_is_read_past_its_robots_rule_on_the_owners_ruling(tmp_path
     assert requested == ["https://ftp.ebi.ac.uk/robots.txt", "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README"]
 
 
+def test_dblp_is_read_past_its_robots_rule_on_the_owners_ruling(tmp_path, monkeypatch):
+    """The owner, 27 October 2026, asked whether to extend the exception to dblp.org: "Yes".
+
+    It was the one route that would have settled whether two entries of docs/references.bib claiming ICLR are
+    peer-reviewed conference papers, in the bibliography sweep of decision 9.101.
+    """
+    reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+    record = reader.read("https://dblp.org/search/publ/api?q=decoupled+weight+decay+regularization")
+    assert record["read"] is True, record
+    assert "27 October 2026" in record["robots_file"] and "disallows" in record["robots_file"]
+
+
 @pytest.mark.parametrize("address", [
     "https://www.ebi.ac.uk/gene2phenotype/api/panel/all/download",  # another EBI host keeps its own robots rules
     "https://ftp.ebi.ac.uk.example.org/pub/file.txt",  # a host that only begins with the exempt name
     "https://ftp.example.org/pub/file.txt",
+    "https://www.dblp.org/search/publ/api?q=anything",  # another dblp host keeps its own robots rules
+    "https://dblp.org.example.org/search/publ/api?q=anything",
 ])
 def test_the_exemption_is_the_one_host_and_every_other_robots_rule_still_refuses(tmp_path, monkeypatch, address):
     reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)

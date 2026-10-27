@@ -14,10 +14,15 @@ This script is that fallback with its limits written into code, so that a resear
 
 It does not log in, solve challenges, or use caches and mirrors of a page that refused it.
 
-One host is read past its robots file, on the owner's ruling of 22 October 2026, "don't refuse FTP from EBI":
-EMBL-EBI's FTP host, ftp.ebi.ac.uk, whose robots file disallows every path for every reader. The exception is that
-host alone, over https; the robots file is still read and its answer recorded beside the page, and limits 2 to 4 hold
-there as everywhere else.
+Two hosts are read past their robots file, each on a ruling of the owner's, over https only; the robots file is still
+read and its answer recorded beside the page, and limits 2 to 4 hold there as everywhere else. Each exception is the
+exact host name and no other host of the same organisation:
+
+  ftp.ebi.ac.uk   EMBL-EBI's FTP host, whose robots file disallows every path for every reader (22 October 2026,
+                  "don't refuse FTP from EBI");
+  dblp.org        the computer science bibliography, whose search interface refused the reader on 27 October 2026
+                  while two entries of docs/references.bib claiming ICLR could not otherwise be verified (the owner,
+                  27 October 2026, asked whether to extend the exception to it: "Yes").
 
 Usage:
   python experiments/read_public_page.py https://example.org/page.html
@@ -67,11 +72,19 @@ CHALLENGE_MARKERS = (
 PASSIVE_TELEMETRY_SCRIPT = re.compile(r"<script\b[^>]*>(?:(?!</script>).)*?/cdn-cgi/challenge-platform/scripts/jsd/(?:(?!</script>).)*?</script>",
                                       re.S | re.I)
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
-# The hosts read past a robots rule, each with the ruling that admits it. The robots file of ftp.ebi.ac.uk reads
-# "User-agent: *" and "Disallow: /" (read 22 October 2026), which closed the releases scripts/fetch_raw_sources.sh
-# already fetches from it (IntAct's negative interactions, IMPC), so the owner ruled on 22 October 2026: "don't refuse
-# FTP from EBI". The match is on the exact host name: www.ebi.ac.uk and every other EBI host keep their own robots rules.
-ROBOTS_RULE_EXEMPT_HOSTS = {"ftp.ebi.ac.uk": "the owner, 22 October 2026: \"don't refuse FTP from EBI\""}
+# The hosts read past a robots rule, each with the ruling that admits it. The match is on the exact host name, so
+# www.ebi.ac.uk and every other host of either organisation keeps its own robots rules.
+#   ftp.ebi.ac.uk: its robots file reads "User-agent: *" and "Disallow: /" (read 22 October 2026), which closed the
+#     releases scripts/fetch_raw_sources.sh already fetches from it (IntAct's negative interactions, IMPC), so the
+#     owner ruled on 22 October 2026: "don't refuse FTP from EBI".
+#   dblp.org: the computer science bibliography. Its search interface refused this reader on 27 October 2026 during
+#     the bibliography sweep of decision 9.101, where it was the one route that would have settled whether
+#     loshchilov2019decoupled and alon2021bottleneck are peer-reviewed conference papers, ICLR registering no DOIs.
+#     The pass did not assume the exception; asked for it, the owner answered "Yes" (27 October 2026).
+ROBOTS_RULE_EXEMPT_HOSTS = {
+    "ftp.ebi.ac.uk": "the owner, 22 October 2026: \"don't refuse FTP from EBI\"",
+    "dblp.org": "the owner, 27 October 2026, asked whether to extend the exception to dblp.org: \"Yes\"",
+}
 
 
 def robots_rule_exemption(address: str) -> str | None:
