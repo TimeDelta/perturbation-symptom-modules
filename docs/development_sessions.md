@@ -482,3 +482,60 @@ transcript address, then the dates of the session, then its summary.
   after each commit that changes the register, because they name the register or the status page. The full suite
   passed before each push (1479 passed, 28 skipped at `d95eff9`). The session ran on Claude Opus 5.5 and was
   switched to Claude Sonnet 5.5 on 27 October.
+- https://claude.ai/share/6355ebf0-383b-41d2-b443-7ec0201645c5 — 21 to 27 October 2026. It began as a request to source papers adjudicating
+  "TMEM175's coupling to lysosomal release" and became the session that moved the message-passing encoder out of the
+  tested models. **The sourcing:** the claim was underspecified into three readings with very different support.
+  Proton efflux is in open dispute (Hu et al. 2022, doi:10.1016/j.cell.2022.05.021, against Riederer et al. 2025,
+  doi:10.1083/jcb.202501145, with Schulze et al. 2026, doi:10.1073/pnas.2503909123, on a dual conductance switched
+  by luminal pH); luminal calcium release is not supported as a direct edge, only indirectly through membrane
+  potential, with one pharmacological chain through Mcoln2 in macrophages; exocytic release of lysosomal contents
+  returned nothing. Delivered as an RIS file of twelve records and never committed. **This sourcing was research
+  read on Opus before the "Models" rule of 25 October 2026 and has had no Fable recheck**; nothing in the repository
+  cites it, so nothing here rests on it. **Two research passes, both on Opus:** the first found the dispute
+  asymmetrically reconcilable and recommended two context-qualified parallel edges gated by an observed modifier
+  over a lower evidence tier; the second found that branching on each of the 3,795 sign-disputed regulation edges of
+  9.72 gives a model family of about 10^1142, that the sign is weakly identifiable at the present label strength, and
+  that turning a soft prior on a disputed edge into pseudo-data is that prior restated, adds no identifying
+  information and double-counts the literature that set the edge's evidence weight; only expectation constraints on
+  downstream observables, from sources independent of that literature, add anything. **Measured** from the recorded
+  counts, not from a graph build: the sign contradictions are 1.35 percent of 280,966 edges, 7.96 percent of
+  referenced transcription edges and 11.46 percent of the strictest label set, against animal-only transcription
+  edges at 17.95 percent and 429 edges per bulk PMID, so two quieter problems touch more of the graph than the
+  contradictions do; the monogenic labels sit 1.18 standard deviations above chance against Genebass.
+  **The owner's idea:** combining branches by the intersection of the target nodes' propagation cones. Reachability
+  cones collapse on hubs (cytosolic H+ carries 2,048 edges in and 1,281 out), so the decomposition has to be by
+  thresholded sensitivity; the three reductions are block decomposition, a Woodbury rank-one update per branch and
+  equivalence classing of sign assignments that differ only by a product along a path, and the rank of the
+  label-to-disputed-edge sensitivity matrix bounds how many directions the whole branch family can move predictions
+  in. **Corrected in the session:** it let the reading stand that this identifies the limit exactly, then withdrew
+  that: the screen is first order, a sign flip is not infinitesimal, the rank depends on the tolerance, and the
+  `class_bottleneck` minimum is not injective. Parked as item 1 of `docs/exploration_queue.md`. **Registered
+  (decision 9.77):** "Defer it to robustness. I don't want it constraining things because this is more about
+  mechanistically identifiably predictive nosology". `tested_models` is now the linear-response noisy-OR alone and
+  the new rule `robustness_models` holds the message-passing configuration, moved in `configs/head_choice.json` from
+  `chosen` to a new `robustness` key, which is what stops `score_confirmatory.chosen_models` spending the lockbox on
+  it. The session argued against registering it as a baseline, since that inverts the simple-and-elaborate relation
+  between the two encoders and a registered baseline that outperforms the tested model is an awkward result, and
+  offered a fixed-sequence secondary test instead; the owner chose the robustness reading, giving up the
+  corroboration a second tested model would have bought. **Registered (decision 9.78):** "Move it back to the .05
+  alpha please with just one model now". `alpha_one_sided` returns to 0.05 because the across-model multiplicity
+  that halved it is gone. Knock-on: the Holm level of the smaller of H2 and P1 moves from 0.0125 to 0.025, so the
+  sentence of amendment item 18 was written at the old level, and two scenarios in
+  `tests/test_confirmatory_multiplicity.py` had p-values tuned to 0.025 and were doubled to probe the same
+  relations. Both decisions were taken before any lockbox was drawn. **Merged** `working-rules-and-decision-9-81` on
+  the owner's instruction, after the session had declined to merge it unprompted, and added to it the rule that when
+  two branches already hold a decision id the branch merging second renumbers its own, which is the one case where
+  "never drop or renumber one" gives way. Decision 9.81 was narrowed to its saturation half, its message-passing
+  half struck in the title. **The session's own error:** asked whether `CLAUDE.md` already required reading every
+  branch before taking a decision id, it grepped `origin/main` alone, reported that no such rule existed and
+  offered to draft one. The owner was right that it existed: on that unmerged branch, dated 21 October 2026 and
+  written after the same 9.77 and 9.78 collision. The session had failed in exactly the way the rule describes and
+  reverted its duplicate before pushing. It had also taken 9.77 and 9.78 while the forward-cone branch had held them
+  since 21 October; that branch renumbered its own to 9.86 and 9.87. **Flagged for the owner, not acted on:** the
+  message-passing encoder's failure to hold the perturbation on (9.83) now sits in a reported model rather than a
+  dropped one, so its defect weakens the robustness reading where the monogenic labels are weakest; the 22 October
+  v5 build that carries the 9.93 and 9.94 numbers died with its container and cannot be regenerated; `main` is
+  unprotected with no CI while work is pushed straight to it; and the v5 handoff had gone stale, which
+  `claude/README.md` has since fixed. **Still open:** the saturation half of 9.81, and a Fable recheck of the
+  TMEM175 sourcing if anything ever relies on it. The session ran on Claude Opus 5 and Claude Opus 5.5, across four
+  containers.
