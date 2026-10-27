@@ -196,6 +196,12 @@
    "class": "generated",
    "generator": "experiments/score_directed_random_walk.py"
   },
+  "docs/development_sessions.md": {
+   "class": "record",
+   "recorded": "2026-10-27",
+   "append_only": false,
+   "what": "the public transcripts of the sessions that developed the repository, one entry per session with what it settled, withdrew and left open; moved from the README's Development sessions section on 2026-10-27, and a new session is added at the end"
+  },
   "docs/documentation_process.md": {
    "class": "living",
    "reviewed": "2026-10-25",

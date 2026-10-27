@@ -46,7 +46,7 @@ against them before it is acted on.
   - When a decision closes, a claim is withdrawn or corrected, or a registered value changes, search the code for
     the old version in the same turn (`git grep` the symbol, the flag, the decision id and the withdrawn wording) and
     correct every comment that still states it. Withdrawn claims are listed in `docs/research_summary.md` and in the
-    README's session summaries.
+    session summaries of `docs/development_sessions.md` (the README's own section links there since 27 October 2026).
   - A comment that names a symbol, flag, file or decision id names one that exists.
   - History is kept only when it is framed as history, with a date ("what every run before 13 October 2026 did").
   - A comment found stale and not fixed in the same commit is recorded in the commit message or as a decision row,
