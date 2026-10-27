@@ -629,3 +629,30 @@ transcript address, then the dates of the session, then its summary.
   exam. No research was done. The GitHub connector refused the write of this entry (403), so the repository was
   attached with push access on the owner's approval ("yes. you should have push access"). The session ran on
   Claude Opus 5.5.
+- https://claude.ai/share/b53e479b-9a35-40e3-8496-218d553fcea2 — 24 to 27 October 2026. It began with the owner's
+  idea of adding protein biophysics and a peak-exposure (PK) layer, and ended as repair and organisation of the
+  record. **PK and Kp,uu.** A coverage count on the 222 drugs found half-life tabulated or on the label for 172,
+  with 97 drugs inside the TDC half-life training set, so QSAR priors were not needed; Kp,uu,brain (94 of 222, human
+  for 13) was the binding gap (`docs/pk_coverage_check_2026-10-24.md`). A further Kp,uu source search found Zou et
+  al. 2025 (AAPS J) and Wanat and Brzezinska 2023 and ruled out Loryan et al. 2022 as a survey with no table.
+  **Fagerholm.** The 2022 preprint was found to have no peer-reviewed version, which led to 9.100 and the 18-month
+  rule of 9.101; on 27 October the owner's ruling that Fagerholm et al. 2021's remedy is contingent on further
+  interspecies evidence, and the two-gap distinction it turns on, were recorded in 9.102 for the first time.
+  **Decision log.** Row 9.100 had lost eight characters while authored as one 11,744-character line; seven were
+  repaired and the eighth placed provisionally. Decision 9.105 records the owner's choice of a guard over a
+  restructuring: `tests/test_decision_log_integrity.py`, the editing practice in `CLAUDE.md`, generators that
+  refuse a shallow clone (a depth-1 clone had made them write "0 amendments" where there are 6), and log parsers
+  that read a subsection heading as well as a table row. The guard first flagged five more rows; git history and a
+  check of the counter showed the counter was wrong, not the rows, and the guard is strict with no baseline. 9.88
+  gained the owner's BRENDA "no effect" ruling and lost its stale "blocked on the file"; 9.97 gained its second
+  owner question. **Project notes.** Every `claude/` note was checked against the repository and deleted under the
+  owner's ruling that the repository is the single source of truth; the owner chose not to keep the handoffs, the
+  transcripts being public. Left only in transcripts: the TP53 recuration and the PR #4 narrowings check stopped on
+  17 October, and a suggested GitHub Action for the suite; 9.90 still reads "with the weighted loss still the
+  default". **Withdrawn in the session:** that the Kp,uu filter widening awaited a ruling (built 12 October); that
+  the species disclosure was missing (amendment item 15); that the Fagerholm exclusion was unimplemented; that the
+  session had read access only (never tested until 27 October); that restructuring the log would re-stamp its
+  history (the history keys by id); and that five rows held unpaired markers. A `verify-repo-state-before-claiming`
+  skill was saved from those errors. The PK coverage count, the Kp,uu search and the first Fagerholm check were
+  research done on Claude Opus 5, not Fable; the Fagerholm finding was rechecked on Fable under 9.100, and the
+  coverage count stands as a measurement. Later turns ran on Claude Opus 5.5.
