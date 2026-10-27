@@ -170,7 +170,7 @@ transcript address, then the dates of the session, then its summary.
   CLAUDE.md. This session ran on Claude Opus 5.5, and its literature readings predate the rule of 25 October
   2026 that research is done on Fable: 9.79's was rechecked on Fable on 26 October (9.99), and the cyclase
   reading still awaits that recheck. A handover note is in the project as
-  `claude/handoff_g_alpha_cyclase_2026-10-25.md`.
+  `docs/g_alpha_cyclase_handoff_2026-10-25.md` (moved from the Project note `claude/handoff_g_alpha_cyclase_2026-10-25.md` on 27 October 2026).
 - https://claude.ai/share/43da3596-a160-4bbd-882a-d0752d8f296a — 21 to 27 October 2026. Where linearity binds,
   entmax, and the working rules for comments and modelling. The owner asked whether to merge the two encoders,
   nonlinear pieces by message passing and linear pieces by linear propagation, because pull request #7's pH ceiling
@@ -351,7 +351,7 @@ transcript address, then the dates of the session, then its summary.
   isozyme, substrate or activity, cell line or concentration, for example "activates cNII, no effect on cNI"); the
   owner asked that "the wording context of the 47 should be investigated", so the session built nothing and wrote
   that investigation into the handoff as the first step before any rule. The handoff is
-  `claude/handoff_brenda_regeneration_2026-10-26.md` in the Project, indexed in `claude/README.md`, and the owner
+  `docs/brenda_regeneration_handoff_2026-10-26.md` (moved from the Project note `claude/handoff_brenda_regeneration_2026-10-26.md` on 27 October 2026) in the Project, indexed in `claude/README.md`, and the owner
   gave it to the session running on the new shared environment. The owner asked for it to be in the repository;
   the session drafted a record and a decision row (9.104) and, when the owner said the other session already held the
   handoff, committed neither. **Still open:** the ruling is not yet in `docs/open_decisions.md`; the owner's sign-off

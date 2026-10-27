@@ -355,6 +355,12 @@
       "class": "generated",
       "generator": "experiments/measure_fraction_unbound_coverage.py"
     },
+    "docs/g_alpha_cyclase_handoff_2026-10-25.md": {
+      "class": "record",
+      "recorded": "2026-10-27",
+      "append_only": false,
+      "what": "the Gi/o-to-cyclase handoff of 25 October 2026 for decision 9.97: the per-isoform cyclase table awaiting a Fable recheck, its sources, the two owner questions, the build plan and the sweep thresholds; moved from a Project note on 27 October 2026"
+    },
     "docs/gene_protein_split.md": {
       "class": "living",
       "reviewed": "2026-10-25",
