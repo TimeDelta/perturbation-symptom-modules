@@ -70,6 +70,29 @@ def git_output(*arguments: str, cwd: Path = REPOSITORY_ROOT) -> str:
     return subprocess.run(["git", *arguments], cwd=cwd, capture_output=True, text=True, check=True).stdout
 
 
+def repository_is_shallow(root: Path = REPOSITORY_ROOT) -> bool:
+    """True when the clone holds truncated history, so anything read from `git log` is incomplete."""
+    return git_output("rev-parse", "--is-shallow-repository", cwd=root).strip() == "true"
+
+
+def refuse_on_shallow_history(generator: str, allow_shallow: bool = False, root: Path = REPOSITORY_ROOT) -> None:
+    """Stop a generator that reads git history from writing a page in a shallow clone.
+
+    Every page generated from the decision log or from commit trailers is read from `git log`, so a truncated
+    history produces a plausible page that is wrong while nothing fails. In a depth-1 clone on 27 October 2026
+    generate_amendment_history.py reported "0 amendments, 0 unparsed trailers" where there are 6, and
+    generate_decision_history.py reported "159 decisions over 2 versions" where there are 217; the diff was 215
+    lines of deletions and would have been committed had the counts not been read. Deepening the clone fixed both.
+    """
+    if allow_shallow or not repository_is_shallow(root):
+        return
+    raise SystemExit(
+        f"{generator}: this clone is shallow, so the git history this page is generated from is truncated and the "
+        "page would be written wrong without anything failing. Run `git fetch --depth=1000 origin main` first, or "
+        "pass --allow-shallow to write an incomplete page on purpose."
+    )
+
+
 def tracked_markdown_documents(root: Path = REPOSITORY_ROOT) -> list[str]:
     """Every Markdown file git tracks under docs/ plus the two root documents sessions read first."""
     listed = git_output("ls-files", "README.md", "CLAUDE.md", "docs", cwd=root).split()
@@ -209,17 +232,28 @@ ITEM_ID = re.compile(r"\bitem\s+(?P<id>\d+[a-z]?)\b", flags=re.IGNORECASE)
 
 
 def decision_ids_in_log(text: str) -> list[str]:
-    """Every decision id the log's tables carry, in file order, struck-through or not, duplicates kept."""
+    """Every decision id the log carries, in file order, struck-through or not, duplicates kept.
+
+    Two forms are read. A table row, `| 9.100 | ... |`, is what the log has used throughout. A subsection heading,
+    `### 9.100` or `### ~~9.100~~`, is the form a restructuring of the log out of the table would use, and it is
+    read here so that such a restructuring needs no change to this parser or to the pages generated from it (the
+    owner, 27 October 2026, asking for both versions of the generator fix). The history keys decisions by id and
+    not by row text, so moving a decision from a row to a subsection keeps the commit it was first recorded in.
+    """
     ids = []
     for line in text.replace("\\n", "\n").splitlines():
-        match = re.match(r"^\|\s*(~~)?(?P<id>\d+\.\d+[a-z]?)(~~)?\s*\|", line)
+        match = re.match(r"^\|\s*(~~)?(?P<id>\d+\.\d+[a-z]?)(~~)?\s*\|", line) or re.match(
+            r"^#{2,6}\s*(~~)?(?P<id>\d+\.\d+[a-z]?)(~~)?\s*$", line)
         if match:
             ids.append(match.group("id"))
     return ids
 
 
 def closed_decision_ids(text: str) -> set[str]:
-    return {match.group("id") for match in re.finditer(r"^\|\s*~~(?P<id>\d+\.\d+[a-z]?)~~\s*\|", text.replace("\\n", "\n"), flags=re.MULTILINE)}
+    unrolled = text.replace("\\n", "\n")
+    rows = re.finditer(r"^\|\s*~~(?P<id>\d+\.\d+[a-z]?)~~\s*\|", unrolled, flags=re.MULTILINE)
+    headings = re.finditer(r"^#{2,6}\s*~~(?P<id>\d+\.\d+[a-z]?)~~\s*$", unrolled, flags=re.MULTILINE)
+    return {match.group("id") for match in (*rows, *headings)}
 
 
 # An open row that is kept as a record and asks the owner for nothing starts its last cell with this marker, so the
@@ -231,9 +265,19 @@ NOTHING_OWED_MARKER = "**nothing owed**"
 def decision_ids_owing_nothing(text: str) -> set[str]:
     """Ids of open (not struck-through) rows whose last cell starts with NOTHING_OWED_MARKER."""
     ids = set()
+    open_subsection: str | None = None  # the id of the subsection being read, in the restructured form
     for line in text.replace("\\n", "\n").splitlines():
+        heading = re.match(r"^#{2,6}\s*(?P<id>\d+\.\d+[a-z]?)\s*$", line)
+        if heading:
+            open_subsection = heading.group("id")
+            continue
+        if line.startswith("#"):
+            open_subsection = None  # any other heading ends the subsection, including a struck (closed) one
+            continue
         match = re.match(r"^\|\s*(?P<id>\d+\.\d+[a-z]?)\s*\|", line)
         if not match:
+            if open_subsection and line.strip().lower().startswith(NOTHING_OWED_MARKER):
+                ids.add(open_subsection)
             continue
         last_cell = line.rstrip().rstrip("|").rsplit(" | ", 1)[-1].strip()
         if last_cell.lower().startswith(NOTHING_OWED_MARKER):

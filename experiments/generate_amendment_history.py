@@ -51,7 +51,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from mechanistic_pathway_learning.documentation import provenance_stamp
+from mechanistic_pathway_learning.documentation import provenance_stamp, refuse_on_shallow_history
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 BASELINE_PATH = REPOSITORY_ROOT / "docs" / "preregistration_baseline_2026-10-15.md"
@@ -159,7 +159,10 @@ def main() -> None:
     parser.add_argument("--check", action="store_true",
                         help="write nothing and exit non-zero if the committed file differs from what would be "
                              "generated, so a stale history fails rather than misleads")
+    parser.add_argument("--allow-shallow", action="store_true",
+                        help="write the page even from a shallow clone, whose truncated history makes it wrong")
     arguments = parser.parse_args()
+    refuse_on_shallow_history("experiments/generate_amendment_history.py", arguments.allow_shallow)
 
     if not BASELINE_PATH.exists():
         raise SystemExit(f"{BASELINE_PATH} is missing: the baseline is what the history is relative to")

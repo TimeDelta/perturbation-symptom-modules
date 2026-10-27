@@ -190,6 +190,18 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   of the commit that first holds each row, so it cannot be generated inside that commit, and amending the commit
   changes the hash. Commit the change to `docs/open_decisions.md` first, then run the generators and commit the
   regenerated pages (`docs/decision_history.md`, `docs/status.md`, `docs/README.md`) on their own.
+- **A long row is edited by uniquely-anchored replacement, never by rewriting the row** (27 October 2026). Row
+  9.100 of `docs/open_decisions.md` lost eight characters - six inside words and two bold markers - while it was
+  being authored and rewrapped as a single 11,744-character line; the losses were already in the committed text, so
+  git holds no record of the edits that caused them. A markdown table row cannot be wrapped, being one physical
+  line, so the practice is the guard: replace a uniquely-anchored fragment and verify the result, rather than
+  reproducing a row of thousands of characters. `tests/test_decision_log_integrity.py` checks every row's emphasis
+  markers pair and holds a ceiling on line length; a lost `**` is a two-character loss of exactly this kind.
+- **Deepen a shallow clone before running the generators** (27 October 2026). All three read `git log`, so a
+  truncated history writes a plausible page that is wrong while nothing fails: in a depth-1 clone
+  `generate_amendment_history.py` reported "0 amendments" where there are 6 and `generate_decision_history.py`
+  "159 decisions over 2 versions" where there are 217, a 215-line diff that was nearly committed. They now refuse a
+  shallow clone and name the fix, `git fetch --depth=1000 origin main`; `--allow-shallow` overrides it on purpose.
 - **After changing data, rules, decisions or documents:** `python experiments/generate_status.py`,
   `python experiments/generate_decision_history.py`, `python experiments/generate_amendment_history.py`,
   `pytest tests/test_documentation_process.py -q`.

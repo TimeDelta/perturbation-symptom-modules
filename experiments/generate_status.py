@@ -30,6 +30,7 @@ from experiments.generate_decision_history import read_history, sort_key
 from experiments.generate_docs_index import INDEX_PATH as DOCS_INDEX_PATH
 from experiments.generate_docs_index import index_is_current, rendered_index
 from mechanistic_pathway_learning.documentation import (
+    refuse_on_shallow_history,
     REPOSITORY_ROOT,
     STAMP_POLICY_DATE,
     DECISION_LOG_PATH,
@@ -289,7 +290,10 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--review", action="store_true", help="print the review diagnostics (due reviews, files changed since) and write nothing")
+    parser.add_argument("--allow-shallow", action="store_true",
+                        help="write the page even from a shallow clone, whose truncated history makes it wrong")
     arguments = parser.parse_args()
+    refuse_on_shallow_history("experiments/generate_status.py", arguments.allow_shallow)
     today = date.today()
     if arguments.review:
         print(render_review(documents(today), today))

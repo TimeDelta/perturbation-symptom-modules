@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from mechanistic_pathway_learning.documentation import (
+    refuse_on_shallow_history,
     REPOSITORY_ROOT,
     closed_decision_ids,
     decision_ids_in_log,
@@ -181,7 +182,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--allow-shallow", action="store_true",
+                        help="write the page even from a shallow clone, whose truncated history makes it wrong")
     arguments = parser.parse_args()
+    refuse_on_shallow_history("experiments/generate_decision_history.py", arguments.allow_shallow)
     history = read_history()
     rendered = render(history, provenance_stamp("experiments/generate_decision_history.py", [f"the git history of {LOG_RELATIVE_PATH}"]))
     if arguments.check:
