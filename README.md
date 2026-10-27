@@ -349,6 +349,39 @@ behind them.
   doi:10.18653/v1/P19-1146, including the claim that 1.5 is their main setting; Blondel, Martins and Niculae 2019,
   arXiv:1901.02324). Both were written from memory, were not read in the session and are not in
   `docs/references.bib`.
+- https://claude.ai/share/be16df9d-b1d1-4a69-b185-de20d9ca0f73 — 20 to 27 October 2026. VAMP1 beside VAMP2,
+  how Human-GEM's gene rules are read, and ambient RNA in the single-nucleus weights. It began with a
+  plain-language reading of why joining VAMP1 to one or more of VAMP2's 16 Reactome entities was a choice (9.68).
+  The owner proposed combining a shared-complex and a per-transmitter placement and a backup path, an edge starting
+  at weight 0 that opens when VAMP2 is lost. The session argued that in the registered linear loop such an edge is a
+  smaller VAMP2 weight to first order, would put a state-dependent product inside the loop, and predicts no effect
+  of losing VAMP1 where it is the main paralog; the owner: "good points on my backup option. move forward with your
+  suggestion please". Built on pull request #5 (merged 21 October 2026 as `e313ce5`): VAMP1 is an alternative
+  member of all 16 entities, every one a synaptic vesicle entity, splitting VAMP2's membership weight by mean GTEx
+  brain median TPM (0.145 against 0.855) so no divisor changes, and counted with VAMP2 as one member, the larger, in
+  the decision 4.2 gate (`docs/curated_alternative_members.csv`). On a scratch build the two SNARE complex entities
+  are products of release with no edge out, which withdrew the session's first reading that joining the shared
+  fusion complex would carry VAMP1; with the pair rule no gate changes, where a plain minimum would have lowered
+  them by up to 0.405. Asked whether more studies had been sought and to review Human-GEM's readings for physiology,
+  the session found that propagation turns every rule gene into an equal-share `catalyzed_by` edge, so an "and"
+  subunit of complex I carries 2 percent of the input and an "or" isozyme 1/k whatever its expression, while the
+  gate takes the minimum over "and" and the maximum over "or" (GECKO and the MIN/SUM mapping add isozyme
+  capacities). On 24 October the owner asked about the docstring's claim that single-nucleus pseudobulk carries
+  ambient RNA: it holds (Caglayan et al. 2022, Janssen et al. 2023) but moves VAMP1 shares by a few thousandths,
+  and the session's earlier statement that HPA ranks excitatory above inhibitory neurons for VAMP1 was withdrawn as
+  an aggregation artifact: a class value is each gene's maximum over the class's cluster types, so the excitatory
+  0.166 paired VAMP1 from the lower rhombic lip with VAMP2 from thalamic neurons, against a forebrain median of
+  0.047. Under the rule of 25 October 2026 the recommendation went to a Fable agent, which re-read the 14
+  load-bearing sources (every quoted claim holds) and recommended keeping 0.145 with its limits recorded: the
+  per-transmitter shares the session had proposed (GABA about 0.5, glutamate about 0) do not hold as shares, since
+  the same VAMP1 knockdown lowered mIPSC and mEPSC frequency alike and human layer 4 non-PV neurons carry about half
+  the PV level of VAMP1 mRNA; an even split has no source; and the Human-GEM isozyme reading is decided apart, as an
+  amendment, after re-measuring it on a current build. The owner's call is open. Recorded on 27 October 2026 as
+  `2852923`: the 9.68 addendum, 14 entries in `docs/references.bib`, the cited docstring of
+  `graph/brain_expression_weights.py`, `experiments/measure_ambient_rna_hpa.py` and item 8 of
+  `docs/exploration_queue.md`. The session ran on Claude Opus 5.5 and its 25 October research step on Fable 5.1.
+  Still owed under the "Models" rule: a Fable reading of `lee2015cytoplasmic`, flagged in its entry, and a
+  re-measurement of the gene-rule counts, which were taken on a scratch graph from an old branch.
 
 ## Conventions
 
