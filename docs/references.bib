@@ -7162,3 +7162,68 @@
   pmid    = {26687839},
   note    = {Cited on 24 October 2026 for the untested hypothesis that nuclear RNA understates VAMP1 in interneurons. "Cytoplasmic Rbfox1 binding increased target mRNA stability and translation" (abstract). READ ON OPUS 5.5 ON 24 OCTOBER 2026 AND NOT RECHECKED ON FABLE (CLAUDE.md "Models"); not to be relied on until re-read. The year is the PubMed record's publication date (10 December 2015)}
 }
+
+% Four entries for the papers that docs/open_decisions.md 9.79 cites in its text without a bibliography entry, added
+% 27 October 2026 on Fable 5.1 to docs/references.bib rather than to Zotero (the owner, 27 October 2026: "add the
+% others too please and mark them as needing sourced by me if you can't access them"). Every author list, journal,
+% year, volume, issue, page range and DOI below was read from the PubMed record (PubMed MCP get_article_metadata,
+% 27 October 2026) and confirmed against the Europe PMC record (ebi.ac.uk/europepmc/webservices/rest/search, read
+% with experiments/read_public_page.py on 27 October 2026). The records agree on every author (count and order),
+% year, volume, issue and page range for all four; Europe PMC writes two page ranges in full where PubMed abbreviates
+% them, and it writes the Wang DOI in lower case, which is the same identifier. Two papers carry a DOI in Europe PMC
+% and none in PubMed (Mitsuhashi 1989, Zhu 1994); each note says so. All four are typed "Journal Article" by both
+% records; none is a preprint. None is in PMC or Europe PMC (inPMC N, inEPMC N for all four), and every publisher
+% route tried with experiments/read_public_page.py on 27 October 2026 was refused (an HTTP 403 or a robots
+% disallow), so ONLY THE ABSTRACT IS HELD for each and the FULL TEXT NEEDS SOURCING BY THE OWNER.
+
+@article{wellnerkienitz2003atrialh2,
+  author  = {Wellner-Kienitz, Marie C{\'e}cile and Bender, Kirsten and Meyer, Thomas and Pott, Lutz},
+  title   = {Coupling to {Gs} and {G(q/11)} of histamine {H2} receptors heterologously expressed in adult rat atrial myocytes},
+  journal = {Biochimica et Biophysica Acta},
+  year    = {2003},
+  volume  = {1642},
+  number  = {1-2},
+  pages   = {67--77},
+  doi     = {10.1016/s0167-4889(03)00101-0},
+  pmid    = {12972295},
+  note    = {Cited in docs/open\_decisions.md 9.79 as the third heterologous source for an {HRH2} to {Gq/11} coupling: rat atrial myocytes transfected with the {H2} receptor. The phrase 9.79 quotes, "a partial coupling of overexpressed {H2-R} to {G(q/11)}", matches the abstract (PubMed 12972295, read 27 October 2026), whose sentence reads "This inhibition is supposed to be mediated via a {G(q/11)-PLC}-mediated depletion of {PIP2}, suggesting a partial coupling of overexpressed {H2-R} to {G(q/11)}"; the same abstract states "In {H2-R}-transfected myocytes, exposure to {His} resulted in a reversible augmentation of {L}-type {Ca2+} currents, consistent with the established coupling of this receptor to the {Gs-cAMP-PKA} signalling pathway" and "Dual coupling of {H2-Rs} to {Gs} and {Gq} is demonstrated for the first time in cardiac myocytes". ONLY THE ABSTRACT IS HELD: the full text was not reached (not in {PMC} or Europe {PMC}; the {DOI} resolves to ScienceDirect, which answered {HTTP} 403 to experiments/read\_public\_page.py on 27 October 2026), so the receptor density reached by the transfection, the species of the receptor construct and the fraction of cells showing the inhibition are NOT held here, and nothing beyond the quoted sentences is to be cited from this entry. FULL TEXT NEEDS SOURCING BY THE OWNER. Journal article, not a preprint. Not open access (Europe {PMC} isOpenAccess N, inPMC N; its full-text link is marked "Subscription required"); licence UNVERIFIED, no licence statement read}
+}
+
+@article{wang1996parietalh2,
+  author  = {Wang, L. and Gantz, I. and DelValle, J.},
+  title   = {Histamine {H2} receptor activates adenylate cyclase and {PLC} via separate {GTP}-dependent pathways},
+  journal = {American Journal of Physiology},
+  year    = {1996},
+  volume  = {271},
+  number  = {4 Pt 1},
+  pages   = {G613--G620},
+  doi     = {10.1152/ajpgi.1996.271.4.G613},
+  pmid    = {8897880},
+  note    = {Cited in docs/open\_decisions.md 9.79 as a native-tissue study pointing away from {Gq/11} for the {H2} phospholipase {C} arm: membranes of purified canine parietal cells, and of {HEPA} rat hepatoma cells stably expressing the canine {H2} receptor. The quote in 9.79, "anti-{Gq} alpha ... did not alter the action of histamine on {PLC}", matches the abstract (PubMed 8897880, read 27 October 2026) with its ellipsis standing for the clause between: "Although anti-{Gq} alpha inhibited vasopressin-stimulated {PLC} activity in {HEPA} cells and carbachol-stimulated {PLC} in parietal cells, this antibody did not alter the action of histamine on {PLC} in the same membrane preparations"; and the row's "cholera toxin abolished it" paraphrases "Cholera toxin pretreatment abolished the stimulatory effect of histamine on {PLC} activity in isolated membranes without altering binding of the {H2} receptor antagonist tiotidine". The abstract also states "Anti-{Gs} alpha dose-dependently inhibited histamine-stimulated {AC} activity while leaving the effect of this secretagogue on {PLC} activity unaltered" and concludes "activation of the {H2} receptor leads to stimulation of both {AC} and {PLC} via separate {GTP}-dependent mechanisms". ONLY THE ABSTRACT IS HELD: the full text was not reached (not in {PMC} or Europe {PMC}; doi.org answered {HTTP} 403 and journals.physiology.org disallows the page by its robots file, both to experiments/read\_public\_page.py on 27 October 2026), so which {G} protein the authors propose for the {PLC} arm, the antibody specificities and the toxin doses are NOT held here, and nothing beyond the quoted sentences is to be cited from this entry. FULL TEXT NEEDS SOURCING BY THE OWNER. The {DOI} is as PubMed writes it; Europe {PMC} writes it in lower case ({G613} as {g613}), the same identifier. Journal article, not a preprint. Not open access (Europe {PMC} isOpenAccess N, inPMC N, full-text link "Subscription required"); licence UNVERIFIED, no licence statement read}
+}
+
+@article{mitsuhashi1989hl60h2,
+  author  = {Mitsuhashi, M. and Mitsuhashi, T. and Payan, D. G.},
+  title   = {Multiple signaling pathways of histamine {H2} receptors. {Identification} of an {H2} receptor-dependent {Ca2+} mobilization pathway in human {HL-60} promyelocytic leukemia cells},
+  journal = {Journal of Biological Chemistry},
+  year    = {1989},
+  volume  = {264},
+  number  = {31},
+  pages   = {18356--18362},
+  doi     = {10.1016/S0021-9258(18)51471-X},
+  pmid    = {2553705},
+  note    = {Cited in docs/open\_decisions.md 9.79 as the second native-cell study pointing away from {Gq/11} ({HL-60} cells differentiated to neutrophils), and it is one of the two PMIDs that {GPCRdb}'s primary\_PMID field attaches to every {HRH2} coupling row (9.79, 9.99). The quote in 9.79, the {H2} calcium response "was inhibited by cholera toxin but not by pertussis toxin", matches the abstract (PubMed 2553705, read 27 October 2026): "histamine-induced mobilization of [{Ca2+}]i was inhibited by cholera toxin but not by pertussis toxin, whereas the action of {fMet-Leu-Phe} was inhibited by pertussis toxin but not by cholera toxin. These data suggest that {H2} receptors on {HL-60} cells are coupled to two different cholera toxin-sensitive {G}-proteins and activate adenylate cyclase and phospholipase {C} simultaneously". ONLY THE ABSTRACT IS HELD: the full text was not reached (not in {PMC} or Europe {PMC}; jbc.org disallows the article page and its {PDF} by its robots file, read with experiments/read\_public\_page.py on 27 October 2026), so the toxin concentrations, the differentiation protocol and the antagonists that gave the "{H2} receptor specificity" are NOT held here, and nothing beyond the quoted sentences is to be cited from this entry. FULL TEXT NEEDS SOURCING BY THE OWNER. The PubMed record carries no {DOI}, only the publisher item identifier {S0021-9258(18)51471-X}; the {DOI} above is the one Europe {PMC} records (the same string under the Elsevier prefix) and it resolved at doi.org on 27 October 2026 to jbc.org; PubMed writes the pages 18356-62 and Europe {PMC} 18356-18362, the same range. Journal article, not a preprint. Licence UNVERIFIED: Europe {PMC}'s record holds a license field reading "cc by" beside isOpenAccess N and inPMC N, and no licence statement was read on the paper, so the field is recorded here and not relied on}
+}
+
+@article{zhu1994dualsignaling,
+  author  = {Zhu, X. and Gilbert, S. and Birnbaumer, M. and Birnbaumer, L.},
+  title   = {Dual signaling potential is common among {Gs}-coupled receptors and dependent on receptor density},
+  journal = {Molecular Pharmacology},
+  year    = {1994},
+  volume  = {46},
+  number  = {3},
+  pages   = {460--469},
+  doi     = {10.1016/S0026-895X(25)09722-6},
+  pmid    = {7935326},
+  note    = {The paper docs/open\_decisions.md 9.79 calls "the highest-value outstanding item for this row and for 9.20": it is reference 19 of K{\"u}hn et al. 1996, cited there for the claim that cholera toxin does not selectively inhibit {Gs}-coupled stimulation of phospholipase {C}, and it is the paper 9.20 uses for its sites-per-cell threshold. 9.79 quotes nothing from this paper directly, only K{\"u}hn's account of it. Its abstract (PubMed 7935326, read 27 October 2026) states "the ability of {Gs}-coupled receptors to stimulate {PLC} is dependent on the levels of receptor expression" and gives the densities at which the four receptors ({LHR}, {V2R}, beta1 and beta2 adrenergic, in {L} cells) stimulated {PLC}: "Expressing the {V2R} at 100,000 sites/cell or more and the beta {ARs} at 300,000 sites/cell resulted in stimulation of {PLC} by these receptors"; the abstract does not mention cholera toxin, so K{\"u}hn's reading of it cannot be checked from what is held. ONLY THE ABSTRACT IS HELD: not in {PMC} or Europe {PMC}, and molpharm.aspetjournals.org disallows the article page and its {PDF} by its robots file (read with experiments/read\_public\_page.py on 27 October 2026). FULL TEXT NEEDS SOURCING BY THE OWNER: the owner has said they will supply this paper to a later session (9.79, addition of 27 October 2026), and a Fable full-text pass on it is owed before 9.79 is ruled; that pass records in 9.79 what the paper does and does not change for the cholera-toxin inference and for 9.20's threshold. The PubMed record carries no {DOI}, as 9.79 states; the {DOI} above is the one Europe {PMC} records and it resolved at doi.org on 27 October 2026 to molpharm.aspetjournals.org; PubMed writes the pages 460-9 and Europe {PMC} 460-469, the same range. Journal article, not a preprint. Not open access (Europe {PMC} isOpenAccess N, inPMC N); licence UNVERIFIED, no licence statement read}
+}
