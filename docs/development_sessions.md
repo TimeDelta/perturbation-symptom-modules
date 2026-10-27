@@ -363,3 +363,31 @@ transcript address, then the dates of the session, then its summary.
   not a result; the investigation it asks for is a Fable pass. Its first request for push access to this repository
   was refused by the auto-mode classifier; a second, after the owner asked for the handoff to be in the repository,
   was granted. No commit was made.
+- https://claude.ai/share/c87ab459-ec77-4576-aa28-df88678909f2 — 24 to 27 October 2026. Merging the open pull
+  requests. The owner asked for the conflicts of pull request #11 to be fixed; they had already resolved them that
+  morning (`0ba41ef`, `3a61779`), and the session found no conflict markers and no decision id held twice. The owner
+  merged #11 and then asked that every open pull request be fixed and merged "one at a time". **Done:** #12 to #17
+  were merged in order, each after main was merged into its branch, the generated pages were regenerated in a commit
+  of their own and the full suite passed (1,246 passed for #12, rising to 1,399 for #17, 28 skipped throughout; #13
+  has one test fewer by design, six tests of the withdrawn newborn-through-toddler exclusion replaced by five). Every
+  conflict in `docs/open_decisions.md` was rows appended at the same place, kept in id order; no decision id moved.
+  `experiments/build_edge_evidence.py` (#16) and the three code files of #17 (`PER_PERTURBATION_ARRAYS`, the run
+  fingerprint and the permutation block of `experiments/run_main_model.py`, the slicing test's fixture) kept both
+  sides, as the pull requests had said. **Renumbered:** #14, #16 and #17 had each added a section 14 to
+  `docs/edge_priors.md`, which is append-only, so what main held first kept its number: 14 is 9.88 (#14); 9.91's
+  sections (#16) moved from 14 and 15 to 15 and 16; 9.90's (#17) moved from 14 to 17. Rows 9.90 and 9.91 cite the new
+  numbers, and comments on #16 and #17 say so, since their descriptions keep the old ones. #17 needed a second merge
+  because another session merged #18 (decision 1.2, orphenadrine) during it; amendment items stay numbered once each
+  (30 to 33). Main after the last merge, `a9503af`: 1,399 passed, 28 skipped, generated pages current. **Corrections
+  made before any push:** the first two resolution commits of #12 carried the owner's name and no signature and were
+  recreated as signed Claude commits; a first run of the documentation tests did not run at all because pytest was
+  not installed in the container; in #17 the status page was generated before the amendment history counted the fifth
+  amendment, which `tests/test_documentation_process.py` caught; and a merge message named `graph/experiment_data.py`
+  for `evaluation/experiment_data.py`. **Still open (as found on 25 October):** filling `evidenced_negative_power`
+  from #15's arrays, the step #17 names for after both merged; three branches with commits not on main and no pull
+  request, `records/readout-and-timescale-sources-rebased` (two records and `experiments/fixed_point_rate_checks.py`;
+  the branch without `-rebased` is its earlier copy), `claude/friendly-allen-q5xf0t` (the CLAUDE.md rule that
+  research is done on Fable, the session-start hook and the Fenckova et al. 2019 pin) and `stale-comment-cleanup`
+  (138 commits behind main); `soft-priors` and `entmax-mixture-weighting` appear to have landed through other
+  commits, which was not checked line by line. The session ran on Claude Opus 5.5 after the owner switched it from
+  the configured Sonnet at the start; it did no research, only merges, tests and this entry.
