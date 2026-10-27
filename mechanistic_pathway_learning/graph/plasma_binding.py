@@ -13,6 +13,11 @@ small_molecule_protein edges from OmniPath run metabolite -> gene with relation 
 sign 0, which is the right reading for a carrier, since it moves a substrate without acting on it. Only the
 extracellular copy of a cargo is joined, because plasma is the extracellular compartment.
 
+That reading of sign 0 is not the only one in this build: graph/brenda_enzyme_regulation.py reads the same sign on
+the same relation as "unknown". Open decision 9.98 (26 October 2026) records the conflict - a measured no-effect
+and an unestablished sign are one symbol on binds, so neither can be read off the graph - and holds the options for
+telling them apart. Nothing here changes until it is settled.
+
 Two sources, kept apart in evidence_source so each edge says where it came from:
   - UniProt binding-site features (data/raw/uniprot/uniprot_plasma_binders.tsv.gz, fetched by
     experiments/fetch_plasma_binder_annotations.py). Their ligand entries carry ChEBI identifiers, which the same

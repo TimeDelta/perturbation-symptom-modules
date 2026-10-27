@@ -12,7 +12,9 @@ What is added to a graph:
     with no edge, so the mechanism edges add no relation type;
   - for a drug whose plasma carrier is known, one sequestration edge, relation sequesters, sign -1, from the carrier's
     node to the drug node. The existing carriage edges use binds, whose rows all carry sign 0, which reads as moving a
-    cargo without acting on it; a carriage edge that is to lower free drug needs a sign.
+    cargo without acting on it; a carriage edge that is to lower free drug needs a sign. That reading of sign 0 is
+    contested: open decision 9.98 (26 October 2026) records that graph/brenda_enzyme_regulation.py reads the same
+    sign on the same relation as "unknown", so the two cannot be told apart on binds as it stands.
   - for a drug with a known clearing enzyme, one clearance edge, relation clears, sign -1, from the enzyme's node to the
     drug node (the user, 11 October 2026: "Add the enzyme labels as the carrier twin instead then"). It is the carrier's
     edge with another relation name: more enzyme, less drug. Added only when a table of clearing enzymes is passed

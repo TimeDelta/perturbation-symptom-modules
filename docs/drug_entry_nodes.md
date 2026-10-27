@@ -53,7 +53,9 @@ relation was added for, and competition between two drugs for one binder.
    substrate without acting on it, so a carriage edge as it stands does not make bound drug unavailable. Representing
    that needs a signed depletion edge from binder to cargo, as `depletes_substrate` was added for stoichiometry. This
    applies to the 27 existing carriage edges too: albumin binding bilirubin does not lower free bilirubin in this
-   model either.
+   model either. Open decision 9.98 (26 October 2026) records that the sign carries a second problem: this "no
+   effect" reading and the "unknown" reading of the same sign 0 in `graph/brenda_enzyme_regulation.py` are both
+   written down, so a measured null and an unestablished sign cannot be told apart on `binds`.
 
 ## Two objections to weigh before deciding
 

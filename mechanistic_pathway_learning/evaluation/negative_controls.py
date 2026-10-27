@@ -119,7 +119,8 @@ def fast_degree_preserving_rewiring(edge_index: np.ndarray, edge_relation_type: 
     relation stays symmetric where the real one is (rewiring the two directions apart leaves 1,664 of the full graph's
     31,118 binds edges with their reverse, from 30,682); its edges without a reverse are rewired as directed edges. Every
     node keeps its in- and out-degree in every relation either way. With none given the output is the one this function
-    has always produced for a seed.
+    has always produced for a seed. That 31,118 is of an earlier build: open decision 9.98 records it against the
+    31,177 of the v5 physiology audit, and names the correction as belonging with a rebuild, not with the decision.
 
     fixed_relations: relations left as they are, such as encodes on a split graph (gene -> its own protein; swapping it
     would join a gene to another gene's protein). The random stream of the other relations is unchanged when the fixed

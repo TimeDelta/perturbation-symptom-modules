@@ -13,8 +13,11 @@ source's reliability from its overlapping rows and carrying it to the rest. The 
 is a per-source parameter - but the data cannot anchor it. BRENDA meets the existing edge sources on **53 of 4,143
 pairs**, 40 of them `cofactor_of` against one source (`UniProt cofactor Mn(2+)`) on one metabolite; and of the other 13,
 the existing edge is usually OmniPath `binds`, sign 0, meaning unknown, so BRENDA naming a sign is a specificity gain
-that a fit would score as disagreement. Above all, **no edge source ever asserts a negative**: no row says a metabolite
-does not inhibit an enzyme, so specificity is unestimable for every source and sensitivity alone rewards volume, which
+that a fit would score as disagreement. (That reading of sign 0 as unknown is the opposite of the one
+`graph/plasma_binding.py` states for the carriage edges, where sign 0 means a carrier moves its cargo without acting
+on it. Open decision 9.98, 26 October 2026, records the conflict and is open.) Above all, **no edge source ever
+asserts a negative**: no row says a metabolite does not inhibit an enzyme, so specificity is unestimable for every
+source and sensitivity alone rewards volume, which
 `evidence_reliability_model` already states for the label sources ("the estimate becomes a decreasing function of how
 much the source reports rather than a measurement of anything"). So every pair enters at sign alone and the evidence
 quantity travels as recorded provenance instead of as a weight. Decision 9.88 (22 October 2026) keeps BRENDA's own

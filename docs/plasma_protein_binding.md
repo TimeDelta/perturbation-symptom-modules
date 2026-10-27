@@ -136,6 +136,10 @@ hard stop:
    cargo, in the way `depletes_substrate` was added because "the stoichiometric reading needs edges the graph does
    not store" (`linear_response_encoder.py`). That applies to the 27 existing carriage edges too: as they stand,
    albumin binding bilirubin does not lower free bilirubin in this model either.
+   Open decision 9.98 (26 October 2026) records a second problem with the sign: this "no effect" reading and the
+   "unknown" reading of the same sign 0 in `graph/brenda_enzyme_regulation.py` are both written down, so a measured
+   null and an unestablished sign are one symbol on `binds`. A signed `sequesters` relation (carrier to cargo) has
+   since been built for the drug layer; `docs/drug_entry_nodes.md` item 3 is the design.
 
 So the limitation is not that the edges are unplaceable. It is that placing them needs drug nodes, a change to
 where a drug perturbation is seeded and a signed sequestration relation, which is three changes to the confirmatory
