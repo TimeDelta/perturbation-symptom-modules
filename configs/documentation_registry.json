@@ -154,6 +154,12 @@
     "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
    }
   },
+  "docs/coproduct_of_de_novo_split_2026-10-26.md": {
+   "class": "record",
+   "recorded": "2026-10-26",
+   "append_only": true,
+   "what": "the carrier relation coproduct_of mixes regeneration with de novo synthesis under one learned gain: 49 de novo against 1,030 redistribution edges on the v0.4 slice, 2 against 37 in the biopterin family, and the whole de novo biopterin route passing through one carrier-gained edge at SPR"
+  },
   "docs/ctd_notice_draft.md": {
    "class": "draft",
    "recorded": "2026-10-11"
@@ -257,7 +263,7 @@
   "docs/exploration_queue.md": {
    "class": "living",
    "reviewed": "2026-10-26",
-   "as_of_commit": "f54e3e9",
+   "as_of_commit": "0b976bf",
    "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
   },
   "docs/exposure_sources/benet2011_bddcs.md": {
@@ -712,6 +718,12 @@
    "class": "record",
    "recorded": "2026-10-07",
    "append_only": true
+  },
+  "docs/relation_timescale_ordering_2026-10-26.md": {
+   "class": "record",
+   "recorded": "2026-10-26",
+   "append_only": true,
+   "what": "which side of an observation time each relation falls on, binned against about 2 hours, 6 weeks and 1 year, with the straddling set reported as a finding; researched on Fable, seven sources Consensus-only and marked as such"
   },
   "docs/research_summary.md": {
    "class": "living",

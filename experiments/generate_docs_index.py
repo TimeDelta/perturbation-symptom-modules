@@ -59,7 +59,7 @@ TOPICS = (
                               "docs/complex_*.md", "docs/membrane_potential_*.md", "docs/plasma_*.md", "docs/transporter_connectivity_audit.md",
                               "docs/superfluous_physiology_review.md", "docs/missing_physiology_review.md", "docs/physiological_adherence_review.md",
                               "docs/physiology_audit.md", "docs/family_in_graph.md", "docs/edge_priors.md", "docs/edge_gate_simulation.md",
-                              "docs/binds_resource_precision.md",
+                              "docs/binds_resource_precision.md", "docs/coproduct_of_de_novo_split_*.md",
                               "docs/knowledge_graph_practices_review.md", "docs/channel_conduction_audit.md", "docs/regulation_sign_recuration.md",
                               "docs/node_descriptor_columns.md", "docs/protein_descriptor_report.md", "docs/brain_expression_descriptors.md",
                               "docs/linear_response_sign_check.md", "docs/tissue_saturation.md", "docs/data_sources.md", "docs/alternative_sources.md")),
@@ -81,7 +81,7 @@ TOPICS = (
                                     "docs/graph_content_null_results.md", "docs/sign_and_typing_ablations.md", "docs/best_epoch_zero.md",
                                     "docs/message_passing_depth_probe.md", "docs/neuronal_variant_comparison.md", "docs/perturbation_type_offset.md",
                                     "docs/gene_protein_split_results.md", "docs/nonlinearity_inventory.md", "docs/mechanism_cards/*/*.md",
-                                    "docs/steady_state_readout_alternatives.md",
+                                    "docs/steady_state_readout_alternatives.md", "docs/relation_timescale_ordering_*.md",
                                     "docs/fixed_point_against_pharmacological_steady_state.md")),
 )
 OTHER_TOPIC = "Other documents"

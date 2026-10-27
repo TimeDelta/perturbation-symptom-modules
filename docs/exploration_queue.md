@@ -6,9 +6,9 @@ limits that must not be overstated when it is written up.
 
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`,
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; item 5 is new.
+were tagged; items 5 and 6 are new, both added on 26 October 2026.
 
-Checked against `main` at `f54e3e9` on 26 October 2026.
+Checked against `main` at `0b976bf` on 26 October 2026.
 
 ---
 
@@ -208,3 +208,61 @@ nothing. The head is not linear, so a prediction-level reading needs a pass.
 
 **Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
 arms R0, R1 and R5, and it cannot be scored on the 1,067 HPO pairs, which carry no drug perturbations.
+
+---
+
+## 6. The fast/slow partition as a function of the observation time, and the conserved-moiety constraint
+
+Tagged 2026-10-26, from the owner's question of that date about pulling timeframe ranges per edge type, and their
+refinement that what matters is only which side of an observation time a relation falls on.
+
+**What it is.** The Tikhonov partition of `docs/fixed_point_against_pharmacological_steady_state.md` section 3.4
+splits relations into a fast layer and a slow layer, and "Rates enter only through membership in F and S". The slow
+set is currently proposed as `{regulates_transcription_of, encodes}` — a proposal, not code: `git grep` finds it only
+in documents and the masked loop is a sketch. The idea is to replace the fixed list with an ordering plus thresholds,
+so membership is derived for each label class's observation time rather than asserted once.
+
+**Why that is better than a rate table.** Rates cannot enter the update: at the fixed point every rate drops out, and
+a per-relation rate changes the transient of the full system and nothing else. Membership is the only channel rates
+have. And a fixed list can serve only one observation time, which the sourcing in
+`docs/relation_timescale_ordering_2026-10-26.md` shows is a real problem rather than a hypothetical one: at about two
+hours the proposed slow set is defensible and transcription already straddles, while at about six weeks transcription
+is fast and `encodes` straddles, inverting it.
+
+**What is already done.** `docs/relation_timescale_ordering_2026-10-26.md` bins the relations against about 2 hours,
+6 weeks and 1 year, with the straddling set reported as a finding rather than a gap, and corrects section 3.4's claim
+that the band is "a few hundred nodes": that holds at 6 weeks and 1 year and fails at 2 hours, where the band is
+thousands of edges over at least five relations.
+
+**The conserved-moiety half.** A conserved moiety has two timescales, not one: redistribution among its forms is fast
+and holds the total fixed, while the total moves only through synthesis and degradation, which is slow. On the fast
+layer a conserved total has a relaxation rate of exactly zero, so it sits outside the positive-diagonal hypothesis
+the invariance argument needs. The graph avoids the singularity by giving each form its own unconstrained node, at
+the price of being able to raise tetrahydrobiopterin and quinonoid dihydrobiopterin together, which conservation
+forbids. The physiological fix is a per-moiety sum-to-zero projection, which is a constraint and not a rate, and it
+needs no literature sourcing: the constraint's form is arithmetic and moiety membership is computable from the
+stoichiometry already in the graph. What does need sourcing is the licence to treat a total as fixed over a given
+observation time, which is what the timescale record supplies.
+
+**The nearest concrete defect**, measured and recorded separately in
+`docs/coproduct_of_de_novo_split_2026-10-26.md`: the carrier relation `coproduct_of` mixes regeneration with de novo
+synthesis under one learned gain, 49 de novo edges against 1,030 redistribution edges on the v0.4 slice, and within
+the biopterin family 2 against 37. Splitting it is computable from the stoichiometry and needs no sourcing.
+
+**Known limits (do not overstate these in writing).**
+- Seven of the timescale record's sources were read through Consensus rather than PubMed and are marked as such;
+  they are not to be relied on in a registered document until re-read.
+- Its relation counts are v4's; v5 was not rebuilt for it.
+- Choosing an interpretable basis for the stoichiometric null space is a known hard problem and was not attempted;
+  that claim is itself unsourced and would need a Fable pass.
+- Conservation relations exist only for the stoichiometric sublayer, so signalling, transcription and binding get
+  none.
+- Nothing here moves the full fixed point. Every item changes membership or structure, not the steady state the
+  registered model reads.
+
+**What would need an owner ruling**, none of which has a decision id yet: whether to split `coproduct_of`; whether
+plain THF's absence from the carrier list is an oversight; and whether the slow set becomes a function of the
+observation time rather than a list.
+
+**Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
+arms R0, R1 and R5.
