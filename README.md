@@ -283,6 +283,38 @@ behind them.
   licence tick. This session ran on Claude Opus 5.5, before the rule of 25 October 2026 that research is done
   on Fable, so its licence readings, source appraisals and the ratios read for 9.91 and 9.94 need the Fable
   recheck that rule asks for. A handover note is in the project as `claude/session_2026-10-22_to_24.md`.
+- https://claude.ai/share/630c343b-04db-486b-8e7a-91817c696c48 — 20 to 27 October 2026. The forward-cone
+  divisor wired into training, the G-alpha coupling edge types, and what is left of the receptor-to-G-protein
+  dilution. It began with a plain-language reading of pull request #3 (VGLUT2 and VGLUT3 loading) and why the
+  neuronal build deletes Human-GEM's vesicular shortcuts; VMAT1 (SLC18A1) loses its shortcut with no
+  replacement, which was noted and not changed. 9.16: the per-seed cone divisor the owner asked for on 14
+  October had been built but never called; it became a normalisation of the linear-response encoder and the
+  registered default (`Amends: normalisation`, `total_in_degree` to `forward_cone`; pull request #8, merged 22
+  October 2026 as `ba7573e`). The owner set aside a first measurement on the v0.4 release ("ignore the v.4
+  graph. it's outdated"), so v5 was rebuilt in the session from main at `344d211`: every v5 perturbation has
+  one seed, so the per-seed and union divisors coincide; 1,338 of 2,447 cones are the same 40,172 nodes; a
+  node's response is a median 1.58 times its item-28 value with 97.7 percent of signs kept, at 2.2 times the
+  forward cost. Correcting a stale comment on the membrane potential found that the rebuild did not build the
+  membrane potential item 13 registers, and that under item 28 the reaction edges divide the conductance law
+  by 1 + R (9.87; the owner has since ruled `computed_from_the_pools`). 9.86 (first numbered 9.77): on v5 the
+  cAMP sign of receptors coupled to both Gs and Gi/o followed the primary transducer, which withdrew two
+  claims made from v0.4 (that family size sets the sign, and that an ADRB2 agonist lowers cAMP), and the
+  GtoPdb coupling filter missed GNA14, GNA15 and the transducins. On "build the suggested change", pull
+  request #11 (merged 24 October 2026 as `72d1a72`) reads the G-alpha families from HGNC's gene groups, which
+  drops 26 edges (not the 142 first stated), and adds three edge types, `couples_primary`, `couples_secondary`
+  and `g_alpha_regulates_effector` (580, 88 and 63 edges); in a gain sweep the `inhibits` gain no longer flips
+  any receptor's cyclase sign, and the remaining risk is secondary coupling outweighing primary, from 1.5 to 2
+  times for ADRB2 (9.80, with parameter counts for a cap or for per-edge strengths on the coupling types only,
+  the scope the owner set). 9.79: the HRH2 literature reads Gs primary, with the Gq/11 evidence mostly from
+  transfected cells. On 24 October the session found that every cyclase isoform receives the same five
+  inhibitory Gi/o edges, while the sources it read say Gi alpha inhibits only AC1, AC5 and AC6, which would
+  leave 32 of the 45 edges unsupported. The owner accepted the proposed order (correct those edges, rebuild
+  and rerun the sweep, then decide 9.80) with "Order accepted but give me a handoff for another session to do
+  the work" (9.97). Decision ids collided twice with other branches and were renumbered under the rule now in
+  CLAUDE.md. This session ran on Claude Opus 5.5, and its literature readings predate the rule of 25 October
+  2026 that research is done on Fable: 9.79's was rechecked on Fable on 26 October (9.99), and the cyclase
+  reading still awaits that recheck. A handover note is in the project as
+  `claude/handoff_g_alpha_cyclase_2026-10-25.md`.
 
 ## Conventions
 
