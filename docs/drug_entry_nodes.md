@@ -448,3 +448,36 @@ about the sign of a carrier edge"), and a regulator has reviewed each pair.
   appended, and no registered configuration reads either graph. Whether the enzyme statements also train a model is
   the user's decision (`docs/label_source_review.md`, section 13.3).
 
+
+## The plasma-binder limitation this document was written against is resolved, 27 October 2026
+
+`docs/plasma_binder_graph.md` carried a hand-written section, "Known limitation: no drug reaches its plasma carrier
+in the graph", written on 9 October 2026 and pointing at this document for the three changes it would take. All three
+were made, by the decision of 10 October 2026 and the build recorded above, so the section describes a state the graph
+left three weeks ago. Its claims against what the graph holds now:
+
+| the 9 October section says | what is built |
+|---|---|
+| "0 of the study's 142 drug perturbations is a node in the graph at all" | drug nodes exist: **154** in `data/processed/graph_full_neuronal_split_binders_drugs` (`docs/drug_entry_nodes_measured.md`), and the `drug` node type carries **222** on `graph_full_neuronal_split_binders_drugs_v4` (`docs/physiology_audit.md`, generated 17 October 2026) |
+| representing bound drug as unavailable "needs a signed depletion edge from binder to cargo" | the relation exists: `sequesters`, sign -1, carrier to drug. **71** edges for **49** drugs, by carrier gene ALB 39, ORM1 16, ORM2 16 (`docs/drug_entry_nodes_measured.md`); **101** on the v4 audit graph (`docs/physiology_audit.md`) |
+| "ORM1 and ORM2 have exactly one carriage edge each, to progesterone", so no drug reaches orosomucoid | ORM1 and ORM2 hold 16 sequestration edges each, and the measured stake names orosomucoid as the carrier of 10 drugs holding 46 kept positives (`docs/drug_entry_nodes_measured.md` section 6) |
+
+**What is kept as history, not as a current claim.** The section's reason for caring was fentanyl: of the 23 kept
+positive pairs the eleven orosomucoid-carried drugs hold, fentanyl holds 12 (`docs/orosomucoid_label_stake.md`
+confirms the 12 symptoms), and its free fraction is the one an acute-phase response moves most. That reasoning stands
+as the 9 October argument for why the carriage mattered; it is not evidence about the graph as it is now.
+
+**One caveat, and it is unmeasured.** Whether **fentanyl in particular** holds one of those sequestration edges is
+recorded nowhere. Both measurements above give counts by carrier gene, not the list of drugs, and no document in this
+repository names the 49. So "fentanyl now reaches ORM1 or ORM2" does not follow from them and is not asserted here.
+The check is one lookup of fentanyl's node in the `sequesters` rows of `edges.parquet` on a built drug graph, owed by
+a session that has one, and it pairs with the cortisol -> `NR3C1` count owed under `docs/open_decisions.md` 9.68.
+
+**Why the stale section is still in that file.** `configs/documentation_registry.json` makes
+`docs/plasma_binder_graph.md` a generated document, written by `experiments/build_plasma_binder_variant.py`, and
+`docs/documentation_process.md` says a generated document is "never edited by hand". Its generator's
+`carriage_report()` emits no such heading, so **the next build of the plasma-binder variant rewrites the file and the
+section goes with it**; that is the cut, and it is the generator's to make, not a session's. The history above exists
+so that the build does not take the reasoning with it. The generator was given the provenance stamp in the same
+commit as this note, under the rule that a generator which does not yet write one "is given it at its next change",
+so the regenerated file will also carry the stamp it now lacks.

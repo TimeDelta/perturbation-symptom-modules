@@ -28,6 +28,7 @@ from pathlib import Path
 import pandas as pd
 
 from experiments.fetch_plasma_binder_annotations import BINDER_GENES
+from mechanistic_pathway_learning.documentation import provenance_stamp
 from mechanistic_pathway_learning.evaluation.experiment_data import GENE_TO_PROTEIN_FILE
 from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import (
     ChemicalDefinition, human_gem_metabolites_by_chebi, map_definition_to_metabolites, read_chebi_relations)
@@ -57,8 +58,18 @@ def binder_nodes_on_split(graph_directory: Path, binder_genes) -> dict[str, list
 
 
 def carriage_report(summary: dict, graph_directory: Path, output_directory: Path, curated: pd.DataFrame,
-                    other_outputs: list[Path] | None = None) -> str:
+                    other_outputs: list[Path] | None = None, inputs: list[str] | None = None) -> str:
+    """The markdown of docs/plasma_binder_graph.md: what this build added, by binder and by source.
+
+    The provenance stamp goes in the first five lines, where documentation.parse_stamp reads it, because the
+    register makes that document generated and docs/documentation_process.md gives a generator without a stamp
+    one "at its next change". Everything this function emits is a property of the build it was called from: a
+    statement about the graph that this run did not measure belongs in a record document, not here. One such
+    statement was hand-added to the output and is dropped by the next run that writes the file, with the
+    reasoning kept at docs/drug_entry_nodes.md, section of 27 October 2026.
+    """
     lines = ["# Plasma substrate binders in the graph", "",
+             provenance_stamp("experiments/build_plasma_binder_variant.py", inputs or [str(graph_directory)]), "",
              f"Built by experiments/build_plasma_binder_variant.py from `{graph_directory}` into `{output_directory}`. "
              f"{summary['edges_added']} `binds` edges, sign 0, each from the extracellular copy of a cargo metabolite to its "
              f"binder, carried on {summary['carriage_on']}, which is the direction and sign the graph's own small-molecule "
@@ -129,7 +140,8 @@ def main() -> None:
                                             if key not in ("cargo_by_binder", "binder_genes_asked_for")}, indent=1))
         if position == 0 and str(arguments.markdown_output) != "none":
             other_outputs = [other.parent / f"{other.name}_binders" for other in arguments.graph_dirs[1:]]
-            arguments.markdown_output.write_text(carriage_report(summary, graph_directory, output_directory, curated, other_outputs))
+            arguments.markdown_output.write_text(carriage_report(summary, graph_directory, output_directory, curated, other_outputs,
+                                                            [str(graph_directory), str(arguments.binder_table), str(arguments.curated_table)]))
             print(f"wrote {arguments.markdown_output}")
 
 
