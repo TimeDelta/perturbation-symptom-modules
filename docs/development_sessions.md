@@ -84,7 +84,7 @@ transcript address, then the dates of the session, then its summary.
   first-order effect. Four replies were withheld by a safety classifier on 20 October 2026, all on the
   intracellular channel write-up and across three models; that content was not reproduced, and the work was
   finished by subagents with fresh context. A handover note is in the project as
-  `claude/session_2026-10-20_to_21.md`.
+  `claude/session_2026-10-20_to_21.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it).
 - https://claude.ai/share/96dd13e4-29c2-4078-973f-70a8e11976e5 — 21 October 2026. Two scoping questions
   raised and left open: whether small extracellular vesicles belong in the graph as a cross-compartment
   transfer mechanism rather than as a signed node, and whether target engagement needs an exposure term
@@ -138,7 +138,7 @@ transcript address, then the dates of the session, then its summary.
   licence, unverified behind RGD's robots file; the ClinicalTrials.gov `/api/` robots ruling; and the BRENDA
   licence tick. This session ran on Claude Opus 5.5, before the rule of 25 October 2026 that research is done
   on Fable, so its licence readings, source appraisals and the ratios read for 9.91 and 9.94 need the Fable
-  recheck that rule asks for. A handover note is in the project as `claude/session_2026-10-22_to_24.md`.
+  recheck that rule asks for. A handover note is in the project as `claude/session_2026-10-22_to_24.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it).
 - https://claude.ai/share/630c343b-04db-486b-8e7a-91817c696c48 — 20 to 27 October 2026. The forward-cone
   divisor wired into training, the G-alpha coupling edge types, and what is left of the receptor-to-G-protein
   dilution. It began with a plain-language reading of pull request #3 (VGLUT2 and VGLUT3 loading) and why the
@@ -324,7 +324,7 @@ transcript address, then the dates of the session, then its summary.
   session reconstructed the gap instead, marked as its own inference: NHE6 changes endosomal pH rather than calcium
   store content, the 9.75 endolysosome store lumps endosome and lysosome and takes no input, and the compartment pH
   weight is inert because `calibrate_ph_sensitivity` is called only by tests. On 24 October it wrote the handoff
-  for a session holding the v5 graph (`claude/handoff_v5_session_2026-10-24.md` in the project): the name `v5`
+  for a session holding the v5 graph (`claude/handoff_v5_session_2026-10-24.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it) in the project): the name `v5`
   covers two builds (20 October from `344d211`, 268,876 edges; 22 October, 274,917), v5 predates the graph changes
   of pull requests #5, #7, #9, #11, #14, #16, #17 and #18, and `scripts/rebuild_data_layer.sh` skips every step
   whose output exists, so a rerun beside v5 rebuilds nothing. On 27 October, asked what to do before retiring it,
@@ -351,7 +351,7 @@ transcript address, then the dates of the session, then its summary.
   isozyme, substrate or activity, cell line or concentration, for example "activates cNII, no effect on cNI"); the
   owner asked that "the wording context of the 47 should be investigated", so the session built nothing and wrote
   that investigation into the handoff as the first step before any rule. The handoff is
-  `docs/brenda_regeneration_handoff_2026-10-26.md` (moved from the Project note `claude/handoff_brenda_regeneration_2026-10-26.md` on 27 October 2026) in the Project, indexed in `claude/README.md`, and the owner
+  `docs/brenda_regeneration_handoff_2026-10-26.md` (moved from the Project note `claude/handoff_brenda_regeneration_2026-10-26.md` on 27 October 2026) in the Project, indexed in `claude/README.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it), and the owner
   gave it to the session running on the new shared environment. The owner asked for it to be in the repository;
   the session drafted a record and a decision row (9.104) and, when the owner said the other session already held the
   handoff, committed neither. **Still open:** the ruling is not yet in `docs/open_decisions.md`; the owner's sign-off
@@ -402,7 +402,7 @@ transcript address, then the dates of the session, then its summary.
   `docs/development_sessions.md` (`243d978`), registered as a record that is not append-only because earlier entries
   were corrected in place, and listed under the design topic of the docs index; the README keeps a three-line section
   that links to the page; CLAUDE.md's pointer to "the README's session summaries" names the page; and a dated
-  addition in the Project note `claude/session_2026-10-22_to_24.md` says its summary and transcript link moved. The
+  addition in the Project note `claude/session_2026-10-22_to_24.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it) says its summary and transcript link moved. The
   generated status page and docs index were regenerated in a commit of their own (`a840d52`). The owner then said
   "I thought I also asked you to include the instruction in the repo". The conversation holds no earlier request for
   that, and Claude said so, then added the rule to CLAUDE.md under "Documents" (`a072205`): a session's transcript and
@@ -463,7 +463,7 @@ transcript address, then the dates of the session, then its summary.
   `experiments/make_explanatory_figures.py` reads its model facts from `configs/registered_rules.json` through
   `registered_model_facts`, with a test that fails if superseded wording returns to the script (`758bf15`); stale
   comments and docstrings were corrected (`c84d4b0`); all nine Project notes carry a dated status block and
-  `claude/README.md` is an index checked against `d95eff9`; the PK coverage check of 24 October and two Kp,uu,brain
+  `claude/README.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it) is an index checked against `d95eff9`; the PK coverage check of 24 October and two Kp,uu,brain
   sources came into the repository (`d60757f`, section 30.8 of `docs/label_source_review.md`). **Withdrawn:** the
   Fenckova et al. 2019 licence reading "All rights reserved" (read on another model than Fable) was wrong; a Fable
   recheck found CC BY-NC-ND 4.0 on the publisher's PDF (`77b87fa`). Two claims in the Project notes were also wrong
@@ -536,7 +536,7 @@ transcript address, then the dates of the session, then its summary.
   dropped one, so its defect weakens the robustness reading where the monogenic labels are weakest; the 22 October
   v5 build that carries the 9.93 and 9.94 numbers died with its container and cannot be regenerated; `main` is
   unprotected with no CI while work is pushed straight to it; and the v5 handoff had gone stale, which
-  `claude/README.md` has since fixed. **Still open:** the saturation half of 9.81, and a Fable recheck of the
+  `claude/README.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it) has since fixed. **Still open:** the saturation half of 9.81, and a Fable recheck of the
   TMEM175 sourcing if anything ever relies on it. The session ran on Claude Opus 5 and Claude Opus 5.5, across four
   containers.
 - https://claude.ai/share/37e38d55-13bd-48f3-a337-ad188ddc8f1c — 26 to 27 October 2026. The owner asked for only the
@@ -621,7 +621,7 @@ transcript address, then the dates of the session, then its summary.
   remaining work in dependency order and what is parked. Its one structural recommendation: the cyclase handoff and
   the BRENDA handoff each call for a v5 rebuild, and both should go into a single rebuild, with the BRENDA table
   regenerated before the neuronal step it feeds. It also recorded that the Kp,uu reconstruction is not a build
-  blocker, and named four Project notes left stale by later rulings (`claude/README.md` not listing the BRENDA or
+  blocker, and named four Project notes left stale by later rulings (`claude/README.md` (Project note deleted on 27 October 2026, when the owner made the repository the single source of truth; the session's public transcript holds it) not listing the BRENDA or
   Kp,uu handoffs; the Fagerholm note, settled by 9.100; the Kp,uu search note's claims on Kalvass 2007 and the
   section 30.6 widening; and the v5 handoff still listing Negatome as unanswered). None of those notes was edited
   in the session. Two cautions were raised: the work queue was growing faster than the owner's rulings, with a
