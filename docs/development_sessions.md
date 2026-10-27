@@ -581,3 +581,35 @@ transcript address, then the dates of the session, then its summary.
   search for comments or documents that still describe these tests as subprocess runs found none. The session ran on
   Claude Opus 5.5 and, for its last turns on 27 October, Claude Sonnet 5.5. It did engineering only, with no research,
   so no Fable recheck is owed from it.
+- https://claude.ai/share/112552d6-36cc-4494-aca6-62e48823c64a — 26 to 27 October 2026. Whether to model protein
+  phosphorylation, and what was left unchecked. The owner asked on 26 October whether modelling phosphorylation would
+  be useful. The answer was no for the linear-response encoder and a possible yes as sign evidence on existing edges.
+  It rested on a code search of the repository for "phosphorylat" (most of the 25 files matched oxidative
+  phosphorylation rows in generated pages), on `configs/go_not_edge_rules.csv` ("no relation of the graph states
+  phosphorylation"), on decision 9.10(a), which already sets GRK and arrestin edges onto receptors to -1, on section
+  1.2 of `docs/steady_state_readout_alternatives.md` (desensitisation lies outside linearity) and on the Project notes.
+  The reasons: a kinase and a phosphatase acting on one substrate are two edges of opposite sign into one node, which
+  the graph already holds; what phosphorylation adds beyond that is a saturation or a product of states; its rate
+  drops out of every fixed point and it sits in the fast set of R2's partition; and site nodes would be relays
+  carrying the same net sign, adding path length and in-degree dilution. The entry point is edge sign: a kinase can act
+  on one substrate at an activating and at an inhibitory site, OmniPath's consensus sign collapses the two (the
+  failure mode of 9.72), and site-level annotations (PhosphoSitePlus regulatory sites, SIGNOR residue-level entries)
+  could supply an edge prior on the data layer. The measurement that decides it has not been run: a count of
+  kinase-to-substrate edges whose substrate has both site types annotated for that kinase, then how many of those
+  touch perturbed genes or lie on paths to labelled symptoms. **Correction:** the question had already been answered
+  and queued. Item 4 of `claude/exploration_queue.md` (tagged 26 October 2026, written on Opus by another session)
+  held the same reasoning, and the file was in this session's context from the start. The session did not check the
+  queue, derived the answer again and offered to file it as item 4, which repeats the kind of re-derivation the
+  project notes exist to prevent. It then wrote an updated Project copy of the queue from a read that carried no
+  pointer to the repository copy; the repository's `docs/exploration_queue.md` is the maintained version and already
+  held the item, so no content was lost, but the Project copy and the repository copy may differ. **Unverified:**
+  Goldbeter and Koshland 1981 (ultrasensitivity from opposed enzymes near saturation) and Needham et al. 2019, Sci
+  Signal (most phosphosites have no annotated function) were cited from memory. A search of the repository on 27
+  October found both only in item 4 and in neither `docs/references.bib` nor any other document. Item 4 flags the
+  Needham claim as unverified and does not flag Goldbeter and Koshland. When the owner asked on 27 October whether
+  anything remained before retiring the session, it named these two citations, offered a Fable pass to read both and
+  add them to `docs/references.bib`, and did not start it. **Still owed:** that Fable pass, and the phosphorylation
+  count above (research, so Fable). The session's answer was written from repository searches and general knowledge
+  and no paper was read, so nothing in it is a literature finding. The auto-mode classifier gave no verdict on the
+  first read-only clone made to prepare this entry; the identical repeat ran. The session's turns ran on Claude
+  Sonnet 5.5 as far as the session can tell, and it did no research.
