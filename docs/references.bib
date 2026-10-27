@@ -6938,3 +6938,37 @@
   pmcid   = {PMC2427207},
   note    = {docs/exploration_queue.md item 7: SLC9A6 is the Christianson syndrome gene. Quoted: "identified a deletion in the SLC9A6 gene encoding the Na(+)/H(+) exchanger NHE6" and "Subsequently, other mutations were found in a male with mental retardation (MR) who had been investigated for Angelman syndrome and in two XLMR families with epilepsy and ataxia, including the family designated as having Christianson syndrome." Not open: "All right reserved" by PMC's copyright record. Read through the PubMed API on Fable, 27 October 2026}
 }
+
+% Two entries for the HRH2 transducer question of docs/open_decisions.md 9.79, added 27 October 2026 on Fable 5.1
+% to docs/references.bib rather than to Zotero (the owner, 27 October 2026: "just add papers to the repository's
+% references.bib file instead of zotero from now on"). Every author list, journal, year, volume, issue, page range
+% and DOI below was read from the PubMed record (PubMed MCP get_article_metadata, 27 October 2026) and confirmed
+% against the Europe PMC record (ebi.ac.uk/europepmc/webservices/rest/search, read with
+% experiments/read_public_page.py on 27 October 2026); the two records agree on every field for both papers.
+% Both are typed "Journal Article" by both records; neither is a preprint.
+
+@article{panula2015iupharhistamine,
+  author  = {Panula, Pertti and Chazot, Paul L. and Cowart, Marlon and Gutzmer, Ralf and Leurs, Rob and Liu, Wai L. S. and Stark, Holger and Thurmond, Robin L. and Haas, Helmut L.},
+  title   = {International {Union} of {Basic} and {Clinical} {Pharmacology}. {XCVIII}. {Histamine} Receptors},
+  journal = {Pharmacological Reviews},
+  year    = {2015},
+  volume  = {67},
+  number  = {3},
+  pages   = {601--655},
+  doi     = {10.1124/pr.114.010249},
+  pmid    = {26084539},
+  note    = {The {IUPHAR} histamine receptor review that docs/open\_decisions.md 9.79 cites for the {H2} receptor's transducers, the successor to hill1997iupharhistamine. The full text is in PubMed Central ({PMC4485016}), read 27 October 2026 with experiments/read\_public\_page.py, and the two sentences 9.79 quotes are confirmed there, in its {H2} signal transduction section: "As for many adenylyl cyclase-coupled {GPCRs}, the {H2} receptor stimulates {cAMP} production via the coupling to {Gs} proteins, as indicated by, for example, agonist-induced photoaffinity labeling" and "The {H2} receptor does not only couple to {Gs} proteins but also to {Gq/11} proteins, resulting in inositol phosphate formation and increases in cytosolic {Ca2+} concentration in some, but not all, {H2} receptor expressing cells (for previous reviews, see Hill, 1990, and Hill et al., 1997)" ({PMC} full text, read 27 October 2026; {PMC}'s plain text renders subscripts and superscripts as plain characters, so a quote carried into a living document is to be rechecked against the typeset {PDF}). The {Gq/11} sentence cites only the two Hill reviews, and 9.79 records that hill1997iupharhistamine, read in full on 26 October 2026, does not support it; Hill 1990 is not held. Nothing else from the full text is asserted here. Review. In {PMC} (Europe {PMC} inPMC Y, {PMC4485016}) but NOT in Europe {PMC}'s open-access subset (isOpenAccess N); the {PMC} record states "Copyright \copyright{} 2015 by The American Society for Pharmacology and Experimental Therapeutics" and names no licence, so the licence is unverified}
+}
+
+@article{mondillo2005leydig,
+  author  = {Mondillo, Carolina and Patrignani, Zoraida and Reche, Cecilia and Rivera, Elena and Pignataro, Omar},
+  title   = {Dual role of histamine in modulation of {Leydig} cell steroidogenesis via {HRH1} and {HRH2} receptor subtypes},
+  journal = {Biology of Reproduction},
+  year    = {2005},
+  volume  = {73},
+  number  = {5},
+  pages   = {899--907},
+  doi     = {10.1095/biolreprod.105.041285},
+  pmid    = {15917347},
+  note    = {Found by a PubMed search for the {HRH2} transducer question of docs/open\_decisions.md 9.79; a native-cell (purified rat {Leydig} cell) and tumour-line ({MA-10} murine {Leydig} cell) study. "Our results regarding signal transduction pathways associated with these receptors indicate the coupling of {HRH2} to the adenylate cyclase system through direct interaction with a {Gs} protein. Moreover, we show {HRH1} activation mediates increases in inositol phosphate production, possibly due to coupling of this receptor to {Gq} protein and phospholipase {C} activation" (abstract, PubMed 15917347, read 27 October 2026). ONLY THE ABSTRACT IS HELD: the full text was not reached, so what "direct interaction" rests on, which agonists and antagonists were used, and whether any {H2} response in these cells was tested for a {Gq/11} arm are NOT held here, and nothing beyond the quoted sentences is to be cited from this entry. A Fable full-text pass on this paper is a follow-up the owner has placed before 9.79 is ruled; the owner will supply the paper. Not open access (Europe {PMC} isOpenAccess N, inPMC N); year 2005 is the journal-issue year, and the Europe {PMC} record gives the electronic publication as 25 May 2005 and the issue as November 2005}
+}
