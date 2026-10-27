@@ -200,6 +200,13 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   `configs/documentation_registry.json` before it is committed.
 - **No container or session state in a living document.** That state is on the machine
   (`bash scripts/resume_jobs.sh --status`); a dated record may describe it, a living document may not.
+- **A session's public transcript and its summary go in `docs/development_sessions.md`, not in the README** (the
+  owner, 27 October 2026, proposing the move: "moving the public transcripts to a separate page with a section in the
+  readme where they are right now that just links to them and their summaries because they are starting to take up a
+  lot of space"). Add the entry at the end of that page, oldest first, opening with the transcript address and the
+  dates of the session. The README's "Development sessions" section stays a short link to the page and gets no
+  entries. The page is a record in `configs/documentation_registry.json`; the entries moved from the README on 27
+  October 2026 are kept as they were written, and a later correction is a dated addition.
 
 ## Pushing (24 October 2026)
 
