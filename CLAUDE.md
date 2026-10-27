@@ -143,6 +143,9 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   setup, builds, tests, pins, graph and data-layer code, and running a measurement script. Interpreting a measurement
   for a decision is research. (This line was proposed by the session of 25 October 2026 with the question "Tell me if
   the line belongs elsewhere"; the owner's reply was the request above.)
+- **Commits are not research.** The owner, 27 October 2026: "let's remove the requirement of fable doing the full
+  commit. downgrade it to opus or better". A commit of code, data-layer changes, documents or decision entries may be
+  made on Opus or better. Research steps behind a commit stay on Fable under the rules here.
 - **A session on another model** hands each research step to a subagent started on Fable (the Agent tool's `model`
   set to `fable`), or leaves that step undone and says so. A research step whose model falls back from Fable is
   stopped and reported, not finished on the fallback model.
