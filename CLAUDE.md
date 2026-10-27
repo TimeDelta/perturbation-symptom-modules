@@ -124,6 +124,11 @@ against them before it is acted on.
   posting date, when the preprint is excluded unless a peer-reviewed version has appeared. A conference paper with
   programme-committee review is peer reviewed, whatever identifier it is cited by, so an arXiv number is not itself
   evidence that a paper failed this test.
+- **Papers are added to `docs/references.bib`, not to Zotero** (the owner, 27 October 2026: "just add papers to the
+  repository's references.bib file instead of zotero from now on"). An entry follows the convention of commit
+  `8ad304c`: every field read from the paper's PubMed record and confirmed against Europe PMC, with a `note` that says
+  what is held (the abstract only, or the full text and where it was read). Building an entry is research and is
+  done on Fable ("Models").
 
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.
