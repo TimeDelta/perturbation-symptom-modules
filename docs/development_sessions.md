@@ -335,3 +335,31 @@ transcript address, then the dates of the session, then its summary.
   found that the review does not itself name SLC9A6 as the Christianson syndrome gene, so that claim cites the
   2008 gene identification instead. One correction from the session: it first called item 7 documentation
   outside the Fable rule, which CLAUDE.md's definition of research contradicts.
+- https://claude.ai/share/353341d9-7cb0-4b87-aaee-fa8ca2109b1b — 26 to 27 October 2026. The owner asked for the
+  BRENDA regeneration of decision 9.88 and supplied the release 2026.1 JSON (83,199,555 bytes packed, matching the
+  `docs/data_sources.md` row). **Done:** the extraction, `experiments/extract_brenda_enzyme_regulation.py` at
+  `0d4d62f` (unchanged on `main` at `a072205`): 150,173 rows over 8,129 enzyme entries with a human protein
+  (`inhibits` 137,209; `no_inhibition` 184; `cofactor_of` 7,261; `activates` 5,519). It settled the question the
+  extractor's docstring left open: the JSON's 176,313 inhibition-field comments carry no `#n#` protein markers, so
+  each is one note on every protein of its record. **Not done:** the mapping onto the graph, which needs a rebuilt
+  v4 or v5 split graph with `uniprot_entry`; none was in the container. **Withdrawn:** the session first named EBI
+  FTP as a mirror that `CLAUDE.md` forbids reading; the owner remembered their exception of 22 October 2026 ("don't
+  refuse FTP from EBI"), the session read it, and the 403 on `rest.uniprot.org` was the container's proxy and not a
+  refusal by UniProt. **The owner's ruling:** the extraction counted 47 activating-compound notes that state no
+  effect and still wrote them as `activates`; the owner: "\"no effect\" should not have an activates edge ...".
+  A first reading of the 47 found that most state activation and put the absence on something else (another
+  isozyme, substrate or activity, cell line or concentration, for example "activates cNII, no effect on cNI"); the
+  owner asked that "the wording context of the 47 should be investigated", so the session built nothing and wrote
+  that investigation into the handoff as the first step before any rule. The handoff is
+  `claude/handoff_brenda_regeneration_2026-10-26.md` in the Project, indexed in `claude/README.md`, and the owner
+  gave it to the session running on the new shared environment. The owner asked for it to be in the repository;
+  the session drafted a record and a decision row (9.104) and, when the owner said the other session already held the
+  handoff, committed neither. **Still open:** the ruling is not yet in `docs/open_decisions.md`; the owner's sign-off
+  on the classification of the 47 notes and on widening the activator absence pattern ("no activation", "not
+  stimulated", "does not activate", about 15 more notes, which was the session's inference from the ruling); the
+  mapping and the comparison with the committed table (4,143 pairs); and the BRENDA JSON again, since it died with
+  the container. The session ran on Claude Opus 5.5 and was switched to Claude Sonnet 5.5 on 27 October. Its skim
+  of the 47 notes was research read on another model than Fable and is marked in the handoff as a starting point,
+  not a result; the investigation it asks for is a Fable pass. Its first request for push access to this repository
+  was refused by the auto-mode classifier; a second, after the owner asked for the handoff to be in the repository,
+  was granted. No commit was made.
