@@ -98,12 +98,6 @@
       "recorded": "2026-10-07",
       "append_only": false
     },
-    "docs/brenda_regeneration_handoff_2026-10-26.md": {
-      "class": "record",
-      "recorded": "2026-10-27",
-      "append_only": false,
-      "what": "the BRENDA regeneration handoff of 26 October 2026 for decision 9.88: the 47 activator notes' first-pass reading, the note-class counts, file hashes, the no_activation implementation shape and the mapping procedure; moved from a Project note on 27 October 2026"
-    },
     "docs/cell_state_representation.md": {
       "class": "living",
       "reviewed": "2026-10-13",
@@ -354,12 +348,6 @@
     "docs/fraction_unbound_coverage.md": {
       "class": "generated",
       "generator": "experiments/measure_fraction_unbound_coverage.py"
-    },
-    "docs/g_alpha_cyclase_handoff_2026-10-25.md": {
-      "class": "record",
-      "recorded": "2026-10-27",
-      "append_only": false,
-      "what": "the Gi/o-to-cyclase handoff of 25 October 2026 for decision 9.97: the per-isoform cyclase table awaiting a Fable recheck, its sources, the two owner questions, the build plan and the sweep thresholds; moved from a Project note on 27 October 2026"
     },
     "docs/gene_protein_split.md": {
       "class": "living",
