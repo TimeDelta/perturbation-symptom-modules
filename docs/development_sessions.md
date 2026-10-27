@@ -613,3 +613,19 @@ transcript address, then the dates of the session, then its summary.
   and no paper was read, so nothing in it is a literature finding. The auto-mode classifier gave no verdict on the
   first read-only clone made to prepare this entry; the identical repeat ran. The session's turns ran on Claude
   Sonnet 5.5 as far as the session can tell, and it did no research.
+- https://claude.ai/share/6227f27f-0cf0-4291-b40a-c66c4b13a3f2 — 26 to 27 October 2026. An organisation pass over
+  the Project notes, with no change to code, graph or decisions. The owner asked for help staying organised; the
+  session read the thirteen notes in `claude/` plus the new Kp,uu corpus handoff and set out, in one reply, the
+  actions only the owner can take (9.87 before any rebuild; the GEO GSE100472, BRENDA and Siletti inputs; the two
+  cyclase rulings of 9.97; the BRENDA activator sign-off of 9.88; Dessauer 2017, Zou 2025 and its correction), the
+  remaining work in dependency order and what is parked. Its one structural recommendation: the cyclase handoff and
+  the BRENDA handoff each call for a v5 rebuild, and both should go into a single rebuild, with the BRENDA table
+  regenerated before the neuronal step it feeds. It also recorded that the Kp,uu reconstruction is not a build
+  blocker, and named four Project notes left stale by later rulings (`claude/README.md` not listing the BRENDA or
+  Kp,uu handoffs; the Fagerholm note, settled by 9.100; the Kp,uu search note's claims on Kalvass 2007 and the
+  section 30.6 widening; and the v5 handoff still listing Negatome as unanswered). None of those notes was edited
+  in the session. Two cautions were raised: the work queue was growing faster than the owner's rulings, with a
+  suggestion to start nothing new until the merged rebuild lands; and none of the queue advances the qualifying
+  exam. No research was done. The GitHub connector refused the write of this entry (403), so the repository was
+  attached with push access on the owner's approval ("yes. you should have push access"). The session ran on
+  Claude Opus 5.5.
