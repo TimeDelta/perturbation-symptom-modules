@@ -58,7 +58,7 @@ TOPICS = (
     ("The physiology graph", ("docs/graph_summary.md", "docs/graph_reliance.md", "docs/gene_protein_split.md", "docs/cell_state_representation.md",
                               "docs/complex_*.md", "docs/membrane_potential_*.md", "docs/plasma_*.md", "docs/transporter_connectivity_audit.md",
                               "docs/superfluous_physiology_review.md", "docs/missing_physiology_review.md", "docs/physiological_adherence_review.md",
-                              "docs/physiology_audit.md", "docs/family_in_graph.md", "docs/edge_priors.md", "docs/edge_gate_simulation.md",
+                              "docs/physiology_audit.md", "docs/family_in_graph.md", "docs/edge_priors.md", "docs/brenda_regeneration_handoff_*.md", "docs/g_alpha_cyclase_handoff_*.md", "docs/edge_gate_simulation.md",
                               "docs/binds_resource_precision.md", "docs/coproduct_of_de_novo_split_*.md",
                               "docs/knowledge_graph_practices_review.md", "docs/channel_conduction_audit.md", "docs/regulation_sign_recuration.md",
                               "docs/node_descriptor_columns.md", "docs/protein_descriptor_report.md", "docs/brain_expression_descriptors.md",
