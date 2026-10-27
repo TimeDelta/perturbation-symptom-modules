@@ -6,7 +6,7 @@ limits that must not be overstated when it is written up.
 
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`,
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, and item 7 was added on 27 October 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026.
 
@@ -266,3 +266,54 @@ observation time rather than a list.
 
 **Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
 arms R0, R1 and R5.
+
+---
+
+## 7. Endosomal pH: SLC9A6 (NHE6), SLC9A9 (NHE9) and the endolysosome node
+
+Tagged 2026-10-27. Raised on 21 October 2026, when the owner asked what concern about SLC9A6 pull request #7 had set
+out of scope; the write-up of 20 October behind that pull request named it and was never committed, so its reasoning
+is lost and this item restates the gap from sources.
+
+**The physiology.** The endosomal Na+/H+ exchangers set the pH of early and recycling endosomes against the proton
+pump: "By providing a leak pathway for protons pumped by the V-ATPase, eNHE determine luminal pH and regulate cation
+(Na(+), K(+)) content in early and recycling endosomal compartments", and "Loss-of-function mutations in eNHE cause
+hyperacidification of endosomal lumen, as a result of imbalance in pump and leak pathways"; "Two isoforms, NHE6 and
+NHE9 are highly expressed in brain, including hippocampus and cortex" (Kondapalli, Prasad and Rao 2014,
+`kondapalli2014endosomalnhe`). SLC9A6 is the Christianson syndrome gene: a family with an X-linked syndrome "resembling
+Angelman syndrome" carried "a deletion in the SLC9A6 gene encoding the Na(+)/H(+) exchanger NHE6", and further
+mutations were found in "two XLMR families with epilepsy and ataxia, including the family designated as having
+Christianson syndrome" (Gilfillan et al. 2008, `gilfillan2008slc9a6`).
+
+**Why it matters here.** A monogenic gene with psychiatric and neurological phenotypes whose mechanism is a
+compartment's pH. The symptom crosswalks already name SLC9A6 among the genes behind Inappropriate laughter, which is
+excluded under `disinhibition_or_impulsivity` as mostly the Angelman sign.
+
+**Where it meets the graph** (read on `main` at `68bde1f`, 27 October 2026; no graph was available, so nothing below is
+a count):
+- SLC9A6 and SLC9A9 appear in no code, config or curated table; only the two symptom crosswalks name SLC9A6. Their
+  edges out and their reach are unmeasured.
+- Decision 9.75's endolysosome store (`l`, "endolysosome lumen" in `graph/reactome_import.py`) lumps the endosome with
+  the lysosome, and on the scratch rebuild of 20 October it took no reaction in and fed two ("0 in, 2 out"). NHE6 and
+  NHE9 act on early and recycling endosomes, a compartment the graph does not separate.
+- The quantity NHE6 changes is luminal pH, which belongs with the compartment pH weight of `linear_response_encoder.py`,
+  and that weight is inert: `calibrate_ph_sensitivity` is called by no trainer code, only by tests (recorded under 9.75).
+  Routing NHE6 into pH would change nothing until that is settled.
+
+**The direction is stated.** Unlike TMEM175, whose coupling to lysosomal release 9.75 left at "activates nothing: no
+paper read states the direction", loss of these exchangers acidifies the lumen.
+
+**Known limits (do not overstate these in writing).**
+- Kondapalli 2014 is a review, and its abstract speaks of the eNHE as a class; it names neither gene in the text
+  quoted, and it does not assign phenotypes to isoforms.
+- The disease association of NHE9 is not sourced here.
+- The licences of both papers were read from PMC's licence metadata through the PubMed copyright tool, not from a
+  sentence on the page: the two page reads were refused by the fetch tool's permission check on 27 October 2026
+  (https://pmc.ncbi.nlm.nih.gov/articles/PMC4066934/ and https://doi.org/10.3389/fncel.2014.00172).
+
+**What would need an owner ruling**, none of which has a decision id yet: whether the endosome and the lysosome are
+separated; whether endosomal pH becomes a node or stays inside the pH weight; and the inert pH calibration, which is a
+registered-model matter.
+
+**Status.** Parked. Measure first, on the current graph: SLC9A6's and SLC9A9's edges out and reach, and whether a
+perturbation of either gets past its own protein.
