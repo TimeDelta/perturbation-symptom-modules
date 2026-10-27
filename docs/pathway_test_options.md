@@ -63,7 +63,10 @@ Notes on the ranked options:
 - **Option 2** compares with matched random deletions because deletion without retraining mixes two effects
   (hooker2019benchmark: "it is unclear whether degradation in performance is due to the introduction of artifacts outside
   of the original training distribution or because we actually removed information"; zheng2024robust gives the graph
-  form). Sanity checks from adebayo2018sanity: re-initialised encoder weights must change the result, and permuted-label
+  form). **Added 27 October 2026: `zheng2024robust` is excluded under decision
+  9.101, being an arXiv preprint of October 2023 with no peer-reviewed version, so the graph-specific form of
+  this point now rests on nothing and should be reworded or re-sourced. The point itself survives: `hooker2019benchmark`
+  is a peer-reviewed NeurIPS 2019 paper and carries it.** Sanity checks from adebayo2018sanity: re-initialised encoder weights must change the result, and permuted-label
   modules must fail. Seeds are excluded from the deleted set, and each module's seed share is reported.
 - **Option 3** uses Hungarian matching (kuhn1955hungarian), selection frequency with the threshold of
   meinshausen2010stability, complementary-pair subsamples (shah2013variable) and the stability index with an interval of

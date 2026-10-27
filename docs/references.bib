@@ -787,7 +787,7 @@
   year = {2026},
   howpublished = {bioRxiv preprint, version 1, posted 4 May 2026, \url{https://www.biorxiv.org/content/10.64898/2026.04.29.721775v1}},
   doi = {10.64898/2026.04.29.721775},
-  note = {Not peer reviewed. Appraised in docs/literature_appraisal_staging.md; the appraisal is unreviewed}
+  note = {NOT PEER REVIEWED, marked for follow-up under decision 9.101: a bioRxiv preprint posted 4 May 2026, within the owner's 18 months, so it may be cited with this flag beside it. **Recheck by 4 November 2027**, when it is excluded unless a peer-reviewed version has appeared. Its PubMed record (PMID 42182201, PMC13192585) is not evidence of peer review: PubMed indexes bioRxiv preprints and types this one "Preprint". Not peer reviewed. Appraised in docs/literature_appraisal_staging.md; the appraisal is unreviewed}
 }
 
 @article{martin2014quantification,
@@ -1145,7 +1145,7 @@
   title  = {Towards Robust Fidelity for Evaluating Explainability of Graph Neural Networks},
   year   = {2023},
   doi    = {10.48550/arXiv.2310.01820},
-  note   = {"The reason is due to potential distribution shifts when subgraphs are removed in computing these fidelity measures." (abstract). The graph-specific form of the ROAR concern for deleting a module's support}
+  note   = {EXCLUDED 27 October 2026 under decision 9.101: not peer reviewed, an arXiv preprint posted October 2023 and so more than 18 months old, with no peer-reviewed version (OpenAlex and Consensus both give arXiv as its only venue, verified on Fable 27 October 2026). Kept as the record of what was cited before that date; nothing is asserted from it. "The reason is due to potential distribution shifts when subgraphs are removed in computing these fidelity measures." (abstract). The graph-specific form of the ROAR concern for deleting a module's support}
 }
 
 @inproceedings{sanchezlengeling2020evaluating,
@@ -2724,7 +2724,7 @@
   eprint        = {1806.01261},
   archivePrefix = {arXiv},
   doi           = {10.48550/arXiv.1806.01261},
-  note          = {A shared block applied many times between an encoder and a decoder: "a shared core block [...] is applied M times" (section 4.3, read in the arXiv PDF; the elision is the block's symbol, and the extracted text drops letters elsewhere, so only this intact phrase is quoted). Parameters shared across rounds with own maps for entry and readout (docs/drug_entry_nodes.md, decision F)}
+  note          = {EXCLUDED 27 October 2026 under decision 9.101: not peer reviewed, an arXiv preprint (1806.01261) posted June 2018, no peer-reviewed version (Semantic Scholar venue arXiv.org, no Crossref record; verified on Fable 27 October 2026). Nothing in the repository cited it outside this file, so nothing rested on it. A shared block applied many times between an encoder and a decoder: "a shared core block [...] is applied M times" (section 4.3, read in the arXiv PDF; the elision is the block's symbol, and the extracted text drops letters elsewhere, so only this intact phrase is quoted). Parameters shared across rounds with own maps for entry and readout (docs/drug_entry_nodes.md, decision F)}
 }
 
 @article{datto2009sedation,
@@ -6560,4 +6560,315 @@
   doi     = {10.1016/j.ejps.2023.106554},
   pmid    = {37543065},
   note    = {The cross-species Kp,uu,brain evidence of amendment item 36, cited in place of the excluded Fagerholm 2022 preprint (decision 9.100). Owner-supplied publisher PDF, read in full on Fable on 26 October 2026; CC BY-NC-ND 4.0, read on its own first page. Quoted: "A good correlation was achieved for Kp,brain between species with 59% falling within 2-fold"; "Kp,uu,brain values, derived from rat Kp,brain and literature fu values, were less well correlated between rat and minipig and showed greater spread (47% within 2-fold)"; "However, Kp,uu,brain calculated using in-house fu values, determined from the same assay set up across species, resulted in an improved correlation (71% within 2-fold)" (section 3.5, p. 8); "<2-fold for cimetidine and risperidone" (p. 9), which corrects the abstract's suggestion that risperidone is among the largest species differences; "The BBB restriction appeared compound dependant as opposed to a systematic bias between species" (p. 9). The author list is from the file's own first page}
+}
+
+% Bibliography entries for the assay-comparability research pass of 26 October 2026
+% (/tmp/.../scratchpad/kpuu_assay_comparability_fable.md), prepared on Fable 5.1 on 27 October 2026
+% for appending to docs/references.bib. 23 entries; four sources of that pass were already in the file
+% and are NOT repeated here: friden2009structure, loryan2022kpuu, sato2021translational, zou2025formula.
+%
+% Every author list, journal, year, volume, issue and page range below was read from the PubMed record
+% (PubMed MCP get_article_metadata) and confirmed against the Europe PMC record
+% (ebi.ac.uk/europepmc/webservices/rest/search, read with experiments/read_public_page.py on 27 October 2026).
+% Where the two disagreed on the year, the journal-issue year of the Europe PMC record is used and the
+% discrepancy is stated in the note. No field is completed from inference: a field the records did not
+% supply is absent.
+
+@article{gustafsson2019regional,
+  author  = {Gustafsson, Sofia and Sehlin, Dag and Lampa, Erik and Hammarlund-Udenaes, Margareta and Loryan, Irena},
+  title   = {Heterogeneous drug tissue binding in brain regions of rats, {Alzheimer's} patients and controls: impact on translational drug development},
+  journal = {Scientific Reports},
+  year    = {2019},
+  volume  = {9},
+  number  = {1},
+  pages   = {5308},
+  doi     = {10.1038/s41598-019-41828-4},
+  pmid    = {30926941},
+  note    = {The only measured repeatability figure for the unbound brain fraction assay found by the assay-comparability pass of 26 October 2026, and the source of its caution that the species conservation of fu,brain fails in diseased brain. "The experiments confirmed that the coefficient of variation in the inter-day assessment of f[u,brain] was at an acceptable level below 20%, i.e., for diazepam (10.3%), donepezil (18.7%), indomethacin (5.76%), memantine (8.47%), and paliperidone (6.86%). Intra-day variability in all experiments was lower than 10%"; "Overall, the rat data showed higher binding than control subjects, while being within 2-fold of the line of identity, for all studied drugs and investigated brain regions"; "Remarkably, for paliperidone, memantine, indomethacin and diazepam, the f[u,brain] in CRB of AD patients was on average twice as high as compared to that in rat CRB"; "it is not recommended to use rat WB f[u,brain] as a surrogate of regional BTB in AD patients [...] since the potential bias will most likely be larger than the two-fold acceptance in industry" (full text, PubMed Central PMC6440985, read 26 October 2026). Paliperidone and memantine are study drugs. The square-bracket expansions are the reading pass's: PubMed Central's plain text strips subscripts, so any quote carried into a living document is to be rechecked against the typeset PDF. Open access (Scientific Reports); Europe PMC isOpenAccess Y}
+}
+
+@article{friden2011phpartition,
+  author  = {Frid{\'e}n, Markus and Bergstr{\"o}m, Fredrik and Wan, Hong and Rehngren, Mikael and Ahlin, Gustav and Hammarlund-Udenaes, Margareta and Bredberg, Ulf},
+  title   = {Measurement of unbound drug exposure in brain: modeling of {pH} partitioning explains diverging results between the brain slice and brain homogenate methods},
+  journal = {Drug Metabolism and Disposition},
+  year    = {2011},
+  volume  = {39},
+  number  = {3},
+  pages   = {353--362},
+  doi     = {10.1124/dmd.110.035998},
+  pmid    = {21149540},
+  note    = {The clearest published inter-method noise floor for the brain free-fraction term, and the pH-partition correction between the two accepted assays, cited by the assay-comparability pass of 26 October 2026. "This model allowed prediction of V(u,brain) from f(u,brain) within a 2.2-fold error range for 95% of the drugs compared with a 4.5-fold error range using the brain homogenate f(u,brain) method alone"; "The greatest discrepancies between the methods occurred with compounds that are actively transported into brain cells, including gabapentin, metformin, and prototypic organic cation transporter substrates"; "the slice method is therefore more reliable than the homogenate method"; "this model does not take into consideration possible active brain cell uptake" (abstract, PubMed 21149540, read 26 October 2026). 56 compounds, rat, one laboratory running both assays; PubMed indexes it under MeSH "Reproducibility of Results". Gabapentin is a study drug and is named among the worst discrepancies. Full text not reached (ASPET/Elsevier), so the paper's own definition of "error range" and its per-compound table are not held here; request 3 of section 7 of the pass. Not open access (Europe PMC isOpenAccess N, inPMC N); year 2011 is the journal-issue year, PubMed records the electronic publication as 13 December 2010}
+}
+
+@article{friden2010residualblood,
+  author  = {Frid{\'e}n, Markus and Ljungqvist, Helena and Middleton, Brian and Bredberg, Ulf and Hammarlund-Udenaes, Margareta},
+  title   = {Improved measurement of drug exposure in the brain using drug-specific correction for residual blood},
+  journal = {Journal of Cerebral Blood Flow and Metabolism},
+  year    = {2010},
+  volume  = {30},
+  number  = {1},
+  pages   = {150--161},
+  doi     = {10.1038/jcbfm.2009.200},
+  pmid    = {19756019},
+  note    = {A systematic bias in the Kp,uu,brain measurement itself, worst for drugs restricted to the brain vascular spaces: a plausible source of between-study disagreement that is neither biology nor random noise. "A major challenge associated with the determination of the unbound brain-to-plasma concentration ratio of a drug (K(p,uu,brain)), is the error associated with correction for the drug in various vascular spaces of the brain, i.e., in residual blood"; "The correction model was successfully applied for the determination of K(p,uu,brain) for indomethacin, loperamide, and moxalactam, which had potential problems associated with correction"; "the results highlight the value of determining K(p,uu,brain) with statistical precision to enable appropriate interpretation of brain exposure for drugs that appear to be restricted to the brain vascular spaces" (abstract, PubMed 19756019, read 26 October 2026). Rat, 3 demonstration compounds. Correction 3.2 of the assay-comparability pass of 26 October 2026, which records that this repository cannot know per collated value whether, or how, residual blood was corrected for. The author list beyond the first author was NOT verified by that pass; it is verified here from PubMed and Europe PMC. Europe PMC isOpenAccess N but inPMC Y (PMC2949109)}
+}
+
+@article{mateus2014cellbased,
+  author  = {Mateus, Andr{\'e} and Matsson, P{\"a}r and Artursson, Per},
+  title   = {A high-throughput cell-based method to predict the unbound drug fraction in the brain},
+  journal = {Journal of Medicinal Chemistry},
+  year    = {2014},
+  volume  = {57},
+  number  = {7},
+  pages   = {3005--3010},
+  doi     = {10.1021/jm401963n},
+  pmid    = {24601604},
+  note    = {One of the three surrogate-assay agreement figures that place like-for-like variants of the fu,brain assay within about 2-fold of equilibrium dialysis (section 1.3 of the assay-comparability pass of 26 October 2026). "Our method estimated f(u,brain) with an average error of 1.9-fold" (abstract, PubMed 24601604, read 26 October 2026). HEK293 cell homogenate as a surrogate for brain tissue. The author list and title recorded by that pass were partly unverified; both are verified here from PubMed and Europe PMC (the pass gave the citation as "Mateus A et al." with no title). Europe PMC isOpenAccess Y (PMC3985417)}
+}
+
+@article{longhi2011transil,
+  author  = {Longhi, Raffaele and Corbioli, Silvia and Fontana, Stefano and Vinco, Federicia and Braggio, Simone and Helmdach, Lydia and Schiller, J{\"u}rgen and Boriss, Hinnerk},
+  title   = {Brain tissue binding of drugs: evaluation and validation of solid supported porcine brain membrane vesicles ({TRANSIL}) as a novel high-throughput method},
+  journal = {Drug Metabolism and Disposition},
+  year    = {2011},
+  volume  = {39},
+  number  = {2},
+  pages   = {312--321},
+  doi     = {10.1124/dmd.110.036095},
+  pmid    = {21071520},
+  note    = {A surrogate fu,brain assay agreeing with equilibrium dialysis, and a secondary statement on rat-against-pig brain composition, cited in section 1.3 of the assay-comparability pass of 26 October 2026. "A good correlation (r(2) > 0.93) of f(u,brain) (%) between the TRANSIL brain absorption assay and equilibrium dialysis was observed"; "The comparison of the lipid composition indicated only minor differences between rat and porcine brain, and albumin appears to have a low impact on brain tissue binding measurements" (abstract, PubMed 21071520, read 26 October 2026). 65 drugs, 27 marketed and 38 proprietary. The author list was NOT verified by that pass ("Longhi R et al."); it is verified here from PubMed and Europe PMC. Not open access (Europe PMC isOpenAccess N, inPMC N); year 2011 is the journal-issue year, PubMed records the electronic publication as 11 November 2010}
+}
+
+@article{wan2007pooled,
+  author  = {Wan, Hong and Rehngren, Mikael and Giordanetto, Fabrizio and Bergstr{\"o}m, Fredrik and Tunek, Anders},
+  title   = {High-throughput screening of drug-brain tissue binding and in silico prediction for assessment of central nervous system drug delivery},
+  journal = {Journal of Medicinal Chemistry},
+  year    = {2007},
+  volume  = {50},
+  number  = {19},
+  pages   = {4606--4615},
+  doi     = {10.1021/jm070375w},
+  pmid    = {17725338},
+  note    = {The pooled-against-single-compound dialysis agreement figure, and an independent corroboration of the species conservation of brain tissue binding for the rodent pair, cited in section 1.3 of the assay-comparability pass of 26 October 2026. "A strong correlation of fraction unbound in brain (fu) between single compound measurements and 25-pooled compounds (R2 = 0.906) was obtained for a selection of structurally diverse CNS compounds"; "it was the first time that we have demonstrated consistent fraction unbound in mouse and rat brain homogenate, revealing the drug-tissue partitioning mechanism predominated by hydrophobic interaction" (abstract, PubMed 17725338, read 26 October 2026). The author list was NOT verified by that pass ("Wan H et al."); it is verified here from PubMed and Europe PMC. Not open access (Europe PMC isOpenAccess N, inPMC N)}
+}
+
+@article{fagerholm2021labvariability,
+  author  = {Fagerholm, Urban and Spjuth, Ola and Hellberg, Sven},
+  title   = {Comparison between lab variability and in silico prediction errors for the unbound fraction of drugs in human plasma},
+  journal = {Xenobiotica},
+  year    = {2021},
+  volume  = {51},
+  number  = {10},
+  pages   = {1095--1100},
+  doi     = {10.1080/00498254.2021.1964044},
+  pmid    = {34346291},
+  note    = {The only 117-compound figure for interlaboratory variation in human fu,plasma, cited in section 1.5a of the assay-comparability pass of 26 October 2026 for the condition this repository's own Kp,uu,brain inputs are in - values collated from the published literature across laboratories, methods and conditions. "Corresponding estimates for lab variability (ratio between max and min f[u] for each compound) were 2.0- and 185-fold, respectively. Greater than 10-fold lab variability was found for 14 of 117 selected compounds"; "predictions were about as reliable as lab estimates when these have been generated during different conditions" (abstract, PubMed 34346291, read 26 October 2026; PubMed's rendering strips the subscript on fu and the italics on "in silico"). CARRIES THE SAME CONFLICT OF INTEREST THAT DECISION 9.100 RECORDED FOR THE EXCLUDED fagerholm2022human PREPRINT: all three authors are at Prosilico AB, and the paper benchmarks laboratory variability against that company's own in silico prediction method, so it evaluates data against a product of its authors' company. Unlike the preprint this paper IS peer reviewed (Xenobiotica), so the exclusion of decision 9.100 does not reach it; but the conflict is to be disclosed wherever the 2.0-fold figure is cited, and whether to cite it at all is the owner's. An independent second source for the same term was sought and found under the second-source rule: kazmi2026iqconsortium, with di2017proteinbinding and riccardi2015challenging. Full text not reached (Taylor and Francis), so the per-compound table naming the 14 compounds above 10-fold is not held here; request 7 of section 7 of the pass. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{kazmi2026iqconsortium,
+  author  = {Kazmi, Faraz and Gradhand, Ulrike and Gangl, Eric T. and Fricke, Robert and Aldinger, Tanya and Chambers, Rob and Donzelli, Massimiliano and Ferguson, Douglas and Francq, Bernard G. and Harradine, Paul J. and Kazma, R{\'e}mi and Mardirosian, Saro and Nicolas, Jean-Marie and Shinkyo, Raku and Simon, Sandrine and Sinz, Michael and Stuart, Patricia and Tatikola, Kanaka and Wittwer, Matthias Beat and Vendrell-Navarro, Gloria and Yan, Zhengyin and Kalvass, John C.},
+  title   = {Breaking the 1\% unbound threshold: an {IQ} consortium whitepaper on the evaluation of plasma protein binding of highly bound compounds},
+  journal = {Drug Metabolism and Disposition},
+  year    = {2026},
+  volume  = {54},
+  number  = {9},
+  pages   = {100358},
+  doi     = {10.1016/j.dmd.2026.100358},
+  pmid    = {42612543},
+  note    = {The only true interlaboratory consortium measurement of a free-fraction assay found by the assay-comparability pass of 26 October 2026, and the second source sought under the second-source rule because fagerholm2021labvariability carries a Prosilico conflict; this one is independent of Prosilico. "an IQ working group comprising 11 member companies evaluated the interlab accuracy and precision of the PPB determination of 20 compounds highly bound to plasma proteins with f[u] values <1%"; "Results demonstrated that f[u] values as low as ~0.003% can potentially under optimized conditions be reliably quantified, challenging the necessity of a fixed cutoff"; "the bioanalytical sensitivity, qualification of the PPB assays in the appropriate unbound fraction range, and compound properties dictate the lower limit for f[u], rather than an arbitrary threshold" (abstract, PubMed 42612543, read 26 October 2026). Equilibrium dialysis plus flux dialysis and the plasma P450 IC50 shift method; PubMed indexes it under MeSH "Reproducibility of Results"; last author John C. Kalvass of the brain tissue binding method. ONLY THE ABSTRACT IS HELD: the full text was not reached (ASPET/Elsevier) and THE NUMERIC INTERLAB ACCURACY AND PRECISION FIGURES ARE IN IT, not in the abstract, so no fold figure from this paper is to be cited from here. It is the top request of section 7 of the pass. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{di2017proteinbinding,
+  author  = {Di, Li and Breen, Christopher and Chambers, Rob and Eckley, Sean T. and Fricke, Robert and Ghosh, Avijit and Harradine, Paul and Kalvass, J. Cory and Ho, Stacy and Lee, Caroline A. and Marathe, Punit and Perkins, Everett J. and Qian, Mark and Tse, Susanna and Yan, Zhengyin and Zamek-Gliszczynski, Maciej J.},
+  title   = {Industry perspective on contemporary protein-binding methodologies: considerations for regulatory drug-drug interaction and related guidelines on highly bound drugs},
+  journal = {Journal of Pharmaceutical Sciences},
+  year    = {2017},
+  volume  = {106},
+  number  = {12},
+  pages   = {3442--3452},
+  doi     = {10.1016/j.xphs.2017.09.005},
+  pmid    = {28927987},
+  note    = {A cross-company concordance statement for fu,plasma, cited in section 1.5c of the assay-comparability pass of 26 October 2026 as one of two independent figures pointing the same way - that a qualified protocol is reproducible across companies, even though literature collations across methods and conditions are not. "The ability to measure f[u] is further illustrated by a cross-company data comparison of PPB for warfarin and itraconazole, demonstrating good concordance of the measured f[u] values. The data indicate that f[u] values of <=0.01 may be determined accurately across laboratories when appropriate methods are used" (abstract, PubMed 28927987, read 26 October 2026). Only 2 compounds and NO FOLD FIGURE in the abstract, which is why it is the lowest-priority full-text request (request 9) of section 7 of the pass. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{riccardi2015challenging,
+  author  = {Riccardi, Keith and Cawley, Shannon and Yates, Phillip D. and Chang, Cheng and Funk, Carrie and Niosi, Mark and Lin, Jian and Di, Li},
+  title   = {Plasma protein binding of challenging compounds},
+  journal = {Journal of Pharmaceutical Sciences},
+  year    = {2015},
+  volume  = {104},
+  number  = {8},
+  pages   = {2627--2636},
+  doi     = {10.1002/jps.24506},
+  pmid    = {26037784},
+  note    = {A within-company precision figure for fu,plasma, cited in section 1.5c of the assay-comparability pass of 26 October 2026. "Our analysis of over 2000 Pfizer drug discovery compounds showed no systematic bias in low or high f[u] precision using the equilibrium dialysis method" (abstract, PubMed 26037784, read 26 October 2026). Speaks to precision within one company, NOT to interlaboratory agreement, which is the term the pass was looking for. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{hammarlundudenaes2008rateextent,
+  author  = {Hammarlund-Udenaes, Margareta and Frid{\'e}n, Markus and Syv{\"a}nen, Stina and Gupta, Anubha},
+  title   = {On the rate and extent of drug delivery to the brain},
+  journal = {Pharmaceutical Research},
+  year    = {2008},
+  volume  = {25},
+  number  = {8},
+  pages   = {1737--1750},
+  doi     = {10.1007/s11095-007-9502-2},
+  pmid    = {18058202},
+  note    = {The dynamic range of Kp,uu across CNS drugs, cited by the assay-comparability pass of 26 October 2026 to keep its measured 2.96-fold within-species spread in proportion: a roughly 3-fold noise inside a 150-fold range blurs the scale without destroying rank order. "Kp,uu can differ between CNS-active drugs by a factor of up to 150-fold. This range is much smaller than that for log BB ratios (Kp), which can differ by up to at least 2,000-fold, or for BBB permeabilities, which span an even larger range (up to at least 20,000-fold difference)" (abstract, PubMed 18058202, read 26 October 2026). Also the definitional source for Kp,uu, CLin and Vu,brain. DATED 2008, NOT 2007: the assay-comparability pass cited it as "Hammarlund-Udenaes 2007", which is the electronic publication year PubMed records (5 December 2007); the journal issue is Pharmaceutical Research 25(8), 2008, per both the PubMed citation record and the Europe PMC record read 27 October 2026. Open access (Europe PMC isOpenAccess Y, PMC2469271)}
+}
+
+@article{nicolai2020llcpk1,
+  author  = {Nicola{\"i}, Johan and Chapy, H{\'e}l{\`e}ne and Gillent, Eric and Saunders, Kenneth and Ungell, Anna-Lena and Nicolas, Jean-Marie and Chanteux, Hugues},
+  title   = {Impact of in vitro passive permeability in a {P-gp}-transfected {LLC-PK1} model on the prediction of the rat and human unbound brain-to-plasma concentration ratio},
+  journal = {Pharmaceutical Research},
+  year    = {2020},
+  volume  = {37},
+  number  = {9},
+  pages   = {175},
+  doi     = {10.1007/s11095-020-02867-z},
+  pmid    = {32856111},
+  note    = {The closest thing in the literature to an assay-based correction validated against MEASURED human Kp,uu,brain, and so the most directly relevant source to the owner's question of 26 October 2026 about bridging the gap to humans. "11 compounds with reported rat in situ brain perfusion data and 6 compounds with reported human Kp[uu,brain] values"; "A 10-fold difference between in vitro and in vivo passive permeability was observed. Incorporation of the differences between in vitro and in vivo passive permeability and P-gp expression levels resulted in an improved prediction of rat (AAFE 2.17) and human Kp[uu,brain] (AAFE 2.10)" (abstract, PubMed 32856111, read 26 October 2026). The human leg rests on 6 compounds and the average absolute fold error is still just over 2-fold. Section 3.3 of the pass records what this does and does not do: it corrects the species term by a forward prediction from new in vitro measurements, so it is NOT a coefficient that could be applied to an already-collated animal Kp,uu,brain, which is what this repository holds. The abstract does not give the UNCORRECTED human AAFE, so how much the correction bought is not recoverable from it; full text not reached (Springer), request 5 of section 7 of the pass. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{storelli2021ref,
+  author  = {Storelli, Flavia and Anoshchenko, Olena and Unadkat, Jashvant D.},
+  title   = {Successful prediction of human steady-state unbound brain-to-plasma concentration ratio of {P-gp} substrates using the proteomics-informed relative expression factor approach},
+  journal = {Clinical Pharmacology and Therapeutics},
+  year    = {2021},
+  volume  = {110},
+  number  = {2},
+  pages   = {432--442},
+  doi     = {10.1002/cpt.2227},
+  pmid    = {33675056},
+  note    = {A proteomics-informed relative expression factor correction verified against human brain PET, on 3 drugs; section 3.4 of the assay-comparability pass of 26 October 2026, where it is grouped with nicolai2020llcpk1 and sato2021translational as a species correction rather than an assay-noise correction. "Due to lack of good in vitro human blood-brain barrier models, we and others have advocated the use of a proteomics-informed relative expressive factor (REF) approach to predict K[p,uu,brain]"; "The ER approach successfully predicted K[p,uu,brain] of all three drugs within twofold of observed data and within 95% confidence interval of the observed data for verapamil and N-desmethyl loperamide" (abstract, PubMed 33675056, read 26 October 2026). The three drugs are verapamil, N-desmethyl loperamide and metoclopramide. AUTHOR LIST CORRECTED: the pass recorded it as "Storelli F, Billington S, Kumar AR, Unadkat JD"; the PubMed record and the Europe PMC record, both read 27 October 2026, give three authors - Storelli, Anoshchenko and Unadkat. Open access (Europe PMC isOpenAccess Y, PMC8360000)}
+}
+
+@article{summerfield2008prediction,
+  author  = {Summerfield, S. G. and Lucas, A. J. and Porter, R. A. and Jeffrey, P. and Gunn, R. N. and Read, K. R. and Stevens, A. J. and Metcalf, A. C. and Osuna, M. C. and Kilford, P. J. and Passchier, J. and Ruffo, A. D.},
+  title   = {Toward an improved prediction of human in vivo brain penetration},
+  journal = {Xenobiotica},
+  year    = {2008},
+  volume  = {38},
+  number  = {12},
+  pages   = {1518--1535},
+  doi     = {10.1080/00498250802499459},
+  pmid    = {18979396},
+  note    = {THE LOAD-BEARING SOURCE for the species conservation of the unbound brain fraction, on which the whole of the assay-comparability pass of 26 October 2026 turns: if fu,brain is conserved across species then there is no species error in that term for an assay correction to fix, and the gap to human cannot be bridged by harmonising free-fraction assays. "An excellent correlation was noted between unbound brain fractions across species (R(2) > 0.9 rat, pig, and human, n = 21), which is indicative of the high degree of conservation of the central nervous system environment"; "In vitro estimates of human brain-blood or brain-plasma ratios of marketed central nervous system drugs and PET tracers agree well with in vivo values derived from clinical PET and post-mortem studies" (abstract, PubMed 18979396, read 26 October 2026). Single laboratory (GlaxoSmithKline Neurosciences CEDD, Harlow) with PET collaborators. ONLY THE ABSTRACT IS HELD: the full text was not reached (Taylor and Francis), so which 21 compounds, which species pairs, whether the correlation is on a log scale, the fold scatter about the line, and the detail behind "agree well" are NOT held here, and no figure beyond the two quoted sentences is to be cited from this entry. It is a top request of section 7 of the pass, equal with kazmi2026iqconsortium. PubMed records only initials for every author. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{summerfield2016uptake,
+  author  = {Summerfield, Scott G. and Zhang, Yanyan and Liu, Houfu},
+  title   = {Examining the uptake of central nervous system drugs and candidates across the blood-brain barrier},
+  journal = {Journal of Pharmacology and Experimental Therapeutics},
+  year    = {2016},
+  volume  = {358},
+  number  = {2},
+  pages   = {294--305},
+  doi     = {10.1124/jpet.116.232447},
+  pmid    = {27194478},
+  note    = {One of the peer-reviewed statements on the state of human Kp,uu,brain data assembled in section 4.3 of the assay-comparability pass of 26 October 2026, which found that peer-reviewed sources say the human data are FEW and heterogeneous but none supports the excluded fagerholm2022human preprint's stronger claim that they are too uncertain to validate against. "Challenges for identifying high Kp,uu compounds are discussed in the context of acute versus steady-state data and cross-species differences. Evidently, there is a need for better predictive models of human brain Kp,uu" (abstract, PubMed 27194478, read 26 October 2026). The author list was NOT verified by that pass ("Summerfield S et al."); the PubMed and Europe PMC records read 27 October 2026 give three authors. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{syvanen2009speciesdifferences,
+  author  = {Syv{\"a}nen, Stina and Lindhe, Orjan and Palner, Mikael and Kornum, Birgitte R. and Rahman, Obaidur and L{\aa}ngstr{\"o}m, Bengt and Knudsen, Gitte M. and Hammarlund-Udenaes, Margareta},
+  title   = {Species differences in blood-brain barrier transport of three positron emission tomography radioligands with emphasis on {P-glycoprotein} transport},
+  journal = {Drug Metabolism and Disposition},
+  year    = {2009},
+  volume  = {37},
+  number  = {3},
+  pages   = {635--643},
+  doi     = {10.1124/dmd.108.024745},
+  pmid    = {19047468},
+  note    = {THE ONE MEASURED ANIMAL-TO-HUMAN COMPARISON with a fold figure found by the assay-comparability pass of 26 October 2026, and it cuts against bridging the species gap by correcting binding: the authors tested the binding explanation and rejected it. "the brain-to-plasma ratio of [(11)C]GR205171 was almost 9-fold higher in humans compared with rats"; "The species differences were still present after P-gp inhibition, although the increase in brain concentrations after P-gp inhibition was somewhat greater in rats than in the other species. Differences in plasma protein binding and metabolism did not explain the species-related differences" (abstract, PubMed 19047468, read 26 October 2026). Rat, guinea pig, monkey, minipig and human; 3 radioligands; PET with cyclosporin A as the P-gp probe. CAVEAT recorded by the pass: these are brain and brain-to-plasma concentrations (Kp), NOT Kp,uu,brain - the abstract does not say a Kp,uu,brain was computed or what human fu,brain would have been used, so no Kp,uu claim is to be made from this entry. Altanserin is one of langthaler2023minipig's 17 reference compounds and one of its outliers, so the two papers overlap on a compound where both see a large species effect. Full text not reached (ASPET/Elsevier), request 4 of section 7 of the pass. Not open access (Europe PMC isOpenAccess N, inPMC N); year 2009 is the journal-issue year, PubMed records the electronic publication as 1 December 2008}
+}
+
+@article{uchida2020transporters,
+  author  = {Uchida, Yasuo and Yagi, Yuta and Takao, Masaki and Tano, Mitsutoshi and Umetsu, Mina and Hirano, Satoshi and Usui, Takuya and Tachikawa, Masanori and Terasaki, Tetsuya},
+  title   = {Comparison of absolute protein abundances of transporters and receptors among blood-brain barriers at different cerebral regions and the blood-spinal cord barrier in humans and rats},
+  journal = {Molecular Pharmaceutics},
+  year    = {2020},
+  volume  = {17},
+  number  = {6},
+  pages   = {2006--2020},
+  doi     = {10.1021/acs.molpharmaceut.0c00178},
+  pmid    = {32310660},
+  note    = {The measured size of the real species term at the blood-brain barrier - transporter expression, not binding - which is the central negative result of the assay-comparability pass of 26 October 2026: no free-fraction correction touches it. "Protein expression levels of transporters and receptors in humans were remarkably smaller than those in rats in both BBB and BSCB"; "Protein expression levels (fmol/cm[2]) of MDR1 and BCRP at the BBB in humans were 9.88-fold and 5.23-fold smaller than those in rats, respectively" (abstract, PubMed 32310660, read 26 October 2026; the superscript on cm2 is stripped in PubMed's rendering). 39 proteins quantified in human capillary samples and 29 in rat, by targeted proteomics. Corroborated independently by bao2019glioblastoma and zhang2023abctransporters, with the downstream consequence on named drugs in verscheijden2021pgpactivity. AUTHOR LIST CORRECTED: the pass recorded it as "Uchida Y, Goto R, Takeuchi H, Luczak M, Usui T, Tachikawa M, Terasaki T"; the PubMed record and the Europe PMC record, both read 27 October 2026, give the nine authors above. Not open access (Europe PMC isOpenAccess N)}
+}
+
+@article{bao2020glioblastoma,
+  author  = {Bao, Xun and Wu, Jianmei and Xie, Youming and Kim, Seongho and Michelhaugh, Sharon and Jiang, Jun and Mittal, Sandeep and Sanai, Nader and Li, Jing},
+  title   = {Protein expression and functional relevance of efflux and uptake drug transporters at the blood-brain barrier of human brain and glioblastoma},
+  journal = {Clinical Pharmacology and Therapeutics},
+  year    = {2020},
+  volume  = {107},
+  number  = {5},
+  pages   = {1116--1127},
+  doi     = {10.1002/cpt.1710},
+  pmid    = {31664714},
+  note    = {An independent corroboration of the species difference in blood-brain barrier transporter abundance of uchida2020transporters, cited in section 5.2 of the assay-comparability pass of 26 October 2026. "Species difference in BBB transporter abundances was noted" (abstract, PubMed 31664714, read 26 October 2026). Targeted proteomics on isolated microvessels: human normal brain N = 30, glioblastoma N = 47, rat N = 10, mouse N = 10. CITED AS 2019 BY THAT PASS, which is the electronic publication year PubMed records (10 December 2019); the journal issue is Clinical Pharmacology and Therapeutics 107(5), 2020, per both the PubMed citation record and the Europe PMC record read 27 October 2026. The pass also quoted a companion abstract at doi 10.1093/neuonc/noz175.355 ("rodent BBB expressed significantly higher ABCB1 but similar ABCG2, as compared to human BBB"); that is a SEPARATE record and is not covered by this entry. Europe PMC isOpenAccess N but inPMC Y (PMC7167337)}
+}
+
+@article{zhang2023abctransporters,
+  author  = {Zhang, Wandong and Liu, Qing Yan and Haqqani, Arsalan S. and Liu, Ziying and Sodja, Caroline and Leclerc, Sonia and Baumann, Ewa and Delaney, Christie E. and Brunette, Eric and Stanimirovic, Danica B.},
+  title   = {Differential expression of {ABC} transporter genes in brain vessels vs. peripheral tissues and vessels from human, mouse and rat},
+  journal = {Pharmaceutics},
+  year    = {2023},
+  volume  = {15},
+  number  = {5},
+  pages   = {1563},
+  doi     = {10.3390/pharmaceutics15051563},
+  pmid    = {37242805},
+  note    = {A second independent corroboration of the species difference in blood-brain barrier efflux transporter expression, cited in section 5.2 of the assay-comparability pass of 26 October 2026. "the expression of [ABCB1, ABCG2, ABCC1, ABCC4 and ABCC5] was generally higher in rodent brain microvessels compared to those of humans" (abstract, PubMed 37242805, read 26 October 2026; PubMed's rendering strips the italicised gene names from both the title and this sentence, and the gene list in square brackets is as the pass recorded it - the Europe PMC record read 27 October 2026 restores the title's "ABC" but not the gene list, so that list is to be rechecked against the publisher's text before it is quoted in a living document). RNA-seq and Wes analyses in human, mouse and rat. The author list was NOT verified by that pass ("Zhang W-D et al.", which also mis-initialled the first author); it is verified here from PubMed and Europe PMC. Open access (Europe PMC isOpenAccess Y, PMC10221359)}
+}
+
+@article{verscheijden2021pgpactivity,
+  author  = {Verscheijden, Laurens F. M. and Koenderink, Jan B. and de Wildt, Saskia N. and Russel, Frans G. M.},
+  title   = {Differences in {P-glycoprotein} activity in human and rodent blood-brain barrier assessed by mechanistic modelling},
+  journal = {Archives of Toxicology},
+  year    = {2021},
+  volume  = {95},
+  number  = {9},
+  pages   = {3015--3029},
+  doi     = {10.1007/s00204-021-03115-y},
+  pmid    = {34268580},
+  note    = {The downstream consequence of the species difference in blood-brain barrier P-gp, quantified on named drugs INCLUDING A STUDY DRUG, cited in section 5.3 of the assay-comparability pass of 26 October 2026. "Comparison of human with rodent Kp,brain ratios indicated >= twofold lower values in human for digoxin, verapamil, indinavir, paclitaxel and citalopram and >= twofold higher values for vincristine. In conclusion, BBB Pgp activity appears species-specific" (abstract, PubMed 34268580, read 26 October 2026). Citalopram is a study drug and one of those whose registered Kp,uu,brain is a human value (decision 9.100), so a named study drug sits in a peer-reviewed list of twofold-or-greater human-against-rodent differences attributed to P-gp activity rather than to binding. AUTHOR LIST CORRECTED: the pass recorded nine authors ("Verscheijden LFM, van Hattem AC, Pertijs JCLM, de Jongh CA, Verdijk RM, Smeets B, Koenderink JB, Russel FGM, de Wildt SN"); the PubMed record and the Europe PMC record, both read 27 October 2026, give the four authors above. Open access (Europe PMC isOpenAccess Y, PMC8380243)}
+}
+
+@article{shannon2013microdialysis,
+  author  = {Shannon, Richard J. and Carpenter, Keri L. H. and Guilfoyle, Mathew R. and Helmy, Adel and Hutchinson, Peter J.},
+  title   = {Cerebral microdialysis in clinical studies of drugs: pharmacokinetic applications},
+  journal = {Journal of Pharmacokinetics and Pharmacodynamics},
+  year    = {2013},
+  volume  = {40},
+  number  = {3},
+  pages   = {343--358},
+  doi     = {10.1007/s10928-013-9306-4},
+  pmid    = {23468415},
+  note    = {Why the only direct route to a human Kp,uu,brain is restricted to an unrepresentative patient population, cited in section 4.1a of the assay-comparability pass of 26 October 2026. "Cerebral microdialysis is an invasive technique, so is only useable in patients requiring neurocritical care, neurosurgery or brain biopsy. Application of results to wider patient populations, and to those with different pathologies or degrees of pathology, obviously demands caution"; "The microdialysis technique needs careful calibration for relative recovery (extraction efficiency) of the drug if absolute quantification is required" (abstract, PubMed 23468415, read 26 October 2026). Review. Open access (Europe PMC isOpenAccess Y, PMC3663257)}
+}
+
+@article{granerud2025microdialysis,
+  author  = {Granerud, Ingrid L{\o}chen and Fabritius, Maria Louise and Jensen, Helene Ravnholt and M{\o}ller, Kirsten and S{\o}rensen, Martin Kryspin},
+  title   = {Cerebral microdialysis values in healthy brain tissue - a scoping review},
+  journal = {Acta Neurochirurgica},
+  year    = {2025},
+  volume  = {167},
+  number  = {1},
+  pages   = {62},
+  doi     = {10.1007/s00701-025-06424-8},
+  pmid    = {40055196},
+  note    = {The heterogeneity of human cerebral microdialysis as a body of work, cited in sections 4.1a and 4.3 of the assay-comparability pass of 26 October 2026 as one of the peer-reviewed statements that the human evidence base is few and methodologically heterogeneous. "Out of 3257 studies identified, 39 studies were included. Six of these studies were in humans (total n = 54)"; "We found a high degree of clinical and methodological heterogeneity in both human and gyrencephalic animal studies"; "the quality of several human studies was moderate at best" (abstract, PubMed 40055196, read 26 October 2026). READ WITH ITS SCOPE IN MIND: this is on markers of brain energy metabolism (glucose, lactate, pyruvate, glutamate, glycerol), NOT on drugs, so it bounds the technique in humans rather than drug Kp,uu directly. The author list was NOT verified by that pass ("Granerud IL et al."); it is verified here from PubMed and Europe PMC. Open access (Europe PMC isOpenAccess Y, PMC11889025)}
+}
+
+@article{dolgikh2016qsar,
+  author  = {Dolgikh, Elena and Watson, Ian A. and Desai, Prashant V. and Sawada, Geri A. and Morton, Stuart and Jones, Timothy M. and Raub, Thomas J.},
+  title   = {{QSAR} model of unbound brain-to-plasma partition coefficient, {Kp,uu,brain}: incorporating {P-glycoprotein} efflux as a variable},
+  journal = {Journal of Chemical Information and Modeling},
+  year    = {2016},
+  volume  = {56},
+  number  = {11},
+  pages   = {2225--2233},
+  doi     = {10.1021/acs.jcim.6b00229},
+  pmid    = {27684523},
+  note    = {The one candidate source that might hold an experimental-variability figure for Kp,uu,brain ITSELF - the single quantity section 1 of the assay-comparability pass of 26 October 2026 could not fill, there being no published interlaboratory figure for it. "We report development and prospective validation of a QSAR model of the unbound brain-to-plasma partition coefficient, K[p,uu,brain], based on the in-house data set of ~1000 compounds. We discuss effects of experimental variability, explore the applicability of both regression and classification approaches" (abstract, PubMed 27684523, read 26 October 2026; PubMed's rendering strips the subscript, which the Europe PMC record read 27 October 2026 restores as "K<sub>p,uu,brain</sub>"). ONLY THE ABSTRACT IS HELD: the full text was not reached (ACS), so WHETHER THAT DISCUSSION CONTAINS A NUMBER IS UNKNOWN and no variability figure is to be cited from this entry. It is request 6 of section 7 of the pass. The author list was NOT verified by that pass ("Dolgikh E et al."); it is verified here from PubMed and Europe PMC. Not open access (Europe PMC isOpenAccess N)}
 }
