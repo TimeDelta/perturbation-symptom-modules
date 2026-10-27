@@ -147,6 +147,15 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   ("All rights reserved", from PubMed's copyright record) was wrong; the version of record is CC BY-NC-ND 4.0, read on
   the publisher's PDF in the Radboud Repository and matched by Crossref, Europe PMC and OpenAlex (the row and
   `docs/label_source_review.md` section 36 hold the quote). No case flagged under this rule remains open.
+- **One case is open under a waiver, which is not the same thing** (recorded 27 October 2026). The bullet above
+  covers research done before the rule existed. A second kind has since arisen: research done on another model
+  after the rule, with the owner's explicit permission for that piece of work (26 October 2026: "Don't worry
+  about fable this time"). The SERPINA6 free-cortisol record in `docs/open_decisions.md` 9.68 was written that
+  way, is flagged in its own row, and has not been rechecked on Fable. So a reader asking whether any research
+  on `main` awaits a Fable recheck should read yes, and that one row is it. **How a waiver works is the owner's
+  to set and is not stated here**: whether a waived pass still needs a later Fable recheck before it is relied
+  on, and whether a waiver covers one turn or a session, are both open. Until they are settled, a waived pass is
+  flagged where it is recorded, as 9.68 is.
 
 ## Documents (15 October 2026)
 
