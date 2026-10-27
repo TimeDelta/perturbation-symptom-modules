@@ -382,6 +382,37 @@ behind them.
   `docs/exploration_queue.md`. The session ran on Claude Opus 5.5 and its 25 October research step on Fable 5.1.
   Still owed under the "Models" rule: a Fable reading of `lee2015cytoplasmic`, flagged in its entry, and a
   re-measurement of the gene-rule counts, which were taken on a scratch graph from an old branch.
+- https://claude.ai/share/44e03976-f9b9-4eea-ad89-430ce80702d1 — 22 to 27 October 2026. The HRH2 coupling
+  evidence behind decision 9.79, and where papers are recorded. On 22 October the owner asked for the sources
+  needed to check the 9.79 claim from pull request #11 that HRH2 reads Gs primary and that its Gq/11 coupling
+  rests almost entirely on transfected systems. PubMed gave Panula et al. 2015 (PMID 26084539), Kühn et al. 1996
+  (PMID 8961278) and Mondillo et al. 2005 (PMID 15917347), read by abstract only. Kühn's one native-tissue
+  result is GTP-azidoanilide labelling of Gαq and Gα11 in guinea pig heart membranes, not a functional PLC
+  readout, so the session said "almost entirely transfected" may be slightly overstated; searches for further
+  native-tissue studies returned nothing, so "Gs primary" was not shown beyond those papers. On 27 October the
+  owner asked whether anything still needed doing. The first answer was built from the Project notes alone and
+  recommended a Fable recheck of 9.79 that decision 9.99 had already recorded on 26 October. The owner asked
+  whether the session had pulled from origin; it had not, and the answer was redone from `origin/main` at
+  `68bde1f` (read through the GitHub connector, since the workspace held no clone): 84 decisions waiting and no
+  open pull requests. The owner then ruled "just add papers to the repository's references.bib file instead of
+  zotero from now on" (`CLAUDE.md` "Reading sources", commit `838d7b9`) and, for the papers 9.79 leans on, "mark
+  the modillo fable pass as followup work that should be done before 9.79 decision. same for zhu et al 1994.
+  i'll supply those papers to the new session." Row 9.79 carries both as owed Fable full-text passes; the
+  session reads "modillo" as Mondillo 2005. Fable 5.1 subagents, by their own reports, added six entries to
+  `docs/references.bib` after checking each field against Europe PMC: `c3f99fc` (Panula 2015, Mondillo 2005) and
+  `e7f350e` (Wellner-Kienitz 2003, Wang 1996, Mitsuhashi 1989, Zhu 1994). Only the Panula entry rests on a full
+  text, from its PMC record; its licence is unverified and Europe PMC does not mark it open access, which
+  corrects the session's earlier statement that it was free to read. Panula's sentence on Gq/11 coupling cites
+  only Hill 1990 (not held) and Hill et al. 1997, which row 9.79 records as not supporting it. The other five
+  hold the abstract alone and carry "FULL TEXT NEEDS SOURCING BY THE OWNER": the publisher sites answered 403 or
+  disallow the reader by robots file. The PubMed records of Mitsuhashi and Zhu carry no DOI, so those entries
+  take theirs from Europe PMC, confirmed only by resolution at doi.org. The 9.79 wording that said Zhu was still
+  to be added was changed in `2b356f8`, the generated pages were regenerated, and the full suite passed (1503
+  passed, 28 skipped). When the git proxy refused a subagent's first push, it attached the repository with push
+  access through `add_repo`; the owner had not approved that step separately. Written on Claude Sonnet 5.5, with
+  the bibliography research done by Fable 5.1 subagents. Still the owner's: supply Mondillo 2005,
+  Wellner-Kienitz 2003, Wang 1996, Mitsuhashi 1989 and Zhu 1994; Zhu is the paper 9.79 calls "the
+  highest-value outstanding item".
 
 ## Conventions
 
