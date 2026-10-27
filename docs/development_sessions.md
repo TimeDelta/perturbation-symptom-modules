@@ -391,3 +391,33 @@ transcript address, then the dates of the session, then its summary.
   (138 commits behind main); `soft-priors` and `entmax-mixture-weighting` appear to have landed through other
   commits, which was not checked line by line. The session ran on Claude Opus 5.5 after the owner switched it from
   the configured Sonnet at the start; it did no research, only merges, tests and this entry.
+- https://claude.ai/share/a452d8a9-a180-4435-ba8f-67abb267c60c — 27 October 2026. Moving the public transcripts out
+  of the README. The owner asked what Claude thought of moving them to a page of their own, with a section in the
+  README that "just links to them and their summaries", because they "are starting to take up a lot of space". The
+  first answer was given from the Project notes alone and said so ("I haven't read the README itself"); it argued
+  for the move and named four risks: references that point at the README section, a bare link that gets ignored,
+  link rot, and the rule that history is moved and not rewritten. The owner then asked for the move and ruled "update
+  the references you know of and don't worry about the rest since the existing section will still exist as a link to
+  the real place". Built and pushed to `main`: the section's entries moved word for word to
+  `docs/development_sessions.md` (`243d978`), registered as a record that is not append-only because earlier entries
+  were corrected in place, and listed under the design topic of the docs index; the README keeps a three-line section
+  that links to the page; CLAUDE.md's pointer to "the README's session summaries" names the page; and a dated
+  addition in the Project note `claude/session_2026-10-22_to_24.md` says its summary and transcript link moved. The
+  generated status page and docs index were regenerated in a commit of their own (`a840d52`). The owner then said
+  "I thought I also asked you to include the instruction in the repo". The conversation holds no earlier request for
+  that, and Claude said so, then added the rule to CLAUDE.md under "Documents" (`a072205`): a session's transcript and
+  summary go on the new page and the README gets no entries. Two things went wrong on the way and were corrected
+  before they reached `main`. Another session pushed a new README entry (the NHE6 session) while this one worked, so
+  the rebase conflicted; Claude first kept the wrong side of the conflict, which restored the long README section,
+  then kept its own README, and moved the NHE6 entry to the new page. Its first regenerated pages were also dropped
+  in the rebase and made again on the rebased tree. Only `tests/test_documentation_process.py` was run before each
+  push (52 passed). The full suite was not run: the dependency install, torch included, did not finish inside the
+  time limits of three background attempts, and the owner told the session to skip the non-documentation tests
+  ("I already told you not to worry about the non-doc-related tests so skip the Python torch stuff", and, of the
+  CLAUDE.md change, "That can also skip non-doc tests"). The conversation shows the earlier statement only as "don't
+  worry about the rest", said of the references, which Claude read as covering this. A stop hook asked three times
+  for a push while the suite was unrun; Claude held the push until told to skip the tests. CLAUDE.md "Pushing" still
+  says the full suite passes before every push, and Claude offered, without adding, a line that a change to documents
+  alone needs only the documentation tests. The owner has not answered that offer. The session attached the repository
+  with push access through `add_repo` to do the work, a step the owner did not approve separately. It ran on Claude
+  Sonnet 5.5 and did no research, so no Fable recheck is owed from it.
