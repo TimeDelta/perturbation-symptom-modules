@@ -7,7 +7,7 @@ limits that must not be overstated when it is written up.
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
 (**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026, and items 7 and 8 were added on 27 October 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, and item 9 on 28 October 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026.
 
@@ -364,3 +364,41 @@ The owner's call on keeping 0.145 is open in decision 9.68.
 
 **Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
 arms.
+
+## 9. The Krebs cycle's effect on oxidative burden
+
+Tagged 2026-10-28, at the owner's request ("please add the kreb's cycle effect on oxidative burden to the exploration
+queue").
+
+**The idea.** Represent how the tricarboxylic acid cycle bears on oxidative burden, so that a perturbation of a cycle
+enzyme, or of the supply into the cycle, can move the oxidant species the graph already carries. What the graph holds
+today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (tables, not a graph build):
+- `mechanistic_pathway_learning/graph/oxidative_regulation.py` makes `produces_oxidant` edges, gene to oxidant, from
+  `docs/curated_oxidant_sources.csv` (23 rows) and `oxidatively_modifies` edges, oxidant to gene, from
+  `docs/curated_oxidant_targets.csv` (38 rows), both built into the neuronal variants by
+  `experiments/build_neuronal_graph_variant.py`.
+- The respiratory-chain sources are two genes, NDUFV1 (complex I) and UQCRFS1 (complex III). **No tricarboxylic acid
+  cycle enzyme is listed as an oxidant source.**
+- Of the cycle's genes, only ACO2 appears, and only as a target: four rows, superoxide, hydrogen peroxide,
+  peroxynitrite and nitric oxide, each signed -1.
+- The cycle's reactions and the NADH they make are in the Human-GEM metabolic layer, while oxidant production is an
+  edge from a gene node, so whether a change in cycle flux or in the NADH supplied to complex I reaches the superoxide
+  that complex I makes is not established for this graph.
+
+**The cheapest checks.**
+- Trace, on the current build, whether a seed on a cycle enzyme reaches any oxidant node, and by which relations.
+  This is engineering and needs the real v5 build, which does not exist yet (decision 9.106).
+- A Fable pass on the literature: which cycle enzymes are themselves oxidant sources in human or mammalian
+  mitochondria, which are oxidant targets beyond ACO2, and whether the effect of cycle flux on respiratory-chain
+  superoxide is stated with a sign that a graph edge could carry. Nothing on this page asserts any of it yet.
+
+**Known limits (do not overstate these in writing).**
+- Oxidant production by the respiratory chain depends on the redox state of its carriers and on membrane potential,
+  not on flux alone, and the linear-response encoder carries a signed steady-state response, not a rate law.
+- The tables are built from PubMed abstracts (`docs/data_sources.md`), and `docs/curated_oxidant_edges_unverified.csv`
+  holds 10 proposed edges that were not admitted.
+
+**What would need an owner ruling.** Whether metabolite pools, such as NADH or succinate, may drive a
+`produces_oxidant` edge, which today starts only from a gene. That would be a new kind of edge for that relation.
+
+**Status.** Parked. Not on the critical path of the v5 rebuild, the 9.97 cyclase work or the lockbox sequence.
