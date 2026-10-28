@@ -2652,7 +2652,7 @@ as `membrane_potential_build` with an `Amends:` trailer). Item 13 registered `co
 keeps one edge from each reaction that moves net charge beside the six weighted pool edges. Its reason was a
 measurement made under the `in_degree` divisor, where the two relations at `VM_c` split the input in half; under
 amendment item 28 and the `forward_cone` divisor of item 34a the divisor at `VM_c` is 1 + R, R being the 412
-charge-moving reactions on the v5 build of 20 October 2026, so the conductance law arrived at 1/413 of itself and every
+charge-moving reactions on the build of 20 October 2026 (**called v5 here until 28 October 2026**, when the owner ruled it an early build a session made unasked and not v5: `graph_full_neuronal_split_binders_drugs_v5` from `main` at `344d211`, decision 9.106; the count is remeasured on the real v5 under 9.87 (b)), so the conductance law arrived at 1/413 of itself and every
 reaction edge outweighed every pool edge. Under `computed_from_the_pools` the divisor is 1 and the law arrives whole.
 The reactions still reach the potential, through the pools whose contents they move. Outcome-blind: no lockbox has been
 drawn, so no confirmatory result existed to see. What item 13 registers about the law itself is unchanged, including

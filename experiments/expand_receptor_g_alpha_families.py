@@ -4,9 +4,10 @@ GtoPdb annotates a receptor's primary and secondary transducers by G-protein fam
 decision 9.23 admits a receptor-to-G-alpha edge when the G alpha gene is a member of an annotated family. The table
 was written once with the families expanded by hand to GNAS and GNAL, GNAI1 to GNAI3 with GNAO1 and GNAZ, GNAQ and
 GNA11, and GNA12 and GNA13. That left out GNA14 and GNA15 from Gq/11 and the transducins GNAT1 to GNAT3 from Gi/o,
-so the filter never saw an edge into them (decision 9.86, measured on v5 on 20 October 2026: 142 signed edges from
-annotated receptors into those four genes, 24 receptors into GNA14 and 2 into GNA15 from receptors annotated for
-another family).
+so the filter never saw an edge into them (decision 9.86, measured on 20 October 2026 on
+graph_full_neuronal_split_binders_drugs_v5, an early build that the owner ruled on 28 October 2026 was not v5,
+decision 9.106: 142 signed edges from annotated receptors into those four genes, 24 receptors into GNA14 and 2 into
+GNA15 from receptors annotated for another family).
 
 What `primary_pubmed_id` is (the owner, 26 October 2026, decision 9.99: "have the rows cite whatever is supported").
 It is the evidence for the row it sits on: the papers that support that receptor coupling to that G-protein family in
