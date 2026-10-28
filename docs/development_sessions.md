@@ -656,3 +656,45 @@ transcript address, then the dates of the session, then its summary.
   skill was saved from those errors. The PK coverage count, the Kp,uu search and the first Fagerholm check were
   research done on Claude Opus 5, not Fable; the Fagerholm finding was rechecked on Fable under 9.100, and the
   coverage count stands as a measurement. Later turns ran on Claude Opus 5.5.
+- https://claude.ai/share/43b5f454-83d7-4da1-9550-3297a89cb30d — 20 to 27 October 2026. Ways round steady-state
+  evaluation, and the ruling that retired every slice-period number. The owner asked for alternatives to reading the
+  physiology graph at a fixed point, wanted the steady-state and transient regimes in one model, and asked how it
+  matters that the fixed point is the whole physiology's final settling and not the pharmacological steady state.
+  **Written:** two records committed in `2c68fe7` (24 October 2026): `docs/steady_state_readout_alternatives.md`,
+  twelve ranked alternatives (2.1 to 2.12) over 36 references, and `docs/fixed_point_against_pharmacological_steady_state.md`,
+  which finds that no assignment of relaxation rates moves a fixed point once the gains are read as dimensionless
+  steady-state sensitivities, reads one round of the registered update as one half-life under uniform damping, assigns
+  an equilibrium per label class and closes with recommendations R0 to R5; `experiments/fixed_point_rate_checks.py`
+  prints the second record's toy numbers on numpy alone and no test names it; and 66 entries went into
+  `docs/references.bib`, whose section header flags the locator lookups (four PubMed queries, two arXiv records, one
+  ISBN) as read on Opus and due a Fable recheck. **The ruling:** both records built their central argument on finding
+  10 of `docs/research_summary.md`, the 7 October 2026 sign check. On 27 October the owner asked "but that's based on
+  at best a v4 graph, right?". It was earlier: the metabolic slice, the fixed-step propagation of before 12 October and
+  a script no test covers. The owner ruled "please fix those records you committed to main. they should not be counted
+  as evidence of anything moving forward" (`f92d3c3`, first committed as `0b6bc5e` before a rebase: a dated status
+  section in each record and a dated addition at every passage that leaned on the finding, the invariance result and
+  the per-class assignment left standing as derivations), then at 14:13 "ANY numbers from that time are to have the
+  same treatment". A Fable pass applied that across `docs/research_summary.md` (every finding 1 to 16 now carries the
+  graph and date it was measured on and a list of the numbers retired), the adherence review, the literature appraisal,
+  the preregistration, the design document and the two 7 October records (`ade562f`, pages regenerated in `ba1563c`
+  and, after a rebase onto `41a0769`, `e894e5d`). Decision 9.103 is closed with the verdicts one by one; 9.104 holds
+  what the ruling leaves open to the owner: (a) whether "that time" is read as the pass read it, which reaches finding
+  7 and `docs/tissue_saturation.md`; (b) whether it reaches the derivations the two records and
+  `docs/relation_timescale_ordering_2026-10-26.md` build on; (c) whether item 28's 7,811-of-21,337 count is remeasured
+  before the rule that cites it is relied on; (d) whether it reaches the 26 October count on the v0.4 slice that item 6
+  of `docs/exploration_queue.md` cites. **Process faults, stated plainly:** the session fell back from Fable to Opus
+  without saying so and reported the change late; it refused a push over a count of failing tests it read as an
+  unsatisfiable gate, when the cause was the missing install that `.claude/hooks/session-start.sh` performs; a rebase
+  conflict in `docs/references.bib` was masked by an `&&` chain that pushed mid-rebase to a stray branch instead of
+  `main` (the two `records/readout-and-timescale-sources` branches of 24 October hold copies of that commit; under the
+  rule of 25 October they are left alone); `2c68fe7`'s message claimed a red suite and blamed torch, and `7104489`
+  corrects it without amending (1478 passed, 28 skipped once the extras were installed); a turn ended without
+  committing and a container restart destroyed an uncommitted Fable pass, which was rerun and committed at once, with
+  `wip/not-evidence-27oct` and `wip/not-evidence-era-27oct` pushed as safety copies that the owner may delete; and the
+  session's early hypothesis that heterogeneous rates break the two-sign row cancellations was wrong. **Still owed:**
+  9.104; the Fable recheck of the Opus-read locators in `docs/references.bib`; the stale "the registered encoder runs 8
+  steps" in `docs/tissue_saturation.md`, a generated page that can be rebuilt only where `data/processed` exists (its
+  generator's text was corrected in `ade562f`); and finding 10 itself, which cannot be rerun on the registered encoder
+  because its script is pinned to the slice graph and to fixed steps. The session ran mostly on Claude Sonnet and
+  Claude Opus 5 fallbacks, with its research in Fable 5.1 subagents. The owner deleted the Project's `claude/` notes on
+  27 October 2026; this entry and the repository are the record of the session.
