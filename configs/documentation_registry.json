@@ -775,6 +775,12 @@
       "append_only": true,
       "what": "which side of an observation time each relation falls on, binned against about 2 hours, 6 weeks and 1 year, with the straddling set reported as a finding; researched on Fable, seven sources Consensus-only and marked as such"
     },
+    "docs/study_sheet_2026-10-27.md": {
+      "class": "record",
+      "recorded": "2026-10-27",
+      "append_only": true,
+      "what": "text of the owner's study sheet with the architecture, quantities, equations, concepts and critique, exported from Claude Docs; the sheet itself is docs/study_sheet_2026-10-27.html with its 12 figures in docs/study_sheet_figures"
+    },
     "docs/research_summary.md": {
       "class": "living",
       "reviewed": "2026-10-25",
