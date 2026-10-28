@@ -121,13 +121,24 @@ def looks_like_robots_file(response_text: str) -> bool:
     return not (leading_text.startswith("<!doctype") or leading_text.startswith("<html") or "<head" in leading_text)
 
 
+# An interstitial is short in what a reader sees, however much markup carries it, while an article that mentions a
+# captcha is long in readable text. The 20,000-character test on the raw page alone let a 21,362-byte PubMed Central
+# reCAPTCHA page ("Checking your browser before accessing pmc.ncbi.nlm.nih.gov") pass as a page read on 27 October 2026
+# (decision 9.102 (c)), so a page over that size is still a challenge when its readable text is under this ceiling.
+CHALLENGE_SCAN_CHARACTERS = 20000
+CHALLENGE_READABLE_TEXT_CEILING = 3000
+
+
 def looks_like_challenge(status_code: int, response_text: str) -> bool:
     """True when the answer is a refusal or a check that the visitor is human rather than the page asked for."""
     if status_code in CHALLENGE_STATUS_CODES:
         return True
     without_passive_telemetry = PASSIVE_TELEMETRY_SCRIPT.sub(" ", response_text)
-    leading_text = without_passive_telemetry[:20000].lower()
-    return len(without_passive_telemetry) < 20000 and any(marker in leading_text for marker in CHALLENGE_MARKERS)
+    leading_text = without_passive_telemetry[:CHALLENGE_SCAN_CHARACTERS].lower()
+    if not any(marker in leading_text for marker in CHALLENGE_MARKERS):
+        return False
+    return (len(without_passive_telemetry) < CHALLENGE_SCAN_CHARACTERS
+            or len(text_of_page(without_passive_telemetry)) < CHALLENGE_READABLE_TEXT_CEILING)
 
 
 def text_of_page(page_source: str) -> str:

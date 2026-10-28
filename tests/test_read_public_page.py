@@ -180,3 +180,17 @@ def test_a_real_cloudflare_challenge_is_still_a_refusal():
     assert read_public_page.looks_like_challenge(200, interstitial)
     passive_and_real = interstitial.replace("</body>", "<script>d.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';</script></body>")
     assert read_public_page.looks_like_challenge(200, passive_and_real)
+
+
+def test_a_challenge_page_padded_past_the_raw_size_limit_is_still_a_refusal():
+    """Decision 9.102 (c): PubMed Central answered 200 with a 21,362-byte reCAPTCHA interstitial, "Checking your browser
+    before accessing pmc.ncbi.nlm.nih.gov", and the raw-size test alone let it through as a page read. Its readable text
+    is a sentence or two; the rest is script and markup."""
+    padded_interstitial = ("<html><head><script>" + "var a=1;" * 3000 + "</script></head><body><p>Checking your browser "
+                           "before accessing pmc.ncbi.nlm.nih.gov</p></body></html>")
+    assert len(padded_interstitial) > read_public_page.CHALLENGE_SCAN_CHARACTERS
+    # the marker must sit within the scanned head of the page, as it did on the page of 27 October 2026
+    padded_interstitial = padded_interstitial.replace("<head>", "<head><title>Checking your browser</title>", 1)
+    assert read_public_page.looks_like_challenge(200, padded_interstitial)
+    long_article_that_mentions_a_captcha = "<html><body>" + "A study of captcha design. " * 2000 + "</body></html>"
+    assert not read_public_page.looks_like_challenge(200, long_article_that_mentions_a_captcha)
