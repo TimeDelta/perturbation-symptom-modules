@@ -698,3 +698,40 @@ transcript address, then the dates of the session, then its summary.
   because its script is pinned to the slice graph and to fixed steps. The session ran mostly on Claude Sonnet and
   Claude Opus 5 fallbacks, with its research in Fable 5.1 subagents. The owner deleted the Project's `claude/` notes on
   27 October 2026; this entry and the repository are the record of the session.
+- https://claude.ai/share/5c158c17-b535-406a-8949-55da5de1906f — 25 to 27 October 2026. A study sheet of the
+  project, and the questions it raised about drug seed magnitude, damping and which relations count as slow. The
+  owner asked for a study sheet with explanatory figures and then, through it, for evidence of the nonlinear
+  requirement per inventory row, architecture diagrams with each transform's inputs and outputs and their meanings in
+  biological terms, the equations and variable meanings (propensity labelling among them), diagrams of the propagation,
+  the curated and learned modules and the parameter count (about 404,000 learned values at the defaults, 98.6% of them
+  module supports, derived from argument defaults and not read off a trained run). The sheet was built in Claude Docs
+  and on 27 October exported into the repository as `docs/study_sheet_2026-10-27.html` with its 12 figures in
+  `docs/study_sheet_figures/` and a registering record, `docs/study_sheet_2026-10-27.md` (`8e2c208`, pages
+  `be2d5af`); figures 1 to 8 are the doc's PDF-export images and 9 to 12, which that export omits, were rendered to SVG
+  from the doc's figure source. **Drug seed magnitude:** asked why most drugs enter at 1, the session found that
+  `map_drug_targets_to_graph_nodes.py` seeds magnitude 1 although 183 of 222 drugs already have a mechanism-target
+  occupancy in the repository (115 measured, 68 imputed by the items 5c/29 calibration); the owner agreed that a single
+  occupancy across doses is acceptable for now, since dose normalisation and first-pass metabolism are not linear,
+  and the idea became item 5 of the new living `docs/exploration_queue.md` (`b704f9c`), with its Opus-read citations
+  (Kapur 2000, Meyer 2004) flagged for a Fable recheck. **Damping and time:** the owner corrected the sheet's reading of
+  "channels settle at different time scales" as a claim about rounds; it marks a physiological limitation tied to the
+  gains, and the sheet was rewritten. Damping is a degenerate half-life, inert at the fixed point because
+  `(I − G)⁻¹u` holds for any positive per-node step; rates can enter only through which relations are held fast or
+  slow. The owner proposed that what matters is which side of an observation time each relation falls on, and a Fable
+  agent binned the relations against about 2 hours, 6 weeks and 1 year (`docs/relation_timescale_ordering_2026-10-26.md`,
+  24 sources, seven Consensus-only and marked as such; none a preprint under 9.101). It found the proposed slow set
+  {regulates_transcription_of, encodes} is a document-level proposal never in code, holds only near 2 hours, inverts by
+  6 weeks, and leaves a straddling band of thousands of edges at 2 hours. The owner preferred the κ = 0 treatment in
+  which conserved totals do not leak. **`coproduct_of`:** the conserved-moiety discussion led to
+  `experiments/measure_coproduct_de_novo_split.py` and `docs/coproduct_of_de_novo_split_2026-10-26.md`: of 1,079
+  carrier product edges on the v0.4 graph, 779 come from the pair clause, 251 are regeneration and 49 de novo, and in
+  the biopterin family 2 de novo edges (SPR) share one gain with 37 regeneration edges (`57b9c26`, pages `171f0a0`).
+  Item 6 of the exploration queue ties these together and names three rulings for the owner: splitting
+  `coproduct_of`, plain THF's absence from the carrier list, and making the slow set a function of observation time.
+  No decision ids were taken. **Since retired:** the v0.4 counts fall under the 27 October ruling on numbers from that
+  period (decision 9.104 (d) asks whether it reaches them), and the derivations the timescale record builds on are
+  under 9.104 (b). **Process faults:** the session called the slow set "hard-coded" before a grep showed it only in
+  documents; misattributed two occupancy figures, corrected in the queue item; and understated the haloperidol range
+  until the owner corrected it. **Still owed:** the Fable or PubMed recheck of the seven Consensus-only sources and of
+  Kapur 2000, Meyer 2004, Ludden 1991 and Ghabrial 1994; wiring occupancy into the drug seeds; the three rulings of
+  queue item 6. The session ran on Claude Opus 5 and Claude Sonnet 5.5, with its research in a Fable 5.1 subagent.
