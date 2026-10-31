@@ -3729,7 +3729,8 @@ refused or could not be read.
 **One source the reading newly makes load-bearing, and which is not held.** Zhu, Gilbert, Birnbaumer and Birnbaumer
 1994 (PMID 7935326) is the project's source for the 100,000 to 300,000 sites per cell at which a Gs-coupled
 receptor's phospholipase C arm appears, a figure Kenakin 1997 restates independently as "300 000 receptors per
-cell" (p. 461). Reading Kühn et al. 1996 in full showed it is load-bearing a second time: Kühn's Discussion cites
+cell" (p. 461). (Read in full on 31 October 2026, section 39: that figure is Zhu's V2R and beta-adrenergic threshold; the
+LH receptor's arm appears at 4,000 sites/cell, and the paper gives no single threshold.) Reading Kühn et al. 1996 in full showed it is load-bearing a second time: Kühn's Discussion cites
 that same paper (its reference 19) to argue that **cholera-toxin sensitivity does not discriminate Gs from Gq for a
 phospholipase C readout** — "Gs-coupled receptor-mediated stimulation of phospholipase C cannot be selectively
 inhibited by this toxin, because inositol phosphate accumulation induced by activation of endogenous Gq-coupled P₂
@@ -4025,3 +4026,32 @@ second source, Liao et al. 1990 (PMID 2162842), is also abstract only: no PMC id
 | Mondillo et al. 2005, the deposited copy | `dc.rights` "info:eu-repo/semantics/openAccess" and `dc.rights.uri` "https://creativecommons.org/licenses/by-nc-sa/2.5/ar/". **CC BY-NC-SA 2.5 Argentina, verified**, for the repository's copy. The site footer states the looser "Los contenidos del CONICET están licenciados bajo Creative Commons Reconocimiento 2.5 Argentina License"; the item-level field is the one relied on | the DSpace item record for CONICET Digital item 284f9ccf-ea62-4ede-a5bb-d91606b1613c, read 31 October 2026 |
 | Zhu et al. 1994, Mol Pharmacol 46:460-469 (PMID 7935326) | No licence statement could be read: both publisher routes refused, Europe PMC's `license` field is `null` beside `isOpenAccess: N`, PubMed's copyright record holds none, and OpenAlex records every location with `license: null`. **Licence unverified**, and nothing is quoted from the paper | the refusals and records listed above, all 31 October 2026 |
 | Liao et al. 1990, J Biol Chem 265:11273-11284 (PMID 2162842) | Europe PMC holds a `license` field reading "cc by" beside `isOpenAccess: N` and `inPMC: N`, the same artefact the Mitsuhashi 1989 entry flags, so the field is recorded and not relied on; `jbc.org` refuses automated readers by its robots file. **Licence unverified**; two abstract sentences are quoted | the Europe PMC core record and the PubMed abstract, read 31 October 2026 |
+| Zhu et al. 1994, the publisher's PDF supplied by the owner | "Copyright © by The American Society for Pharmacology and Experimental Therapeutics" and "All rights of reproduction in any form reserved", with the item code "0026-895X/94/030460-10$03.00/0"; no other rights statement in the ten pages (searched for "creative", "CC BY", "open access", "reuse", "licen"). **All rights reserved, verified on the paper.** Quotation only; no table or figure is copied | p. 460 of the supplied PDF, read 31 October 2026 |
+
+**Added 31 October 2026, later the same day: the owner supplied Zhu et al. 1994, and it was read in full on Fable 5.1.** The
+file is the publisher's PDF, pinned at `data/raw/supplied_papers/pmid7935326_zhu1994.pdf` (SHA-256
+`9b56f48eec2c2b9b7e53d88504e663475d3bfc71f0e7e1e2983bda18624e49be`, 2,292,714 bytes, 10 pages, with a `.pin.json`
+beside it; `data/raw` is not committed). The hash was verified before reading. Printed-page numbers were fixed from
+the page images, PDF page 1 being printed page 460 and the offset holding on every page checked; the text layer is
+OCR of a scan and is fragmentary, so the pages were read as images and the quotations checked against the OCR
+where legible. The refusals recorded above stand as the record of the open routes; the paper is now held because
+the owner supplied it, not because any route opened.
+
+What it holds, for decisions 9.79 and 9.20 (the quotations are in those rows and in the `zhu1994dualsignaling`
+note): it is a heterologous study throughout, four Gs-coupled receptors (murine LH receptor, human V2 vasopressin
+receptor, human beta1 and beta2 adrenergic receptors) stably transfected into Ltk- fibroblasts at 500 to 500,000
+sites per cell, with calcium, inositol phosphate and adenylyl cyclase readouts; histamine does not occur in it. It
+**does** report cholera toxin suppressing agonist-driven inositol phosphate accumulation, by about half, for both
+the LH receptor and the endogenous P2 purinergic receptor in the same cells after a 16 h pretreatment, and calls
+that "a rather general effect not related specifically to the Gs-coupled receptors" (p. 465) — so Kühn et al.
+1996's reference 19 says what Kühn says it says, and the alternative raised this morning, that Kühn had read Liao
+et al. 1990's calcium result as an inositol one, is closed (Zhu cites Liao 1990 only for the fura-2 method, its
+reference 20). Its density threshold is receptor-specific and in sites per cell, 4,000 for the LH receptor against
+100,000 for V2R and 300,000 for the beta-adrenergic receptors (p. 468); the "100,000 to 300,000 sites per cell"
+quoted from its abstract in section 37 above and in 9.20's addition of 26 October 2026 is the V2R and
+beta-adrenergic figure only, and both places carry a dated correction. It identifies no transducer for the second
+arm and warns that "Caution should be used when interpreting dual coupling results in physiological terms"
+(p. 467).
+
+Liao et al. 1990 stays abstract only and is not given a bibliography entry: the question it was brought in for is
+closed by the Zhu full text, and the repository cites it inline by PMID.
