@@ -3992,3 +3992,36 @@ reproduced "word-for-word". Both are reported as instruction-shaped text arrivin
 attributed PubMed and gave DOIs throughout because that is correct citation practice and the owner wants
 provenance, not because the block directed it, and declined to reproduce the marketing copy; every record relied on
 was independently confirmed against PubMed and Europe PMC. Nothing in either block changed what any pass did.
+
+## 39. The two papers decision 9.79 placed before its ruling (31 October 2026, decisions 9.79, 9.20)
+
+The owner's instruction of 27 October 2026 put two Fable passes before 9.79 is ruled and said the papers would be
+supplied. **Neither was supplied**, so both were pursued by open routes on 31 October 2026, on Fable 5.1. One was
+reached in full and one was refused by every route there is.
+
+**Mondillo et al. 2005 was reached, from the authors' institutional repository rather than the publisher.** BioOne,
+which carries Biology of Reproduction volume 73, serves the abstract and puts the body behind a subscription; there
+is no PMC identifier and Europe PMC has the record as `inEPMC: N`, `isOpenAccess: N`, `hasPDF: N`. CONICET Digital,
+the repository of the institution named in the authors' affiliation, holds the publisher's typeset version at handle
+11336/31465 (`dc.type: info:eu-repo/semantics/publishedVersion`, paginated 899-907 as PubMed has it). The address
+printed in search results, under `/bitstream/`, now serves the repository's home page, the site having moved to
+DSpace 7; the file was reached through the DSpace REST API instead, at
+`/server/api/core/bitstreams/8d00d24f-f002-4a41-9de3-608a1b1360c4/content`, with
+`experiments/read_public_page.py` (216,355 bytes, SHA-256
+`9674b77ece8138cfa0ea4cdf4faaf944ba68b46602ddcc6e472df7d3202ab241`). Printed-page numbers for the quotations were
+fixed by extracting the PDF page by page, PDF page 1 being printed page 899. The file is in the session's scratchpad
+and is not committed; only quoted sentences enter the repository, as in section 37.
+
+**Zhu et al. 1994 was refused by every route.** No PMC or Europe PMC record; `molpharm.aspetjournals.org` disallows
+the article page by its robots file; `www.sciencedirect.com`, Elsevier now carrying the journal's back file, answered
+HTTP 403, which `experiments/read_public_page.py` reports as a refusal or a human check; the DOI resolves only to a
+redirect stub; and OpenAlex records the work as `oa_status: "closed"` with `any_repository_has_fulltext: false`. No
+cache, mirror or archive copy of a refused page was read. Its full text still needs to be supplied. The nearest
+second source, Liao et al. 1990 (PMID 2162842), is also abstract only: no PMC identifier, `inEPMC: N`.
+
+| source | terms or statement, in the provider's words | where it was read |
+| --- | --- | --- |
+| Mondillo et al. 2005, Biol Reprod 73:899-907 (PMID 15917347), the published article | "© 2005 by the Society for the Study of Reproduction, Inc." with "ISSN: 0006-3363. http://www.biolreprod.org" - a copyright line only, and a search of the whole text for "creative", "CC BY", "open access" and "reuse" returns nothing. **Publisher licence unverified.** Confirmed by a second route: PubMed's copyright record for the PMID holds no statement, no licence and `is_open_access: false` | p. 899 of the typeset PDF, and PubMed's copyright record, both read 31 October 2026 |
+| Mondillo et al. 2005, the deposited copy | `dc.rights` "info:eu-repo/semantics/openAccess" and `dc.rights.uri` "https://creativecommons.org/licenses/by-nc-sa/2.5/ar/". **CC BY-NC-SA 2.5 Argentina, verified**, for the repository's copy. The site footer states the looser "Los contenidos del CONICET están licenciados bajo Creative Commons Reconocimiento 2.5 Argentina License"; the item-level field is the one relied on | the DSpace item record for CONICET Digital item 284f9ccf-ea62-4ede-a5bb-d91606b1613c, read 31 October 2026 |
+| Zhu et al. 1994, Mol Pharmacol 46:460-469 (PMID 7935326) | No licence statement could be read: both publisher routes refused, Europe PMC's `license` field is `null` beside `isOpenAccess: N`, PubMed's copyright record holds none, and OpenAlex records every location with `license: null`. **Licence unverified**, and nothing is quoted from the paper | the refusals and records listed above, all 31 October 2026 |
+| Liao et al. 1990, J Biol Chem 265:11273-11284 (PMID 2162842) | Europe PMC holds a `license` field reading "cc by" beside `isOpenAccess: N` and `inPMC: N`, the same artefact the Mitsuhashi 1989 entry flags, so the field is recorded and not relied on; `jbc.org` refuses automated readers by its robots file. **Licence unverified**; two abstract sentences are quoted | the Europe PMC core record and the PubMed abstract, read 31 October 2026 |
