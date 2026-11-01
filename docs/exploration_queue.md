@@ -133,7 +133,10 @@ whose substrate has both activating and inhibitory sites annotated for that kina
 touch perturbed genes or lie on paths to labelled symptoms. If the count is small, drop this item.
 
 **Known limits (do not overstate these in writing).**
-- Most phosphosites have no annotated function (Needham et al. 2019, Sci Signal; cited from memory, not verified).
+- Most phosphosites have no annotated function (Needham et al. 2019, Sci Signal, `needham2019darkphosphoproteome`;
+  verified 1 November 2026: "functional assignments of phosphosites are almost negligible" and kinases are
+  identified for "less than 5% of the phosphoproteome", abstract read through PubMed 30670635 and confirmed
+  against Europe PMC).
 - Desensitisation as a mechanism waits on case 4 of `docs/nonlinearity_inventory.md`; explicit phosphorylation adds
   nothing there until saturation enters the propagation.
 
