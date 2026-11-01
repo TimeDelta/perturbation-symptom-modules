@@ -35,8 +35,16 @@ the `inhibits` row as before; a clause of absence about this enzyme with no clau
 `no_inhibition` row, a negative observation that experiments/map_brenda_regulation_to_graph.py writes to its own table
 and never to the edges; a clause of absence about another organism, isozyme, mutant or compound alone makes no row;
 and a clause stating inhibition of this enzyme beside a clause of absence keeps the `inhibits` row (concentration
-dependence: "no inhibition at 1 mM, 50% inhibition at 10 mM"). The activating-compound, cofactor and metal fields are
-written as before; the summary counts how many activating-compound notes state no effect, for the owner.
+dependence: "no inhibition at 1 mM, 50% inhibition at 10 mM"). The cofactor and metal fields are written as before.
+
+An entry of the activating-compound field (relation_of_activator_notes, the owner's rulings of 1 November 2026 in
+decision 9.88) is written as `activates`, as before, unless a note denies an effect on this human enzyme and no clause
+states activation, when it becomes a `no_activation` negative that the mapping keeps out of the edges. The absence
+pattern is not widened ("Don't widen then"), and the rule is the conservative one ("That's a defensible rule. Use it
+for now"). Until 1 November 2026 every activating-compound entry was written as `activates` whatever its note said, and
+the summary only counted the notes stating no effect. On release 2026.1 the rule turns two of the 47 such notes into
+negatives, pyrazole on EC 1.1.1.284 and Ca2+/calmodulin on EC 2.7.1.23, and leaves the rest as they were, which matches
+the Fable reading of all 47 in docs/brenda_activator_note_classification_2026-11-01.md.
 """
 import argparse
 import collections
@@ -58,6 +66,7 @@ REGULATION_FIELDS_AND_RELATIONS = {
 }
 INHIBITION_FIELDS = ("inhibitor", "ki_value", "ic50_value")
 NO_INHIBITION_RELATION = "no_inhibition"
+NO_ACTIVATION_RELATION = "no_activation"
 UNIPROT_ACCESSION_PATTERN = re.compile(r"\b([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})\b")
 
 # --- the notes of a record ---------------------------------------------------------------------------------------
@@ -103,6 +112,29 @@ POINT_MUTATION = re.compile(r"\b[ACDEFGHIKLMNPQRSTVWY][1-9]\d{0,3}[ACDEFGHIKLMNP
 WILD_TYPE = re.compile(r"\bwild[\s-]?type\b|\bnative\s+enzyme\b", re.I)
 # "not inhibited by <name>" names the compound the absence is about; "by 1 mM" or "by the compound" does not
 NAMES_A_COMPOUND = re.compile(r"\bby\s+(?!(?:the|this|that|it|its|either|both|excess|high|higher|low|lower|increasing|up)\b)[A-Za-z]", re.I)
+
+# --- the activating-compound field (decision 9.88, the owner's rulings of 1 November 2026) ---------------------------
+# The owner ruled on 26 October 2026 that "\"no effect\" should not have an activates edge", and on 1 November 2026,
+# after a Fable reading of every activator note the absence pattern catches
+# (docs/brenda_activator_note_classification_2026-11-01.md), "Don't widen then" and, of the conservative rule, "That's a
+# defensible rule. Use it for now". So the candidates are only the notes NO_INHIBITION_OR_EFFECT already catches, and a
+# note becomes a negative only when it denies an effect on this human enzyme and states no activation anywhere.
+# Activator notes of no effect are mostly comparisons ("increases activity of the mitochondrial enzyme, no effect on the
+# cytosolic enzyme"), and scope_elsewhere does not recognise another substrate, activity or cell line, so the guards
+# below lean towards keeping `activates`: each way they can be wrong leaves the edge as it was before the ruling.
+# Activation stated anywhere in the note keeps the edge. "Induces" counts: phenobarbital on EC 2.4.1.17 "induces
+# activities towards bilirubin" beside its absence for other substrates. The \b keeps "inactivated" out.
+STATES_ACTIVATION = re.compile(r"\bactivat\w*|\bstimulat\w*|\benhanc\w*|\bincreas\w*|\binduc\w*|\b\d+(?:\.\d+)?\s*-?\s*fold\b"
+                               r"|%\s*activation", re.I)
+# The absence must be of an effect: in an activator note "no inhibition" says nothing about activation (phosphate on
+# EC 2.7.6.1, "no inhibition up to 75 mM", is an inhibitor observation filed under activating compounds).
+EFFECT_ABSENCE = re.compile(r"\beffect\b|\baffect(?:ed|s)?\b|\binsensitive\b", re.I)
+# A dose-bounded absence is a point on a dose response, not a denial (spermine on EC 3.1.3.48, "no effect at
+# 0.02-0.2 mM", beside a separate record of activation by spermine on the same entry).
+DOSE_BOUNDED = re.compile(r"\d\s*(?:mM|uM|µM|nM|pM|M)\b")
+# An absence whose subject is a part or a form of the compound compares two forms of it rather than denying that the
+# compound acts (lipoylated H-protein on EC 1.4.4.2: "the presence of the lipoyl moiety on H-protein does not affect").
+FORM_OF_COMPOUND = re.compile(r"\bpresence of\b|\bmoiety\b|\bdeletion of\b|\btruncat\w*|\bwithout (?:the|its)\b", re.I)
 
 ABSENCE, ABSENCE_ELSEWHERE, INHIBITION, OTHER = "absence", "absence_elsewhere", "inhibition", "other"
 
@@ -175,6 +207,25 @@ def relation_of_notes(notes: list[str], ligand_name: str = "") -> tuple[str | No
     return None, f"no inhibition, {absent_elsewhere[0]}"
 
 
+def relation_of_activator_notes(notes: list[str], ligand_name: str = "") -> tuple[str, str]:
+    """(relation, note class) of an activating-compound entry on one human protein, by the conservative rule the owner
+    approved on 1 November 2026 (decision 9.88): (NO_ACTIVATION_RELATION, ...) only when a clause denies an effect on
+    this human enzyme, unbounded by a dose and not about a form of the compound, and no clause states activation;
+    otherwise ('activates', ...) as before. It never drops a row, so a note the rule cannot read is left as it was."""
+    clauses = [clause for note in notes for clause in clauses_of(note)]
+    absences = [clause for clause in clauses if NO_INHIBITION_OR_EFFECT.search(clause)]
+    if not absences:
+        return "activates", "no note of absence"
+    if any(STATES_ACTIVATION.search(clause) for clause in clauses):
+        return "activates", "activation and absence both stated"
+    about_this_enzyme = [clause for clause in absences
+                         if EFFECT_ABSENCE.search(clause) and scope_elsewhere(clause, ligand_name) is None
+                         and not DOSE_BOUNDED.search(clause) and not FORM_OF_COMPOUND.search(clause)]
+    if about_this_enzyme:
+        return NO_ACTIVATION_RELATION, "no effect on this enzyme, no activation stated"
+    return "activates", "absence not unambiguously about this enzyme, kept"
+
+
 def human_accessions_of_protein_entry(protein_entry: dict) -> list[str]:
     """BRENDA keys `protein` by index; each entry carries `organism` and, for 40 percent of them, `accessions`.
 
@@ -214,8 +265,7 @@ def human_protein_entries(enzyme_record: dict) -> tuple[dict[str, list[str]], di
 
 def regulation_rows(ec_number: str, enzyme_record: dict, note_classes: collections.Counter | None = None):
     """The rows of one enzyme: one per (field entry, human protein entry, accession). note_classes, when given, counts
-    each (field, relation, note class) of an inhibition field entry and each activating-compound entry whose notes
-    state no effect."""
+    each (field, relation, note class) of an inhibition field entry and of an activating-compound entry."""
     accessions_by_protein_index, organism_by_protein_index = human_protein_entries(enzyme_record)
     if not accessions_by_protein_index:
         return
@@ -241,9 +291,11 @@ def regulation_rows(ec_number: str, enzyme_record: dict, note_classes: collectio
                         note_classes[f"{field_name}: {row_relation or 'no row'} ({note_class})"] += 1
                     if row_relation is None:
                         continue
-                elif field_name == "activating_compound" and note_classes is not None and any(
-                        NO_INHIBITION_OR_EFFECT.search(clause) for note in own_notes for clause in clauses_of(note)):
-                    note_classes["activating_compound: a note states no effect (written as activates, as before)"] += 1
+                elif field_name == "activating_compound":
+                    row_relation, note_class = relation_of_activator_notes(own_notes, ligand_name)
+                    row_sign = sign if row_relation == "activates" else 0.0
+                    if note_classes is not None:
+                        note_classes[f"{field_name}: {row_relation} ({note_class})"] += 1
                 for accession in accessions_by_protein_index[protein_index]:
                     yield {"ec_number": ec_number, "field": field_name, "relation_type": row_relation, "sign": row_sign, "ligand_name": ligand_name,
                            "uniprot_accession": accession, "organism_entry": organism_by_protein_index.get(protein_index, ""),

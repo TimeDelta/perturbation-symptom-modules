@@ -87,7 +87,9 @@ def test_the_extraction_writes_the_note_class_and_counts_it(tmp_path):
     assert summary["note_classes"]["comments of an inhibition field entry with protein markers"] == 3
     with open(output, newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
-    assert {row["note_class"] for row in rows} == {"no note of absence", "no inhibition of this enzyme", ""}
+    # since 1 November 2026 an activating-compound row carries a note class too (decision 9.88, relation_of_activator_notes);
+    # before then it was written with an empty one
+    assert {row["note_class"] for row in rows} == {"no note of absence", "no inhibition of this enzyme"}
 
 
 def mapped_rows(relations: list[tuple[str, str, str, float]]) -> pd.DataFrame:
