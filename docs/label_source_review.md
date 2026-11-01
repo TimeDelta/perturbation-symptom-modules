@@ -3724,7 +3724,11 @@ reusing any of these papers: only quoted sentences enter the repository, and the
 
 **One source awaited, not failed.** Sunahara, Dessauer and Gilman 1996 (PMID 8725398), named in decision 9.97, is on
 interlibrary loan to the owner as of 26 October 2026. It is recorded here as awaited; it is not a source that
-refused or could not be read.
+refused or could not be read. **Added 1 November 2026: it is no longer awaited.** The owner supplied the publisher's
+PDF on 1 November 2026, pinned at `data/raw/supplied_papers/pmid8725398_sunahara1996.pdf`, and it was read in full on
+Fable the same day. The reading is section 40 below; the DOI the pin file carried is verified, the licence is "All
+rights reserved" read on p. 461, and the finding that bears on 9.97 is that the review covers seven of the graph's
+nine adenylyl cyclase isoforms for regulation and neither ADCY7 nor ADCY9.
 
 **One source the reading newly makes load-bearing, and which is not held.** Zhu, Gilbert, Birnbaumer and Birnbaumer
 1994 (PMID 7935326) is the project's source for the 100,000 to 300,000 sites per cell at which a Gs-coupled
@@ -4066,3 +4070,53 @@ The publisher's file is pinned beside the other at `data/raw/supplied_papers/pmi
 the same single licence line and no Creative Commons or open-access statement, so the position recorded above is
 unchanged: the article's own licence is a copyright line only and the deposited copy is what carries
 CC BY-NC-SA 2.5 Argentina.
+
+## 40. Sunahara, Dessauer and Gilman 1996, the source 9.97 awaited (1 November 2026, decisions 9.97, 9.20, 9.86)
+
+Supplied by the owner on 1 November 2026 as the publisher's PDF, the interlibrary-loan copy section 37 and line 3725
+above recorded as awaited rather than failed. Pinned at `data/raw/supplied_papers/pmid8725398_sunahara1996.pdf`,
+SHA-256 `a11ceaf57d08ba4d2bd50f9843167674ee6f7177c87cc73ec3867946f3368b4c`, 1,268,126 bytes, 20 pages, printed pages
+461-480; `data/raw` is gitignored, so the file is not redistributed. Read in full on Fable 5.1 on 1 November 2026.
+
+**It is a scan and the text layer is not quotable.** `/Creator` "Acrobat Capture 3.0", `/Style` "Searchable Image
+(Exact)". The OCR renders the masthead "1996. 36:461-80" as "19%. 36461-80", "type II" as "type I1" and "Gq alpha"
+as "G,,". Every quotation carried into `docs/open_decisions.md` 9.97 and into `docs/references.bib` was read off the
+rendered page image at 200-220 dpi, not off the text layer. The PDF-to-printed offset is 460: PDF page 1 is printed
+461.
+
+**Identity verified.** The pin file's DOI, 10.1146/annurev.pa.36.040196.002333, was not read from the file and was
+checked against two sources: PubMed carries it in the identifiers for PMID 8725398, and Crossref returns for it the
+title "Complexity and Diversity of Mammalian Adenylyl Cyclases", Annual Review of Pharmacology and Toxicology
+36:461-480, published print April 1996, the three authors, ISSN 0362-1642 and 1545-4304. It is correct.
+
+**Licence, verified on the paper and restrictive.** "Copyright (c) 1996 by Annual Reviews Inc. All rights reserved"
+(p. 461, the masthead block). Crossref registers no licence for the DOI, which corroborates it. A ruled box on
+p. 476 adds that any Annual Review chapter and any article cited in one may be purchased from the publisher's
+reprints service. So: quoted sentences only, and **Table 2 is not reproduced as a table in any committed file**; the
+per-isoform statements in 9.97's addition of 1 November 2026 are prose with quoted fragments.
+
+**A per-download watermark.** Every page carries a line naming the subscribing institution, an account number and
+the IP address the download came from, as the pin file records. It identifies the owner's institution and is
+reproduced in no committed document and in no outbound request. The OCR intermediate used for navigation had those
+lines stripped before anything else was done with it.
+
+**What the reading establishes**, in full in `docs/open_decisions.md` 9.97's addition of 1 November 2026. In short:
+the review's regulation table (Table 2, p. 468) covers types I, II, III, IV, V, VI and VIII, so **seven of the nine
+isoforms the graph holds**; type VII gets Gs alpha stimulation only and is marked "VII unknown" for beta-gamma
+(p. 473); type IX gets nothing beyond its tissue distribution. Of the graph's 45 Gi/o-to-cyclase edges, 12 are
+supported, 6 are contradicted by a stated negative, 1 is unresolved by a disagreement between the paper's own table
+and body, and 26 are not addressed. The graph's GNG2-into-ADCY5 edge is contradicted three times over. The GNAL
+edges are not supported in either direction: Golf is named once (p. 463) and tested on no cyclase.
+
+**Two things the reading does not settle, and must not be read as settling.** First, the evidence behind every
+stated negative in the review is reconstituted or heterologous, and the review attaches no reference to any of them;
+whether that is enough to remove an edge is the owner's open question under 9.20 and is not ruled here. Second, the
+beta-gamma effect on types II and IV is conditional on Gs alpha in the review's own words, which is the conjunction
+9.97's second question asks how to represent; the options the handoff set out are unchanged by this reading, and the
+reading is evidence for the conditionality, not for any one of them.
+
+**A second source was not needed and was not sought.** The working rule that a failed source is followed by a second
+reputable one applies to a source that is missing a record, refuses or cannot be read. This source was supplied and
+read in full, so there was no failure to answer. Where it is silent - types VII and IX, and GNAL - that silence is
+reported as silence, not as absence of the regulation, and is the reason 9.97's premise about a source covering all
+isoforms is recorded as not met.

@@ -260,7 +260,10 @@ G_ALPHA_FAMILY_MEMBERS: dict[str, tuple[str, ...]] = {
     "G12/13": ("GNA12", "GNA13"),
 }
 G_ALPHA_GENE_SYMBOLS = frozenset(gene for members in G_ALPHA_FAMILY_MEMBERS.values() for gene in members)
-# The transmembrane adenylyl cyclases, which Gs stimulates and Gi/o inhibits. ADCY10 is the soluble cyclase, regulated
+# The transmembrane adenylyl cyclases. Gs stimulates all of them; Gi/o does NOT, and the uniform signs this
+# module gives every isoform are decision 9.97's open correction - Sunahara et al. 1996 (PMID 8725398, read 1
+# November 2026) states that Gi alpha does not inhibit type II and that Go alpha inhibits type I alone among
+# those tested, and leaves types VII and IX untested. ADCY10 is the soluble cyclase, regulated
 # by bicarbonate and calcium rather than by G proteins, and is left out.
 ADENYLYL_CYCLASE_SYMBOLS = frozenset(f"ADCY{number}" for number in range(1, 10))
 # Decision 9.86 (the owner, 21 October 2026: "build the suggested change"). Each edge type carries its own learned
