@@ -363,6 +363,13 @@ transcript address, then the dates of the session, then its summary.
   not a result; the investigation it asks for is a Fable pass. Its first request for push access to this repository
   was refused by the auto-mode classifier; a second, after the owner asked for the handoff to be in the repository,
   was granted. No commit was made.
+  **Added 1 November 2026, same session:** two statements above no longer hold. The ruling was recorded in decision
+  9.88 on 27 October 2026 by another session (`ab5d82a`), and "8,129 enzyme entries with a human protein" is wrong:
+  8,129 is the number of EC entries in release 2026.1, and 1,806 of them carry a human protein entry. The owner
+  could not fit the JSON in the session that will regenerate the table, so this session, which still held it,
+  committed a human subset that gives the extraction byte-identical rows
+  (`data/brenda/brenda_2026_1_human_regulation_subset.json.gz`, written by `experiments/make_brenda_human_subset.py`),
+  and let the extractor read it gzip-compressed; see the addition of the same date to 9.88. Claude Opus 5.5.
 - https://claude.ai/share/c87ab459-ec77-4576-aa28-df88678909f2 — 24 to 27 October 2026. Merging the open pull
   requests. The owner asked for the conflicts of pull request #11 to be fixed; they had already resolved them that
   morning (`0ba41ef`, `3a61779`), and the session found no conflict markers and no decision id held twice. The owner

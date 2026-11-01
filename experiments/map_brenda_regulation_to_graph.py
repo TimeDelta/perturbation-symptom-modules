@@ -20,9 +20,11 @@ keeps the three relations `inhibits`, `activates` and `cofactor_of`. --compare-w
 regeneration and adds to the summary how many pairs each relation gained and lost, which is the measurement the
 decision asks for.
 
-Usage, after decision 9.88 (the BRENDA JSON is the owner's, release 2026.1; the paths below are an example):
+Usage, after decision 9.88 (release 2026.1; the committed human subset gives the rows the whole JSON gives, see
+experiments/make_brenda_human_subset.py; the graph directory is an example and should be the current split graph):
   cp configs/brenda_metabolite_enzyme_regulation.csv data/processed/brenda_metabolite_enzyme_regulation_before_9_88.csv
-  python experiments/extract_brenda_enzyme_regulation.py brenda_2026_1.json --output data/processed/brenda_regulation_records.csv
+  python experiments/extract_brenda_enzyme_regulation.py data/brenda/brenda_2026_1_human_regulation_subset.json.gz \
+      --output data/processed/brenda_regulation_records.csv
   python experiments/map_brenda_regulation_to_graph.py --regulation-records data/processed/brenda_regulation_records.csv \
       --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4 --output configs/brenda_metabolite_enzyme_regulation.csv \
       --summary docs/brenda_regulation_mapping.json --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \

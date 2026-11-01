@@ -20,7 +20,10 @@ human entries it names. BRENDA's text release writes a record's comment as one n
 "#1,4# note <12>; #5# note <13>", and notes_by_protein reads the notes of each human entry apart from the others'; a
 comment without the markers is read as one note on every protein of the record. The JSON release was not on the
 machine of 22 October 2026 to check which form it carries, so the parser takes either, and the summary counts the
-comments of each form. Each note is split into clauses and each clause classed (classify_clause):
+comments of each form. The run of 26 October 2026 on release 2026.1 answered it: no comment of an inhibition field
+entry in the JSON carries the markers, so on the JSON every comment is one note on every protein of its record, and
+the per-protein reading matters only for the text release. Each note is split into clauses and each clause classed
+(classify_clause):
 
   a clause stating no inhibition or no effect (NO_INHIBITION_OR_EFFECT), about this enzyme;
   the same, scoped to another organism, an isozyme or another form of the enzyme, a mutant or another compound
@@ -38,6 +41,7 @@ written as before; the summary counts how many activating-compound notes state n
 import argparse
 import collections
 import csv
+import gzip
 import json
 import re
 from pathlib import Path
@@ -249,7 +253,9 @@ def regulation_rows(ec_number: str, enzyme_record: dict, note_classes: collectio
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("brenda_json", type=Path)
+    parser.add_argument("brenda_json", type=Path,
+                        help="the BRENDA JSON release unpacked, or data/brenda/brenda_2026_1_human_regulation_subset.json.gz, "
+                             "which gives the same rows")
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
 
@@ -260,7 +266,9 @@ def main() -> None:
     distinct_human_accessions: set[str] = set()
     enzyme_entries_seen = 0
 
-    with open(arguments.brenda_json, "rb") as handle, open(arguments.output, "w", newline="", encoding="utf-8") as output_file:
+    # the whole release unpacked, or the gzip-compressed human subset that experiments/make_brenda_human_subset.py writes
+    open_release = gzip.open if arguments.brenda_json.suffix == ".gz" else open
+    with open_release(arguments.brenda_json, "rb") as handle, open(arguments.output, "w", newline="", encoding="utf-8") as output_file:
         writer = csv.DictWriter(output_file, fieldnames=["ec_number", "field", "relation_type", "sign", "ligand_name",
                                                          "uniprot_accession", "organism_entry", "note_class", "brenda_comment",
                                                          "brenda_reference_count"])
