@@ -4055,3 +4055,14 @@ arm and warns that "Caution should be used when interpreting dual coupling resul
 
 Liao et al. 1990 stays abstract only and is not given a bibliography entry: the question it was brought in for is
 closed by the Zhu full text, and the repository cites it inline by PMID.
+
+**Added 1 November 2026: the owner supplied the publisher's own PDF of Mondillo et al. 2005, and it is content-identical
+to the repository copy this section records.** The two files differ in bytes - the publisher's is 211,090 and the
+deposited copy 216,355 - but their text layers are the same, 45,866 characters each hashing to `6fc67e1cf478521d`,
+checked mechanically with pypdf rather than read. So the CONICET Digital route gave the version of record, and the
+page numbers of every quotation taken from it in decision 9.79 and in the `mondillo2005leydig` note stand as written.
+The publisher's file is pinned beside the other at `data/raw/supplied_papers/pmid15917347_mondillo2005_publisher.pdf`
+(SHA-256 `5874de03a267a1b2fbafc8af949b7f154a3c6a0733a5875aaf38862bf9a770b1`); `data/raw` is not committed. It carries
+the same single licence line and no Creative Commons or open-access statement, so the position recorded above is
+unchanged: the article's own licence is a copyright line only and the deposited copy is what carries
+CC BY-NC-SA 2.5 Argentina.
