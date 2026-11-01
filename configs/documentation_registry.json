@@ -98,6 +98,12 @@
       "recorded": "2026-10-07",
       "append_only": false
     },
+    "docs/brenda_activator_note_classification_2026-11-01.md": {
+      "class": "record",
+      "recorded": "2026-11-01",
+      "append_only": true,
+      "what": "the 47 BRENDA activating-compound notes stating no effect and the 25 a widened pattern would add, each read in full and classed for the owner's sign-off before the no-activation rule of decision 9.88 is built; read on Fable"
+    },
     "docs/cell_state_representation.md": {
       "class": "living",
       "reviewed": "2026-10-13",
