@@ -598,8 +598,8 @@
     },
     "docs/nonlinearity_inventory.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-02",
+      "as_of_commit": "9ef8750"
     },
     "docs/nosology_discovery_options.md": {
       "class": "draft",

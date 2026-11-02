@@ -6,11 +6,14 @@ what the code does instead. Kept current for decision 9.81 (saturation inside th
 decisions 9.77 and 9.78: the encoder is a robustness reading under the registered rule `robustness_models`. Counts are
 the repository's own, taken on `data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes` (49,796 nodes,
 280,966 edges) on 21 October 2026 unless another source is named. Written 21 October 2026; read against the
-repository at 7104489 on 25 October 2026.
+repository at 7104489 on 25 October 2026. **Read against the repository again on 2 November 2026** (the review
+below): two cases are added, 9 and 10, both of which the owner has since ruled on in part, and the counts of 21
+October 2026 are left as they are because the build they were taken on is not the current graph and the real v5 is
+not built (decision 9.106), so they are history and are not restated as current.
 
 ## 1. The cases
 
-Cases 1 to 6 are from `docs/physiological_adherence_review.md` (13 October 2026), whose section is named.
+Cases 1 to 6 are from `docs/physiological_adherence_review.md` (13 October 2026), whose section is named. Cases 9 and 10 were added on 2 November 2026, from decisions 9.97 and 9.108; neither has a section there.
 
 | # | Case | Section | Size | Status |
 |---|---|---|---|---|
@@ -22,6 +25,8 @@ Cases 1 to 6 are from `docs/physiological_adherence_review.md` (13 October 2026)
 | 6 | Compartment pH ceiling | 5, 6 | 18,928 of 49,796 nodes take a weight; 25,741 have no compartment; 5,127 transport reactions take none | Applied after the fixed point; `calibrate_ph_sensitivity` is called by no trainer code |
 | 7 | Dosage asymmetry | - | All gene perturbations | The response is positively homogeneous of degree one (the bottleneck's comment states it), so a knockout cannot saturate at zero activity while an overexpression does not |
 | 8 | Multistability, hysteresis and sustained oscillation | - | The clock genes' CollecTRI edges are in the graph | A linear map has one fixed point or a continuum of them, and the contraction bound makes it unique |
+| 9 | G beta gamma raising a cyclase's Gs-stimulated activity, with no effect alone | - | The review states "these effects are dependent on coincidental activation by Gs alpha" (Sunahara et al. 1996, p. 469); the graph's GNG2 to ADCY5 edge is contradicted three times | **The owner chose a conjunction relation** (2 November 2026, decision 9.97). The linear encoder has none, and 9.81 ruled against a minimum over the signed field, so the device is an open design question; a plain positive edge is ruled out as misstating it |
+| 10 | A drug's effect depending on the genome at its target or in the background | - | A drug seeds its own entry node with a fixed sign and magnitude (`DRUG_ENTRY_COLUMNS`), so the same drug enters identically whatever the genome | Open (decision 9.108). Nothing scales one perturbation's action by another's state, which is the same shape as cases 2 and 4. The pharmacokinetic half is 9.107 and is representable already, through the `clears` relation |
 
 **On this list as evidence.** Most entries were written in Claude sessions rather than observed independently. The
 counts are measured and the code claims can be checked, so the list stands; the sense that the problem keeps
@@ -101,7 +106,14 @@ Until 22 October 2026 `tested_models` named the noisy-OR configurations of both 
 - The version closest to physiology is used, and a choice made on numerical grounds is justified where it is made
   (CLAUDE.md, Modelling).
 - 9.68's VAMP1 membership is related to 9.81 and decided apart from it.
-- Findings 5, 13 and 14 of the slice pilot are not evidence about the current model (9.82).
+- Findings 5, 13 and 14 of the slice pilot are not evidence about the current model (9.82), and the ruling of 27
+  October 2026 extended that treatment to every measurement of that period (9.103 and 9.104).
+- **Transfected and reconstituted evidence is too weak to stand alone** (the owner, 2 November 2026, decision 9.97),
+  so a negative shown only in such a system does not remove an edge by itself. It bears on this document because
+  several cases rest on results from those systems, case 9 among them: the review that states the G beta gamma
+  conjunction carries every one of its negatives from a reconstituted or heterologous system.
+- **A conjunction is wanted where the physiology is conditional** (9.97, case 9), which is the first time the project
+  has chosen a device for a case on this list rather than disclosing the limit.
 
 ## 8. Open in 9.81
 
@@ -111,6 +123,12 @@ Until 22 October 2026 `tested_models` named the noisy-OR configurations of both 
    238 alternatives.
 3. Whether the pH ceiling is read at the right node: cytosolic H+ (`MAM02039c`) has 2,048 incoming and 1,281 outgoing
    edges, so one perturbed reaction moves it by about 1/4,096 of its own change.
+
+**Added 2 November 2026, from the review**: question 2 above, how conjunction is controlled, is no longer only about
+the 542 obligate complexes. Case 9 needs the same device for a different reason, and the owner has chosen a conjunction
+relation for it (9.97), so whatever is built has to serve both or the project carries two mechanisms for one shape.
+Cases 2 and 4 are the same family again. A design pass of 2 November 2026 is setting out the options with their costs
+against the contraction bound.
 
 Settled since the inventory was written: whether the message-passing encoder leaves the tested models. It left them on
 22 October 2026 (decision 9.77) and stays as a robustness reading under `robustness_models`, not as a tested model
