@@ -138,8 +138,13 @@ def test_the_membrane_potential_is_computed_from_the_pools_in_the_rebuild(regist
     rebuild_script = (REPOSITORY_ROOT / "scripts" / "rebuild_data_layer.sh").read_text()
     builds_passed = re.findall(r"--membrane-potential\s+(\S+)", rebuild_script)
     assert set(builds_passed) == {registered}
-    # every neuronal variant build takes the flag, or one of them silently keeps the module default
-    assert len(builds_passed) == rebuild_script.count("build_neuronal_graph_variant.py")
+    # every neuronal variant build takes the flag, or one of them silently keeps the module default. Counted over the
+    # lines that invoke the script, not every mention of its name: on 2 November 2026 a comment naming the script, for
+    # the preflight that watches the tables it reads, made a count of mentions exceed the number of calls and failed
+    # this test with nothing wrong in the data layer.
+    invocations = [line for line in rebuild_script.splitlines()
+                   if "build_neuronal_graph_variant.py" in line and not line.lstrip().startswith("#")]
+    assert len(builds_passed) == len(invocations), invocations
 
 
 def test_the_normalisation_is_the_per_seed_forward_cone_divisor(registered_rules):
