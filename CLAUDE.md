@@ -111,6 +111,19 @@ against them before it is acted on.
   rule and `experiments/read_public_page.py`, and a check that the visitor is human or a login stays a refusal. The
   first case is the Siletti et al. 2023 cluster aggregate: the authors' README links it at a Dropbox address under
   `/scl/`, which Dropbox's robots file disallows for every reader (read 26 October 2026).
+- **GtoPdb is read with the owner's API key, and its website login stays a refusal** (the owner, 28 October 2026).
+  GtoPdb now puts its target pages behind a website login, which answer 302 to `/login.jsp`, and its REST API behind
+  an API key: "To use an API Key we recommend passing the key in a request header", `GTP-API-Key`
+  (`www.guidetopharmacology.org/webServices.jsp`, read 28 October 2026). Offered either a key or the curators' own
+  publications instead, for the HRH2 transduction check of decision 9.79, the owner answered "no. i want both because
+  evidence could contradict each other", so both routes are taken and compared. **The exception covers the REST API on
+  `www.guidetopharmacology.org` only**, over https, with the key supplied by the environment, preferably as a network
+  secret the proxy injects as the `GTP-API-Key` header so that no script, saved page, log or commit holds it. It does
+  not cover the website's form login, which stays a refusal, and the reader's other limits hold. The basic-auth
+  credentials the owner added as a network secret on 28 October 2026 are not used: GtoPdb takes neither route by basic
+  auth, the API answering "API key is missing" with the proxy reporting `upstream auth failed`, and the pages
+  redirecting to the login form. The data downloads under `/DATA/` need no key and are fetched by
+  `scripts/fetch_raw_sources.sh` as before.
 - **A paper with no peer review is excluded; a recent one is kept and marked for follow-up** (the owner, 27 October
   2026: "No peer review means toss the paper unless it's recent then just mark it for follow up"). **Excluded means
   what decision 9.100 did to the Fagerholm preprint, not deleted**: the citation stays where it is, marked excluded
