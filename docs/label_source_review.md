@@ -4341,3 +4341,241 @@ robots file served) documents "GPCR transduction mechanisms {base_url}/targets/{
 (optional): the species common name". `GET https://www.guidetopharmacology.org/services/targets/263/transduction`,
 17:09:33 UTC, HTTP 200, 2,571 bytes, SHA-256 `c919dbc8fbbf7987d101dc7a95964cb09d838b1b510b1a43bf83637a91e3d15b`,
 returns two records, here with the reference objects shortened to their PMIDs:
+
+```
+{"targetId": 263, "transducers": "G<sub>q</sub>/G<sub>11</sub> family", "effectors": "Phospholipase C stimulation",
+ "comments": "", "secondaryMechanism": false, "refs": [pmid 8961278 (Kühn et al. 1996), pmid 2553705 (Mitsuhashi et al. 1989)]}
+{"targetId": 263, "transducers": "G<sub>s</sub> family", "effectors": "Adenylyl cyclase stimulation",
+ "comments": "", "secondaryMechanism": true, "refs": [pmid 8961278 (Kühn et al. 1996), pmid 2553705 (Mitsuhashi et al. 1989)]}
+```
+
+The `refs` arrays are the same two objects on both records (referenceId 4055, "G proteins of the Gq family couple
+the H2 histamine receptor to phospholipase C.", Mol Endocrinol 1996;10:1697-1707; referenceId 4056, "Multiple
+signaling pathways of histamine H2 receptors. Identification of an H2 receptor-dependent Ca2+ mobilization pathway in
+human HL-60 promyelocytic leukemia cells.", J Biol Chem 1989;264(31):18356-62).
+
+**The seven items of the template.** (1) Release: the endpoint prints none and the API has no version endpoint
+(`services/version` and `services/release` answer 404); the page says the base URL "points to the current version of
+the API", updated "in line with normal database release cycles". The field is therefore dated as the live API on
+2 November 2026; the same host's bulk `targets_and_families.csv` that day is release 2026.3.1 published 2026-10-12
+(section 41). (2) Labels: two records each carrying a boolean `secondaryMechanism`, `false` on Gq/11 and `true` on Gs,
+which is a labelled primary/secondary split and not an unlabelled list. The website's own headings are behind the
+login and were not read; the flag's meaning was checked instead on the beta2-adrenoceptor (`targets/29/transduction`:
+Gs `false`, Gi/o `true`) and the H3 receptor (`targets/264/transduction`: Gi/o `false`, the only record). (3) Order:
+Gq/11 then Gs. (4) Effectors: phospholipase C stimulation on Gq/11, adenylyl cyclase stimulation on Gs. (5)
+References: PMIDs 8961278 and 2553705 on each half, nothing else. (6) Species and comment: `comments` is empty on both;
+no species field exists on the record; the documented `species` parameter returns byte-identical output for Human,
+Rat, Mouse, Guinea pig and Zebrafish (all SHA-256 `c919dbc8...`). The target record `targets/263` is one record for
+human (P25021), mouse (P97292) and rat (P25102), and `targets/263/interactions` does carry `targetSpecies` (Human,
+Rat), so the absence is specific to the transduction field: **not annotated**, as the template says to record rather
+than inferring human. (7) Route: API key, https, 2 November 2026 17:09-17:10 UTC, no login. `targets/263/function`
+and `targets/263/comments` were searched for transducer wording and state none.
+
+### The comparison with GPCRdb's sheet
+
+The `GtoPdb` sheet of `GPCR-G_protein_couplings.xlsx` (fetched 14 October 2026, `docs/data_sources.md`), HRH2 row:
+Primary Transducer `Gq/11`, Secondary Transducer `Gs`, PrimaryEffectors `Phospholipase C stimulation`,
+SecondaryEffectors `Adenylate cyclase stimulation`, primary_PMID `8961278|2553705`, secondary_PMID
+`8961278|2553705`. Every field matches the API record above (the one difference is "Adenylate" for "Adenylyl").
+So `configs/admitted_receptor_g_alpha_coupling.csv` holds what GtoPdb says, and 9.23's reading of the sheet's
+ranking as noise is, for this receptor, not borne out: the sheet is faithful and the ranking is in GtoPdb's data.
+
+Two things follow for rows already on the record. **9.99's citation defect originates in GtoPdb, not in GPCRdb's
+copying**: the sheet's `primary_PMID` and `secondary_PMID` both read `8961278|2553705` because the curators attach the
+same two references to both halves, including Mitsuhashi 1989 to the primary-Gq/11 half; 9.99's correction of the
+table rests on its own reading of that paper and stands. **The two curator statements are the same database at two
+dates**: the about page states the Concise Guide "is created from a snapshot of the database summary pages", so the
+2013/14 "Principal transduction: Gs" cell is a 2013 snapshot of the curators' data and the live field reads primary
+Gq/11 in 2026. Whether the field changed between the two, or the 2013/14 row was a separately curated column, the
+API cannot show, carrying no history; it is recorded as not determinable.
+
+**Under the template's criteria, this is the contradiction case and its decisive item falls on the already-weighed
+side.** The primary-Gq/11 half cites only Kühn 1996 and Mitsuhashi 1989. The first is one of the three heterologous
+papers 9.79 weighs (rat H2, insect and COS cells, a co-transfected G alpha for the inositol phosphate arm; 9.99); the
+second concludes a cholera-toxin-sensitive coupling and is the paper 9.99 removed from the Gq/11 rows. No paper new
+to the row supports the ranking, so nothing further has to be read on its account, and the owner's ruling of
+2 November 2026 in 9.97, that transfected and reconstituted cases are too weak to stand alone, applies to the field's
+own evidence directly. What the field cannot settle, as the template said in advance: whether the Gq/11 rows stay,
+the field being a ranking and not evidence; and the species of the annotation.
+
+**One observation outside the template, recorded and not interpreted.** On the H1 receptor (`targets/262/transduction`)
+the record flagged primary is Gq/11 with "Adenylyl cyclase stimulation" (comment: "Stimulation of cAMP accumulation is
+via G<sub>&beta;&gamma;</sub> subunits of G<sub>q</sub>", ref 16189696) and the one flagged secondary is Gq/11 with
+"Phospholipase C stimulation" (ref 7695921). The flag attaches to a transducer-effector pair, and on H1 the pair
+flagged primary is not the receptor's defining response. Both H1 rows name the same family, so this says nothing about
+a family ranking; it is kept for a reader weighing how much curatorial care the flag carries.
+
+### Licence and citation, as the curators publish them on 2 November 2026
+
+The owner forwarded the curators' request, "When using GtoPdb please can you give us attribution, it really helps",
+pointing at the two pages below, both read with `experiments/read_public_page.py`, neither needing the key, no robots
+file served by the host.
+
+- `https://www.guidetopharmacology.org/about.jsp` (17:10:37 UTC, HTTP 200, 39,877 bytes, SHA-256
+  `3009f47cb50e63318d52bd000985f84ac77e9c9acc7472d0b8e665b3ff0c64f6`): "License The Guide to PHARMACOLOGY database is
+  licensed under the Open Data Commons Open Database License (ODbL) . Its contents are licensed under a Creative
+  Commons Attribution-ShareAlike 4.0 International License". This is the wording `docs/data_sources.md` records from
+  the same page read on 11 October 2026; **it still matches.** The web-services page states the same and adds "Our
+  license specifies that use of GtoPdb data requires attribution."
+- `https://www.guidetopharmacology.org/citing.jsp` (17:10:39 UTC, HTTP 200, 33,102 bytes, SHA-256
+  `b76c2446b6603062cd2dc9ac152501af35ebc30c19afb652d139b80c3792bf1ac`): "For a general citation of the database please
+  cite the article published in the Nucleic Acids Research Database Issue. Harding SD, Armstrong JF, Faccenda E,
+  Southan C, Alexander SPH, Davenport AP, Spedding M, Davies JA. (2025) The IUPHAR/BPS Guide to PHARMACOLOGY in 2026 .
+  Nucl. Acids Res. 2026. 54(D1):D1446-D1456. doi: 10.1093/nar/gkaf1067 . [ Full text ]. PMID: 41160876 ." and, for
+  individual data, "Work using the detailed target pages and family introductions (information from IUPHAR-DB) should
+  give the appropriate IUPHAR/BPS Guide to PHARMACOLOGY CITE reference. Full citation information can be found at the
+  bottom of each page. Example citation formats: Baker JG, ... Adrenoceptors in GtoPdb v.2023.1. IUPHAR/BPS Guide to
+  Pharmacology CITE. 2023; 2023(1). Available from: https://doi.org/10.2218/gtopdb/F4/2023.1." The transduction field
+  is detailed-target-page data, so the attribution the curators ask for is the NAR 2026 paper plus the histamine
+  family's CITE reference. The family page that prints it is behind the login; Crossref resolves
+  `10.2218/gtopdb/F33/2025.3`, "Histamine receptors in GtoPdb v.2025.3", IUPHAR/BPS Guide to Pharmacology CITE, issued
+  10 September 2025, first author Chazot P, licence URL `http://creativecommons.org/licenses/by-sa/4.0`, and answers
+  404 for `F33/2026.1`, `F33/2026.2` and `F33/2026.3`, so v.2025.3 is the latest registered on 2 November 2026. PMID
+  41160876 is confirmed on Europe PMC (Nucleic Acids Res 2026;54(D1):D1446-D1456, doi 10.1093/nar/gkaf1067).
+  `docs/references.bib` holds the 2024 paper (`harding2024iuphar`, PMID 37897341) and not the 2026 one; an entry is
+  owed if the project cites GtoPdb by the form the curators now ask for.
+
+### Refusals, and what is not verified
+
+No address refused today; `services/version` and `services/release` are 404s for endpoints the API does not
+document, not refusals. Not verified: the website's own headings over the two halves for target 263 (behind the
+login, deliberately not read); the GtoPdb release the API served (not printed); whether a histamine CITE newer than
+v.2025.3 exists (behind the login). No text addressed to an AI assistant was found on any page or in any response.
+
+## 43. Dessauer et al. 2017, the IUPHAR AC review, for the two gaps 9.97 left open (2 November 2026, decisions 9.97, 9.20, 9.86)
+
+Supplied by the owner on 2 November 2026 as the publisher's PDF, the review 9.97's source list named as unreadable
+(PMC answered with a browser check, the publisher blocks full-text download). Pinned at
+`data/raw/supplied_papers/pmid28255005_dessauer2017.pdf`, SHA-256
+`3c35fb0fb56902b5ae61bd66339e370f1241c8fcd5db5c3b5e907eef48371624`, 3,705,262 bytes, 47 pages, printed pages 93-139;
+`data/raw` is gitignored, so the file is not redistributed. Read in full on Fable 5.1 on 2 November 2026. This section
+extends section 40 (Sunahara, Dessauer and Gilman 1996) and does not restate it.
+
+**Born-digital and quotable.** `/Creator` Arbortext Advanced Print Publisher 9.1.510, `/Producer` Acrobat Distiller
+10.0.0; unlike the Sunahara scan, the text layer is reliable. Its one systematic defect is that Greek letters extract
+as Latin ("Gas", "Gai", "Gbg", "Gao"); every quotation below was checked against the rendered page image and α, β, γ
+restored. The PDF-to-printed offset is 92 (PDF page 1 is printed 93), confirmed on PDF pages 2, 20, 30 and 47. No text
+addressed to an AI assistant is present (searched).
+
+**Identity verified.** PubMed 28255005 and Europe PMC (both read 2 November 2026): Pharmacol Rev 69(2):93-139, April
+2017, doi 10.1124/pr.116.013078, six authors Dessauer, Watts, Ostrom, Conti, Dove, Seifert, PMC5394921. Every field
+of 9.97's citation is correct.
+
+**Licence, verified on the paper and restrictive.** "Copyright © 2017 by The American Society for Pharmacology and
+Experimental Therapeutics" and "1521-0081/69/2/93–139$25.00" (p. 93, masthead). No Creative Commons or open-access
+statement in the 47 pages; Europe PMC isOpenAccess N, licence none. So quotation only, and **Table 3 is reproduced as
+a table in no committed file**, as with Sunahara's Table 2.
+
+**Does it carry a per-isoform G-protein regulation table?** Partly. Section II.D (pp. 112-113) opens "Table 3
+summarizes regulation of mAC isoforms"; Table 3 (p. 112), "Regulation of mAC isoforms", "adapted and updated from that
+published by Ostrom et al. (2012)" (Ostrom is a coauthor), is a regulator-by-effect-by-isoform table with references.
+**It has no Gαo row and no Gαz row.** Gαz, Gz and "alpha z" occur nowhere in the review; Gαo occurs only in the
+abbreviations list, "α-subunit of the G-protein Go that is widely expressed in the CNS and neuroendocrine cells and
+mediates inhibition of calcium channels" (p. 95), a definition giving it no cyclase role, and nowhere in the body. The
+Gαi row does not separate Gαi1/2/3. The legend declines to mark evidence type per row: "Some of the effects listed have
+been clearly demonstrated as 'direct' using purified, cell free components, whereas others have only been shown in
+intact cells." (p. 112).
+
+### Gap 1: AC7 and AC9, every statement with its evidence type
+
+**Gαs stimulation (both):** "ACs 1–9 are activated by Gαs, and ACs 1–8 are also activated by FSK." (p. 99); "All mACs
+are activated by Gαs (Tang and Gilman, 1992; Iyengar, 1993; Jones et al., 1990)" (p. 112); Table 3 "Gαs | Stimulation |
+All isoforms | Iyengar (1993)". Evidence type unstated; all three references predate the cloning of AC7 (Watson et al.
+1994) and AC9 (Premont et al. 1996), so for these two isoforms the universal is asserted, not evidenced here. AC9 in
+native human cells: "human monocytes and neutrophils express AC activity that is effectively stimulated by the β2AR
+and histamine H2 receptor, whereas FSK is almost ineffective" (p. 119), an AC9-attributed activity (the attribution
+indirect, via FSK-insensitivity and mRNA); Seifert, a coauthor, is senior author of those papers.
+
+**Gαi inhibition:** "Only ACs 1, 5, and 6 are directly inhibited by Gαi (Federman et al., 1992; Taussig et al., 1993a,
+1994; Chen and Iyengar, 1993)." (p. 112); Table 3 "Gαi | Inhibition | AC1, AC5, AC6; not AC2". **AC7 and AC9 are not
+named**; they are covered only by the unreferenced universal "Only", and the sole explicit per-isoform negative is "not
+AC2". No stated negative for AC7 or AC9. Evidence type by the references: Taussig 1993a/1994a purified and reconstituted
+(Gilman laboratory; section 37), Federman 1992 and Chen and Iyengar 1993 transfected.
+
+**Gβγ:** Table 3 "Gβγ | Inhibition | AC1, AC3, AC8" and "Stimulation (conditional) | AC2, AC4, AC5, AC6" - **AC7 and
+AC9 absent from both.** AC7 appears only in prose: "This effect depends on Gβγ signaling and expression of AC7, a Gβγ-
+sensitive isoform" (p. 111, Ehrlich et al. 2013, whose title ends "in human embryonic kidney 293T cells" - transfected),
+which the table omits. AC9 nowhere under Gβγ. On AC5/AC6 (the removed GNG2 edge): "When overexpressed, Gβγ subunits have
+been reported to inhibit ACs 5 and 6 (Bayewitch et al., 1998). However, cellular and in vitro assays using purified
+proteins display a conditional stimulation of AC5 and AC6 by Gβγ (Gao et al., 2007; Thomas and Hoffman, 1996)" (p. 112)
+- evidence type stated: overexpression for the inhibition, purified-protein for the conditional stimulation; Gao 2007
+and Brand 2015 are Dessauer's own laboratory. So where Sunahara 1996 said βγ "not ACV, VI", this review lists AC5 and
+AC6 under conditional stimulation and treats the 1998 inhibition report as superseded.
+
+**Ca2+/CaM and Ca2+:** "AC5 and AC6 are inhibited by submicromolar concentrations of Ca2+; AC1 and AC8, and to a lesser
+extent AC3, are stimulated by low concentrations of Ca2+ via CaM" (pp. 112-113); Table 3 "Ca2+ | Inhibition | AC5, AC6",
+"Ca2+/CaM | Stimulation | AC1, AC3 (weak), AC8". AC7 and AC9 named only by the universal high-Ca2+ inhibition (which
+Sunahara marked "nonphysiological" at 100 µM). Evidence type unstated.
+
+**PKC and PKA:** Table 3 "PKC | Stimulation | AC1, AC2, AC3, AC5, AC7" and "PKA | Inhibition | AC5, AC6, AC8". **AC7's
+PKC stimulation is its one regulation beyond Gαs** (Sunahara gave PKC to "ACII, V" only); AC7 reference Watson et al.
+1994, mouse cloning paper; evidence type unstated. AC9 named under neither.
+
+**FSK (AC9's one negative):** "ACs 1–8, but not AC9, are activated by FSK" (p. 119); Table 3 "FSK | Stimulation | All
+isoforms (except AC9)". Not a G-protein edge, but AC9's only stated negative, with native-cell support (p. 119). Cumbay
+and Watts 2004, "Novel regulatory properties of human type 9 adenylate cyclase", is cited only here; its G-protein
+content, if any, is not carried into the review.
+
+### Gap 2: Gαz and type VI
+
+The review is silent - no Gαz anywhere, no Gαz row, the Gαi row undivided. It neither resolves nor repeats Sunahara's
+table-versus-body disagreement; GNAZ-into-ADCY6 still rests on Sunahara's references 54 and 63, to be read directly.
+The Chen and Iyengar 1993 abstract notes GTPase-deficient Go1α did not inhibit type 2 in co-transfected COS-7 cells, a
+transfected negative consistent with Sunahara's "Goα ... not ACII"; it says nothing about Gz.
+
+### Giα and type II: the review's "not AC2", and whether it is independent
+
+The review states "not AC2" twice with no hedge (Table 3; "Only ACs 1, 5, and 6 are directly inhibited by Gαi",
+p. 112), firmer than Sunahara 1996's "Attractively, Giα and Goα appear not to inhibit these enzymes directly" (section
+40) and dropping Taussig 1994a's "it is conceivable that Giα might inhibit type II adenylyl cyclase under some condition
+not tested". The Gαi row cites three laboratories, but: Federman 1992 (Nature 356:159, PMID 1312225, abstract read
+2 November 2026) is about Gβγ stimulation of AC2, not a Giα-inhibition test; and **Chen and Iyengar 1993 (J Biol Chem
+268:12253, PMID 8389756, abstract read 2 November 2026, full text unread) reports the opposite of "not AC2"**:
+"Transfection with Q205LGi2-alpha but not Q205LGo1-alpha resulted in 50-60% inhibition of hCG-stimulated cAMP
+accumulation of the type 2 adenylyl cyclase. hCG stimulation of types 3 and 6 adenylyl cyclases was also extensively
+inhibited by co-transfection with the Q205LGi2-alpha cDNA. Treatment with 4 beta-phorbol 12-myristate 13-acetate of
+cells transfected with the type 2 enzyme cDNA resulted in ... a complete suppression of the Q205LGi2-alpha inhibition of
+the type 2 adenylyl cyclase. However, similar treatment did not affect Q205LGi2-alpha inhibition of the type 3 and type
+6 adenylyl cyclases. These data indicate that many if not all types of adenylyl cyclases may be susceptible to
+inhibition by Gi2-alpha, but this inhibition can be regulated by protein kinase C in a type-specific manner." Dessauer
+coauthored Sunahara 1996, the review is dedicated to Gilman (p. 93), and Taussig 1994a's authors are Taussig, Tang,
+Hepler and Gilman (PMID 8119955, no Dessauer) - the Gilman laboratory. So "not AC2" in 2017 is that laboratory's
+reconstituted result restated by a former member, hedge removed, not an independent second source; and the one
+independent-laboratory primary paper the row cites contradicts the flat negative in a transfected system. Under the
+owner's ruling of 2 November 2026 ("transfected and reconstituted cases are too weak of evidence to stand alone") the
+Chen and Iyengar positive cannot stand alone either, but the ruling spoke to a negative removing an edge, and this is
+a transfected positive against a reconstituted negative - a direction it did not address. The same abstract reports
+Gi2α inhibition of AC3 (GNAI-into-ADCY3), one of section 40's 26 unaddressed edges.
+
+### GNAL
+
+Gαolf is named only with AC3 (native olfactory tissue): "olfactory receptors, AC3, and Gαolf) are expressed in the
+distal nephron (Pluznick et al., 2009)" and "AC3 ... located within olfactory cilia" (p. 115). No test of Gαolf on any
+other isoform. Section 40's "GNAL not supported in either direction" stands, now with native evidence for AC3 alone.
+
+### Evidence type, the review's account of its own systems
+
+"organ membranes ... relatively close to the physiologic situation" (p. 97); "most studies are conducted with crude Sf9
+membranes overexpressing a given AC isoform" (p. 97); "HEK293 cells endogenously express several mACs, providing
+background activity" (p. 97); "formally, intact cell assays do not reflect AC activity assays but constitute cAMP
+accumulation assays" (p. 99); "AC isoform knockout serves as the most reliable tool" (p. 113). Structures are dog 5C1
+and rat 2C2 (Table 1, p. 99); no species restated beside any Table 3 entry.
+
+### Against the graph, what moves from section 40
+
+Nothing in the edge counts. The 9 GNAI1/2/3-into-ADCY1/5/6 edges stay supported (Gαi undivided); the 3 GNAI-into-ADCY2
+edges stay contradicted, now with a transfected positive (Chen and Iyengar) on record against the negative; GNAO1 (4)
+and GNAZ (9) are not addressed; the 26 unaddressed edges stay unaddressed by any referenced per-isoform statement, the
+"Only ACs 1, 5, and 6" universal being unreferenced for AC3/4/7/8/9. The GNG2-into-ADCY5 edge: this review treats the
+1998 βγ-inhibition report as superseded by conditional stimulation, consistent with section 40 removing the edge.
+
+### A second source was not needed and was not sought
+
+This source was supplied and read in full, so there was no failure to answer. Where it is silent - AC7 and AC9 beyond
+Gαs, Gαo, Gαz, type VI - that silence is reported as silence. Candidates for the still-missing primary evidence, from
+this review's own reference list: Watson et al. 1994 (AC7 cloning, mouse, J Biol Chem 269:28893), Yan et al. 2001 (AC7
+regulation, J Biol Chem 276:8500), Premont et al. 1996 (AC9 cloning, J Biol Chem 271:13900), Cumbay and Watts 2004
+(human AC9 regulation, J Pharmacol Exp Ther 310:108); and Sunahara's references 54 and 63 for Gz/type VI. No
+recommendation on the edges is made here; that is the owner's under 9.97 and 9.20.
+
+----- END SECTION 43 -----
