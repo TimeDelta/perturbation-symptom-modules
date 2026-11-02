@@ -4145,7 +4145,7 @@ All seven editions of the chapter exist. Six were read in full from Europe PMC's
 | 2015/16 | 26650439 | PMC4718210 | `f762de5f50d1dd1fc345863eb9acaadb30dc1620df8963619238409afc9ecde3` | no |
 | 2017/18 | 29055040 | PMC5650667 | `0c76a6e5c202dd38164407d4b2778c7132c4f08d87a96c0038a06c86afca5d38` | no |
 | 2019/20 | 31710717 | PMC6844580 | `f0531cec854f5c400d8795099c2512dbfe5bd6ed2b75d90cdbfad6bc2db5fec0` | no |
-| 2021/22 | 34529832 | none | not read, see the refusals below | not established |
+| 2021/22 | 34529832 | none | all 130 pages supplied by the owner in three slices, 2 November 2026 | **0 occurrences in the whole chapter**, so absent; the histamine family at S94 is in the second slice and its H2 row is unread |
 | 2023/24 | 38123151 | PMC13324819 | `f22e0023c00233bee31c30028754402d6c3f5f71365f512a5e59daec2e60222c` | no |
 | 2025/26 | 41461581 | PMC13242166 | `aee34e1c4494b9e676cde095f33523c64e4600e806ecf01b92ce2b3550b2289d` | no |
 
@@ -4275,7 +4275,26 @@ three papers as the Gq/11 evidence.
   refused page was read. **So "the field is absent from every edition after 2013/14" is established for five
   editions and not for 2021/22.** The risk is low, the field having been removed chapter-wide in 2015/16 and being
   absent either side of 2021/22, but it is a gap rather than a verified run. The Wiley connector would settle it and
-  is not authorised in this session.
+  is not authorised in this session. **Narrowed 2 November 2026, and not closed.** The owner supplied pages 1 to 50
+  of the chapter's 130 (`data/raw/supplied_papers/pmid34529832_conciseguide2021_pages1to50.pdf`, SHA-256
+  `b95627b6695512d4c9db51d8111b647c0f10e68ba763608e1d107a72b4f5a743`; `data/raw` is not committed). Measured
+  mechanically on the extracted text rather than read: 195,629 characters over those 50 pages, carrying 92
+  family-like headings, in which **"Principal transduction" occurs 0 times**, against 83 occurrences in the 2013/14
+  chapter. So the field's absence now rests on a large sample of this edition as well, and the run of five editions
+  reads as six on the evidence available. **What is still not established**: the pages supplied stop short of the
+  histamine receptors family, which the chapter's own contents page places at S94, so this edition's H2 row is
+  unread and the absence is established across the supplied pages rather than the whole chapter. The single
+  "Histamine" match in the text is that contents line. **Closed the same day, 2 November 2026**: the owner supplied the
+  remaining two slices, pages 50 to 100 and 100 to 130
+  (`pmid34529832_conciseguide2021_pages50to100.pdf`, SHA-256 `79c29c7aa9e007de0bbce588ebb2147cc0318b5aedcb91f8b03b11f9b93fe831`;
+  `pmid34529832_conciseguide2021_pages100to130.pdf`, SHA-256 `9a7924f8020a82b61dcf7cdcbfa8dd4648fb29ec26ac9bccbf4a944baedd7285`),
+  so the chapter is complete. **"Principal transduction" occurs 0 times in all 130 pages**, over 562,183 characters of
+  extracted text, against 83 occurrences in the 2013/14 chapter. Measured mechanically on the extracted text, not
+  read. So the field's absence is established for every edition after 2013/14, six of six, and the run is a verified
+  run rather than five editions and an inference. **What the second slice makes newly readable, and what is still
+  unread**: it holds the histamine receptors family at S94, so this edition's H2 row can now be read, which no pass
+  has done; what rows the 2021/22 table carries in place of the removed field, and what it says about H2, is a reading
+  for a Fable pass and is not asserted here.
 - **The Guide to Receptors and Channels (GRAC), the pre-2013 predecessor series**, six editions (PMIDs 22040146,
   18347570, 17279063, 16550176, 15793590, 15082510), all `inEPMC: Y` but `isOpenAccess: N`. Three routes tried for
   the 5th edition (2011, PMC3315626): Europe PMC `fullTextXML` answered **HTTP 500**; PubMed Central through the
