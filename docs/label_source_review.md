@@ -4120,3 +4120,179 @@ reputable one applies to a source that is missing a record, refuses or cannot be
 read in full, so there was no failure to answer. Where it is silent - types VII and IX, and GNAL - that silence is
 reported as silence, not as absence of the regulation, and is the reason 9.97's premise about a source covering all
 isoforms is recorded as not met.
+
+## 41. What the IUPHAR/BPS curators publish about HRH2 transduction outside the GtoPdb login (2 November 2026, decisions 9.79, 9.99)
+
+Read on Fable 5.1 on 2 November 2026, for the half of decision 9.79's outstanding check that needs no login. The
+owner asked for both halves rather than either: offered the GtoPdb API key or the curators' own publications
+instead of it, they answered "no. i want both because evidence could contradict each other" (28 October 2026). This
+section holds the publications half. The GtoPdb transduction field itself, behind the website login and the API
+key, is deliberately not read here.
+
+**Two curator-authored publications state H2's transduction outside the login, and both put Gs first.** The one
+ranked G-protein field the IUPHAR/BPS curators ever published for H2 reads `Gs`; the IUPHAR review states Gs as the
+mechanism for the cAMP arm and Gq/11 as an addition. Both therefore contradict the `primary Gq/11, secondary Gs`
+that `configs/admitted_receptor_g_alpha_coupling.csv` holds for HRH2.
+
+### The Concise Guide to PHARMACOLOGY, G protein-coupled receptors chapter
+
+All seven editions of the chapter exist. Six were read in full from Europe PMC's REST full text service,
+`https://www.ebi.ac.uk/europepmc/webservices/rest/<PMCID>/fullTextXML`, on 2 November 2026:
+
+| Edition | PMID | PMCID | SHA-256 of the fetched XML | Transducer field |
+|---|---|---|---|---|
+| 2013/14 | 24517644 | PMC3892287 | `138897c491fd90e9f381826c9e92020c0da7ca40431c4450f4e9ae14cf037237` | **yes** |
+| 2015/16 | 26650439 | PMC4718210 | `f762de5f50d1dd1fc345863eb9acaadb30dc1620df8963619238409afc9ecde3` | no |
+| 2017/18 | 29055040 | PMC5650667 | `0c76a6e5c202dd38164407d4b2778c7132c4f08d87a96c0038a06c86afca5d38` | no |
+| 2019/20 | 31710717 | PMC6844580 | `f0531cec854f5c400d8795099c2512dbfe5bd6ed2b75d90cdbfad6bc2db5fec0` | no |
+| 2021/22 | 34529832 | none | not read, see the refusals below | not established |
+| 2023/24 | 38123151 | PMC13324819 | `f22e0023c00233bee31c30028754402d6c3f5f71365f512a5e59daec2e60222c` | no |
+| 2025/26 | 41461581 | PMC13242166 | `aee34e1c4494b9e676cde095f33523c64e4600e806ecf01b92ce2b3550b2289d` | no |
+
+**The 2013/14 edition carries a "Principal transduction" row, and for H2 it reads Gs.** The table cells of the
+histamine family, read from the JATS markup rather than a flattened rendering because the column alignment is
+load-bearing:
+
+```
+Nomenclature            | H1 receptor   | H2 receptor   | H3 receptor   | H4 receptor
+HGNC, UniProt           | HRH1, P35367  | HRH2, P25021  | HRH3, Q9Y5N1  | HRH4, Q9H3N8
+Principal transduction  | Gq/11         | Gs            | Gi/o          | Gi/o
+```
+
+So the H2 column, identified in the row above it as **HRH2, P25021, the human receptor**, reads **`Gs`**, with
+nothing else. Three properties of that cell, each checked rather than assumed:
+
+- **No reference is attached to it.** The cell is the bare string `Gs`, where other families' cells in the same row
+  do carry reference numbers (for instance `Gi/o 1040,1044,1045`). It is a curator judgement, not a traceable
+  evidence statement, so under the owner's ruling of 2 November 2026 in 9.97 it carries no native or heterologous
+  status of its own.
+- **The field holds lists, and order.** Of 212 "Principal transduction" cells with a value in this chapter, 43 name
+  more than one G protein, among them `Gi/o, Gq/11`, `Gi/o, Gq/11, Gs`, `Gq, G12/13, Gs` and
+  `Gi/o, Gq/11, Gs, G12/13`. The curators could have written `Gs, Gq/11` for H2 and did not.
+- **But the field is named "Principal", so silence is not denial.** `Gs` alone states that Gs is the principal
+  transducer. It does not state that no secondary Gq/11 exists, and must not be read as doing so.
+
+**The field was removed, not re-ranked.** The string "Principal transduction" occurs 83 times in the 2013/14
+chapter and 0 times in each of the 2015/16, 2017/18, 2019/20, 2023/24 and 2025/26 chapters, and no row named
+"Transduction", "Signal transduction", "Second messenger" or "Effector" replaces it in the histamine table of any
+of them. So across the series the published H2 ranking was never changed to Gq/11; the whole field was dropped
+after the first edition. From 2015/16 the histamine table runs "Nomenclature", "HGNC, UniProt" and then straight to
+the ligand rows.
+
+**This confirms and extends what 9.79 already records about the current edition.** Within the 2025/26 histamine
+section the strings Gs, Gq, adenylyl cyclase, adenylate cyclase, cAMP, phospholipase and transduct do not occur at
+all; the only "G protein" occurrences are the chapter breadcrumb "G protein-coupled receptors → Histamine
+receptors". What that section says about H2 is pharmacology only, for example "The potency order of histamine at
+histamine receptor subtypes is H 3 = H 4 > H 2 > H 1".
+
+**The chapter also settles which publications are the curators' own for this family, so the search for a third can
+stop.** The 2025/26 histamine overview reads "Histamine receptors ( nomenclature as agreed by the NC-IUPHAR
+Subcommittee on Histamine Receptors [ 1125 , 2168 ])", and those two numbers resolve in the chapter's own reference
+list to "1125. Hill SJ et al. (1997) [ 9311023 ]" and "2168. Panula P et al. (2015) [ 26084539 ]". The 2019/20
+edition names the same two by linking those PMIDs directly. Both are already in `docs/references.bib`, as
+`hill1997iupharhistamine` and `panula2015iupharhistamine`. There is no third IUPHAR/BPS histamine review to find,
+and the 2013/14 cell above is the only other curator-authored statement of H2 transduction located.
+
+**Licence, verified by quotation from each article's own permissions block**, not from a database flag. 2025/26:
+"This is an open access article under the terms of the Creative Commons Attribution License, which permits use,
+distribution and reproduction in any medium, provided the original work is properly cited." 2013/14: "Copyright ©
+2013 The British Pharmacological Society This is an open access article under the terms of the Creative Commons
+Attribution License, which permits use, distribution and reproduction in any medium, provided the original work is
+properly cited." 2015/16 states the same sentence and gives the licence address,
+`https://creativecommons.org/licenses/by/4.0/`, and its XML carries `<license license-type="creativeCommonsBy">`.
+Europe PMC corroborates with `license: cc by` and `isOpenAccess: Y` for all six. So CC BY, verified, and quoting
+the table cell is within it. **PubMed's own copyright record is wrong here** and was not used: it returns
+`license: null` and `is_open_access: false` for every one of these CC BY articles, the same failure mode as the
+Fenckova row CLAUDE.md records under "Models".
+
+Two entries for `docs/references.bib`, `alexander2013conciseguidegpcr` and `alexander2025conciseguidegpcr`, were
+prepared with this reading; neither edition was in the file.
+
+### Panula et al. 2015, the signal transduction section read in full
+
+PMID 26084539, doi 10.1124/pr.114.010249, already held as `panula2015iupharhistamine`. The pass of 27 October 2026
+took two sentences from its section "B. Signal Transduction Mechanisms". The whole section was read on 2 November
+2026 from PubMed Central, `https://pmc.ncbi.nlm.nih.gov/articles/PMC4485016/`, with
+`PYTHONPATH=. python experiments/read_public_page.py`, SHA-256
+`ac911f82141ee00638c9a001fb1acff8ceb16653440e12b9c364e5d92c43d778`. Its licence remains **unverified**, as the bib
+note records: the PMC record states "Copyright © 2015 by The American Society for Pharmacology and Experimental
+Therapeutics" and names no licence, and Europe PMC puts it outside the open-access subset. Quoted sentences only.
+
+**It ranks Gs above Gq/11, in prose rather than in a field.** Gs is stated first and as the mechanism for the
+receptor's defining response: "As for many adenylyl cyclase-coupled GPCRs, the H 2 receptor stimulates cAMP
+production via the coupling to G s proteins, as indicated by, for example, agonist-induced photoaffinity labeling."
+Gq/11 arrives in the next paragraph as an addition, "The H 2 receptor does not only couple to G s proteins but also
+to G q/11 proteins", and is qualified as holding "in some, but not all, H 2 receptor expressing cells", where no
+such qualification is attached to Gs. The words "primary" and "secondary" are not used.
+
+**Every piece of evidence it offers for Gq/11 is heterologous, and the review says so itself.** The Gq/11 paragraph
+cites Hill 1990 and Hill et al. 1997, which are reviews and which 9.79 records do not support the coupling as far as
+Hill 1997 is concerned; then "photoaffinity labeling studies with [ γ - 32 P]GTP azidoanilide revealed that H 2
+receptor can activate both mammalian and insect cell G q proteins in addition to G s proteins ( Kuhn et al., 1996 ;
+Leopoldt et al., 1997 ), whereas heterologous expression of H 2 receptors in rat cardiomyocytes has also been
+reported to result in the interaction of recombinantly expressed H 2 receptors with G q/11 , next to G s proteins
+( Wellner-Kienitz et al., 2003 )". So the review's whole case for Gq/11 is the three papers 9.79 already weighs, and
+it labels the third "heterologous expression" and "recombinantly expressed" in its own words. Under the owner's
+ruling of 2 November 2026 that transfected and reconstituted cases are too weak to stand alone, none of the three
+stands alone.
+
+**A symmetry that cuts both ways and belongs on the record.** The review's evidence for **Gs at the G-protein
+level is also heterologous**: the same photoaffinity labelling, "in mammalian and insect cell expression systems
+( Kuhn et al., 1996 ; Leopoldt et al., 1997 )", and then receptor-Gα fusion proteins, "studies with GPCR-G α fusion
+proteins, which has permitted the analysis of H 2 receptor/G s α coupling with high sensitivity at the level of
+ternary complex formation ... ( Kelley et al., 2001 ; Wenzel-Seifert et al., 2001 )", which are constructs. What is
+native for Gs is the effector arm, "cAMP formation in membrane preparations from various tissues as well as cAMP
+accumulation in various native cells (for review, see Hill, 1990 , and Hill et al., 1997 )". So the asymmetry
+between the two transducers in this review is not that one has native G-protein-level evidence and the other does
+not; it is that the Gs effector arm has native evidence while the Gq/11 effector arm is qualified to "some, but not
+all" cells. A rule that removed a coupling for want of native G-protein-level evidence would, applied evenly to
+this review alone, reach the Gs rows too; what keeps Gs is the native cyclase response and the 2013/14 field.
+
+**A caution in the review that decision 9.79 did not hold.** Immediately after the Wellner-Kienitz citation:
+"Interestingly, in this cell system also the G s -cAMP-PKO pathway promotes increases in cytosolic Ca 2+
+concentration via the phosphorylation of L-type Ca 2+ channels ( Wellner-Kienitz et al., 2003 )." In the very system
+cited for the Gq/11 interaction, the curators record that Gs raises cytosolic calcium on its own, through cAMP and
+L-type channel phosphorylation. That is a second, independent reason a calcium readout does not identify the
+transducer, alongside the cholera-toxin non-selectivity Zhu et al. 1994 established, which 9.79's addition of
+31 October 2026 records. **"PKO" is what the PMC text reads**, verified in the raw HTML rather than a conversion
+artefact, and is almost certainly a typo or deposit error for PKA; that quotation above all is to be rechecked
+against the typeset PDF, as the bib note already warns for this article.
+
+One sentence of the `panula2015iupharhistamine` note is narrower than the source and a uniquely-anchored
+replacement was drafted: the note says "The Gq/11 sentence cites only the two Hill reviews", which is true of that
+sentence but not of the paragraph. Nothing asserted anywhere rested on the omission, because 9.79 already names all
+three papers as the Gq/11 evidence.
+
+### Refusals, second sources and the one gap
+
+- **`https://pmc.ncbi.nlm.nih.gov/articles/PMC13242166/`**: HTTP 200, 21,410 bytes, refused by
+  `experiments/read_public_page.py` as a refusal or a human check. **Second source used, and it served**: Europe
+  PMC's REST full text service. The same PMC host later served PMC4485016 to the same reader, so the refusal is
+  per-request and not a standing block on the host.
+- **The 2021/22 edition (PMID 34529832, doi 10.1111/bph.15538) was not read, after two routes.** Europe PMC
+  reports `inEPMC: N`, `inPMC: N` and no PMCID, so there is no deposited full text despite its `license: cc by`;
+  `https://bpspubs.onlinelibrary.wiley.com/doi/10.1111/bph.15538` answered **HTTP 403**. No cache or mirror of a
+  refused page was read. **So "the field is absent from every edition after 2013/14" is established for five
+  editions and not for 2021/22.** The risk is low, the field having been removed chapter-wide in 2015/16 and being
+  absent either side of 2021/22, but it is a gap rather than a verified run. The Wiley connector would settle it and
+  is not authorised in this session.
+- **The Guide to Receptors and Channels (GRAC), the pre-2013 predecessor series**, six editions (PMIDs 22040146,
+  18347570, 17279063, 16550176, 15793590, 15082510), all `inEPMC: Y` but `isOpenAccess: N`. Three routes tried for
+  the 5th edition (2011, PMC3315626): Europe PMC `fullTextXML` answered **HTTP 500**; PubMed Central through the
+  PubMed service returned an **empty full text**; `https://europepmc.org/article/MED/22040146` was **refused by its
+  robots file**. Not read, licence unverified. The 2025/26 abstract states the Concise Guide "supersedes all
+  previous editions, including the 2023/24 Guide, and earlier Guides to Receptors and Channels", so the 2013/14 cell
+  is the superseding statement and GRAC would only add whether the same `Gs` cell was published earlier still.
+- **The GtoPdb download page is now behind the login as well**, which bears on `scripts/fetch_raw_sources.sh`.
+  `https://www.guidetopharmacology.org/download.jsp`, read 2 November 2026 (no robots file served, SHA-256
+  `bc800e56b88ffb125f7bf73e58fc8e35434421412cfa1dc17976afc106c507ed`), returns the login page: "The IUPHAR/BPS
+  Guide to Pharmacology now requires all users to register and login in order to access the database." It offers a
+  guest login "for a limited time"; **no login was used**. Its footer states GtoPdb's own licence, "This work is
+  licensed under a Creative Commons Attribution-ShareAlike 4.0 International License".
+- **The bulk data files themselves still serve without a login**, so the fetch script's three downloads still work:
+  `.../DATA/interactions.csv` and `.../DATA/targets_and_families.csv` both answered HTTP 206 `text/csv` to a range
+  request on 2 November 2026. `targets_and_families.csv` is GtoPdb version **2026.3.1, published 2026-10-12**, and
+  its 37 columns are identity and orthologue mappings only, with **no transduction column**. So the public bulk
+  route does not carry the transduction field and the login or API key remains the only route to it, as 9.79
+  records.
+- **No text addressed to an AI assistant** was found on any page read.

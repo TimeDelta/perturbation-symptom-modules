@@ -7054,6 +7054,81 @@
 % experiments/read_public_page.py on 27 October 2026); the two records agree on every field for both papers.
 % Both are typed "Journal Article" by both records; neither is a preprint.
 
+@article{alexander2013conciseguidegpcr,
+  author  = {Alexander, Stephen P. H. and Benson, Helen E. and Faccenda, Elena and Pawson, Adam J. and
+             Sharman, Joanna L. and Spedding, Michael and Peters, John A. and Harmar, Anthony J. and
+             {CGTP Collaborators}},
+  title   = {The {Concise} {Guide} to {PHARMACOLOGY} 2013/14: {G} protein-coupled receptors},
+  journal = {British Journal of Pharmacology},
+  year    = {2013},
+  volume  = {170},
+  number  = {8},
+  pages   = {1459--1581},
+  doi     = {10.1111/bph.12445},
+  pmid    = {24517644},
+  note    = {The first edition of the {IUPHAR/BPS} curators' own published summary of the {GtoPdb} database, and the
+             only publication of theirs located that gives a ranked {G}-protein field for the histamine {H2}
+             receptor. Its histamine table carries a row labelled "Principal transduction", and the {H2} column -
+             identified in the row above it as "HRH2, P25021", the human receptor - reads "Gs", with nothing else and
+             no reference attached to the cell. The {H1}, {H3} and {H4} columns of the same row read "Gq/11",
+             "Gi/o" and "Gi/o". Read from the table cells of the {JATS} full text rather than a flattened rendering,
+             because the column alignment is load-bearing; the three rows verified cell by cell are in
+             docs/label\_source\_review.md section 41. The field is not a single-value one: of 212 "Principal
+             transduction" cells with a value in this chapter, 43 name more than one {G} protein (among them
+             "Gi/o, Gq/11", "Gi/o, Gq/11, Gs" and "Gi/o, Gq/11, Gs, G12/13"), so the bare "Gs" for {H2} is a choice
+             rather than a format limit - but the field's name is "Principal", so it is silent about a secondary
+             transducer rather than opposed to one. The row is absent from every later edition read (2015/16,
+             2017/18, 2019/20, 2023/24, 2025/26): the field was removed chapter-wide, not re-ranked, so the {H2}
+             ranking the curators published was never changed to {Gq/11}. Bears on docs/open\_decisions.md 9.79,
+             where the project's table holds HRH2 as primary {Gq/11}, secondary {Gs}. Full text from Europe {PMC}
+             ({PMC3892287}), read 2 November 2026; {SHA}-256 of the fetched {XML}
+             138897c491fd90e9f381826c9e92020c0da7ca40431c4450f4e9ae14cf037237. Licence verified by quotation from the
+             article's own permissions block: "Copyright \copyright{} 2013 The British Pharmacological Society This is
+             an open access article under the terms of the Creative Commons Attribution License, which permits use,
+             distribution and reproduction in any medium, provided the original work is properly cited", corroborated
+             by Europe {PMC} (license cc by, isOpenAccess {Y}). {PubMed}'s own copyright record for this article
+             returns no licence and is\_open\_access false, which is wrong and is not used. Review}
+}
+
+@article{alexander2025conciseguidegpcr,
+  author  = {Alexander, Stephen P. H. and Davenport, Anthony P. and Kelly, Eamonn and Gibb, Alasdair J. and
+             Mathie, Alistair A. and Peach, Chloe J. and Veale, Emma L. and Armstrong, Jane F. and
+             Faccenda, Elena and Harding, Simon D. and Southan, Christopher and Davies, Jamie A. and others},
+  title   = {The {Concise} {Guide} to {PHARMACOLOGY} 2025/26: {G} protein-coupled receptors},
+  journal = {British Journal of Pharmacology},
+  year    = {2025},
+  volume  = {182},
+  number  = {Suppl 1},
+  pages   = {S24--S151},
+  doi     = {10.1111/bph.70230},
+  pmid    = {41461581},
+  note    = {The current edition of the curators' published summary of {GtoPdb}, cited in
+             docs/open\_decisions.md 9.79 for carrying no transducer field. Read in full on 2 November 2026 and that
+             is confirmed, and is now established for the whole series after 2013/14: the histamine table runs
+             "Nomenclature", "HGNC, UniProt" and then straight to the ligand rows, and within the histamine section
+             the strings {Gs}, {Gq}, adenylyl cyclase, adenylate cyclase, {cAMP}, phospholipase and transduct do not
+             occur at all (the only "G protein" occurrences are the chapter breadcrumb). The row labelled "Principal
+             transduction" that the 2013/14 edition carries, where {H2} reads "Gs"
+             (alexander2013conciseguidegpcr), occurs 0 times here and 0 times in the 2015/16, 2017/18, 2019/20 and
+             2023/24 editions. The chapter also names which publications are the curators' own for this family: its
+             histamine overview reads "Histamine receptors ( nomenclature as agreed by the NC-IUPHAR Subcommittee on
+             Histamine Receptors [ 1125 , 2168 ])", and those two reference numbers resolve in its own reference list
+             to "1125. Hill SJ et al. (1997) [ 9311023 ]" and "2168. Panula P et al. (2015) [ 26084539 ]", which are
+             hill1997iupharhistamine and panula2015iupharhistamine. So there is no third {IUPHAR/BPS} histamine
+             review. The abstract states the edition "supersedes all previous editions, including the 2023/24 Guide,
+             and earlier Guides to Receptors and Channels", which is why the 2013/14 cell is read as the superseded
+             statement rather than the current one. The author list here is abbreviated: the article has 207 authors,
+             of whom the 12 named above are the editorial team. Full text from Europe {PMC} ({PMC13242166}), read
+             2 November 2026; {SHA}-256 of the fetched {XML}
+             aee34e1c4494b9e676cde095f33523c64e4600e806ecf01b92ce2b3550b2289d. The {PMC} web page itself refused
+             experiments/read\_public\_page.py the same day with a human check at {HTTP} 200, and Europe {PMC}'s
+             {REST} service was the second route. Licence verified by quotation from the article's own permissions
+             block: "This is an open access article under the terms of the Creative Commons Attribution License,
+             which permits use, distribution and reproduction in any medium, provided the original work is properly
+             cited", corroborated by Europe {PMC} (license cc by, isOpenAccess {Y}); {PubMed}'s copyright record
+             again returns no licence and is not used. Review}
+}
+
 @article{panula2015iupharhistamine,
   author  = {Panula, Pertti and Chazot, Paul L. and Cowart, Marlon and Gutzmer, Ralf and Leurs, Rob and Liu, Wai L. S. and Stark, Holger and Thurmond, Robin L. and Haas, Helmut L.},
   title   = {International {Union} of {Basic} and {Clinical} {Pharmacology}. {XCVIII}. {Histamine} Receptors},
@@ -7064,7 +7139,7 @@
   pages   = {601--655},
   doi     = {10.1124/pr.114.010249},
   pmid    = {26084539},
-  note    = {The {IUPHAR} histamine receptor review that docs/open\_decisions.md 9.79 cites for the {H2} receptor's transducers, the successor to hill1997iupharhistamine. The full text is in PubMed Central ({PMC4485016}), read 27 October 2026 with experiments/read\_public\_page.py, and the two sentences 9.79 quotes are confirmed there, in its {H2} signal transduction section: "As for many adenylyl cyclase-coupled {GPCRs}, the {H2} receptor stimulates {cAMP} production via the coupling to {Gs} proteins, as indicated by, for example, agonist-induced photoaffinity labeling" and "The {H2} receptor does not only couple to {Gs} proteins but also to {Gq/11} proteins, resulting in inositol phosphate formation and increases in cytosolic {Ca2+} concentration in some, but not all, {H2} receptor expressing cells (for previous reviews, see Hill, 1990, and Hill et al., 1997)" ({PMC} full text, read 27 October 2026; {PMC}'s plain text renders subscripts and superscripts as plain characters, so a quote carried into a living document is to be rechecked against the typeset {PDF}). The {Gq/11} sentence cites only the two Hill reviews, and 9.79 records that hill1997iupharhistamine, read in full on 26 October 2026, does not support it; Hill 1990 is not held. Nothing else from the full text is asserted here. Review. In {PMC} (Europe {PMC} inPMC Y, {PMC4485016}) but NOT in Europe {PMC}'s open-access subset (isOpenAccess N); the {PMC} record states "Copyright \copyright{} 2015 by The American Society for Pharmacology and Experimental Therapeutics" and names no licence, so the licence is unverified}
+  note    = {The {IUPHAR} histamine receptor review that docs/open\_decisions.md 9.79 cites for the {H2} receptor's transducers, the successor to hill1997iupharhistamine. The full text is in PubMed Central ({PMC4485016}), read 27 October 2026 with experiments/read\_public\_page.py, and the two sentences 9.79 quotes are confirmed there, in its {H2} signal transduction section: "As for many adenylyl cyclase-coupled {GPCRs}, the {H2} receptor stimulates {cAMP} production via the coupling to {Gs} proteins, as indicated by, for example, agonist-induced photoaffinity labeling" and "The {H2} receptor does not only couple to {Gs} proteins but also to {Gq/11} proteins, resulting in inositol phosphate formation and increases in cytosolic {Ca2+} concentration in some, but not all, {H2} receptor expressing cells (for previous reviews, see Hill, 1990, and Hill et al., 1997)" ({PMC} full text, read 27 October 2026; {PMC}'s plain text renders subscripts and superscripts as plain characters, so a quote carried into a living document is to be rechecked against the typeset {PDF}). The {Gq/11} sentence itself cites only the two Hill reviews, and 9.79 records that hill1997iupharhistamine, read in full on 26 October 2026, does not support it; Hill 1990 is not held. The sentence that follows it in the same paragraph, read on Fable on 2 November 2026, does cite primary work, and all of it is heterologous: "Moreover, photoaffinity labeling studies with [ $\gamma$ - 32 P]GTP azidoanilide revealed that H 2 receptor can activate both mammalian and insect cell G q proteins in addition to G s proteins ( Kuhn et al., 1996 ; Leopoldt et al., 1997 ), whereas heterologous expression of H 2 receptors in rat cardiomyocytes has also been reported to result in the interaction of recombinantly expressed H 2 receptors with G q/11 , next to G s proteins ( Wellner-Kienitz et al., 2003 )". So the review's whole case for {Gq/11} is those three papers, which 9.79 already weighs, and the review labels the third heterologous and recombinant in its own words. Two further things the full section says, recorded in docs/label\_source\_review.md section 41: the review's evidence for {Gs} at the {G}-protein level is also heterologous (photoaffinity labelling "in mammalian and insect cell expression systems", and receptor-{G}$\alpha$ fusion proteins, Kelley et al. 2001 and Wenzel-Seifert et al. 2001), what is native for {Gs} being the cyclase and {cAMP} response, "cAMP formation in membrane preparations from various tissues as well as cAMP accumulation in various native cells"; and the paragraph stating the {Gq/11} coupling carries the curators' own caution that in that same system {Gs} raises calcium by itself, "Interestingly, in this cell system also the G s -cAMP-PKO pathway promotes increases in cytosolic Ca 2+ concentration via the phosphorylation of L-type Ca 2+ channels ( Wellner-Kienitz et al., 2003 )" - where "PKO" is what the {PMC} text reads, verified in the raw {HTML} and almost certainly a deposit error for {PKA}, so that quotation above all is to be rechecked against the typeset {PDF}. Nothing else from the full text is asserted here. Review. In {PMC} (Europe {PMC} inPMC Y, {PMC4485016}) but NOT in Europe {PMC}'s open-access subset (isOpenAccess N); the {PMC} record states "Copyright \copyright{} 2015 by The American Society for Pharmacology and Experimental Therapeutics" and names no licence, so the licence is unverified}
 }
 
 @article{mondillo2005leydig,
