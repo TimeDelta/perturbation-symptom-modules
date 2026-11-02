@@ -5,7 +5,7 @@
  "rules": {
   "floor_rule": {
    "value": "none",
-   "means": "No magnitude floor. The decision rests on the paired interval on model minus best baseline; effect sizes are reported in standard errors of the available precision. Registered 15 October 2026 (the owner: \"no floor. paired interval\").",
+   "means": "No magnitude floor. The decision rests on the paired interval on model minus best baseline; effect sizes are reported in standard errors of the available precision. Registered 15 October 2026 (the owner: \"no floor. paired interval\"). ORIGIN: the frozen baseline `docs/preregistration_baseline_2026-10-15.md` lines 20 to 25, the passage headed \"Superseded on the decision rule\", which records the removal and the three values this rule's `superseded` list holds: \"The floor was revised three times on 8 October (0.05 to a fixed 0.041 macro and 0.028 micro, then to each model's realised half-width plus 0.005) and removed on 15 October, the owner: 'no floor. paired interval'.\" No decision row carries it; the baseline is the record. Traced 2 November 2026.",
    "code_location": "experiments/score_confirmatory.py --floor-rule default",
    "superseded": [
     "0.05 fixed",
@@ -35,7 +35,7 @@
    "value": [
     "confirmatory_v2_message_passing_noisy_or"
    ],
-   "means": "Read and reported with their intervals outside the tested family, spending no alpha, as the two permutation readings have since 8 October 2026. The message-passing encoder sits here from 22 October 2026 so a conclusion of the tested model can be checked against a second encoder of a different inductive bias without that check constraining the registered family. A robustness reading that disagrees is reported as a disagreement and cannot withdraw the tested model's result; the corroboration a second tested model would have given is therefore given up, which is the cost the owner accepted.",
+   "means": "Read and reported with their intervals outside the tested family, spending no alpha, as the two permutation readings have since 8 October 2026. The message-passing encoder sits here from 22 October 2026 so a conclusion of the tested model can be checked against a second encoder of a different inductive bias without that check constraining the registered family. A robustness reading that disagrees is reported as a disagreement and cannot withdraw the tested model's result; the corroboration a second tested model would have given is therefore given up, which is the cost the owner accepted. ORIGIN: decision 9.77, closed, the owner's ruling of 22 October 2026 that \"The message-passing encoder leaves the tested family and becomes a robustness reading, leaving one tested model\"; `CLAUDE.md` records 9.77 and 9.78 as settling it, and commit 342c62d is where it was built. The \"since 8 October 2026\" above is the earlier date of the two permutation readings moving out of the tested family, not of this rule. Traced 2 November 2026.",
    "code_location": "configs/head_choice.json robustness values, scored by experiments/score_confirmatory.py --models"
   },
   "held_out_fraction": {
@@ -45,17 +45,17 @@
   },
   "bootstrap_unit": {
    "value": "group",
-   "means": "A cluster bootstrap over leakage groups rather than perturbations, so the dependence among perturbations sharing disease annotations or targets stays inside a resample.",
+   "means": "A cluster bootstrap over leakage groups rather than perturbations, so the dependence among perturbations sharing disease annotations or targets stays inside a resample. ORIGIN: the frozen baseline `docs/preregistration_baseline_2026-10-15.md` line 136, \"Leakage grouping, decided 7 October 2026 (experiments/check_drug_target_leakage.py, docs/drug_target_leakage.md)\", with the bootstrap over those groups registered in the same document. No decision row sets it; decision 1.2 applies it, owing a redraw of the held-out set \"from its leakage groups\", which is a use and not the origin. Traced 2 November 2026.",
    "code_location": "experiments/score_confirmatory.py --bootstrap-unit default"
   },
   "num_bootstrap": {
    "value": 4000,
-   "means": "Resamples in the deciding paired bootstrap, the same rows for every model, seed and baseline.",
+   "means": "Resamples in the deciding paired bootstrap, the same rows for every model, seed and baseline. ORIGIN: the frozen baseline `docs/preregistration_baseline_2026-10-15.md` line 202, in the H1 and H2 paragraph the baseline keeps \"as the record of the original rule\": \"Each reading's one-sided p-value comes from a paired bootstrap over lockbox perturbations (4,000 resamples, the same rows for every model, seed and baseline)\", beside the intersection-union test of Berger 1982 and Holm's procedure. No decision row carries the resample count. Traced 2 November 2026.",
    "code_location": "experiments/score_confirmatory.py --num-bootstrap default"
   },
   "minimum_positives_to_score": {
    "value": 5,
-   "means": "A symptom enters the macro average with at least five positives and one negative among the labelled rows.",
+   "means": "A symptom enters the macro average with at least five positives and one negative among the labelled rows. ORIGIN: the frozen baseline `docs/preregistration_baseline_2026-10-15.md` lines 121 to 123, \"Scored symptoms: every symptom with at least five kept positive pairs in the whole data (so psychomotor retardation and catatonia are not scored, and anhedonia has no pair). The macro average takes the symptoms with at least five positives in the test set\". No decision row sets it; decision 9.35b applies it, measuring that \"a symptom needs five positives to enter the macro\", which is a use and not the origin. Traced 2 November 2026.",
    "code_location": "experiments/score_confirmatory.MINIMUM_POSITIVES_TO_SCORE"
   },
   "normalisation": {
@@ -65,7 +65,7 @@
   },
   "validation_fold_rule": {
    "value": "seed % num_validation_folds",
-   "means": "The early-stopping validation fold rotates with the seed over round(1 / 0.15) = 7 grouped folds, so seeds 0 to 4 use folds 0 to 4 and folds 5 and 6 never serve as validation. The registration said \"fold 0\" until 15 October 2026, which described seed 0 alone.",
+   "means": "The early-stopping validation fold rotates with the seed over round(1 / 0.15) = 7 grouped folds, so seeds 0 to 4 use folds 0 to 4 and folds 5 and 6 never serve as validation. The registration said \"fold 0\" until 15 October 2026, which described seed 0 alone. ORIGIN: decision 9.37 (c), one of the four stale registration passages the owner's questions found, corrected 15 October 2026 before any lockbox run: \"The registration said 'fold 0 of 7 grouped folds'; `run_main_model.py` line 1048 sets `validation_fold = seed % num_validation_folds`, so seeds 0 to 4 rotate over folds 0 to 4 and folds 5 and 6 never serve as validation.\" The corrected form is in the frozen baseline at line 174. Traced 2 November 2026.",
    "code_location": "experiments/run_main_model.py, the validation_fold assignment"
   },
   "label_likelihood": {

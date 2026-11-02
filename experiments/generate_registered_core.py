@@ -104,11 +104,22 @@ def dated_registration(text: str) -> str | None:
     return match.group(1) if match else None
 
 
+# A rule whose origin is a passage of the frozen registration baseline cites it by name. The baseline is pinned by its
+# SHA-256 (tests/test_amendment_history.py), so a line number in it is stable and the citation is as checkable as a
+# decision id. Four rules were traced to it on 2 November 2026, which is why this counts as an origin and not as a gap.
+BASELINE_CITATION = re.compile(r"preregistration_baseline_\d{4}-\d{2}-\d{2}\.md[^.]{0,80}?line[s]?\s+(\d+)", re.I)
+
+
+def baseline_lines(text: str) -> list[str]:
+    return sorted({match.group(1) for match in BASELINE_CITATION.finditer(text)}, key=int)
+
+
 def origin_of(rule_text: str) -> dict:
     decisions = sorted(decision_references(rule_text), key=lambda identifier: [int(part) for part in
                                                                               re.findall(r"\d+", identifier)])
     items = sorted(item_references(rule_text), key=lambda identifier: int(re.match(r"\d+", identifier).group()))
-    return {"decisions": decisions, "items": items, "date": dated_registration(rule_text)}
+    return {"decisions": decisions, "items": items, "baseline": baseline_lines(rule_text),
+            "date": dated_registration(rule_text)}
 
 
 def render_value(value) -> str:
@@ -122,7 +133,8 @@ def render_page(rules: dict, known_decision_ids: set[str], known_items: set[str]
                              inputs=["configs/registered_rules.json", "docs/open_decisions.md",
                                      "docs/preregistration.md"])
     origins = {name: origin_of(rule["means"]) for name, rule in rules.items()}
-    untraced = [name for name, origin in origins.items() if not origin["decisions"] and not origin["items"]]
+    untraced = [name for name, origin in origins.items()
+                if not origin["decisions"] and not origin["items"] and not origin["baseline"]]
     missing_files = {name: resolved_path(rule["code_location"])[0] for name, rule in rules.items()
                      if not resolved_path(rule["code_location"])[1]}
     dangling_decisions = {name: unresolved_decision_references(rule["means"], known_decision_ids)
@@ -158,6 +170,8 @@ def render_page(rules: dict, known_decision_ids: set[str], known_items: set[str]
         origin = origins[name]
         named = ", ".join([f"decision {identifier}" for identifier in origin["decisions"]]
                           + [f"item {identifier}" for identifier in origin["items"]])
+        if not named and origin["baseline"]:
+            named = "the frozen baseline, line" + ("s " if len(origin["baseline"]) > 1 else " ") + ", ".join(origin["baseline"])
         if not named:
             named = origin["date"] or "**not traced**"
         path, exists = resolved_path(rule["code_location"])
@@ -179,9 +193,13 @@ def render_page(rules: dict, known_decision_ids: set[str], known_items: set[str]
         if origin["items"]:
             lines.append("- Amendment items: " + ", ".join(f"{identifier} (`docs/preregistration.md`)"
                                                            for identifier in origin["items"]))
-        if not origin["decisions"] and not origin["items"]:
-            lines.append(f"- Origin: {origin['date'] or 'not stated in the rule'}, with no decision id or amendment "
-                         "item named in the rule's text, so the row or item behind it has to be found by hand")
+        if origin["baseline"]:
+            lines.append("- Registered in the frozen baseline `docs/preregistration_baseline_2026-10-15.md`, line"
+                         + ("s " if len(origin["baseline"]) > 1 else " ") + ", ".join(origin["baseline"])
+                         + ", whose SHA-256 is asserted, so the line number is stable")
+        if not origin["decisions"] and not origin["items"] and not origin["baseline"]:
+            lines.append(f"- Origin: {origin['date'] or 'not stated in the rule'}, with no decision id, amendment "
+                         "item or baseline passage named in the rule's text, so its origin has to be found by hand")
         if rule.get("superseded"):
             lines.append("- Superseded values: " + ", ".join(f"`{value}`" for value in rule["superseded"]))
         lines.append("")
@@ -197,13 +215,14 @@ def render_page(rules: dict, known_decision_ids: set[str], known_items: set[str]
         lines += [f"- `{name}`: item(s) {', '.join(identifiers)}" for name, identifiers in dangling_items.items()]
         lines += [""]
     if untraced:
-        lines += [f"**{len(untraced)} of {len(rules)} rules name no decision id and no amendment item in their own "
-                  "text**, so the question an examiner asks first — who decided this and when — is answered by a "
-                  "date rather than by a row that can be read:", ""]
+        lines += [f"**{len(untraced)} of {len(rules)} rules name no decision id, no amendment item and no baseline "
+                  "passage in their own text**, so the question an examiner asks first — who decided this and when — "
+                  "is answered by a date rather than by something that can be read:", ""]
         lines += [f"- `{name}`: {origins[name]['date'] or 'no date either'}" for name in untraced] + [""]
     if not missing_files and not dangling_decisions and not dangling_items and not untraced:
-        lines += ["Every rule names code that exists, references that resolve and a decision or an amendment item.",
-                  ""]
+        lines += ["Every rule names code that exists, references that resolve, and a decision, an amendment item or a "
+                  "passage of the frozen baseline. Six rules named none of those until 2 November 2026, when each was "
+                  "traced: four to the baseline and two to a decision row of their own.", ""]
     return "\n".join(lines)
 
 
