@@ -25,6 +25,19 @@ processed="data/processed"
 log_directory="$processed/rebuild_logs"
 mkdir -p "$log_directory"
 
+# The preflight (experiments/check_rebuild_inputs.py): lists the step outputs that already exist and so will be
+# skipped, and refuses to start when one of them is older than a table that builds it. Both traps have cost a build:
+# decision 9.106 records that an unasked build of 20 October 2026 wrote the directory names the real v5 will write, so
+# a rebuild on that disk keeps its graphs; and the derived BRENDA table feeds build_neuronal_graph_variant.py, so
+# regenerating it after a neuronal graph is built leaves that graph describing the old table while the skip rule keeps
+# it. Set REBUILD_SKIP_PREFLIGHT=1 to run anyway, which is the deliberate override.
+if [ "${REBUILD_SKIP_PREFLIGHT:-0}" != "1" ]; then
+  python experiments/check_rebuild_inputs.py || {
+    echo "rebuild: the preflight refused; fix the above, or set REBUILD_SKIP_PREFLIGHT=1 to run anyway" >&2
+    exit 1
+  }
+fi
+
 step() {
   # step OUTPUT_PATH DESCRIPTION COMMAND...   runs the command unless OUTPUT_PATH exists
   local output_path="$1" description="$2"
