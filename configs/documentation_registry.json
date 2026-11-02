@@ -332,6 +332,11 @@
       "reviewed": "2026-10-25",
       "as_of_commit": "697f59b"
     },
+    "docs/file_index.md": {
+      "class": "generated",
+      "generator": "experiments/generate_file_index.py",
+      "what": "every file git tracks under docs/, by kind, with each Markdown document's class and, for every other file, the sources that name its path; the complete list, where docs/README.md indexes the registered documents by topic"
+    },
     "docs/fine_symptom_constructs.md": {
       "class": "generated",
       "generator": "experiments/build_fine_symptom_crosswalk.py"

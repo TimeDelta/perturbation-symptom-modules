@@ -44,11 +44,12 @@ START_HERE = (
     ("docs/graph_summary.md", "The physiology graph", "its node types, relations and layers, read from its tables"),
     ("docs/data_sources.md", "Data sources", "every source with its version and verified licence"),
     ("docs/documentation_process.md", "Documentation process", "how documents are classed and checked, and what to run after a change"),
+    ("docs/file_index.md", "Every file under docs/", "the complete list, including the tables, figures and measurements this page does not index"),
 )
 # (topic, file-name patterns relative to the repository); first match wins
 TOPICS = (
     ("Design, registration and decisions", ("docs/experiment_design.md", "docs/preregistration*.md", "docs/amendment_history.md", "docs/decision_history.md",
-                                             "docs/open_decisions.md", "docs/registered_core.md", "docs/status.md", "docs/design_review_v04.md", "docs/confirmatory_*.md",
+                                             "docs/open_decisions.md", "docs/registered_core.md", "docs/status.md", "docs/file_index.md", "docs/design_review_v04.md", "docs/confirmatory_*.md",
                                              "docs/pathway_test_options.md", "docs/target_split_options.md", "docs/nosology_discovery_options.md",
                                              "docs/exploration_queue.md",
                                              "docs/comparative_checks.md", "docs/open_decision_triage_*.md", "docs/development_sessions.md",

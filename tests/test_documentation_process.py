@@ -202,6 +202,15 @@ def test_the_status_page_and_the_readme_block_are_current():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_the_file_index_is_current():
+    """docs/file_index.md is the complete list of what git tracks under docs/, so a committed copy that no longer
+    matches the tree is the stale artifact the generator exists to stop. Added 2 November 2026, at the owner's request
+    for a landing page indexing every file."""
+    result = subprocess.run(["python3", "experiments/generate_file_index.py", "--check"], cwd=REPOSITORY_ROOT,
+                            capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_the_registered_core_page_is_current():
     """The digest of docs/registered_core.md is generated, so a committed copy that no longer matches
     configs/registered_rules.json is the stale artifact the generator exists to stop. Added 27 October 2026."""
