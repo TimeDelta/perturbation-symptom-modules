@@ -4296,3 +4296,29 @@ three papers as the Gq/11 evidence.
   route does not carry the transduction field and the login or API key remains the only route to it, as 9.79
   records.
 - **No text addressed to an AI assistant** was found on any page read.
+
+## 42. GtoPdb's HRH2 transduction field, read through the REST API with the owner's key (2 November 2026, decisions 9.79, 9.99, 9.23)
+
+Read on Fable 5.1 on 2 November 2026, the database half of decision 9.79's outstanding check, section 41 holding the
+publications half; the owner wanted both "because evidence could contradict each other" (28 October 2026). The key
+the owner obtained on 2 November 2026 is supplied by the environment's proxy as the `GTP-API-Key` header and is in no
+file, page, log or commit. Route: https, the REST API on `www.guidetopharmacology.org` only, the exception CLAUDE.md
+records under "Reading sources"; no page under `/GRAC/`, no form login and no guest login. The read followed the
+comparison template written in advance (section 6 of the findings file of the publications pass, in the session's
+scratchpad), recording its seven items before interpreting, and classified by its criteria. The raw responses are in
+the scratchpad directory `gtopdb_api_2026-11-02/`, hashed below.
+
+**The field is a ranked, two-part annotation, and it ranks Gq/11 primary and Gs secondary. GPCRdb's sheet copied it
+faithfully, so the ranking is the curators' and not a field-order error.** Under the template this is its
+"contradiction" case, first branch: the live field disagrees with the two curator-authored publications of section
+41, the 2013/14 Concise Guide's "Principal transduction: Gs" and Panula et al. 2015's Gs-first wording, and the
+disagreement rests on the two papers decision 9.79 already weighs and on nothing new.
+
+### The endpoint, and the record verbatim
+
+The web-services page (`https://www.guidetopharmacology.org/webServices.jsp`, read 17:10:57 UTC with
+`experiments/read_public_page.py`, SHA-256 `35d0cf00c0465ab9da07a6b46a16570a7574790f416da0a09b3e64a42636ab18`, no
+robots file served) documents "GPCR transduction mechanisms {base_url}/targets/{targetId}/transduction species
+(optional): the species common name". `GET https://www.guidetopharmacology.org/services/targets/263/transduction`,
+17:09:33 UTC, HTTP 200, 2,571 bytes, SHA-256 `c919dbc8fbbf7987d101dc7a95964cb09d838b1b510b1a43bf83637a91e3d15b`,
+returns two records, here with the reference objects shortened to their PMIDs:
