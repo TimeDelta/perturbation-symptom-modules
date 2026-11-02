@@ -139,11 +139,14 @@ def test_the_membrane_potential_is_computed_from_the_pools_in_the_rebuild(regist
     builds_passed = re.findall(r"--membrane-potential\s+(\S+)", rebuild_script)
     assert set(builds_passed) == {registered}
     # every neuronal variant build takes the flag, or one of them silently keeps the module default. Counted over the
-    # lines that invoke the script, not every mention of its name: on 2 November 2026 a comment naming the script, for
-    # the preflight that watches the tables it reads, made a count of mentions exceed the number of calls and failed
-    # this test with nothing wrong in the data layer.
+    # lines that actually invoke the script, which is a line running it with python, not every mention of its name: the
+    # name is mentioned twice over in prose in that script and neither mention is a call. Both cases appeared on
+    # 2 November 2026, each failing this test with nothing wrong in the data layer - a comment naming the script for the
+    # preflight that watches the tables it reads, and a line of the brenda stage's message telling an operator which
+    # graphs to delete - so a comment test and a "python " test are both needed.
     invocations = [line for line in rebuild_script.splitlines()
-                   if "build_neuronal_graph_variant.py" in line and not line.lstrip().startswith("#")]
+                   if re.search(r"python\s+experiments/build_neuronal_graph_variant\.py", line)
+                   and not line.lstrip().startswith("#")]
     assert len(builds_passed) == len(invocations), invocations
 
 
