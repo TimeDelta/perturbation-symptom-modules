@@ -7,7 +7,7 @@ limits that must not be overstated when it is written up.
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
 (**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, and item 9 on 28 October 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, and item 10 on 4 November 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Items 5 and 8 carry
 literature read on Opus and not yet rechecked on Fable (item 5's read on 26 October 2026, item 8's source
@@ -413,3 +413,36 @@ today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (ta
 `produces_oxidant` edge, which today starts only from a gene. That would be a new kind of edge for that relation.
 
 **Status.** Parked. Not on the critical path of the v5 rebuild, the 9.97 cyclase work or the lockbox sequence.
+
+## 10. The shunt: inhibition by conductance that no edge into `VM_c` carries
+
+Tagged 2026-11-04, at the owner's request ("I'd actually say add the shunt to the exploration queue to find other,
+potentially non-architectural options"), when decision 9.112 was ruled.
+
+**The idea.** A rise in a channel's conductance does two things. It pulls the membrane potential toward that ion's
+reversal potential, which the conductance edges ruled under 9.112 carry. It also lowers the membrane's input
+resistance, which shrinks the voltage change every other input produces. The second is the shunt. Kaila et al. 2014
+(`kaila2014cation`, read on Fable in the PMC author manuscript PMC4294553 on 4 November 2026): "shunting inhibition,
+which can take place at any level of the membrane potential". It changes the gain of `VM_c`'s other inputs, not the
+value of `VM_c`, so no signed edge into a scalar `VM_c` can represent it, under any option of 9.112. GABA_A and the
+glycine receptor are the plainest cases, because at a mature neuron's resting potential their reversal potential lies
+close to it (V_rest - E_Cl = +11.2 mV at the registered constants), so their effect on `VM_c` is small and most of their
+inhibition is the shunt.
+
+**Where to look first, for options that do not change the encoder.**
+- The labels and the head: whether the symptom labels a shunt would move are already reached through another route the
+  graph carries (the receptor's coupling, the cotransporters, downstream transmitter release), so that the shunt is a
+  matter of magnitude rather than of a missing direction.
+- The input side: whether a drug or allele acting mainly by shunt can be represented at entry, as a per-perturbation
+  scaling of the inputs into `VM_c`, which leaves the propagation linear in the field.
+- A disclosed limit: a list of the perturbations whose main published mechanism is shunting inhibition, so the
+  limitation is counted rather than described.
+- Only then architectural options: a gate on `VM_c`'s row read from a settled first pass, the device the 9.81 review
+  describes, which 9.81 has not ruled on.
+
+**Known limits (do not overstate these in writing).**
+- Nothing here is measured. Which perturbations act mainly by shunt is unread, and so is whether any label depends on it.
+- The Kaila et al. 2014 quotation is from the author manuscript; the published text at nature.com answered a check that
+  the visitor is human and is unread.
+
+**Status.** Parked. Not on the critical path: 9.112's build goes ahead without it, with the shunt stated as a limit.
