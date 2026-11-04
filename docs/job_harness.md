@@ -38,6 +38,12 @@ their present state is read with `list_triggers`, not here:
 | `trig_017eJmHnGUq6q2CzEz3kt1Y5` | `19 * * * *` | Job keep-alive :19 | `session_01M6JNfpSxQbjqBt6hD4RjMV` |
 | `trig_01LJeguqEjTcRN7y2VWKj2qA` | `35 * * * *` | Job keep-alive :35 | `session_01M6JNfpSxQbjqBt6hD4RjMV` |
 | `trig_01LoV65i2vYRtdnCBpV3dY2D` | `51 * * * *` | Hourly job check-in: resume reclaimed jobs | `session_01M6JNfpSxQbjqBt6hD4RjMV` |
+| `trig_01ChixSSRyVdfjKJveZNpq7c` | `3 * * * *` | Job keep-alive :03 | `session_01RNHwqTkjjENH7yo98idnBU` |
+| `trig_01E8QLWkngekoca5hYTdudrc` | `19 * * * *` | Job keep-alive :19 | `session_01RNHwqTkjjENH7yo98idnBU` |
+| `trig_012aUJfUqt3NnSsU67p56wZg` | `35 * * * *` | Job keep-alive :35 | `session_01RNHwqTkjjENH7yo98idnBU` |
+| `trig_01Eng1toZfQteWVXKgebZ7ea` | `51 * * * *` | Hourly job check-in: resume reclaimed jobs | `session_01RNHwqTkjjENH7yo98idnBU` |
+
+The last four rows were created on 4 November 2026 by the session that registered `rebuild_v5_graphs`, the graphs stage of the November data-layer rebuild. Their prompts were written by reading the four above, with this session's own ids in the pause step, and with two departures: the October jobs' own instructions are left out, since those jobs no longer exist, and the first step does not pull while a registered job is running, because a pull could change `scripts/rebuild_data_layer.sh` under the running build (`CLAUDE.md`, Jobs) or split one build across two commits.
 
 **A routine is bound to one session and cannot be repointed.** Each of the four carries
 `persistent_session_id: session_01M6JNfpSxQbjqBt6hD4RjMV`, the session of 6 to 10 October 2026, and only
