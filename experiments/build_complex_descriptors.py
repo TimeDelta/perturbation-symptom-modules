@@ -26,14 +26,14 @@ from mechanistic_pathway_learning.graph.complex_descriptors import (PROTEIN_ENTI
 from mechanistic_pathway_learning.graph.protein_descriptors import (ReducedRankRegression, annotation_target_matrix, go_annotations,
                                                                     read_go_ancestors, ridge_coefficients, top_target_directions,
                                                                     weighted_standardised_targets)
-from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml
+from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml, reactome_export_paths
 from experiments.build_protein_descriptors import PER_GENE_REPRODUCTION_TOLERANCE, load_embeddings
 
 
 def entity_kinds(reactome_dir: Path) -> dict[str, str]:
     """Protein entity node id -> the Reactome entity class (Complex, DefinedSet, CandidateSet, ...)."""
     kinds = {}
-    for path in sorted(reactome_dir.glob("*.sbml")):
+    for path in reactome_export_paths(reactome_dir):
         species, _ = parse_reactome_sbml(path.read_text())
         for species_id, entity in species.items():
             kinds[f"RCTE_{species_id.split('_')[-1]}"] = entity.kind

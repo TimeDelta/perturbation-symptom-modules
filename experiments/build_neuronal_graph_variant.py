@@ -51,6 +51,7 @@ from mechanistic_pathway_learning.graph.reactome_import import (
     MEMBRANE_POTENTIAL_BUILDS,
     CuratedReaction,
     import_reactome_layer,
+    reactome_export_paths,
     read_human_gem_participants,
 )
 from mechanistic_pathway_learning.graph.redox_pools import add_redox_pools
@@ -361,7 +362,7 @@ def main() -> None:
     print(f"ion charges read from the ChEBI term Reactome names: {charges_taken_from_chebi}")
     expression = load_brain_expression(arguments.brain_expression)
     brain_expressed_genes = set(expression.loc[expression.brain_median_tpm_max >= arguments.minimum_brain_tpm, "gene_symbol"])
-    sbml_texts = [path.read_text() for path in sorted(arguments.reactome_dir.glob("*.sbml"))]
+    sbml_texts = [path.read_text() for path in reactome_export_paths(arguments.reactome_dir)]
     new_nodes, new_edges, new_relations, summary = import_reactome_layer(
         sbml_texts, nodes, edges, relation_types, gene_of_uniprot, map_chebi_to_human_gem, ion_bases, ion_charges,
         read_human_gem_participants(human_gem_sbml, set(INORGANIC_IONS.values())), brain_expressed_genes, set(TRANSMITTER_BASES),

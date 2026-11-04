@@ -754,3 +754,16 @@ def test_the_lysosomal_release_of_the_curated_set_draws_on_the_lysosomal_store()
         if tric.reaction_id.startswith("MAR_TRIC"):
             assert "RCT_2855020" in tric.activates_reactions
     assert next(curated for curated in organelle if curated.reaction_id == "MAR_TMEM175_POTASSIUM").activates_reactions == ()
+
+
+def test_a_release_directory_without_exports_is_refused(tmp_path):
+    """Globbing a directory that does not exist returns nothing, so a build pointed at the wrong release imported no
+    Reactome pathway and said nothing (4 November 2026: the default v97 against a fetched v98). The refusal names the
+    release directories that are present."""
+    from mechanistic_pathway_learning.graph.reactome_import import reactome_export_paths
+
+    (tmp_path / "reactome" / "v98").mkdir(parents=True)
+    (tmp_path / "reactome" / "v98" / "R-HSA-1.sbml").write_text("<sbml/>")
+    with pytest.raises(FileNotFoundError, match="v98"):
+        reactome_export_paths(tmp_path / "reactome" / "v97")
+    assert [path.name for path in reactome_export_paths(tmp_path / "reactome" / "v98")] == ["R-HSA-1.sbml"]

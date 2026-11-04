@@ -36,7 +36,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml
+from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml, reactome_export_paths
 from mechanistic_pathway_learning.models.relational_message_passing_encoder import (CONJUNCTION_AGGREGATIONS,
                                                                                     RelationalMessagePassingEncoder)
 
@@ -52,7 +52,7 @@ def reactome_entity_kinds(reactome_directory: Path) -> dict[str, str]:
     """Protein entity node id -> its Reactome class. The node table does not carry the class, so it is read back
     from the pinned SBML, the same way experiments/build_complex_descriptors.py reads it."""
     kinds = {}
-    for path in sorted(reactome_directory.glob("*.sbml")):
+    for path in reactome_export_paths(reactome_directory):
         species, _ = parse_reactome_sbml(path.read_text())
         for species_id, entity in species.items():
             kinds[f"RCTE_{species_id.split('_')[-1]}"] = entity.kind

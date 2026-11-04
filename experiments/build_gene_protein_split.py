@@ -54,7 +54,7 @@ from mechanistic_pathway_learning.graph.gene_protein_split import (
     resolve_entries_of_gene_symbols,
     split_graph,
 )
-from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml
+from mechanistic_pathway_learning.graph.reactome_import import parse_reactome_sbml, reactome_export_paths
 
 REACTOME_MEMBER_RELATION = "member_of"
 REACTOME_MEMBER_SOURCE = "Reactome entity member"
@@ -84,9 +84,11 @@ def entries_named_by_sources(edges: pd.DataFrame, entries_of_symbol: dict[str, l
             with open(path, encoding="utf-8") as handle:
                 named.update(entries_named_by_interaction_rows(csv.DictReader(handle, delimiter="\t"), evidence_source, entries_of_symbol, relation_of_row))
     member_edges = edges[(edges.relation_type == REACTOME_MEMBER_RELATION) & edges.target_id.astype(str).str.startswith(REACTOME_ENTITY_PREFIX)]
-    if len(member_edges) and reactome_directory.exists():
+    # a graph with Reactome member edges needs the release they came from; before 4 November 2026 a missing directory
+    # skipped this silently and the split lost Reactome's entry names
+    if len(member_edges):
         accessions_of_entity: dict[str, set[str]] = defaultdict(set)
-        for path in sorted(reactome_directory.glob("*.sbml")):
+        for path in reactome_export_paths(reactome_directory):
             species, _ = parse_reactome_sbml(path.read_text())
             for species_id, entity in species.items():
                 accessions_of_entity[f"{REACTOME_ENTITY_PREFIX}{species_id.split('_')[-1]}"].update(entity.uniprot_ids)

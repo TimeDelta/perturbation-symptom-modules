@@ -67,6 +67,7 @@ import re
 import xml.etree.ElementTree as ElementTree
 from collections import defaultdict
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import pandas as pd
 
@@ -226,6 +227,25 @@ def compartment_letter(name: str) -> str:
         if any(word in lowered for word in words):
             return letter
     return "c"  # cytosol, cytoplasm, plasma membrane, cell junction and other membranes facing the cytosol
+
+
+def reactome_export_paths(directory: Path) -> list[Path]:
+    """The pathway exports of one Reactome release directory, sorted, refusing a directory that holds none.
+
+    Every reader of a release directory goes through this, because globbing a directory that does not exist returns
+    nothing and raises nothing. On 4 November 2026 the rebuild's neuronal step read the default
+    data/raw/reactome/v97 while experiments/fetch_reactome_pathways.py had written v98, the release Reactome then
+    served, and so imported no Reactome pathway at all; a curated-member check failed on it by chance, and
+    experiments/build_gene_protein_split.py skipped Reactome's entry names on purpose when the directory was absent."""
+    directory = Path(directory)
+    paths = sorted(directory.glob("*.sbml"))
+    if not paths:
+        present = sorted(path.name for path in directory.parent.glob("v*")) if directory.parent.exists() else []
+        raise FileNotFoundError(
+            f"no Reactome pathway exports in {directory} (release directories present: {', '.join(present) or 'none'}); "
+            "experiments/fetch_reactome_pathways.py writes the release Reactome serves when it runs, so pass the "
+            "directory of the release meant, or supply that release's exports")
+    return paths
 
 
 def parse_reactome_sbml(sbml_text: str) -> tuple[dict[str, ReactomeSpecies], list[ReactomeReaction]]:
