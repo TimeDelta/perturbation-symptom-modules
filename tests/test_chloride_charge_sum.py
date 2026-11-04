@@ -16,6 +16,14 @@ The rebuild of 15 October 2026 (a new container, scripts/rebuild_data_layer.sh, 
 at -1, and NKCC1 and KCC2 carry no membrane-potential edge. The two tests below that pinned those defects are
 inverted to that, as their docstrings asked. The two chloride identifiers still exist and no MAM02144 reaction
 reaches the neuronal chloride pool, so the first and last tests still hold the defect they pin.
+
+The rebuild of 4 November 2026 (Reactome release 98, decision 9.111) is the first since two rulings that change what
+these tests read, and two of them were inverted again to it. Decision 9.87 ruled the membrane potential
+`computed_from_the_pools` (26 October 2026): "the 412 reaction edges into `VM_c` are not made", so no reaction carries
+`changes_membrane_potential` and a channel's current reaches the potential through the ion pools and their
+`driving_force` edges. Decision 9.75 added `ION_POOL_ALIASES` (`MAM02144` -> `MAM01442`), so a reaction moving
+`MAM02144` chloride now reaches the neuronal chloride pool. The two chloride identifiers still both exist as nodes, so
+the first test holds as before.
 """
 from __future__ import annotations
 
@@ -48,15 +56,18 @@ def test_two_chloride_identifiers_exist_and_only_one_is_in_the_charge_table(grap
     assert len(named_chloride) >= 3, "three of MAM02144's compartments are display-named Cl-"
 
 
-def test_the_ligand_gated_chloride_channels_carry_an_inward_anion_current(graph):
-    """GABA_A and the glycine receptor move only chloride. While chloride's charge was dropped they had no electrical
-    edge at all; with it read from the ChEBI term Reactome names, each carries `changes_membrane_potential` at -1
-    (an inward anion current hyperpolarises). Inverted after the rebuild of 15 October 2026."""
+def test_the_ligand_gated_chloride_channels_move_chloride_into_the_cell(graph):
+    """GABA_A and the glycine receptor move only chloride, from outside the cell to the cytosol. While chloride's charge
+    was dropped they had no electrical edge at all; the rebuild of 15 October 2026 gave each a
+    `changes_membrane_potential` edge at -1. Under decision 9.87 (`computed_from_the_pools`) no reaction carries that
+    edge, so since the rebuild of 4 November 2026 each carries `changes_ion_pool` edges only: +1 into the cytosolic
+    chloride pool and -1 into the extracellular one."""
     _, edges = graph
     for reaction, what in (("RCT_975340", "GABA_A heteropentamer"), ("RCT_975389", "glycine receptor")):
         electrical = edges[(edges.source_id == reaction) & edges.relation_type.isin(ELECTRICAL)]
-        assert list(electrical.relation_type) == ["changes_membrane_potential"], f"{what} ({reaction}) should carry one membrane-potential edge"
-        assert float(electrical.sign.iloc[0]) == pytest.approx(-1.0), f"{what} ({reaction}): an inward chloride current hyperpolarises"
+        assert set(electrical.relation_type) == {"changes_ion_pool"}, f"{what} ({reaction}) reaches the potential through the pools only (9.87)"
+        sign_into_pool = dict(zip(electrical.target_id, electrical.sign.astype(float)))
+        assert sign_into_pool == {"NEURON_MAM01442c": 1.0, "NEURON_MAM01442e": -1.0}, f"{what} ({reaction}) moves chloride inward"
 
 
 def test_two_electroneutral_cotransporters_carry_no_current(graph):
@@ -64,19 +75,21 @@ def test_two_electroneutral_cotransporters_carry_no_current(graph):
 
     While chloride's charge was dropped, NKCC1's Na+ and K+ left +1 and KCC2's K+ left -1, and the graph carried the
     two as opposing currents. With chloride counted, neither carries a `changes_membrane_potential` edge at all.
-    Inverted after the rebuild of 15 October 2026."""
+    Inverted after the rebuild of 15 October 2026. Since decision 9.87 no reaction carries that edge, so on the rebuild
+    of 4 November 2026 this holds for every reaction and no longer tells the charge sum apart."""
     _, edges = graph
     for reaction, what in (("RCT_426086", "NKCC1"), ("RCT_426155", "KCC2")):
         row = edges[(edges.source_id == reaction) & (edges.relation_type == "changes_membrane_potential")]
         assert row.empty, f"{what} ({reaction}) is electroneutral and should carry no membrane-potential edge"
 
 
-def test_no_reaction_moving_reactome_chloride_feeds_the_neuronal_chloride_pool(graph):
-    """The pool node exists and the reactions that should fill it cannot reach it."""
+def test_the_reactions_moving_reactome_chloride_feed_the_neuronal_chloride_pool(graph):
+    """The pool node exists and the reactions that move `MAM02144` chloride reach it, through the alias of decision 9.75
+    (`ION_POOL_ALIASES`). Until the rebuild of 4 November 2026 this test held the defect, that none reached it."""
     nodes, edges = graph
     assert "NEURON_MAM01442c" in set(nodes.node_id), "the neuronal chloride pool is built"
     reactome_chloride = set(nodes.node_id[nodes.node_id.str.startswith("MAM02144")])
     touching = edges[edges.source_id.isin(reactome_chloride) | edges.target_id.isin(reactome_chloride)]
     reactions = set(touching.source_id) | set(touching.target_id)
     into_the_pool = edges[(edges.target_id == "NEURON_MAM01442c") & edges.source_id.isin(reactions)]
-    assert into_the_pool.empty, "a MAM02144 reaction now reaches the chloride pool; invert this test"
+    assert {"RCT_975340", "RCT_975389"} <= set(into_the_pool.source_id), "GABA_A and the glycine receptor fill the chloride pool"
