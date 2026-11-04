@@ -37,12 +37,18 @@ hpo_release="v2026-09-01"
 hpo_release_url="https://github.com/obophenotype/human-phenotype-ontology/releases/download/$hpo_release"
 
 fetch() {
-  # fetch DESTINATION URL [RECORDED_SHA256]
-  local destination_path="$1" source_url="$2" recorded_sha256="${3:--}" status="fetched"
+  # fetch DESTINATION URL [RECORDED_SHA256] [CA_BUNDLE]
+  # CA_BUNDLE replaces curl's default bundle for this one fetch; bundle_with_trust_anchor makes one that keeps the
+  # default and adds a single pinned root, which is how the zfin.org downloads below are verified
+  local destination_path="$1" source_url="$2" recorded_sha256="${3:--}" ca_bundle="${4:-}" status="fetched"
+  local curl_trust=()
+  if [ -n "$ca_bundle" ]; then
+    curl_trust=(--cacert "$ca_bundle")
+  fi
   mkdir -p "$(dirname "$destination_path")"
   if [ -s "$destination_path" ]; then
     status="present"
-  elif ! curl --fail --silent --show-error --location --retry 3 --retry-delay 5 --output "$destination_path.partial" "$source_url"; then
+  elif ! curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "${curl_trust[@]}" --output "$destination_path.partial" "$source_url"; then
     rm -f "$destination_path.partial"
     printf '%s\t0\t-\t%s\tFAILED\n' "$destination_path" "$recorded_sha256" >> "$report_path"
     echo "FAILED $destination_path from $source_url" >&2
@@ -58,6 +64,26 @@ fetch() {
   fi
   printf '%s\t%s\t%s\t%s\t%s\n' "$destination_path" "$measured_bytes" "$measured_sha256" "$recorded_sha256" "$status" >> "$report_path"
   echo "$status $destination_path ($measured_bytes bytes)"
+}
+
+bundle_with_trust_anchor() {
+  # bundle_with_trust_anchor ANCHOR_PEM PINNED_SHA256_FINGERPRINT: print the path of a temporary CA bundle holding the
+  # default bundle and the one root ANCHOR_PEM holds, after checking that root's fingerprint against the pin. A root
+  # added this way is trusted only by the fetches that are passed the bundle, never by the container's trust store.
+  local anchor_path="$1" pinned_fingerprint="$2" measured_fingerprint default_bundle combined_bundle
+  if ! command -v openssl >/dev/null; then
+    echo "REFUSED $anchor_path: openssl is not installed, so its fingerprint cannot be checked" >&2
+    return 1
+  fi
+  measured_fingerprint="$(openssl x509 -in "$anchor_path" -noout -fingerprint -sha256 | cut -d= -f2)"
+  if [ "$measured_fingerprint" != "$pinned_fingerprint" ]; then
+    echo "REFUSED $anchor_path: its fingerprint $measured_fingerprint is not the pinned $pinned_fingerprint" >&2
+    return 1
+  fi
+  default_bundle="${CURL_CA_BUNDLE:-${SSL_CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}}"
+  combined_bundle="$(mktemp)"
+  cat "$default_bundle" "$anchor_path" > "$combined_bundle"
+  echo "$combined_bundle"
 }
 
 # Human Phenotype Ontology: the ontology, the gene annotations, and the two files the evidence assembler reads when
@@ -252,8 +278,21 @@ fetch "$raw_directory/flybase/genotype_phenotype_data_fb_2026_03.tsv.gz" "https:
 # ZFIN's Fish with Abnormal and Normal Phenotypes and Fish Components (the downloads of 23 October 2026); CC BY 4.0
 # ("ZFIN data and data annotations are licensed under a Creative Commons Attribution 4.0 International License").
 # Rolling: a later fetch reports DRIFT.
-fetch "$raw_directory/zfin/phenotype_fish.txt" "https://zfin.org/downloads/phenotype_fish.txt" a71bfd55b8774b218eb5d4c5dbd4865320b9a8d01eed4b2ec94acc137b61dd6b
-fetch "$raw_directory/zfin/fish_components_fish.txt" "https://zfin.org/downloads/fish_components_fish.txt" 962f9ef4c0644b9a51a19fae04fc4e4e2a6733013d3c3d2cdb5bd81a9014b1dc
+# zfin.org's certificate chains to emSign Root CA - G1, which Ubuntu's ca-certificates no longer ships, so curl cannot
+# verify it with the default bundle. The owner asked on 4 November 2026 that it be trusted again ("add those ZFIN back
+# to the trusted certificates please"); it is trusted for these two fetches alone, from configs/tls/emsign_root_ca_g1.pem
+# (its provenance is in the file) and only when its fingerprint matches the pin here.
+zfin_trust_anchor="configs/tls/emsign_root_ca_g1.pem"
+zfin_trust_anchor_fingerprint="40:F6:AF:03:46:A9:9A:A1:CD:1D:55:5A:4E:9C:CE:62:C7:F9:63:46:03:EE:40:66:15:83:3D:C8:C8:D0:03:67"
+if zfin_ca_bundle="$(bundle_with_trust_anchor "$zfin_trust_anchor" "$zfin_trust_anchor_fingerprint")"; then
+  fetch "$raw_directory/zfin/phenotype_fish.txt" "https://zfin.org/downloads/phenotype_fish.txt" a71bfd55b8774b218eb5d4c5dbd4865320b9a8d01eed4b2ec94acc137b61dd6b "$zfin_ca_bundle"
+  fetch "$raw_directory/zfin/fish_components_fish.txt" "https://zfin.org/downloads/fish_components_fish.txt" 962f9ef4c0644b9a51a19fae04fc4e4e2a6733013d3c3d2cdb5bd81a9014b1dc "$zfin_ca_bundle"
+  rm -f "$zfin_ca_bundle"
+else
+  for zfin_file in phenotype_fish.txt fish_components_fish.txt; do
+    printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/zfin/$zfin_file" >> "$report_path"
+  done
+fi
 # WormBase WS298 from EBI's FTP mirror: downloads.wormbase.org answered with a check that the visitor is human on 24
 # October 2026, a refusal this project respects; the EBI FTP host is read on the owner's ruling "don't refuse FTP from EBI".
 fetch "$raw_directory/wormbase/phenotype_association.WS298.wb" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_association.WS298.wb" 3459ca02779b93557a5fde3c58c978036f0c5e0e943affebfe2b3b6b89b034ab
