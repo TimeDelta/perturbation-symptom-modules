@@ -431,9 +431,12 @@ def render(stamp: str, sections: dict, graph_dir: Path, evidence_dir: Path) -> s
         lines.append(f"Skipped: {negatives['skipped']}.")
     else:
         set_aside = negatives["records_set_aside_by_entry_kinds"]
-        lines += [f"{negatives['human_negative_records']:,} human records from IntAct name two UniProt entries; **{negatives['records_between_whole_proteins']:,}** of them are "
-                  f"between two whole proteins (canonical entries of UniProt's reviewed proteome), naming {negatives['gene_pairs_between_whole_proteins']:,} gene pairs and "
-                  f"{negatives['proteins_named']:,} proteins, and only those count against a gene pair of the graph (decision 9.88). The other "
+        lines += [f"{negatives['human_negative_records']:,} human records from IntAct name two UniProt entries; {negatives['records_between_whole_proteins']:,} of them are "
+                  f"between two whole proteins (canonical entries of UniProt's reviewed proteome), and IntAct cautions "
+                  f"{negatives['records_set_aside_for_isoform_caution']:,} of those as standing for one isoform whose expression the publication did not "
+                  f"confirm, which are set aside too (decision 9.88 (a), 4 November 2026). **{negatives['records_counting_against_a_gene_pair']:,}** "
+                  f"records count against a gene pair of the graph, naming {negatives['contesting_gene_pairs']:,} gene pairs and "
+                  f"{negatives['proteins_named']:,} proteins (decision 9.88). The other "
                   f"{sum(set_aside.values()):,} name an isoform, a processed chain or an unreviewed entry at one end or both "
                   f"({', '.join(f'{kinds} {count:,}' for kinds, count in set_aside.items())}). IntAct accepts an isoform record only where another isoform of "
                   "the protein does interact, and an unreviewed entry or a chain is not the whole protein a graph node stands for, so none of them says "

@@ -24,6 +24,17 @@ canonical entries is a negative between whole proteins, and only such a record c
 graph. Both textbook cases this module flagged before, BCL2L1 isoform Q07817-2 with BAD and IRAK4 entry F8VVZ1 with
 MYD88, are isoform records of that study.
 
+A canonical accession can stand for one isoform too (decision 9.88 (a), the owner, 4 November 2026: "accepted for
+consistency"). IntAct marks the records whose isoform was not confirmed with the interaction-level caution "No direct
+evidence for expression of this isoform is given in the publication" (`ISOFORM_EXPRESSION_CAUTION`): there the
+canonical entry is the study's reference clone, so the record says no more about the gene pair than an isoform record
+does, and under the same rule of the curation manual it is set aside the same way. What runs before 4 November 2026
+counted every record between two canonical entries, 223 of them, of which 171 are Yang et al. 2016 and 164 carry the
+caution (`docs/edge_priors.md` section 14, measured on the file of 14 January 2026). The rule is the annotation, not the
+study: the 7 records of that study between canonical entries without the caution still count, and a record of any
+other study that carries it is set aside. A record counts against a gene pair only when it is between two canonical
+entries and carries no such caution (`NegativePair.counts_against_gene_pair`).
+
 Licence: CC BY 4.0, verified in the provider's paper: "all data is freely available through the web interface,
 API, and from https://www.ebi.ac.uk/intact/download under the CC BY 4.0 licence" (del Toro et al. 2022, Nucleic
 Acids Res, doi 10.1093/nar/gkab1006; read 22 October 2026 through the Europe PMC REST service). The legal page is
@@ -48,6 +59,11 @@ GENE_NAME = re.compile(r"uniprotkb:([^|()]+)\(gene name\)")
 UNIPROTKB_IDENTIFIER = re.compile(r"^uniprotkb:((?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2}))(?:-(\d+)|-(PRO_\d+))?$")
 DEFAULT_REVIEWED_PROTEOME = Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz")
 CANONICAL, ISOFORM, CHAIN, UNREVIEWED = "canonical", "isoform", "chain", "unreviewed"
+# IntAct's interaction-level caution on a record whose isoform was not confirmed expressed (decision 9.88 (a)); on the
+# file of 14 January 2026 it is written "caution:No direct evidence for expression of this isoform is given in the
+# publication, but overall expression of the clones in the dataset has been tested ...", on 670 of the 985 rows
+ISOFORM_EXPRESSION_CAUTION = "No direct evidence for expression of this isoform is given in the publication"
+INTERACTION_ANNOTATION_COLUMN = "Interaction annotation(s)"
 
 
 @dataclass(frozen=True)
@@ -63,11 +79,19 @@ class NegativePair:
     publications: str
     entry_kind_a: str = CANONICAL
     entry_kind_b: str = CANONICAL
+    isoform_expression_unconfirmed: bool = False
 
     @property
     def between_whole_proteins(self) -> bool:
-        """True when both ends are canonical entries, the only records that count against a gene pair (decision 9.88)."""
+        """True when both ends are canonical entries (decision 9.88). Necessary for a record to count against a gene
+        pair and, since 4 November 2026, not sufficient: see counts_against_gene_pair."""
         return self.entry_kind_a == CANONICAL and self.entry_kind_b == CANONICAL
+
+    @property
+    def counts_against_gene_pair(self) -> bool:
+        """True when the record is between two canonical entries and IntAct does not caution that it stands for one
+        unconfirmed isoform (decision 9.88 (a), 4 November 2026); the only records that contest a gene pair."""
+        return self.between_whole_proteins and not self.isoform_expression_unconfirmed
 
 
 def read_reviewed_proteome(path: Path = DEFAULT_REVIEWED_PROTEOME) -> dict[str, str]:
@@ -106,6 +130,10 @@ def read_human_negative_pairs(path: Path, gene_of_reviewed_accession: dict[str, 
         reader = csv.reader(negative_file, delimiter="\t")
         header = next(reader)
         column = {name.lstrip("#"): index for index, name in enumerate(header)}
+        if INTERACTION_ANNOTATION_COLUMN not in column:
+            # a PSI-MITAB 2.5 file stops at 15 columns; read as uncautioned, every record of Yang et al. would count again
+            raise ValueError(f"{path} has no {INTERACTION_ANNOTATION_COLUMN!r} column, so the isoform caution of decision 9.88 (a) cannot be read; "
+                             "use IntAct's PSI-MITAB 2.7 release")
         for row in reader:
             if HUMAN_TAXID not in row[column["Taxid interactor A"]] or HUMAN_TAXID not in row[column["Taxid interactor B"]]:
                 continue
@@ -118,13 +146,16 @@ def read_human_negative_pairs(path: Path, gene_of_reviewed_accession: dict[str, 
             gene_a = end_a[2] or (alias_a.group(1) if alias_a else None)
             gene_b = end_b[2] or (alias_b.group(1) if alias_b else None)
             pairs.append(NegativePair(end_a[0], end_b[0], gene_a, gene_b, row[column["Interaction type(s)"]], row[column["Interaction detection method(s)"]],
-                                      row[column["Publication Identifier(s)"]], end_a[1], end_b[1]))
+                                      row[column["Publication Identifier(s)"]], end_a[1], end_b[1],
+                                      ISOFORM_EXPRESSION_CAUTION in row[column[INTERACTION_ANNOTATION_COLUMN]]))
     return pairs
 
 
-def gene_pairs_between_whole_proteins(pairs: list[NegativePair]) -> set[frozenset[str]]:
-    """The gene pairs a negative between two canonical entries names, the only ones that contest a graph edge."""
-    return {frozenset((pair.gene_a, pair.gene_b)) for pair in pairs if pair.between_whole_proteins and pair.gene_a and pair.gene_b}
+def contesting_gene_pairs(pairs: list[NegativePair]) -> set[frozenset[str]]:
+    """The gene pairs named by the records that count against one (NegativePair.counts_against_gene_pair), the only ones
+    that contest a graph edge. Named gene_pairs_between_whole_proteins before 4 November 2026, when every record between
+    two canonical entries counted."""
+    return {frozenset((pair.gene_a, pair.gene_b)) for pair in pairs if pair.counts_against_gene_pair and pair.gene_a and pair.gene_b}
 
 
 def symbol_of_node(nodes: pd.DataFrame) -> dict[str, str]:
@@ -140,10 +171,11 @@ def symbol_of_node(nodes: pd.DataFrame) -> dict[str, str]:
 def contradicted_edges(pairs: list[NegativePair], edges: pd.DataFrame, nodes: pd.DataFrame) -> pd.DataFrame:
     """The graph edges whose two ends are a pair curators recorded as non-interacting between whole proteins (two
     canonical entries), in either direction, with the pair's provenance. A record on an isoform, a chain or an
-    unreviewed entry contests nothing (decision 9.88)."""
+    unreviewed entry contests nothing (decision 9.88), and nor does one IntAct cautions as standing for one unconfirmed
+    isoform (9.88 (a), 4 November 2026)."""
     negative_by_symbols: dict[frozenset[str], NegativePair] = {}
     for pair in pairs:
-        if pair.between_whole_proteins and pair.gene_a and pair.gene_b:
+        if pair.counts_against_gene_pair and pair.gene_a and pair.gene_b:
             negative_by_symbols[frozenset((pair.gene_a, pair.gene_b))] = pair
     symbols = symbol_of_node(nodes)
     rows = []
@@ -166,9 +198,11 @@ def audit(pairs: list[NegativePair], edges: pd.DataFrame, nodes: pd.DataFrame) -
     """Per edge source: how many of its protein-protein edges fall on a pair curators recorded as non-interacting
     between whole proteins, against how many of its edges join two proteins those records name at all (the exposure),
     so a source is judged on the pairs the anchor set can speak to. The records set aside, on an isoform, a chain or an
-    unreviewed entry, are counted by the kinds of their two ends (decision 9.88)."""
+    unreviewed entry, are counted by the kinds of their two ends (decision 9.88), and those between two canonical
+    entries that IntAct cautions as one unconfirmed isoform are counted apart (9.88 (a), 4 November 2026)."""
     whole = [pair for pair in pairs if pair.between_whole_proteins]
-    named = {gene for pair in whole for gene in (pair.gene_a, pair.gene_b) if gene}
+    contesting = [pair for pair in whole if pair.counts_against_gene_pair]
+    named = {gene for pair in contesting for gene in (pair.gene_a, pair.gene_b) if gene}
     symbols = symbol_of_node(nodes)
     exposed: Counter = Counter()
     for edge in edges.itertuples(index=False):
@@ -182,10 +216,12 @@ def audit(pairs: list[NegativePair], edges: pd.DataFrame, nodes: pd.DataFrame) -
     for source, count in Counter(contradicted.evidence_source.astype(str)).items():
         by_source[source]["edges_on_a_negative_pair"] = int(count)
     set_aside = Counter("+".join(sorted((pair.entry_kind_a, pair.entry_kind_b))) for pair in pairs if not pair.between_whole_proteins)
-    gene_pairs = gene_pairs_between_whole_proteins(pairs)
+    gene_pairs = contesting_gene_pairs(pairs)
     return {"human_negative_records": len(pairs), "records_between_whole_proteins": len(whole),
+            "records_set_aside_for_isoform_caution": len(whole) - len(contesting),
+            "records_counting_against_a_gene_pair": len(contesting),
             "records_set_aside_by_entry_kinds": dict(set_aside.most_common()),
-            "gene_pairs_between_whole_proteins": sum(1 for pair in gene_pairs if len(pair) == 2),
+            "contesting_gene_pairs": sum(1 for pair in gene_pairs if len(pair) == 2),
             "proteins_named": len(named), "edges_on_a_negative_pair": int(len(contradicted)), "by_source": dict(sorted(by_source.items())),
             "contradicted": contradicted.to_dict("records")}
 

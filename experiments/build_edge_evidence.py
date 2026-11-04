@@ -52,7 +52,7 @@ from mechanistic_pathway_learning.graph.edge_evidence import (
 from mechanistic_pathway_learning.graph.edge_negative_sources import NegativeEvidencePaths, assemble_negative_evidence
 from mechanistic_pathway_learning.graph.edge_negatives import (
     DEFAULT_REVIEWED_PROTEOME,
-    gene_pairs_between_whole_proteins,
+    contesting_gene_pairs,
     read_human_negative_pairs,
     read_reviewed_proteome,
 )
@@ -121,7 +121,7 @@ def main() -> int:
     references = pd.concat([signalling_references(pd.read_csv(arguments.omnipath, sep="\t", usecols=columns)),
                             transcription_references(pd.read_csv(arguments.collectri, sep="\t", usecols=columns))], ignore_index=True)
     negative_records = read_human_negative_pairs(arguments.intact_negative, read_reviewed_proteome(arguments.uniprot))
-    negative_pairs = gene_pairs_between_whole_proteins(negative_records)
+    negative_pairs = contesting_gene_pairs(negative_records)
     edges = pd.read_parquet(arguments.graph_dir / "edges.parquet")
     evidence = edge_evidence_table(edges, references, negative_pairs)
     evidence = evidence.assign(source_id=edges.source_id.to_numpy(), target_id=edges.target_id.to_numpy(), relation_type=edges.relation_type.to_numpy())
@@ -169,7 +169,8 @@ def main() -> int:
     edges_sha256 = hashlib.sha256((arguments.graph_dir / "edges.parquet").read_bytes()).hexdigest()
     summary = {"graph_dir": str(arguments.graph_dir), "edges_sha256": edges_sha256, "tiers": str(arguments.tiers), **summarise(evidence, gated, probability, strength),
                "intact_negatives": {"human_records": len(negative_records), "records_between_whole_proteins": sum(pair.between_whole_proteins for pair in negative_records),
-                                    "gene_pairs_between_whole_proteins": len(negative_pairs)},
+                                    "records_counting_against_a_gene_pair": sum(pair.counts_against_gene_pair for pair in negative_records),
+                                    "contesting_gene_pairs": len(negative_pairs)},
                "species": species_summary, "curated_edge_labels": labels, "sign_evidence": sign_summary,
                "negative_evidence": negative_summary}
     (arguments.graph_dir / "edge_evidence_summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")

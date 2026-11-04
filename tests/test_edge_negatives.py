@@ -13,7 +13,8 @@ from mechanistic_pathway_learning.graph.edge_negatives import (
     NegativePair,
     audit,
     contradicted_edges,
-    gene_pairs_between_whole_proteins,
+    ISOFORM_EXPRESSION_CAUTION,
+    contesting_gene_pairs,
     read_human_negative_pairs,
     read_reviewed_proteome,
     symbol_of_node,
@@ -26,13 +27,19 @@ REVIEWED = {"P04637": "TP53", "Q00987": "MDM2", "Q07817": "BCL2L1", "Q92934": "B
 
 HEADER = ["#ID(s) interactor A", "ID(s) interactor B", "Alt. ID(s) interactor A", "Alt. ID(s) interactor B", "Alias(es) interactor A", "Alias(es) interactor B",
           "Interaction detection method(s)", "Publication 1st author(s)", "Publication Identifier(s)", "Taxid interactor A", "Taxid interactor B",
-          "Interaction type(s)", "Source database(s)", "Interaction identifier(s)", "Confidence value(s)"]
+          "Interaction type(s)", "Source database(s)", "Interaction identifier(s)", "Confidence value(s)",
+          # columns 16 to 28 of PSI-MITAB 2.7, which IntAct's release has: the reader needs the last of them (decision 9.88 (a))
+          "Expansion method(s)", "Biological role(s) interactor A", "Biological role(s) interactor B", "Experimental role(s) interactor A",
+          "Experimental role(s) interactor B", "Type(s) interactor A", "Type(s) interactor B", "Xref(s) interactor A", "Xref(s) interactor B",
+          "Interaction Xref(s)", "Annotation(s) interactor A", "Annotation(s) interactor B", "Interaction annotation(s)"]
 
 
-def mitab_row(acc_a: str, acc_b: str, gene_a: str, gene_b: str, taxid_b: str = "taxid:9606(human)|taxid:9606(Homo sapiens)") -> list[str]:
+def mitab_row(acc_a: str, acc_b: str, gene_a: str, gene_b: str, taxid_b: str = "taxid:9606(human)|taxid:9606(Homo sapiens)",
+              interaction_annotations: str = "-") -> list[str]:
     return [f"uniprotkb:{acc_a}", f"uniprotkb:{acc_b}", "-", "-", f"psi-mi:x_human(display_long)|uniprotkb:{gene_a}(gene name)",
             f"psi-mi:y_human(display_long)|uniprotkb:{gene_b}(gene name)", 'psi-mi:"MI:0018"(two hybrid)', "Doe J (2020)", "pubmed:12345",
-            "taxid:9606(human)|taxid:9606(Homo sapiens)", taxid_b, 'psi-mi:"MI:0915"(physical association)', 'psi-mi:"MI:0469"(IntAct)', "intact:EBI-1", "-"]
+            "taxid:9606(human)|taxid:9606(Homo sapiens)", taxid_b, 'psi-mi:"MI:0915"(physical association)', 'psi-mi:"MI:0469"(IntAct)', "intact:EBI-1", "-",
+            *["-"] * 12, interaction_annotations]
 
 
 def write_mitab(path, rows):
@@ -61,7 +68,7 @@ def test_the_two_textbook_cases_are_isoform_records_and_contest_no_edge(tmp_path
                        mitab_row("P04637", "Q00987", "TP53", "MDM2")])
     pairs = read_human_negative_pairs(path, REVIEWED)
     assert [(pair.entry_kind_a, pair.entry_kind_b) for pair in pairs] == [(ISOFORM, CANONICAL), (UNREVIEWED, CANONICAL), (CANONICAL, CANONICAL)]
-    assert gene_pairs_between_whole_proteins(pairs) == {frozenset(("TP53", "MDM2"))}
+    assert contesting_gene_pairs(pairs) == {frozenset(("TP53", "MDM2"))}
     nodes = pd.DataFrame({"node_id": [f"PROTEIN:{gene}" for gene in ("BCL2L1", "BAD", "IRAK4", "MYD88", "TP53", "MDM2")], "node_type": ["protein"] * 6,
                           "gene_symbol": ["BCL2L1", "BAD", "IRAK4", "MYD88", "TP53", "MDM2"]})
     edges = pd.DataFrame({"source_id": ["PROTEIN:BAD", "PROTEIN:MYD88", "PROTEIN:MDM2"], "target_id": ["PROTEIN:BCL2L1", "PROTEIN:IRAK4", "PROTEIN:TP53"],
@@ -69,7 +76,7 @@ def test_the_two_textbook_cases_are_isoform_records_and_contest_no_edge(tmp_path
     contradicted = contradicted_edges(pairs, edges, nodes)
     assert contradicted.source_id.tolist() == ["PROTEIN:MDM2"]
     assert (contradicted.intact_accession_a.iloc[0], contradicted.intact_accession_b.iloc[0]) == ("P04637", "Q00987")
-    evidence = edge_evidence_table(edges, pd.DataFrame(), gene_pairs_between_whole_proteins(pairs))
+    evidence = edge_evidence_table(edges, pd.DataFrame(), contesting_gene_pairs(pairs))
     assert evidence.contested.tolist() == [False, False, True]
 
 
@@ -128,7 +135,7 @@ def test_the_audit_judges_a_source_on_the_pairs_the_anchor_set_names():
     assert result["by_source"]["OmniPath"] == {"edges_on_named_proteins": 2, "edges_on_a_negative_pair": 1}
     assert result["by_source"]["CollecTRI"] == {"edges_on_named_proteins": 1, "edges_on_a_negative_pair": 1}
     assert result["human_negative_records"] == 2 and result["records_between_whole_proteins"] == 2 and result["proteins_named"] == 4
-    assert result["gene_pairs_between_whole_proteins"] == 2 and result["edges_on_a_negative_pair"] == 2
+    assert result["contesting_gene_pairs"] == 2 and result["edges_on_a_negative_pair"] == 2
 
 
 def test_the_audit_counts_isoform_records_apart_and_judges_sources_on_whole_proteins_only():
@@ -142,3 +149,50 @@ def test_the_audit_counts_isoform_records_apart_and_judges_sources_on_whole_prot
     assert result["human_negative_records"] == 3 and result["records_between_whole_proteins"] == 1
     assert result["records_set_aside_by_entry_kinds"] == {"canonical+isoform": 1, "canonical+unreviewed": 1}
     assert result["by_source"]["OmniPath"] == {"edges_on_named_proteins": 1, "edges_on_a_negative_pair": 1}
+
+
+# IntAct's annotation as the file of 14 January 2026 writes it on Yang et al. 2016's records
+CAUTIONED = ("caution:" + ISOFORM_EXPRESSION_CAUTION + ", but overall expression of the clones in the dataset has been tested in several "
+             "assays|figure legend:2A")
+
+
+def test_a_record_between_canonical_entries_that_intact_cautions_as_one_isoform_contests_nothing(tmp_path):
+    """Decision 9.88 (a), the owner, 4 November 2026: "accepted for consistency". A canonical entry that IntAct cautions as
+    standing for one unconfirmed isoform says no more about the gene pair than an isoform record, so it is set aside the
+    same way; the same pair without the caution still counts."""
+    path = tmp_path / "intact_negative.txt"
+    write_mitab(path, [mitab_row("Q07817", "Q92934", "BCL2L1", "BAD", interaction_annotations=CAUTIONED),
+                       mitab_row("P04637", "Q00987", "TP53", "MDM2", interaction_annotations="figure legend:3B")])
+    pairs = read_human_negative_pairs(path, REVIEWED)
+    assert [pair.between_whole_proteins for pair in pairs] == [True, True]
+    assert [pair.isoform_expression_unconfirmed for pair in pairs] == [True, False]
+    assert [pair.counts_against_gene_pair for pair in pairs] == [False, True]
+    assert contesting_gene_pairs(pairs) == {frozenset(("TP53", "MDM2"))}
+    nodes = pd.DataFrame({"node_id": ["GENE:BCL2L1", "GENE:BAD", "GENE:TP53", "GENE:MDM2"], "node_type": ["gene"] * 4,
+                          "gene_symbol": ["BCL2L1", "BAD", "TP53", "MDM2"]})
+    edges = pd.DataFrame({"source_id": ["GENE:BAD", "GENE:MDM2"], "target_id": ["GENE:BCL2L1", "GENE:TP53"], "relation_type": ["inhibits", "inhibits"],
+                          "sign": [-1.0, -1.0], "evidence_source": ["OmniPath", "OmniPath"]})
+    assert contradicted_edges(pairs, edges, nodes).source_id.tolist() == ["GENE:MDM2"]
+    result = audit(pairs, edges, nodes)
+    assert result["records_between_whole_proteins"] == 2 and result["records_set_aside_for_isoform_caution"] == 1
+    assert result["records_counting_against_a_gene_pair"] == 1 and result["contesting_gene_pairs"] == 1
+
+
+def test_the_caution_is_read_from_the_interaction_annotations_and_not_from_an_interactor(tmp_path):
+    """The rule is the annotation, not the study: a record of Yang et al. without the caution still counts, and other
+    isoform remarks ("Evidence for isoform ... expression is provided in figure S2G") are not the caution."""
+    path = tmp_path / "intact_negative.txt"
+    evidence_given = 'comment:"Evidence for isoform CCSB isoform ID: BANP_2 expression is provided in figureS2G."'
+    write_mitab(path, [mitab_row("P04637", "Q00987", "TP53", "MDM2", interaction_annotations=evidence_given)])
+    assert read_human_negative_pairs(path, REVIEWED)[0].counts_against_gene_pair
+
+
+def test_a_file_without_interaction_annotations_is_refused(tmp_path):
+    """Read as uncautioned, every record of Yang et al. would count against its gene pair again, so a PSI-MITAB 2.5 file,
+    which stops at 15 columns, is refused rather than read."""
+    path = tmp_path / "intact_negative.txt"
+    with open(path, "w", encoding="utf-8", newline="") as mitab:
+        mitab.write("\t".join(HEADER[:15]) + "\n")
+        mitab.write("\t".join(mitab_row("P04637", "Q00987", "TP53", "MDM2")[:15]) + "\n")
+    with pytest.raises(ValueError, match="Interaction annotation"):
+        read_human_negative_pairs(path, REVIEWED)
