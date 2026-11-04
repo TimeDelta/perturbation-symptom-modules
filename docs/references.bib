@@ -527,7 +527,7 @@
   year = {2014},
   doi = {10.1038/nrn3819},
   pmid = {25234263},
-  note = {Design document reference [41]}
+  note = {Design document reference [41]. Cited in decision 9.112 (4 November 2026): "There are two ways in which GABA[A]R activity can inhibit the target neuron. In a short-circuiting process known as shunting inhibition, which can take place at any level of the membrane potential" and "Voltage inhibition is caused by hyperpolarizing IPSPs and is enabled by KCC2", read on Fable in the PMC author manuscript PMC4294553 on 4 November 2026 (subscripts restored in brackets); the published text at nature.com answered a check that the visitor is human and is unread, so the quotes stand as the author manuscript's}
 }
 
 @article{nowak1984magnesium,
@@ -3267,7 +3267,7 @@
   pages   = {e39575},
   doi     = {10.7554/eLife.39575},
   pmid    = {30260315},
-  note    = {Table 1 gives the physical constants of the membrane-potential node: "T | 310.15 K | Absolute temperature (=37°C)", "[Na+]o | 145 mM", "[K+]o | 3.5 mM", "[Cl-]o | 119 mM", "[Na+]i | 14.0 mM", "[K+]i | 122.9 mM", "[Cl-]i | 5.2 mM", "gK | 70 µS/cm2", "gNa | 20 µS/cm2", "gCl | 20 µS/cm2" and "Vm | −72.6 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The conductances are ohmic -- "Leak currents were calculated using Ohm's Law, I=g(Vm-E)" -- and are not GHK permeabilities; docs/membrane_potential_constants.md shows that substituting them into the GHK voltage equation misses this paper's own resting potential by 39 mV. CC BY 4.0, verified from the article's permissions block. Set A of docs/membrane_potential_constants.md}
+  note    = {Table 1 gives the physical constants of the membrane-potential node: "T | 310.15 K | Absolute temperature (=37°C)", "[Na+]o | 145 mM", "[K+]o | 3.5 mM", "[Cl-]o | 119 mM", "[Na+]i | 14.0 mM", "[K+]i | 122.9 mM", "[Cl-]i | 5.2 mM", "gK | 70 µS/cm2", "gNa | 20 µS/cm2", "gCl | 20 µS/cm2" and "Vm | −72.6 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The conductances are ohmic -- "Leak currents were calculated using Ohm's Law, I=g(Vm-E)" -- and are not GHK permeabilities; docs/membrane_potential_constants.md shows that substituting them into the GHK voltage equation misses this paper's own resting potential by 39 mV. CC BY 4.0, verified from the article's permissions block. Set A of docs/membrane_potential_constants.md. Read again on Fable on 4 November 2026 in the published HTML (saved by experiments/read_public_page.py) for decision 9.112: equations 1-7 ("Leak currents were calculated using Ohm's Law, I=g(Vm-E)"; the pump "J_p = P ([Na+]_i/[Na+]_o)^3"; "J_KCC2 = g_KCC2 (E_K - E_Cl)"; "The extracellular ionic concentrations were assumed constant (Table 1)") and the further Table 1 rows "g_KCC2 | 20 µS/cm2 | KCC2 conductance (Doyon et al., 2016)" and "p | 0.1 C/(dm2.s) | Default pump rate constant", from which the review derived the pump-clamped pool sensitivities}
 }
 
 @article{raimondo2015ion,
@@ -7487,4 +7487,31 @@
   doi     = {10.1152/jn.1992.68.1.197},
   pmid    = {1381418},
   note    = {Abstract only; Europe {PMC} records isOpenAccess N (checked on Fable, 4 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Cited in decision 9.112: isolates the conductance effect by measuring at the reversal potential, where the concentration term contributes nothing: "Measured at its reversal potential, the {GABAA} receptor-mediated postsynaptic conductance ({GGABA-A}) decreased the peak {DPSP} amplitude by 35\%, shunted 50\% of the charge transferred to the soma by the excitatory {PSC}, and completely inhibited the {NMDA} receptor-mediated component of the {DPSP}."}
+}
+
+@article{kager2000simulated,
+  author  = {Kager, H. and Wadman, W. J. and Somjen, G. G.},
+  title   = {Simulated seizures and spreading depression in a neuron model incorporating interstitial space and ion concentrations},
+  journal = {Journal of Neurophysiology},
+  year    = {2000},
+  volume  = {84},
+  number  = {1},
+  pages   = {495--512},
+  doi     = {10.1152/jn.2000.84.1.495},
+  pmid    = {10899222},
+  note    = {Abstract only; not open access (Europe {PMC} isOpenAccess N, checked on Fable 4 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Second pump-leak source for the review of decision 9.112: a neuron with an interstitial space in which "A Na-K exchange pump operated to restore ion balances. In addition, extracellular potassium concentration, [K(+)](o), was also controlled by a 'glial' uptake function". Cited for the extracellular compartment that D{\"u}sterwald et al. 2018 holds constant; Table 1 of that paper attributes its leak conductances to this one}
+}
+
+@article{hubel2014dynamics,
+  author  = {H{\"u}bel, Niklas and Dahlem, Markus A.},
+  title   = {Dynamics from seconds to hours in {Hodgkin-Huxley} model with time-dependent ion concentrations and buffer reservoirs},
+  journal = {PLoS Computational Biology},
+  year    = {2014},
+  volume  = {10},
+  number  = {12},
+  pages   = {e1003941},
+  doi     = {10.1371/journal.pcbi.1003941},
+  pmid    = {25474648},
+  pmcid   = {PMC4256015},
+  note    = {FULL TEXT read on Fable in PubMed Central on 4 November 2026; open access (Europe {PMC} isOpenAccess Y); every field read from the PubMed record and confirmed against Europe {PMC}. Second pump-leak source for the review of decision 9.112: "We are going to discuss two regulation schemes---coupling to an extracellular bath and glial buffering"; "A closed neuron system with functioning pumps but without ion regulation by glial cells or the vascular system is generally bistable"; "The electroneutrality of the total transmembrane ion flux ... is a consequence of the large time scale separation between the membrane dynamics and the ion dynamics" ({PMC}'s plain text drops equation numbers, so the ellipsis stands for a dropped reference)}
 }
