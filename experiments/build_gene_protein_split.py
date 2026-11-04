@@ -163,7 +163,7 @@ def main() -> None:
                         help="per-entry protein descriptors (experiments/build_protein_descriptors.py --per-entry-only)")
     parser.add_argument("--omnipath-interactions", type=Path, default=Path("data/raw/omnipath/omnipath_interactions.tsv"))
     parser.add_argument("--collectri-interactions", type=Path, default=Path("data/raw/omnipath/collectri_interactions.tsv"))
-    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/v97"))
+    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/current"))
     parser.add_argument("--chembl-targets", type=Path, default=Path("data/raw/chembl/targets.json"))
     parser.add_argument("--hgnc-table", type=Path, default=Path("data/raw/hgnc/hgnc_complete_set.txt"),
                         help="resolves gene symbols no reviewed entry lists through their previous HGNC symbols")

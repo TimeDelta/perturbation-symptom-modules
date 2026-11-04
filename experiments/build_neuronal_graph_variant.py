@@ -3,7 +3,8 @@
 (mechanistic_pathway_learning/graph/reactome_import.py), release regulation by auto- and heteroreceptors
 (graph/neurotransmission_regulation.py) and curated oxidant sources and targets (graph/oxidative_regulation.py).
 
-Inputs: the pinned Reactome exports (data/raw/reactome/v97, experiments/fetch_reactome_pathways.py), UniProt for
+Inputs: the Reactome exports of the release experiments/fetch_reactome_pathways.py fetched, through the link
+data/raw/reactome/current (the latest release until the lockbox is drawn, decision 9.111), UniProt for
 accession -> gene symbol, ChEBI for the ChEBI -> Human-GEM bridge of the laboratory labels, Human-GEM's SBML for ion
 charges and transport stoichiometry, GTEx median TPM for the brain-expressed catalysts, and the curated tables
 docs/curated_presynaptic_receptors.csv, docs/curated_oxidant_targets.csv and docs/curated_oxidant_sources.csv. The
@@ -299,7 +300,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base-graph-dir", type=Path, default=Path("data/processed/graph_manganese"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/graph_neuronal"))
-    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/v97"))
+    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/current"))
     parser.add_argument("--uniprot-table", type=Path, default=Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz"))
     parser.add_argument("--chebi-obo", type=Path, default=Path("data/raw/chebi/chebi_core.obo.gz"))
     parser.add_argument("--human-gem-metabolites", type=Path, default=Path("data/raw/Human-GEM/model/metabolites.tsv"))

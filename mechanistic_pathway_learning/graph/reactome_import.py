@@ -236,7 +236,8 @@ def reactome_export_paths(directory: Path) -> list[Path]:
     nothing and raises nothing. On 4 November 2026 the rebuild's neuronal step read the default
     data/raw/reactome/v97 while experiments/fetch_reactome_pathways.py had written v98, the release Reactome then
     served, and so imported no Reactome pathway at all; a curated-member check failed on it by chance, and
-    experiments/build_gene_protein_split.py skipped Reactome's entry names on purpose when the directory was absent."""
+    experiments/build_gene_protein_split.py skipped Reactome's entry names on purpose when the directory was absent.
+    Since the same day the readers default to data/raw/reactome/current, the link the fetch writes (decision 9.111)."""
     directory = Path(directory)
     paths = sorted(directory.glob("*.sbml"))
     if not paths:

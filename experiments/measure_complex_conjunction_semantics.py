@@ -231,7 +231,7 @@ def write_document(kinds_of_all: Counter, kinds_of_multi: Counter, member_counts
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph_full_neuronal_split_binders"))
-    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/v97"))
+    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/current"))
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v2.parquet"))
     arguments = parser.parse_args()
 

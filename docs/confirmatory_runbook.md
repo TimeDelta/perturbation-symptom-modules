@@ -41,6 +41,11 @@ these changes touches says so where it applies:
   build the owner had not asked for and are not v5 (decision 9.106); the real v5 is what `scripts/rebuild_data_layer.sh`
   writes. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
   ("A measurement carries the graph it was taken on") points toward, is the owner's open question 9.106 (a).
+- The Reactome release is the latest Reactome serves until the lockbox is drawn (decision 9.111, 4 November 2026). **Before
+  the held-out set is drawn**, pin the release the registered graph was built from: read it from that graph's summary
+  (`reactome_pathways.reactome_release`), commit its exports under `data/` (CC0, `docs/data_sources.md`), point the readers
+  at the committed copy and make `experiments/fetch_reactome_pathways.py` refuse any other release. Reactome's content
+  service serves only its current release, so a release left uncommitted cannot be fetched again.
 
 ## Steps
 

@@ -61,7 +61,8 @@ if [ ! -e data/raw/chembl/targets.json ] || [ ! -e data/raw/chembl/.complete ]; 
   touch data/raw/chembl/.complete
 fi
 step data/raw/uniprot/uniprot_human_reviewed.tsv.gz "UniProt proteome, GO, hp-base.owl and ChEBI" python experiments/fetch_node_descriptor_sources.py
-step data/raw/reactome/v97/pathways.json "Reactome release 97 pathway exports" python experiments/fetch_reactome_pathways.py
+# the release Reactome serves, until the lockbox is drawn (decision 9.111); the fetch links data/raw/reactome/current to it
+step data/raw/reactome/current/pathways.json "Reactome pathway exports, the release Reactome serves" python experiments/fetch_reactome_pathways.py
 step data/raw/uniprot/uniprot_plasma_binders.tsv.gz "UniProt plasma binder annotations" python experiments/fetch_plasma_binder_annotations.py
 step data/raw/plasma_protein_binding/fraction_unbound_database.xlsx "fraction-unbound database" python experiments/fetch_fraction_unbound_database.py
 # about 45 minutes uncached (RxNav, UniChem and ChEMBL at a few requests a second); it also extends data/raw/chembl/targets.json,

@@ -6,6 +6,15 @@ and positive or negative regulators, every species annotated with a ChEBI or Uni
 and written to data/raw/reactome/v<release>/<stable id>.sbml with a pin beside it (URL, bytes, SHA-256, fetch time,
 database release). Files already pinned are not fetched again unless --refresh is given.
 
+The release is the one Reactome serves when this runs, and it is used until the lockbox is drawn (decision 9.111, the
+owner, 4 November 2026: "Go with latest until the lockbox is drawn"). After writing a release, this points
+data/raw/reactome/current at its directory, and every reader of the exports defaults to that pointer, so a build reads
+the release the fetch wrote; before 4 November 2026 the readers named v97 while this wrote v98, the release Reactome
+then served, and the neuronal build imported no pathway. Each graph's summary records the release it was built from
+(`reactome_pathways` in experiments/build_neuronal_graph_variant.py). When the lockbox is drawn the release in use is
+pinned (docs/confirmatory_runbook.md): Reactome's content service serves only its current release, so a release that is
+not committed cannot be fetched again.
+
 Usage:
   python experiments/fetch_reactome_pathways.py
 """
@@ -40,6 +49,8 @@ PATHWAYS = {
     "R-HSA-1222556": "ROS and RNS production in phagocytes",
     "R-HSA-611105": "Respiratory electron transport",
 }
+# the link every reader of the exports defaults to: data/raw/reactome/current -> v<release> (decision 9.111)
+CURRENT_RELEASE_LINK = "current"
 
 
 def main() -> None:
@@ -57,6 +68,20 @@ def main() -> None:
         pins[stable_id] = {"description": description, "bytes": pin["bytes"], "sha256": pin["sha256"], "fetched_at": pin["fetched_at"]}
         print(f"{stable_id} ({description}): {pin['bytes']:,} bytes, sha256 {pin['sha256'][:12]}")
     (arguments.raw_root / source / "pathways.json").write_text(json.dumps({"reactome_release": release, "pathways": pins}, indent=1) + "\n")
+    point_current_at(arguments.raw_root / "reactome", f"v{release}")
+    print(f"data/raw/reactome/current -> v{release}")
+
+
+def point_current_at(reactome_root: Path, release_directory: str) -> None:
+    """Make reactome_root/current a relative link to the release directory just written, replacing an older link. A
+    real directory under that name is refused rather than replaced, since it would hold a release of its own."""
+    current = reactome_root / CURRENT_RELEASE_LINK
+    if current.exists() and not current.is_symlink():
+        raise FileExistsError(f"{current} is a directory, not a link to a release; move it before fetching")
+    staged = reactome_root / f".{CURRENT_RELEASE_LINK}.new"
+    staged.unlink(missing_ok=True)
+    staged.symlink_to(release_directory)
+    staged.replace(current)
 
 
 if __name__ == "__main__":

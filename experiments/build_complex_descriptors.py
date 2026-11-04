@@ -116,7 +116,7 @@ def main() -> None:
     parser.add_argument("--gaf", type=Path, default=Path("data/raw/gene_ontology/goa_human.gaf.gz"))
     parser.add_argument("--go-obo", type=Path, default=Path("data/raw/gene_ontology/go-basic.obo"))
     parser.add_argument("--embedding-dir", type=Path, default=Path("data/processed/protein_embeddings"))
-    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/v97"))
+    parser.add_argument("--reactome-dir", type=Path, default=Path("data/raw/reactome/current"))
     parser.add_argument("--graph-dirs", type=Path, nargs="+",
                         default=[Path("data/processed/graph_full_neuronal"), Path("data/processed/graph_full_neuronal_split")])
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/node_descriptors"))
