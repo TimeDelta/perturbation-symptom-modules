@@ -17,6 +17,12 @@ extra and the pinned pandas and pyarrow and, on a shallow clone, fetched the ful
 - `bash scripts/resume_jobs.sh --status` reports only.
 - `bash scripts/resume_jobs.sh --register NAME "COMMAND" DONE_MARKER [FAILED_MARKER] [DESCRIPTION]` registers, then
   relaunches.
+  COMMAND must be one simple command, with no shell operator, redirect or quote: the harness finds a running job by
+  matching its exact command line, and anything else runs as `bash -c ...` or loses its quotes, so it never matches
+  and every check-in would start another copy. Put such a command in a script and register `bash <script>`;
+  `--register` refuses the rest. Found on 4 November 2026, when the rebuild's graphs stage was registered as `bash
+  -c '...'` and the first check-in would have started a second build into the same directories; the paused job
+  `runs/jobs/paused/rebuild_data_layer.job` of 24 October 2026 has the same form.
 - `bash scripts/resume_jobs.sh --stop NAME` stops job NAME and the whole process group it leads. Never kill the pid
   that matches `JOB_COMMAND` instead: that orphans the trainer it spawned, and the next resume puts two processes in
   one fold directory. To keep a job from relaunching, move its `.job` file to `runs/jobs/paused/`.

@@ -2,7 +2,12 @@
 # Relaunch unfinished, resumable background jobs after the cloud container was reclaimed (for example when a usage
 # limit stopped the session). Every job is a file runs/jobs/<name>.job that sets:
 #   JOB_COMMAND        the command, run from the repository root (for example "bash runs/literature_rerun.sh");
-#                      it must be resumable: rerunning it continues from checkpoints and caches
+#                      it must be resumable: rerunning it continues from checkpoints and caches. It must be one
+#                      simple command, with no shell operators, redirects or quotes: the job is found running by
+#                      matching its exact command line, and a command with any of those runs as "bash -c ..." or
+#                      loses its quotes, so it never matches and every check-in would start another copy beside the
+#                      one running. Put such a command in a script and register "bash <script>"; --register refuses
+#                      the rest (4 November 2026, when a rebuild registered as "bash -c '...'" was found unmatched)
 #   JOB_DONE_MARKER    a path that exists once the job finished
 #   JOB_FAILED_MARKER  optional; a path that exists when the job failed and needs attention (never relaunched)
 #   JOB_DESCRIPTION    optional; one line for the status report
@@ -45,6 +50,14 @@ elif [ "${1:-}" = "--register" ]; then
     echo "usage: $0 --register NAME \"COMMAND\" DONE_MARKER [FAILED_MARKER] [DESCRIPTION]" >&2
     exit 2
   fi
+  case "$3" in
+    *'&&'*|*'|'*|*';'*|*'>'*|*'<'*|*'$('*|*'`'*|*"'"*|*'"'*)
+      echo "resume_jobs: refusing job $2: its command has a shell operator, a redirect or a quote, so it would never" >&2
+      echo "resume_jobs: match its own running process and every check-in would start another copy; put the command" >&2
+      echo "resume_jobs: in a script and register \"bash <script>\" instead" >&2
+      exit 2
+      ;;
+  esac
   {
     printf 'JOB_COMMAND=%q\n' "$3"
     printf 'JOB_DONE_MARKER=%q\n' "$4"
