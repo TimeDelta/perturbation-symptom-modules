@@ -21,9 +21,11 @@ its Gs rows are primary (decision 9.79, the owner: "accepted"): every Gq/11 obse
 heterologous and none uses the human receptor, which the owner's ruling of 2 November 2026 holds too weak to stand
 alone, and its native-tissue arguments on either side turn on cholera-toxin sensitivity, which Zhu et al. 1994 shows is
 "a rather general effect not related specifically to the Gs-coupled receptors" (p. 465). A receptor whose list has
-not been checked row by row still carries
-GPCRdb's field as before: 84 of the 253 receptors share one multi-PMID list across two or more family or role groups,
-the shape of the HRH2 defect, and are owed that check (decision 9.99).
+not been checked row by row still carries GPCRdb's field as before: 106 of the 253 receptors share one citation list
+across two or more family or role groups, the shape of the HRH2 defect, 83 of them a multi-PMID list and 23 a single
+PMID with MAS1 among them, and are owed that check (decision 9.99). Before 4 November 2026 this count took multi-PMID
+lists only and read 84. Since that day the check also asks of each paper behind a receptor's second family whether the
+coupling was seen in native tissue or a heterologous system, in which species and at what density (9.109).
 
 The members are read from HGNC's gene groups rather than kept by hand: group 1426 "G protein subunits alpha, group
 s", 1428 "group i", 1427 "group q" and 1429 "group 12/13", from the pinned data/raw/hgnc/hgnc_complete_set.txt. The
