@@ -1,0 +1,9 @@
+base_metabolite_id,uniprot_accession,relation_type,sign,brenda_record_count,ec_numbers,brenda_reference_count,enzyme_routes,example_ligand_name
+MAM01280,P55263,no_inhibition,0.0,1,2.7.1.20,1,EC class names exactly one human accession,adenosine
+MAM01624,P00390,no_inhibition,0.0,1,1.8.1.7,1,EC class names exactly one human accession,Cu2+
+MAM01736,P09417,no_inhibition,0.0,1,1.5.1.34,1,EC class names exactly one human accession,dopamine
+MAM01787,Q06278,no_inhibition,0.0,1,1.2.3.1,1,EC class names exactly one human accession,estradiol
+MAM02034,P00367,no_inhibition,0.0,1,1.4.1.3,1,accession stated by BRENDA,GTP
+MAM02751,O15528,no_inhibition,0.0,1,1.14.15.18,1,EC class names exactly one human accession,phosphate
+MAM02877,Q93088,no_inhibition,0.0,1,2.1.1.5,1,EC class names exactly one human accession,S-adenosyl-L-methionine
+MAM02877,Q9H2M3,no_inhibition,0.0,1,2.1.1.10,1,EC class names exactly one human accession,S-adenosyl-L-methionine

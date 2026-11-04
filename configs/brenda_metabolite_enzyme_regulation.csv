@@ -413,7 +413,6 @@ MAM02785,O14939,activates,1.0,1,3.1.4.4,1,accession stated by BRENDA,prostagland
 MAM02785,Q13393,activates,1.0,1,3.1.4.4,1,accession stated by BRENDA,prostaglandin E1
 MAM02786,P08253,activates,1.0,1,3.4.24.24,1,accession stated by BRENDA,prostaglandin E2
 MAM02810,P15289,activates,1.0,1,3.1.6.8,1,EC class names exactly one human accession,psychosine
-MAM02812,P17405,activates,1.0,1,3.1.4.3,1,EC class names exactly one human accession,putrescine
 MAM02812,P17707,activates,1.0,2,4.1.1.50,15,EC class names exactly one human accession;accession stated by BRENDA,putrescine
 MAM02814,P15121,activates,1.0,1,1.1.1.21,1,EC class names exactly one human accession,pyridoxal 5'-phosphate
 MAM02814,P35520,activates,1.0,1,4.2.1.22,1,EC class names exactly one human accession,pyridoxal 5'-phosphate
@@ -430,9 +429,7 @@ MAM02896,P12955,activates,1.0,1,3.4.13.9,1,EC class names exactly one human acce
 MAM02897,P05164,activates,1.0,1,1.11.2.2,1,accession stated by BRENDA,serotonin
 MAM02908,P15289,activates,1.0,1,3.1.6.8,1,EC class names exactly one human accession,sphingomyelin
 MAM02916,P14735,activates,1.0,2,3.4.24.56,2,EC class names exactly one human accession;accession stated by BRENDA,Somatostatin
-MAM02923,P17405,activates,1.0,1,3.1.4.3,1,EC class names exactly one human accession,spermidine
 MAM02923,Q504Q3,activates,1.0,1,3.1.13.4,1,accession stated by BRENDA,spermidine
-MAM02926,P17405,activates,1.0,1,3.1.4.3,1,EC class names exactly one human accession,spermine
 MAM02926,P51178,activates,1.0,1,3.1.4.11,1,accession stated by BRENDA,spermine
 MAM02926,P56192,activates,1.0,1,6.1.1.10,1,accession stated by BRENDA,spermine
 MAM02930,P51828,activates,1.0,1,4.6.1.1,1,accession stated by BRENDA,sphingosine 1-phosphate
@@ -551,6 +548,7 @@ MAM01371,O00746,cofactor_of,0.0,1,2.7.4.6,21,accession stated by BRENDA,ATP
 MAM01371,O00750,cofactor_of,0.0,1,2.7.1.154,7,accession stated by BRENDA,ATP
 MAM01371,O00763,cofactor_of,0.0,1,6.4.1.2,48,accession stated by BRENDA,ATP
 MAM01371,O00764,cofactor_of,0.0,2,2.7.1.35,18,EC class names exactly one human accession;accession stated by BRENDA,ATP
+MAM01371,O14678,cofactor_of,0.0,1,7.6.2.8,11,accession stated by BRENDA,ATP
 MAM01371,O14733,cofactor_of,0.0,1,2.7.12.2,30,accession stated by BRENDA,ATP
 MAM01371,O14832,cofactor_of,0.0,1,1.14.11.18,1,EC class names exactly one human accession,ATP
 MAM01371,O14841,cofactor_of,0.0,1,3.5.2.9,5,accession stated by BRENDA,ATP
@@ -877,7 +875,6 @@ MAM01413,P16442,cofactor_of,0.0,1,2.4.1.37,1,EC class names exactly one human ac
 MAM01413,P16519,cofactor_of,0.0,1,3.4.21.94,1,EC class names exactly one human accession,Ca2+
 MAM01413,P16885,cofactor_of,0.0,1,3.1.4.11,1,accession stated by BRENDA,Ca2+
 MAM01413,P16930,cofactor_of,0.0,1,3.7.1.2,2,EC class names exactly one human accession,Ca2+
-MAM01413,P17405,cofactor_of,0.0,1,3.1.4.3,1,EC class names exactly one human accession,Ca2+
 MAM01413,P17655,cofactor_of,0.0,1,3.4.22.53,1,accession stated by BRENDA,Ca2+
 MAM01413,P19021,cofactor_of,0.0,1,1.14.17.3,1,accession stated by BRENDA,Ca2+
 MAM01413,P19174,cofactor_of,0.0,1,3.1.4.11,10,accession stated by BRENDA,Ca2+
@@ -1357,6 +1354,7 @@ MAM02482,O00750,cofactor_of,0.0,2,2.7.1.154,7,accession stated by BRENDA,Mg2+
 MAM02482,O00757,cofactor_of,0.0,2,3.1.3.11,23,accession stated by BRENDA,Mg2+
 MAM02482,O00764,cofactor_of,0.0,7,2.7.1.35,11,EC class names exactly one human accession;accession stated by BRENDA,Mg2+
 MAM02482,O14638,cofactor_of,0.0,1,3.6.1.9,8,accession stated by BRENDA,Mg2+
+MAM02482,O14678,cofactor_of,0.0,1,7.6.2.8,11,accession stated by BRENDA,Mg2+
 MAM02482,O14717,cofactor_of,0.0,3,2.1.1.202;2.1.1.204,7,EC class names exactly one human accession;accession stated by BRENDA,Mg2+
 MAM02482,O14733,cofactor_of,0.0,1,2.7.12.2,18,accession stated by BRENDA,Mg2+
 MAM02482,O14735,cofactor_of,0.0,1,2.7.8.11,10,EC class names exactly one human accession,Mg2+
@@ -1763,7 +1761,7 @@ MAM02482,Q8NI77,cofactor_of,0.0,1,5.6.1.3,16,accession stated by BRENDA,Mg2+
 MAM02482,Q8TBC4,cofactor_of,0.0,3,6.2.1.64,3,EC class names exactly one human accession,Mg2+
 MAM02482,Q8TBE9,cofactor_of,0.0,2,3.1.3.29,2,EC class names exactly one human accession,Mg2+
 MAM02482,Q8TCT0,cofactor_of,0.0,3,2.7.1.138,13,accession stated by BRENDA,Mg2+
-MAM02482,Q8TCT1,cofactor_of,0.0,2,3.1.3.75,2,EC class names exactly one human accession;accession stated by BRENDA,Mg2+
+MAM02482,Q8TCT1,cofactor_of,0.0,1,3.1.3.75,1,accession stated by BRENDA,Mg2+
 MAM02482,Q8TD19,cofactor_of,0.0,1,2.7.11.38,1,accession stated by BRENDA,Mg2+
 MAM02482,Q8TDP1,cofactor_of,0.0,2,3.1.26.4,2,accession stated by BRENDA,Mg2+
 MAM02482,Q8TE04,cofactor_of,0.0,1,2.7.1.33,9,accession stated by BRENDA,Mg2+
@@ -2544,7 +2542,6 @@ MN2,Q8NCW6,cofactor_of,0.0,1,2.4.1.41,2,accession stated by BRENDA,Mn2+
 MN2,Q8NFF5,cofactor_of,0.0,1,2.7.7.2,1,accession stated by BRENDA,Mn2+
 MN2,Q8NFP7,cofactor_of,0.0,1,3.6.1.60,1,accession stated by BRENDA,Mn2+
 MN2,Q8NHY0,cofactor_of,0.0,2,2.4.1.165,2,EC class names exactly one human accession,Mn2+
-MN2,Q8TCT1,cofactor_of,0.0,1,3.1.3.75,1,EC class names exactly one human accession,Mn2+
 MN2,Q8TDP1,cofactor_of,0.0,1,3.1.26.4,1,accession stated by BRENDA,Mn2+
 MN2,Q8TDX6,cofactor_of,0.0,2,2.4.1.174;2.4.1.175,5,accession stated by BRENDA,Mn2+
 MN2,Q8WUD6,cofactor_of,0.0,1,2.7.8.2,1,accession stated by BRENDA,Mn2+
@@ -2709,7 +2706,7 @@ MAM01279,P07741,inhibits,-1.0,1,2.4.2.7,1,EC class names exactly one human acces
 MAM01279,P11086,inhibits,-1.0,1,2.1.1.28,1,EC class names exactly one human accession,adenine
 MAM01279,Q9Y2T3,inhibits,-1.0,1,3.5.4.3,1,EC class names exactly one human accession,adenine
 MAM01280,P23526,inhibits,-1.0,2,3.13.2.1,12,EC class names exactly one human accession;accession stated by BRENDA,adenosine
-MAM01280,P55263,inhibits,-1.0,3,2.7.1.20,3,EC class names exactly one human accession,adenosine
+MAM01280,P55263,inhibits,-1.0,2,2.7.1.20,2,EC class names exactly one human accession,adenosine
 MAM01280,Q8NBP7,inhibits,-1.0,1,3.4.21.61,1,accession stated by BRENDA,adenosine
 MAM01280,Q9UBF8,inhibits,-1.0,1,2.7.1.67,11,accession stated by BRENDA,adenosine
 MAM01280,Q9Y259,inhibits,-1.0,1,2.7.1.32,1,accession stated by BRENDA,adenosine
@@ -2827,7 +2824,6 @@ MAM01371,P07741,inhibits,-1.0,1,2.4.2.7,3,EC class names exactly one human acces
 MAM01371,P07902,inhibits,-1.0,1,2.7.7.12,1,EC class names exactly one human accession,ATP
 MAM01371,P11413,inhibits,-1.0,1,1.1.1.49,10,EC class names exactly one human accession,ATP
 MAM01371,P14735,inhibits,-1.0,1,3.4.24.56,1,EC class names exactly one human accession,ATP
-MAM01371,P18440,inhibits,-1.0,1,2.3.1.5,1,accession stated by BRENDA,ATP
 MAM01371,P21589,inhibits,-1.0,1,3.1.3.5,2,accession stated by BRENDA,ATP
 MAM01371,P23368,inhibits,-1.0,1,1.1.1.38,1,accession stated by BRENDA,ATP
 MAM01371,P40926,inhibits,-1.0,1,1.1.1.37,6,accession stated by BRENDA,ATP
@@ -3015,7 +3011,6 @@ MAM01623,Q9H1B5,inhibits,-1.0,1,2.4.2.26,1,accession stated by BRENDA,CTP
 MAM01623,Q9HAB8,inhibits,-1.0,1,6.3.2.51,2,EC class names exactly one human accession,CTP
 MAM01623,Q9NRF8,inhibits,-1.0,1,6.3.4.2,2,accession stated by BRENDA,CTP
 MAM01624,O00584,inhibits,-1.0,1,4.6.1.19,1,accession stated by BRENDA,Cu2+
-MAM01624,P00390,inhibits,-1.0,1,1.8.1.7,1,EC class names exactly one human accession,Cu2+
 MAM01624,P00750,inhibits,-1.0,1,3.4.21.68,1,EC class names exactly one human accession,Cu2+
 MAM01624,P04180,inhibits,-1.0,1,2.3.1.43,1,accession stated by BRENDA,Cu2+
 MAM01624,P04406,inhibits,-1.0,1,1.2.1.12,1,accession stated by BRENDA,Cu2+
@@ -3174,7 +3169,7 @@ MAM01713,Q9UK23,inhibits,-1.0,1,3.1.4.45,1,EC class names exactly one human acce
 MAM01721,P16455,inhibits,-1.0,1,2.1.1.63,1,EC class names exactly one human accession,DNA
 MAM01736,O00764,inhibits,-1.0,1,2.7.1.35,1,EC class names exactly one human accession,dopamine
 MAM01736,P07101,inhibits,-1.0,4,1.14.16.2,4,EC class names exactly one human accession;accession stated by BRENDA,dopamine
-MAM01736,P09417,inhibits,-1.0,2,1.5.1.34,2,EC class names exactly one human accession,dopamine
+MAM01736,P09417,inhibits,-1.0,1,1.5.1.34,1,EC class names exactly one human accession,dopamine
 MAM01736,P14679,inhibits,-1.0,1,1.14.18.1,1,EC class names exactly one human accession,dopamine
 MAM01736,P20711,inhibits,-1.0,1,4.1.1.28,1,EC class names exactly one human accession,dopamine
 MAM01736,P50225,inhibits,-1.0,2,2.8.2.1,2,accession stated by BRENDA,dopamine
@@ -3205,7 +3200,7 @@ MAM01787,P22309,inhibits,-1.0,1,2.4.1.17,1,accession stated by BRENDA,estradiol
 MAM01787,P47989,inhibits,-1.0,1,1.17.1.4,1,EC class names exactly one human accession,17beta-estradiol
 MAM01787,P49448,inhibits,-1.0,1,1.4.1.3,1,accession stated by BRENDA,17beta-estradiol
 MAM01787,P49888,inhibits,-1.0,2,2.8.2.4,2,EC class names exactly one human accession,17beta-estradiol
-MAM01787,Q06278,inhibits,-1.0,2,1.2.3.1,2,EC class names exactly one human accession,estradiol
+MAM01787,Q06278,inhibits,-1.0,1,1.2.3.1,1,EC class names exactly one human accession,estradiol
 MAM01787,Q9H999,inhibits,-1.0,1,2.7.1.33,1,accession stated by BRENDA,estradiol
 MAM01787,Q9HAW9,inhibits,-1.0,1,2.4.1.17,1,accession stated by BRENDA,estradiol
 MAM01788,O60218,inhibits,-1.0,1,1.1.1.21,1,accession stated by BRENDA,estriol
@@ -3373,7 +3368,7 @@ MAM02027,P49591,inhibits,-1.0,1,6.1.1.11,1,accession stated by BRENDA,GSSG
 MAM02027,P49888,inhibits,-1.0,1,2.8.2.4,1,EC class names exactly one human accession,GSSG
 MAM02034,O14735,inhibits,-1.0,1,2.7.8.11,2,EC class names exactly one human accession,GTP
 MAM02034,O14832,inhibits,-1.0,1,1.14.11.18,1,accession stated by BRENDA,GTP
-MAM02034,P00367,inhibits,-1.0,3,1.4.1.3,3,accession stated by BRENDA,GTP
+MAM02034,P00367,inhibits,-1.0,2,1.4.1.3,2,accession stated by BRENDA,GTP
 MAM02034,P06744,inhibits,-1.0,1,5.3.1.9,1,EC class names exactly one human accession,GTP
 MAM02034,P12268,inhibits,-1.0,1,1.1.1.205,6,accession stated by BRENDA,GTP
 MAM02034,P21980,inhibits,-1.0,1,2.3.2.13,1,accession stated by BRENDA,GTP
@@ -3397,7 +3392,6 @@ MAM02041,P14735,inhibits,-1.0,1,3.4.24.56,1,EC class names exactly one human acc
 MAM02041,P14902,inhibits,-1.0,1,1.13.11.52,1,EC class names exactly one human accession,H2O2
 MAM02041,P18440,inhibits,-1.0,1,2.3.1.5,1,accession stated by BRENDA,hydrogen peroxide
 MAM02041,P22303,inhibits,-1.0,2,3.1.1.7,2,EC class names exactly one human accession,H2O2
-MAM02041,P30793,inhibits,-1.0,1,3.5.4.16,1,EC class names exactly one human accession,H2O2
 MAM02041,P32119,inhibits,-1.0,2,1.11.1.24,2,accession stated by BRENDA,H2O2
 MAM02041,P32754,inhibits,-1.0,1,1.13.11.27,1,EC class names exactly one human accession,H2O2
 MAM02041,P32929,inhibits,-1.0,1,4.4.1.1,1,EC class names exactly one human accession,H2O2
@@ -3524,7 +3518,6 @@ MAM02402,Q04828,inhibits,-1.0,2,1.1.1.149;1.3.1.20,2,EC class names exactly one 
 MAM02402,Q06520,inhibits,-1.0,2,2.8.2.14;2.8.2.2,2,accession stated by BRENDA,lithocholic acid
 MAM02426,P00747,inhibits,-1.0,1,3.4.21.7,1,EC class names exactly one human accession,L-lysine
 MAM02426,P05089,inhibits,-1.0,2,3.5.3.1,2,accession stated by BRENDA,L-lysine
-MAM02426,P78540,inhibits,-1.0,1,3.5.3.1,1,accession stated by BRENDA,lysine
 MAM02426,Q8N5Z0,inhibits,-1.0,1,2.6.1.7,1,accession stated by BRENDA,L-lysine
 MAM02439,Q9UM07,inhibits,-1.0,1,3.5.3.15,1,accession stated by BRENDA,malic acid
 MAM02440,Q99489,inhibits,-1.0,3,1.4.3.1,5,EC class names exactly one human accession;accession stated by BRENDA,malonate
@@ -3773,7 +3766,6 @@ MAM02736,P52429,inhibits,-1.0,1,2.7.1.107,1,accession stated by BRENDA,"phosphat
 MAM02736,Q9GZT4,inhibits,-1.0,1,5.1.1.18,1,accession stated by BRENDA,"phosphatidylinositol-4,5-bisphosphate"
 MAM02738,Q99447,inhibits,-1.0,1,2.7.7.14,1,EC class names exactly one human accession,phosphocholine
 MAM02751,O14735,inhibits,-1.0,1,2.7.8.11,3,EC class names exactly one human accession,phosphate
-MAM02751,O15528,inhibits,-1.0,1,1.14.15.18,1,EC class names exactly one human accession,phosphate
 MAM02751,O43314,inhibits,-1.0,2,2.7.4.21;2.7.4.24,2,accession stated by BRENDA,phosphate
 MAM02751,P04053,inhibits,-1.0,1,2.7.7.31,1,EC class names exactly one human accession,phosphate
 MAM02751,P04818,inhibits,-1.0,1,2.1.1.45,1,accession stated by BRENDA,phosphate
@@ -3890,8 +3882,6 @@ MAM02877,O14744,inhibits,-1.0,1,2.1.1.320,1,accession stated by BRENDA,S-adenosy
 MAM02877,P19623,inhibits,-1.0,1,2.5.1.16,1,EC class names exactly one human accession,S-adenosyl-L-methionine
 MAM02877,P23526,inhibits,-1.0,1,3.13.2.1,2,EC class names exactly one human accession,S-adenosyl-L-methionine
 MAM02877,P42898,inhibits,-1.0,2,1.5.1.20;1.5.1.53,2,accession stated by BRENDA,S-adenosyl-L-methionine
-MAM02877,Q93088,inhibits,-1.0,1,2.1.1.5,1,EC class names exactly one human accession,S-adenosyl-L-methionine
-MAM02877,Q9H2M3,inhibits,-1.0,1,2.1.1.10,1,EC class names exactly one human accession,S-adenosyl-L-methionine
 MAM02887,Q14534,inhibits,-1.0,2,1.14.14.17,2,EC class names exactly one human accession,Selenite
 MAM02896,O43175,inhibits,-1.0,1,1.1.1.95,8,EC class names exactly one human accession,L-serine
 MAM02896,P34896,inhibits,-1.0,1,2.1.2.1,5,accession stated by BRENDA,L-serine
@@ -4079,7 +4069,6 @@ MAM03402,P12955,inhibits,-1.0,1,3.4.13.9,1,EC class names exactly one human acce
 MAM03402,P51580,inhibits,-1.0,1,2.1.1.67,1,EC class names exactly one human accession,paracetamol
 MAM03402,Q9NY33,inhibits,-1.0,1,3.4.14.4,1,accession stated by BRENDA,paracetamol
 MAM03418,P47989,inhibits,-1.0,5,1.17.1.4;1.17.3.2,32,EC class names exactly one human accession;accession stated by BRENDA,allopurinol
-MAM03418,Q06278,inhibits,-1.0,1,1.2.3.1,1,accession stated by BRENDA,allopurinol
 MAM03419,P14618,inhibits,-1.0,1,2.7.1.40,1,accession stated by BRENDA,lysophosphatidic acid
 MAM03419,P80108,inhibits,-1.0,1,3.1.4.50,1,EC class names exactly one human accession,lysophosphatidic acid
 MAM03419,Q13822,inhibits,-1.0,3,3.1.4.39,3,EC class names exactly one human accession;accession stated by BRENDA,lysophosphatidic acid

@@ -1,10 +1,10 @@
 {
- "regulation_records_read": 150238,
- "distinct_ligand_names": 116654,
+ "regulation_records_read": 150173,
+ "distinct_ligand_names": 116631,
  "ligand_names_resolved_to_a_metabolite": 696,
  "ligand_resolution": {
-  "no ChEBI term for the name": 112689,
-  "a ChEBI term but no Human-GEM metabolite (unmapped)": 3266,
+  "no ChEBI term for the name": 112668,
+  "a ChEBI term but no Human-GEM metabolite (unmapped)": 3264,
   "matched a Human-GEM display name": 462,
   "a ChEBI term but no Human-GEM metabolite (class_term)": 3,
   "ChEBI route, equivalent": 189,
@@ -13,16 +13,51 @@
  },
  "enzyme_resolution": {
   "EC class names none or several human accessions": 3570,
-  "accession stated by BRENDA": 3624,
-  "EC class names exactly one human accession": 2405,
-  "accession is not a graph protein node": 310
+  "accession stated by BRENDA": 3623,
+  "EC class names exactly one human accession": 2398,
+  "accession is not a graph protein node": 308
  },
- "pairs_written": 4143,
+ "pairs_written": 4132,
  "pairs_by_relation": {
   "cofactor_of": 2109,
-  "inhibits": 1552,
-  "activates": 482
+  "inhibits": 1544,
+  "activates": 479
  },
  "distinct_metabolites": 501,
- "distinct_enzymes": 1364
+ "distinct_enzymes": 1365,
+ "records_by_relation_and_note_class": {
+  "activates: absence not unambiguously about this enzyme, kept": 4,
+  "activates: activation and absence both stated": 41,
+  "activates: no note of absence": 5472,
+  "cofactor_of: ": 7261,
+  "inhibits: inhibition and absence both stated": 156,
+  "inhibits: no note of absence": 137053,
+  "no_activation: no effect on this enzyme, no activation stated": 2,
+  "no_inhibition: no inhibition of this enzyme": 184
+ },
+ "no_inhibition_pairs_written": 8,
+ "no_inhibition_pairs_that_are_also_inhibits_pairs": 4,
+ "no_activation_pairs_written": 0,
+ "no_activation_pairs_that_are_also_activates_pairs": 0,
+ "compared_with": {
+  "path": "data/processed/brenda_metabolite_enzyme_regulation_before_regeneration.csv",
+  "activates": {
+   "before": 482,
+   "after": 479,
+   "lost": 3,
+   "gained": 0
+  },
+  "cofactor_of": {
+   "before": 2109,
+   "after": 2109,
+   "lost": 2,
+   "gained": 2
+  },
+  "inhibits": {
+   "before": 1552,
+   "after": 1544,
+   "lost": 8,
+   "gained": 0
+  }
+ }
 }

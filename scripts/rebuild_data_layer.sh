@@ -349,9 +349,11 @@ if [ "$stage" = "brenda" ]; then
   cp "$derived_table" "$table_before"
   step "$processed/brenda_regulation_records.csv" "BRENDA regulation records from the human subset" \
     python experiments/extract_brenda_enzyme_regulation.py "$brenda_subset" --output "$processed/brenda_regulation_records.csv"
-  # not a step: its output is a committed table, which always exists, so the skip rule would never run it
+  # not a step: its output is a committed table, which always exists, so the skip rule would never run it. PYTHONPATH=.
+  # because the mapper imports experiments.extract_brenda_enzyme_regulation; without it the stage failed on its first run
+  # (4 November 2026) with "No module named 'experiments'"
   echo "building the derived BRENDA table from $split_graph"
-  python experiments/map_brenda_regulation_to_graph.py \
+  PYTHONPATH=. python experiments/map_brenda_regulation_to_graph.py \
     --regulation-records "$processed/brenda_regulation_records.csv" --graph-dir "$split_graph" \
     --output "$derived_table" --summary docs/brenda_regulation_mapping.json \
     --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \
