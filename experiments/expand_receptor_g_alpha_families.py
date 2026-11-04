@@ -15,8 +15,13 @@ that role. What every run before 26 October 2026 held instead was GPCRdb's `prim
 receptor, which this expansion copies onto every row of that receptor, so a paper was attached to couplings it does not
 support. HRH2 was the case found: all six of its rows cited `8961278|2553705`, and PMID 2553705 (Mitsuhashi et al.
 1989) concludes that the H2 calcium response is "inhibited by cholera toxin but not by pertussis toxin", which excludes
-Gq/11, so its four Gq/11 rows now cite 8961278 alone (Kuehn et al. 1996, which reports H2 labelling of alpha q and
-alpha 11) while its two Gs rows keep both. A receptor whose list has not been checked row by row still carries
+Gq/11, so from 26 October to 4 November 2026 its four Gq/11 rows cited 8961278 alone (Kuehn et al. 1996, which reports
+H2 labelling of alpha q and alpha 11) while its two Gs rows kept both. Since 4 November 2026 HRH2 has no Gq/11 row and
+its Gs rows are primary (decision 9.79, the owner: "accepted"): every Gq/11 observation for the H2 receptor is
+heterologous and none uses the human receptor, which the owner's ruling of 2 November 2026 holds too weak to stand
+alone, and its native-tissue arguments on either side turn on cholera-toxin sensitivity, which Zhu et al. 1994 shows is
+"a rather general effect not related specifically to the Gs-coupled receptors" (p. 465). A receptor whose list has
+not been checked row by row still carries
 GPCRdb's field as before: 84 of the 253 receptors share one multi-PMID list across two or more family or role groups,
 the shape of the HRH2 defect, and are owed that check (decision 9.99).
 
