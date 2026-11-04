@@ -183,7 +183,9 @@ Consequences of the user's decision:
   graph"; amendment of 9 October 2026 (fourth)), which is what `FULL_GRAPH_ARGUMENTS_V2` of
   experiments/run_main_model_batch.py names. The registered model since the amendments of 12 and 13 October 2026 (the
   v4 flags, `--num-layers 3` the trainer's default) reads the v5 drug and allele graph built on that variant,
-  graph_full_neuronal_split_binders_drugs_v5 (scripts/rebuild_data_layer.sh). The degree check on the full split graph
+  graph_full_neuronal_split_binders_drugs_v5 (scripts/rebuild_data_layer.sh), which the registered code has not yet
+  built: the directories of that name written on 20 October 2026 came from a build the owner had not asked for and are
+  not v5 (decision 9.106). The degree check on the full split graph
   is done and `encodes` is held fixed in the H2 rewiring (point 8 above, the user's second amendment of 9 October
   2026); the development pilots on the split graph come before any lockbox run.
 

@@ -514,8 +514,8 @@ edge forms a negative two-cycle with the depletes_substrate edge the encoder der
 neuronal graph, measured by `experiments/measure_signed_graph_balance.py` on 7 October 2026 on the slice
 graphs of that day (`data/processed/graph`, the 94,786 stored edges of the release v0.4 `graph` table plus
 34,791 derived depletion edges, and the graph_neuronal build of the same day). The graph has been rebuilt
-several times since (the v4 and v5 builds), so these are the counts of that graph, not of the current
-one. So the balance-theoretic
+several times since (the v4 build, and October builds under the v5 names that decision 9.106 rules are not
+v5), so these are the counts of that graph, not of the current one. So the balance-theoretic
 tools are unavailable here, and the papers that work best on association networks do so partly because
 those networks are close to balanced.
 

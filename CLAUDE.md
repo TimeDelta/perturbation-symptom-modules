@@ -36,6 +36,11 @@ against them before it is acted on.
   random walk because "it's on like v.1 or v.2 graph when it barely matched the physiology and before most of the
   decisions were made that completely changed the graph structure and propagation mechanisms" (decision 9.82). When
   the current graph is not available, say so and say which graph the number is from, rather than substituting it.
+- **The project is the qualifying exam, and its bound is what the owner can follow** (the owner, 27 October 2026,
+  correcting a proposal that parked work behind the exam: "i disagree with gating things behind the qualifying exam
+  because this project IS the qualifying exam. i just need to make sure it doesn't go too far for me to be able to
+  understand the project"). So work is not deferred until after the exam; the limit is that it does not go further
+  than the owner can understand.
 
 ## Code (21 October 2026)
 
@@ -124,6 +129,13 @@ against them before it is acted on.
   auth, the API answering "API key is missing" with the proxy reporting `upstream auth failed`, and the pages
   redirecting to the login form. The data downloads under `/DATA/` need no key and are fetched by
   `scripts/fetch_raw_sources.sh` as before.
+- **zfin.org's certificate root is trusted for its two downloads** (the owner, 4 November 2026: "add those ZFIN back
+  to the trusted certificates please"). zfin.org chains to emSign Root CA - G1, which Ubuntu's current ca-certificates
+  no longer ships, so curl could not verify it. The root is in `configs/tls/emsign_root_ca_g1.pem`, taken from Ubuntu's
+  ca-certificates 20240203 and not from zfin.org's own chain, with its provenance in the file, and
+  `scripts/fetch_raw_sources.sh` trusts it for the two zfin.org fetches alone after checking its pinned fingerprint.
+  The container's trust store is not changed and no other host is read with it; the two other emSign roots Ubuntu
+  dropped are not added.
 - **A paper with no peer review is excluded; a recent one is kept and marked for follow-up** (the owner, 27 October
   2026: "No peer review means toss the paper unless it's recent then just mark it for follow up"). **Excluded means
   what decision 9.100 did to the Fagerholm preprint, not deleted**: the citation stays where it is, marked excluded
@@ -163,19 +175,23 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   set to `fable`), or leaves that step undone and says so. A research step whose model falls back from Fable is
   stopped and reported, not finished on the fallback model.
 - **Research done on another model before this rule was recorded** is flagged where it is recorded and rechecked by
-  a Fable pass before it is relied on. The one known case: the Fenckova et al. 2019 licence row of
+  a Fable pass before it is relied on. The known cases: the Fenckova et al. 2019 licence row of
   `docs/data_sources.md`, read on 25 October 2026. Rechecked on Fable on 25 October 2026: the non-Fable reading
   ("All rights reserved", from PubMed's copyright record) was wrong; the version of record is CC BY-NC-ND 4.0, read on
   the publisher's PDF in the Radboud Repository and matched by Crossref, Europe PMC and OpenAlex (the row and
-  `docs/label_source_review.md` section 36 hold the quote). No case flagged under this rule remains open.
+  `docs/label_source_review.md` section 36 hold the quote); and `lee2015cytoplasmic` in `docs/references.bib`, read on
+  Opus 5.5 on 24 October 2026 and flagged in its note and in item 8 of `docs/exploration_queue.md`, which has had no
+  Fable recheck; item 8 is parked, so nothing relies on it (found in the review of 4 November 2026).
 - **One case ran under a waiver, which is not the same thing** (recorded 27 October 2026). The bullet above covers
   research done before the rule existed. A second kind has since arisen: research done on another model after the
   rule, with the owner's explicit permission for that piece of work (26 October 2026: "Don't worry about fable this
   time"). The SERPINA6 free-cortisol record in `docs/open_decisions.md` 9.68 was written that way, is flagged in its
   own row, and was rechecked on Fable on 1 November 2026, which left it standing: every citation exists and every
   quotation is in the source named, nothing is withdrawn, and the two gaps that remain (a subscription-only table in
-  Torpy et al. 2001 and a paraphrase of Mendel 1989) are named in the row and relied on by nothing. So a reader asking
-  whether any research on `main` awaits a Fable recheck should now read no. **How a waiver works is the owner's to set
+  Torpy et al. 2001 and a paraphrase of Mendel 1989) are named in the row and relied on by nothing. So nothing written under the
+  waiver awaits a recheck. Two readings on Opus still do, each flagged where it stands: `lee2015cytoplasmic` (the
+  bullet above) and the literature of item 5 of `docs/exploration_queue.md`, read on 26 October 2026, after the rule;
+  both items are parked (found 4 November 2026; this sentence had said none did). **How a waiver works is the owner's to set
   and is not stated here**: whether a waived pass still needs a later Fable recheck before it is relied on, and
   whether a waiver covers one turn or a session, are both open. Until they are settled, a waived pass is flagged where
   it is recorded, as 9.68 is.
@@ -204,7 +220,8 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
 - **The decision log and the pages generated from it go in two commits.** `docs/decision_history.md` records the hash
   of the commit that first holds each row, so it cannot be generated inside that commit, and amending the commit
   changes the hash. Commit the change to `docs/open_decisions.md` first, then run the generators and commit the
-  regenerated pages (`docs/decision_history.md`, `docs/status.md`, `docs/README.md`) on their own.
+  regenerated pages (`docs/decision_history.md`, `docs/status.md`, `docs/README.md`, `docs/registered_core.md`,
+  `docs/file_index.md`) on their own.
 - **A long row is edited by uniquely-anchored replacement, never by rewriting the row** (27 October 2026). Row
   9.100 of `docs/open_decisions.md` lost eight characters - six inside words and two bold markers - while it was
   being authored and rewrapped as a single 11,744-character line; the losses were already in the committed text, so
@@ -219,7 +236,9 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   shallow clone and name the fix, `git fetch --depth=1000 origin main`; `--allow-shallow` overrides it on purpose.
 - **After changing data, rules, decisions or documents:** `python experiments/generate_status.py`,
   `python experiments/generate_decision_history.py`, `python experiments/generate_amendment_history.py`,
-  `pytest tests/test_documentation_process.py -q`.
+  `python experiments/generate_registered_core.py`, `python experiments/generate_file_index.py`,
+  `pytest tests/test_documentation_process.py -q` (the last two generators were added on 27 October and 2 November
+  2026; the test fails on a page any of them would write differently).
 - **Run repository scripts from the checkout's root with `PYTHONPATH=.`** (for example
   `PYTHONPATH=. python experiments/generate_status.py`). When the package is installed in editable mode from another
   checkout or worktree, a script run without it imports that checkout's code, and the generators then write into that

@@ -138,7 +138,8 @@ each row are in the list "Numbers retired on 27 October 2026" below. No row is e
 
 Data layer (release `data/releases/v0.4`, created 6 October 2026, the one committed release; the counts below are that
 release's and are reported by docs/status.md. The graphs the registered model trains on, `graph_full_neuronal_split_*`
-under `data/processed/` through the v4 and v5 rebuilds, are not in a release and are not counted here):
+under `data/processed/`, are not in a release and are not counted here; the v5 build the registration names has not been
+made yet, the October directories under the v5 names coming from a build the owner had not asked for, decision 9.106):
 
 - Graph: 33,964 nodes and 255,367 typed edges (Human-GEM 2.0.1 with compartments, OmniPath, CollecTRI regulons
   restricted to brain-expressed transcription factors, GTEx v10 brain expression on gene nodes). The regulon

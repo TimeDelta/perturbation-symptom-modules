@@ -9,7 +9,9 @@ This document moved into the repository on 26 October 2026 from the Project note
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
 were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, and item 9 on 28 October 2026.
 
-Checked against `main` at `0b976bf` on 26 October 2026.
+Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Items 5 and 8 carry
+literature read on Opus and not yet rechecked on Fable (item 5's read on 26 October 2026, item 8's source
+`lee2015cytoplasmic` on 24 October 2026), flagged where they stand; both items are parked, so nothing relies on them.
 
 Added 27 October 2026: the owner retired the two readout records (`docs/steady_state_readout_alternatives.md`,
 `docs/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
@@ -140,7 +142,13 @@ touch perturbed genes or lie on paths to labelled symptoms. If the count is smal
 - Desensitisation as a mechanism waits on case 4 of `docs/nonlinearity_inventory.md`; explicit phosphorylation adds
   nothing there until saturation enters the propagation.
 
-**Status.** Parked behind the qualifying exam, the 9.97 cyclase handoff and the decisions in `docs/status.md`.
+**Status.** Parked behind the decisions in `docs/status.md`. Until 4 November 2026 this line also parked it behind the
+qualifying exam and the 9.97 cyclase handoff. The owner, 27 October 2026: "i disagree with gating things behind the
+qualifying exam because this project IS the qualifying exam. i just need to make sure it doesn't go too far for me to
+be able to understand the project", so what bounds an item is whether the owner can follow it, not the exam. The
+cyclase handoff is worked through: both of 9.97's questions were ruled on 2 November 2026 and no Gi/o-to-cyclase edge
+changes on them; what remains of 9.97 is the form of the G beta gamma conjunction and, after the rebuild, the sign
+sweep of 9.86 before 9.80 is decided.
 
 ---
 

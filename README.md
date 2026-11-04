@@ -29,6 +29,11 @@ changed after it was written: the linear-response encoder
 message-passing encoder a robustness reading (decision 9.77, 22 October 2026; `tested_models` and `robustness_models`
 in `configs/registered_rules.json`); flux sampling was dropped from the confirmation on 8 October 2026
 (`docs/research_summary.md`); and the label likelihood is positive-unlabelled (decision 9.90, `label_likelihood`).
+Two rulings bear on every number in it. The measurements of the slice-pilot period are history and not evidence about
+the current graph or encoders (the owner, 27 October 2026: "ANY numbers from that time are to have the same treatment",
+decision 9.103); exactly which measurements "that time" covers is open (9.104). And the v5 graph the
+registration names has not yet been built: the directories of that name written in October came from a build the
+owner had not asked for (decision 9.106, 28 October 2026).
 
 Phase 1 is measured and Phases 2 and 3 have started on the monogenic slice. The slice is a pilot; the confirmatory test is the full graph with every layer (docs/preregistration.md, amendment of 7 October 2026). Implemented and tested:
 the noisy-OR pathway module head (sum or mean pooling over hard-concrete supports), soft constraint
@@ -72,7 +77,10 @@ rows are grade E soft priors and never labels or evaluation positives (the exper
 
 A new container has no `data/raw`, `data/processed` or `runs/`. `bash scripts/rebuild_data_layer.sh` fetches the pinned sources and rebuilds the
 graphs, the evidence tables and the label selections in dependency order; docs/data_layer_rebuild.md records what that reproduced on 10 October 2026
-and what it did not. Install pandas 2.3.3 and pyarrow 25.0.1 first if the tables are to be compared with recorded hashes.
+and what it did not. Install pandas 2.3.3 and pyarrow 25.0.1 first if the tables are to be compared with recorded hashes. The derived BRENDA table
+is regenerated afterwards by `bash scripts/rebuild_data_layer.sh brenda`, which needs the split graph the first run builds; when the table changes,
+the stage prints the graphs to delete before the first run is repeated (decision 9.88). The script's header lists its other stages, and
+`experiments/check_rebuild_inputs.py`, which it runs first, reports what would be skipped and what is stale.
 
 Reproduce the data layer by hand (downloads about 110 MB; raw files stay out of git). Human-GEM and the HPO files are fetched by tag: the `main` branch
 of Human-GEM moved to 2.1.1 on 7 October 2026 and no longer gives the graph of data/releases/v0.4.

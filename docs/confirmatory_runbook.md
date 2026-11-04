@@ -34,6 +34,13 @@ these changes touches says so where it applies:
   registered on 9 October 2026; no lockbox run has been made on either.
 - The descriptor treatment is decided (amendment item 21, 13 October 2026): `seed_masked` in both encoders, which is
   the trainer's default with `--node-descriptors`. Step 2b's wait for the user's confirmation ended with it.
+- The membrane potential is computed from the pools (decision 9.87, 26 October 2026): the registered rule
+  `membrane_potential_build` is `computed_from_the_pools`, and `scripts/rebuild_data_layer.sh` passes it to every
+  neuronal variant it builds, so the graph a run reads is the one that script writes.
+- The v5 graph named above has not been built. The directories of that name written on 20 October 2026 came from a
+  build the owner had not asked for and are not v5 (decision 9.106); the real v5 is what `scripts/rebuild_data_layer.sh`
+  writes. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
+  ("A measurement carries the graph it was taken on") points toward, is the owner's open question 9.106 (a).
 
 ## Steps
 

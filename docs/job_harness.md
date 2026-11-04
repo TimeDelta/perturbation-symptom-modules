@@ -93,9 +93,15 @@ session enable four routines that wake a session it is not.
 
 ## What a firing does when a job is active
 
-The prompts hold the detail. In outline: pull, run the resume script, arm one background wait per unfinished job
-against that job's own markers, and report a finished job against the twin the documents name. The working documents
-win over any summary in a routine's prompt, which has gone stale before: docs/confirmatory_runbook.md,
+The prompts hold the detail, and the documents win over any summary in a prompt, which has gone stale before. In
+outline, for the four routines of 4 November 2026: run the resume script, which relaunches an unfinished job and
+reports each; arm one background wait per unfinished job against that job's own markers; and report a job that ended
+to the owner, starting no next stage without the owner's go-ahead in their own message. They do not pull while a
+registered job is running, because a pull could change a shell script under it (`CLAUDE.md`, Jobs) or the code a
+later step of a build runs, so that one build mixes two commits; they pull once no job runs. The documents their
+prompts name are `CLAUDE.md`, `docs/status.md`, `docs/open_decisions.md`, `docs/data_layer_rebuild.md` and this page.
+
+The October routines, paused since 9 October 2026, pulled first and named docs/confirmatory_runbook.md,
 docs/preregistration.md, docs/graph_content_null_results.md, docs/membrane_potential_reach.md and
 docs/literature_appraisal_staging.md (written by the paced literature appraisal of 7 October 2026,
 `scripts/literature_pacing.sh`: read it, never edit it).

@@ -11,6 +11,13 @@ evidence about the current graph or encoders. Figures 15 and 16 read the planted
 gates (`docs/edge_gate_simulation_results.json`). No figure reads a lockbox output, and no full-graph model has been
 scored.
 
+**Corrected 4 November 2026 (decision 9.106).** No graph or table under the `_v5` names that existed before November
+2026 is the v5 the registration means: on 28 October 2026 the owner ruled that "the real v5 has not yet been built".
+The drawings of 17 October 2026 were committed between 00:57 and 05:27 UTC that day, before commit 344d211 (07:12 UTC),
+from which the build decision 9.106 names was made, so they read an earlier `_v5` build still. Their counts are
+readings of that build, not of v5, and the figures are to be redrawn on the real v5 once it is built. Whether readings
+of those builds are reported as history only is the owner's open question 9.106 (a).
+
 ## 1. The model
 
 ![model pipeline](figures/model_pipeline.png)
@@ -179,7 +186,8 @@ paper; 3 pairs whose sources disagree and 2,760 that no source types stay untype
 Left: the 163,276 gated edges of the v5 graph by evidence tier, with the prior that each is real in the form decided on
 16 October 2026, sigmoid(n logit p), and the cost of closing it, n logit p nats (decision 9.62). Only the 15 edges an
 IntAct absence lowered below one half are cheaper closed; that count is of 17 October 2026, before decision 9.88
-(22 October 2026) stopped an isoform record from contesting a gene pair, and has not been measured on v5 since. Right: a
+(22 October 2026) stopped an isoform record from contesting a gene pair, and before decision 9.88 (a) (4 November
+2026) set aside the records IntAct cautions as one unconfirmed isoform; it has not been measured on v5 since. Right: a
 hard concrete gate (Louizos et al. 2018) started at its prior is mostly fractional, and the paper's test-time gate
 reads a 0.9 edge as 0.67; that is why the decided build ends with a binary pass, which trains the gates alone with the
 read-out (open when P(open) is at least one half) in the forward pass and a surrogate gradient in the backward pass.

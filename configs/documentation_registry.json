@@ -5,13 +5,13 @@
   "documents": {
     "CLAUDE.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "README.md": {
       "class": "living",
-      "reviewed": "2026-10-27",
-      "as_of_commit": "2622ed0"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/README.md": {
       "class": "generated",
@@ -158,8 +158,8 @@
     },
     "docs/confirmatory_runbook.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b",
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139",
       "names_absent_paths": {
         "docs/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
         "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
@@ -182,8 +182,8 @@
     },
     "docs/data_sources.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/decision_history.md": {
       "class": "generated",
@@ -215,8 +215,8 @@
     },
     "docs/documentation_process.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/drug_administration_routes.md": {
       "class": "generated",
@@ -266,21 +266,21 @@
     },
     "docs/evidence_reports_spec.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/experiment_design.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b",
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139",
       "names_absent_paths": {
         "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
       }
     },
     "docs/exploration_queue.md": {
       "class": "living",
-      "reviewed": "2026-10-26",
-      "as_of_commit": "0b976bf",
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139",
       "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
     },
     "docs/exposure_sources/benet2011_bddcs.md": {
@@ -329,8 +329,8 @@
     },
     "docs/figures.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/file_index.md": {
       "class": "generated",
@@ -362,8 +362,8 @@
     },
     "docs/gene_protein_split.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b",
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139",
       "names_absent_paths": {
         "docs/split_slice_comparisons.md": "a slice comparison table the document says exists; no commit has held it",
         "docs/split_slice_comparisons_merged_strata.md": "as above"
@@ -405,8 +405,8 @@
     },
     "docs/job_harness.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/knowledge_graph_practices_review.md": {
       "class": "record",
@@ -464,8 +464,8 @@
     },
     "docs/literature_appraisal_staging.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/literature_survey.md": {
       "class": "generated",
@@ -473,8 +473,8 @@
     },
     "docs/literature_survey_spec.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/mechanism_cards/b6_default_disease_cluster/anxiety.md": {
       "class": "generated",
@@ -548,8 +548,8 @@
     },
     "docs/membrane_potential_constants.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/membrane_potential_reach.md": {
       "class": "record",
@@ -738,8 +738,8 @@
     },
     "docs/preregistration.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/preregistration_amendment_draft.md": {
       "class": "draft",
@@ -794,8 +794,8 @@
     },
     "docs/research_summary.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-04",
+      "as_of_commit": "0fd0139"
     },
     "docs/rewiring_null_distribution.md": {
       "class": "generated",
