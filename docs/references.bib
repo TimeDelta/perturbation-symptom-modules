@@ -7435,3 +7435,56 @@
   pmid    = {28194766},
   note    = {An {NC}-{IUPHAR} review. Supplied by the owner on 2 November 2026 and pinned against decision 9.99 at their request ("sure. pin it on that row"); read in full on Fable the same day. Pinned at data/raw/supplied\_papers/mas1\_iuphar\_review\_22\_karnik2017.pdf ({SHA}-256 7ce3a7fb981bbfd5..., 936,379 bytes, 17 pages, printed 737-753, gitignored and not redistributed); the {PDF}-to-printed offset is 736. FIELDS verified against PubMed ({PMID} 28194766, {PMC}5387002, Br J Pharmacol 174(9):737-753, doi 10.1111/bph.13742, four authors in this order) and Europe {PMC}; the two agree on every field. LICENCE, read on the paper, p. 737: "(c) 2017 The British Pharmacological Society" -- the only rights statement in the 17 pages, with no Creative Commons or open-access statement anywhere; corroborated by PubMed's copyright record (holder "The British Pharmacological Society", licence null, open access false), by the {PMC} page for {PMC}5387002 and by Europe {PMC} (isOpenAccess N, licence None). The publisher's own page answered {HTTP} 403 to experiments/read\_public\_page.py on 2 November 2026 and was not worked around. So QUOTATION ONLY: no table or figure of this paper goes into a committed file, as with Dessauer in docs/label\_source\_review.md section 43. WHAT IS HELD: the full text. WHAT IT SUPPORTS, all on p. 744 and all at G-protein FAMILY level -- the review names no G alpha gene anywhere, so it supports no row of configs/admitted\_receptor\_g\_alpha\_coupling.csv at gene resolution: (i) Gq/11, transfected cell only, "In transfected {HEK}293 cells, the {MAS1} receptor was found to activate Gq/11-{PKC} signalling without ligand stimulation (Canals et al., 2006)"; (ii) G alpha s, native rat kidney with an A-779 control, "Ang(1-7) treatment increased c{AMP} levels and activated {PKA} through G alpha s activation by {MAS1} receptors", a family the coupling table carries no row for; (iii) the only Gi sentence in the paper, "The {MAS1} receptor was also shown to constitutively couple to G alpha i, G alpha q and G alpha 12/13 proteins", a bundled ten-citation statement that apportions nothing and whose list includes two papers on other receptors (Chen and Ikeda 2004 on {SNSR4}/mrgX1, Singh et al. 2010 on a {P2Y} receptor). It also records two negatives: Ang(1-7) "does not modulate Gq-{PLC} signalling in {MAS1}-expressing cells", and in early transfected-cell studies treatment "did not produce a G protein coupled calcium, {IP}3 and c{AMP} signalling response". TRAP: the paper's only occurrence of the string "Gi/o" is about {AT2} and {MRGPRD}, not {MAS1} (p. 744), and must not be cited on a {MAS1} row. Its reference list confirms the coupling table's iuphar\_target\_id 150 ("Class A orphans: {MAS1} ... objectId=150") and lists Zhang et al. ({PMID} 22003054) twice, once dated 2011 and once 2012, for the same article}
 }
+
+@article{antonopoulos2026zeroshot,
+  author  = {Antonopoulos, Konstantinos and Nordenstorm, Olof and Nilsson, Avlant},
+  title   = {Zero-shot prediction of drug responses using biologically informed neural networks trained on phosphoproteomic timeseries},
+  journal = {PLoS Computational Biology},
+  year    = {2026},
+  volume  = {22},
+  number  = {3},
+  pages   = {e1014100},
+  doi     = {10.1371/journal.pcbi.1014100},
+  pmid    = {41849361},
+  pmcid   = {PMC13035234},
+  note    = {FULL TEXT HELD: the publisher's {PDF}, supplied by the owner on 4 November 2026 (not committed) and read in full on Fable the same day. Every field read from the PubMed record and confirmed against Europe {PMC} (volume 22, issue 3, e1014100, published 18 March 2026). Peer reviewed: a {PLOS} Computational Biology research article, received 27 October 2025, accepted 7 March 2026 (p. 1). Licence {CC} {BY} 4.0, read on p. 1 ("distributed under the terms of the Creative Commons Attribution License"), the version from the Europe {PMC} {XML} license\_ref. Extends {LEMBAS} (nilsson2022artificial) to time series; the recurrent core keeps "penalties for learning the wrong sign of the weight relative to the known mode of action (Activation/Inhibition) and a spectral radius regularizer to promote convergent dynamics" (pp. 14-15), "enforced using five power iterations per update" (p. 15); a drug is "a large negative input (-5)" that "pushes the targeted node activity toward zero ... as the model uses a leaky linear activation for negative inputs" (p. 15); "the model retains a steady-state constraint to ensure convergence. This constraint reduces the ability to represent sustained oscillatory or non-contracting dynamics" (p. 14). Read for decisions 9.81 and 9.110 on 4 November 2026: its constraints are soft versions of the linear-response encoder's hard max-norm bound and graph-given signs and do not replace them; its pointwise floor at zero activity is precedent for the floor at -1 under the fractional reading. Its hyperparameter source, cited as a {bioRxiv} preprint (reference 24), is published as Nordenstorm et al., Bioinformatics, doi:10.1093/bioinformatics/btag556 (Crossref, 25 July 2026), not held here}
+}
+
+@article{rivera1999kcc2,
+  author  = {Rivera, C. and Voipio, J. and Payne, J. A. and Ruusuvuori, E. and Lahtinen, H. and Lamsa, K. and Pirvola, U. and Saarma, M. and Kaila, K.},
+  title   = {The {K+/Cl-} co-transporter {KCC2} renders {GABA} hyperpolarizing during neuronal maturation},
+  journal = {Nature},
+  year    = {1999},
+  volume  = {397},
+  number  = {6716},
+  pages   = {251--255},
+  doi     = {10.1038/16697},
+  pmid    = {9930699},
+  note    = {Abstract only; Europe {PMC} records isOpenAccess N (checked on Fable, 4 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Cited in decision 9.112: "Antisense oligonucleotide inhibition of {KCC2} expression produces a marked positive shift in the reversal potential of {GABAA} responses in functionally mature hippocampal pyramidal neurons."}
+}
+
+@article{benari2002excitatory,
+  author  = {Ben-Ari, Yehezkel},
+  title   = {Excitatory actions of {GABA} during development: the nature of the nurture},
+  journal = {Nature Reviews Neuroscience},
+  year    = {2002},
+  volume  = {3},
+  number  = {9},
+  pages   = {728--739},
+  doi     = {10.1038/nrn920},
+  pmid    = {12209121},
+  note    = {Abstract only; Europe {PMC} records isOpenAccess N (checked on Fable, 4 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Cited in decision 9.112 for the developmental depolarising-{GABA} case: "{GABA} becomes inhibitory by the delayed expression of a chloride exporter, leading to a negative shift in the reversal potential for choride ions" (the typographical error is the abstract's).}
+}
+
+@article{staley1992shunting,
+  author  = {Staley, K. J. and Mody, I.},
+  title   = {Shunting of excitatory input to dentate gyrus granule cells by a depolarizing {GABAA} receptor-mediated postsynaptic conductance},
+  journal = {Journal of Neurophysiology},
+  year    = {1992},
+  volume  = {68},
+  number  = {1},
+  pages   = {197--212},
+  doi     = {10.1152/jn.1992.68.1.197},
+  pmid    = {1381418},
+  note    = {Abstract only; Europe {PMC} records isOpenAccess N (checked on Fable, 4 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Cited in decision 9.112: isolates the conductance effect by measuring at the reversal potential, where the concentration term contributes nothing: "Measured at its reversal potential, the {GABAA} receptor-mediated postsynaptic conductance ({GGABA-A}) decreased the peak {DPSP} amplitude by 35\%, shunted 50\% of the charge transferred to the soma by the excitatory {PSC}, and completely inhibited the {NMDA} receptor-mediated component of the {DPSP}."}
+}
