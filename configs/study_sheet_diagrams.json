@@ -1,5 +1,288 @@
 {
-  "_what_this_is": "The study sheet's diagrams and what each depicts, for experiments/check_study_sheet_diagrams.py and tests/test_study_sheet_diagrams_current.py (the owner, 5 November 2026; CLAUDE.md, Documents). state: built, decided or built_and_decided; partner: the diagram of the other state where the two differ; depicts: decision ids of docs/open_decisions.md and repository files; fingerprints: their SHA-256 when the diagram was last checked.",
+  "_what_this_is": "The study sheet's diagrams and what each depicts, for experiments/check_study_sheet_diagrams.py and tests/test_study_sheet_diagrams_current.py (the owner, 5 November 2026; CLAUDE.md, Documents). state: built, decided or built_and_decided; partner: the diagram of the other state where the two differ; depicts: decision ids of docs/open_decisions.md and repository files; fingerprints: their SHA-256 when the diagram was last checked. records: diagrams that stand for one date (a plan, a measurement on a named graph), listed and not checked.",
   "doc": "https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65",
-  "diagrams": {}
+  "diagrams": {
+    "d282955a-f81a": {
+      "title": "From perturbation to symptom score in seven stages",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "1.1",
+          "9.106"
+        ],
+        "files": [
+          "experiments/run_main_model_batch.py",
+          "scripts/rebuild_data_layer.sh",
+          "mechanistic_pathway_learning/evidence/assemble_evidence_table.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
+        "decision:9.106": "6d17c67b9c2fbfe83ad537c2ec2d148e7b29fe82aba058b36b63fdf71a89cf4c",
+        "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
+        "file:scripts/rebuild_data_layer.sh": "2f277917e22cf8770ff26858ed09430d7e7f1e892a16e59fb71334b2465460c7",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "35f6783dff4ec91283153bb9191a39881d927e9c5693085b3a0a4cfee84a203c"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "2d0e94ac-2bbc": {
+      "title": "How the model is fit and tested",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "1.1",
+          "9.77",
+          "9.78"
+        ],
+        "files": [
+          "experiments/score_confirmatory.py",
+          "experiments/run_main_model.py",
+          "docs/preregistration.md"
+        ]
+      },
+      "fingerprints": {
+        "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
+        "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
+        "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
+        "file:experiments/score_confirmatory.py": "f9a9974c61cf59b350d397546b456c3a981d29c05cb92fbab9ddb5dc4ccba15c",
+        "file:experiments/run_main_model.py": "d40fdeea26f8c27aad669ae25068a5ef6f23bb8b33c01bbee6801ef07814d2ea",
+        "file:docs/preregistration.md": "24cde60e8356d210c5c3a67e9bd44ac11d816fbeb6e133515589b97916eb54ba"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "236f9823-56fb": {
+      "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
+      "state": "decided",
+      "depicts": {
+        "decisions": [
+          "9.106",
+          "9.112"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/graph/drug_entry_nodes.py",
+          "configs/neomorphic_alleles.csv"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.106": "6d17c67b9c2fbfe83ad537c2ec2d148e7b29fe82aba058b36b63fdf71a89cf4c",
+        "decision:9.112": "782053f1f8b17544b2e46d9a440bbd7e1a9ff7f6acfcc95de718b131aef46a3c",
+        "file:mechanistic_pathway_learning/graph/drug_entry_nodes.py": "a88a447ba174945c614b97a2cc3786ab76398d70c516637e394327ec02e9fd78",
+        "file:configs/neomorphic_alleles.csv": "dfa3bf20dbae061d4a788364ddf199f10c83820022f3af062c4ce63718e4effb"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0",
+      "partner": "a7538790-dcbd"
+    },
+    "081c3c6e-6907": {
+      "title": "The encoder settles one linear field, then scales it",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.16",
+          "9.81"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "mechanistic_pathway_learning/models/forward_cone_divisor.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
+        "decision:9.81": "389a71167c6ddcd8c3503d312b71c3a13590cba7aa643ecfa804a762fe6755a5",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
+        "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "14499161-f021": {
+      "title": "A knockout travels as signed shares to one fixed point",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.16"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "c642a74c-b09e": {
+      "title": "Propagation channels: one lane per cell class",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.76"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "experiments/build_cell_class_weights.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.76": "a1283a44c8f472efb472157de77ced366283fcc7882e45721feb7051892fe2c5",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
+        "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "7d950678-d77c": {
+      "title": "Membrane potential, as built",
+      "state": "built",
+      "partner": "88631e83-33d4",
+      "depicts": {
+        "decisions": [
+          "9.87",
+          "9.112"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/graph/membrane_potential.py",
+          "mechanistic_pathway_learning/graph/reactome_import.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.87": "ffed67c6ab7d20163fe2aa193f4a00fb93b549011e6c8b4ee10761f0926e2d88",
+        "decision:9.112": "782053f1f8b17544b2e46d9a440bbd7e1a9ff7f6acfcc95de718b131aef46a3c",
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c",
+        "file:mechanistic_pathway_learning/graph/reactome_import.py": "c23a9ddc0c4addbe12a539add7a8c8a3229d0fef0f9139ac183674167f1183bd"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "88631e83-33d4": {
+      "title": "Membrane potential, as decided (9.112)",
+      "state": "decided",
+      "partner": "7d950678-d77c",
+      "depicts": {
+        "decisions": [
+          "9.112"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/graph/membrane_potential.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.112": "782053f1f8b17544b2e46d9a440bbd7e1a9ff7f6acfcc95de718b131aef46a3c",
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "15dbd45a-f218": {
+      "title": "The head reads the field through sparse modules",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.90"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
+          "mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
+        "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "012dc8f5-8ee9": {
+      "title": "A module is a learned set of nodes",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [],
+        "files": [
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py"
+        ]
+      },
+      "fingerprints": {
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "15448121-6479": {
+      "title": "Almost every parameter is module membership",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
+          "experiments/run_main_model.py",
+          "experiments/run_main_model_batch.py"
+        ]
+      },
+      "fingerprints": {
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
+        "file:experiments/run_main_model.py": "d40fdeea26f8c27aad669ae25068a5ef6f23bb8b33c01bbee6801ef07814d2ea",
+        "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "e45d7aa9-175e": {
+      "title": "Robustness and exploratory arms",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.57",
+          "9.62",
+          "9.77"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/edge_gates.py",
+          "configs/registered_rules.json"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.57": "f6309bf9c169723ed912e5fa637ea756dc1f326feef5258452376161915fd3aa",
+        "decision:9.62": "0df230af3831ea935acb135be0916610c4d7c8e92deab199150e6e2c61372764",
+        "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
+        "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
+        "file:configs/registered_rules.json": "49d388d1ed746f96ecb99d1a83880f0cf328138dc835568bfe9cb2a9d084247e"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    },
+    "a7538790-dcbd": {
+      "title": "What the graph holds, as built",
+      "state": "built",
+      "partner": "236f9823-56fb",
+      "depicts": {
+        "decisions": [
+          "9.106"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/graph/drug_entry_nodes.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.106": "6d17c67b9c2fbfe83ad537c2ec2d148e7b29fe82aba058b36b63fdf71a89cf4c",
+        "file:mechanistic_pathway_learning/graph/drug_entry_nodes.py": "a88a447ba174945c614b97a2cc3786ab76398d70c516637e394327ec02e9fd78"
+      },
+      "checked": "2026-11-05",
+      "checked_at_commit": "d600be0"
+    }
+  },
+  "records": {
+    "680a4e54-9f5d": "curated modules, docs/curated_pathway_modules.csv as of 25 Oct 2026",
+    "0e9a66a5-331e": "learned module names, ten development pilot runs (docs/module_names.md)",
+    "cccce978-0e9e": "timeline of the project to 25 Oct 2026",
+    "15e96261-d2b5": "label balance on the 22 Oct 2026 v5 build (lost)",
+    "aee8c545-01ba": "soft absence reports on the 22 Oct 2026 v5 build (lost)",
+    "3e86560a-d52d": "critical paths, the plan of 25 Oct 2026 (two labels corrected 5 Nov 2026)"
+  }
 }

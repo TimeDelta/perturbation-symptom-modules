@@ -236,7 +236,8 @@ class NoisyOrPathwayModuleHead(nn.Module):
 
         Returns node_cost * E[active support nodes] + link_cost * E[nonzero links], where
         the link count is relaxed to the sum of link probabilities. The data-cost half is
-        the weighted negative log-likelihood computed by the training loop.
+        the label likelihood computed by the training loop: the positive-unlabelled likelihood of
+        models/positive_unlabelled_likelihood.py under the registered label_likelihood rule.
         """
         expected_active_nodes = self.support_gate.expected_active_node_count().sum()
         expected_nonzero_links = torch.sigmoid(self.module_symptom_link_logit).sum()

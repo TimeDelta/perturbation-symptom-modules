@@ -9,8 +9,11 @@ doc where it is wrong, and re-stamped here.
 
 Each diagram shows one of two states, as the owner asked ("there has to be two versions. The most recently built and
 according to set decisions"): "built", the code and graph as last built, or "decided", the architecture once every
-ruled decision is built. Where the two agree one diagram shows both ("built_and_decided"); where they differ the
-diagram has a partner of the other state, named in "partner".
+ruled decision is built. Where the two agree, or where one diagram draws the decided changes over the built picture
+(dashed, and said so in its key), that diagram is "built_and_decided"; otherwise the diagram has a partner of the other
+state, named in "partner". Diagrams that are dated records (a plan of one day, a measurement on a named graph) are
+listed under "records" with the date they stand for; they are not checked against the decisions, since a record is
+not revised to match a later one.
 
 A fingerprint says that something changed, not that the diagram is wrong: a dated addition to a row changes its hash.
 Re-stamping is the record that a session looked and found the diagram right, or corrected it first.
