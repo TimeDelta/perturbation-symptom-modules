@@ -1,0 +1,5 @@
+{
+  "_what_this_is": "The study sheet's diagrams and what each depicts, for experiments/check_study_sheet_diagrams.py and tests/test_study_sheet_diagrams_current.py (the owner, 5 November 2026; CLAUDE.md, Documents). state: built, decided or built_and_decided; partner: the diagram of the other state where the two differ; depicts: decision ids of docs/open_decisions.md and repository files; fingerprints: their SHA-256 when the diagram was last checked.",
+  "doc": "https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65",
+  "diagrams": {}
+}

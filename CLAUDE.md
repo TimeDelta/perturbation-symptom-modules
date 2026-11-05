@@ -203,6 +203,18 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   document the statement is in. The rules and the classes are in `docs/documentation_process.md`.
 - **Record decisions in the turn they are taken** (the owner, 13 October 2026) in `docs/open_decisions.md`; close
   by striking the id; never drop or renumber one. Registered rules change through `Amends:` trailers.
+- **The study sheet's diagrams stay current with the decisions, in two versions** (the owner, 5 November 2026: "add a
+  rule that the diagrams should remain up-to-date with the current decisions so it acts as a guard to decision
+  commits but there has to be two versions. The most recently built and according to set decisions"). The study sheet
+  is the owner's Claude Docs document (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). Each of its diagrams shows
+  the architecture as last built, or as it will be once every ruled decision is built; where the two differ there is
+  one diagram of each, and where they agree one diagram says so. `configs/study_sheet_diagrams.json` lists every
+  diagram with the decision rows and code files it depicts, and `tests/test_study_sheet_diagrams_current.py` fails
+  while any of them has changed since the diagram was last checked. So a commit that records or rules a decision, or
+  changes depicted code, also checks the diagrams the test names, corrects them in the doc where they are wrong, and
+  re-stamps them with `PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget id>`. A decision
+  that changes the architecture and that no diagram depicts yet is added to a diagram, and to the registry, in the
+  same turn.
 - **A new decision id is the next one free on every branch, not only on the current one** (21 October 2026, after
   9.77 and 9.78 were given to different decisions on two open branches). Before taking an id, fetch and read the
   highest id any branch holds:
