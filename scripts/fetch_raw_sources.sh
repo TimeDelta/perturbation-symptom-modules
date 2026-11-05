@@ -7,6 +7,8 @@
 # does not match is reported as DRIFT and the file is kept: several sources are rolling (docs/data_sources.md), so a
 # drift is a fact to record against the rebuild, not a reason to stop it. The report goes to
 # data/raw/fetch_raw_sources_report.tsv with one row per file: path, bytes, sha256, recorded sha256 or "-", status.
+# A FAILED row stops the script with exit status 1; a KEPT row (a re-fetch that failed where an earlier copy is held,
+# so far only the ChEMBL rat-behaviour pages) does not.
 #
 # Sources with their own script are not fetched here: experiments/fetch_chembl_drug_targets.py,
 # fetch_node_descriptor_sources.py (UniProt proteome, GO, hp-base.owl, ChEBI), fetch_reactome_pathways.py,
@@ -297,9 +299,21 @@ fi
 # October 2026, a refusal this project respects; the EBI FTP host is read on the owner's ruling "don't refuse FTP from EBI".
 fetch "$raw_directory/wormbase/phenotype_association.WS298.wb" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_association.WS298.wb" 3459ca02779b93557a5fde3c58c978036f0c5e0e943affebfe2b3b6b89b034ab
 fetch "$raw_directory/wormbase/phenotype_ontology.WS298.obo" "https://ftp.ebi.ac.uk/pub/databases/wormbase/releases/WS298/ONTOLOGY/phenotype_ontology.WS298.obo" ac8fae2c31975d77b1b32b7e2a531df2d4d8491dd510b363b22ac3ec19668e85
-# ChEMBL's rat catalepsy assays and their activities, page by page through experiments/read_public_page.py.
-PYTHONPATH=. python experiments/fetch_chembl_rat_behaviour.py --output-dir "$raw_directory/chembl_rat_behaviour" \
-  || printf '%s\t0\t-\t-\tFAILED\n' "$raw_directory/chembl_rat_behaviour/manifest.json" >> "$report_path"
+# ChEMBL's rat catalepsy assays and their activities, page by page through experiments/read_public_page.py. The fetcher
+# writes its three files only after every page has been read, so a failed run leaves the copy fetched before untouched.
+# That copy is of a numbered ChEMBL release (its manifest's chembl_release), so when ChEMBL's API answers with an error
+# a held copy is kept and reported KEPT rather than FAILED, and the rebuild goes on (5 November 2026: the API answered
+# HTTP 500 on two of three rebuild launches that day, each stopping a stage that never reads these files). With no
+# copy held, the failure stays FAILED.
+rat_behaviour_manifest="$raw_directory/chembl_rat_behaviour/manifest.json"
+if ! PYTHONPATH=. python experiments/fetch_chembl_rat_behaviour.py --output-dir "$raw_directory/chembl_rat_behaviour"; then
+  if [ -s "$rat_behaviour_manifest" ]; then
+    echo "kept the copy fetched before ($rat_behaviour_manifest): ChEMBL's API answered with an error"
+    printf '%s\t%s\t-\t-\tKEPT\n' "$rat_behaviour_manifest" "$(stat -c %s "$rat_behaviour_manifest")" >> "$report_path"
+  else
+    printf '%s\t0\t-\t-\tFAILED\n' "$rat_behaviour_manifest" >> "$report_path"
+  fi
+fi
 # The Fenckova et al. 2019 supplement (mmc2.xlsx, sheets S1 to S5 and S7) is not fetched (ars.els-cdn.com disallows
 # automated readers and PMC answers its copy with a check that the visitor is human): the owner supplied it on 24 October
 # 2026; place it at data/raw/fenckova_2019/mmc2.xlsx (sha256 f020b26750de9980b6d727e700664dc90d6b96a79a8eb4e33245c8b43dd7d913).
