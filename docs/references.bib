@@ -3267,7 +3267,7 @@
   pages   = {e39575},
   doi     = {10.7554/eLife.39575},
   pmid    = {30260315},
-  note    = {Table 1 gives the physical constants of the membrane-potential node: "T | 310.15 K | Absolute temperature (=37°C)", "[Na+]o | 145 mM", "[K+]o | 3.5 mM", "[Cl-]o | 119 mM", "[Na+]i | 14.0 mM", "[K+]i | 122.9 mM", "[Cl-]i | 5.2 mM", "gK | 70 µS/cm2", "gNa | 20 µS/cm2", "gCl | 20 µS/cm2" and "Vm | −72.6 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The conductances are ohmic -- "Leak currents were calculated using Ohm's Law, I=g(Vm-E)" -- and are not GHK permeabilities; docs/membrane_potential_constants.md shows that substituting them into the GHK voltage equation misses this paper's own resting potential by 39 mV. CC BY 4.0, verified from the article's permissions block. Set A of docs/membrane_potential_constants.md. Read again on Fable on 4 November 2026 in the published HTML (saved by experiments/read_public_page.py) for decision 9.112: equations 1-7 ("Leak currents were calculated using Ohm's Law, I=g(Vm-E)"; the pump "J_p = P ([Na+]_i/[Na+]_o)^3"; "J_KCC2 = g_KCC2 (E_K - E_Cl)"; "The extracellular ionic concentrations were assumed constant (Table 1)") and the further Table 1 rows "g_KCC2 | 20 µS/cm2 | KCC2 conductance (Doyon et al., 2016)" and "p | 0.1 C/(dm2.s) | Default pump rate constant", from which the review derived the pump-clamped pool sensitivities}
+  note    = {Table 1 gives the physical constants of the membrane-potential node: "T | 310.15 K | Absolute temperature (=37°C)", "[Na+]o | 145 mM", "[K+]o | 3.5 mM", "[Cl-]o | 119 mM", "[Na+]i | 14.0 mM", "[K+]i | 122.9 mM", "[Cl-]i | 5.2 mM", "gK | 70 µS/cm2", "gNa | 20 µS/cm2", "gCl | 20 µS/cm2" and "Vm | −72.6 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The conductances are ohmic -- "Leak currents were calculated using Ohm's Law, I=g(Vm-E)" -- and are not GHK permeabilities; docs/membrane_potential_constants.md shows that substituting them into the GHK voltage equation misses this paper's own resting potential by 39 mV. CC BY 4.0, verified from the article's permissions block. Set A of docs/membrane_potential_constants.md. Read again on Fable on 4 November 2026 in the published HTML (saved by experiments/read_public_page.py) for decision 9.112: equations 1-7 ("Leak currents were calculated using Ohm's Law, I=g(Vm-E)"; the pump "J_p = P ([Na+]_i/[Na+]_o)^3"; "J_KCC2 = g_KCC2 (E_K - E_Cl)"; "The extracellular ionic concentrations were assumed constant (Table 1)") and the further Table 1 rows "g_KCC2 | 20 µS/cm2 | KCC2 conductance (Doyon et al., 2016)" and "p | 0.1 C/(dm2.s) | Default pump rate constant", from which the review derived the pump-clamped pool sensitivities. Read on Fable on 5 November 2026 for decision 9.113 (full text, PMC6200395): the text contains no calcium term, and Table 1's conductances are gNa, gK, gCl and gKCC2, so the source gives no resting calcium conductance.}
 }
 
 @article{raimondo2015ion,
@@ -3279,7 +3279,7 @@
   pages   = {419},
   doi     = {10.3389/fncel.2015.00419},
   pmid    = {26539081},
-  note    = {Table 1, "Typical ion concentrations at rest and during an epileptic seizure", gives for typical rest "K+ | 96 mM | 4 mM | −85 mV", "Na+ | 10 mM | 145 mM | +71 mV" and "Cl− | 7 mM | 145 mM | −80 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The paper states no temperature and no resting potential, and says the table's numbers are "averages that have been derived from different cell-types, brain areas and seizure models". CC BY, verified from the article's permissions block. Set B of docs/membrane_potential_constants.md}
+  note    = {Table 1, "Typical ion concentrations at rest and during an epileptic seizure", gives for typical rest "K+ | 96 mM | 4 mM | −85 mV", "Na+ | 10 mM | 145 mM | +71 mV" and "Cl− | 7 mM | 145 mM | −80 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The paper states no temperature and no resting potential, and says the table's numbers are "averages that have been derived from different cell-types, brain areas and seizure models". CC BY, verified from the article's permissions block. Set B of docs/membrane_potential_constants.md. Read again on Fable on 5 November 2026 for decision 9.113, in the PubMed Central full text (PMC4612498): Table 1, typical rest, also gives "Ca2+ | 70 nM | 2 mM | +137 mV" (reference cell "Pumain et al. () and Pal et al. ()", the citation markers stripped by the text extraction) and the seizure peak "700 nM | 100 μM | +66 mV"; the Calcium section states "Under typical baseline conditions the free Ca2+ concentration within neurons is below 100 nM". At the registered 310.15 K those concentrations give E_Ca +137.1 mV.}
 }
 
 @article{um2021trpc3,
@@ -7847,4 +7847,56 @@
   doi     = {10.1038/31255},
   pmid    = {9634236},
   note    = {The HCN clone paper, cited by the 9.112 reading of 5 November 2026 for the sign of the current at rest. "Pacemaker activity of spontaneously active neurons and heart cells is controlled by a depolarizing, mixed Na+/K+ current, named Ih"; "Ih is involved in determining the resting membrane potential of neurons" (abstract, PubMed 9634236, read 5 November 2026). Abstract only. Not open access}
+}
+
+@article{silver1990intracellular,
+  author  = {Silver, I. A. and Ereci{\'n}ska, M.},
+  title   = {Intracellular and extracellular changes of [{Ca2+}] in hypoxia and ischemia in rat brain in vivo},
+  journal = {The Journal of General Physiology},
+  year    = {1990},
+  volume  = {95},
+  number  = {5},
+  pages   = {837--866},
+  doi     = {10.1085/jgp.95.5.837},
+  pmid    = {2163431},
+  note    = {Second source for the calcium driving force of decision 9.113 (Raimondo et al. 2015, Table 1, is the first). Full text read on Fable on 5 November 2026 in PubMed Central (PMC2216343; Europe PMC isOpenAccess Y, licence field "cc by-nc-sa", not verified on the article itself). Quoted: "Under normoxic conditions neuronal [Ca2+]i varied between <10^-8 and 10^-7 M from cell to cell but no systematic regional differences were observed" (abstract; the exponents are flattened by the text extraction and were read as 10 to the minus 8 and 10 to the minus 7); "Concentrations of external calcium in the three regions of the brain investigated in this work were 1.49-1.56 mM (Table II), which is somewhat higher than the 1.2-" (Discussion, the sentence continuing past the extracted fragment; to be completed from the typeset PDF before it is quoted elsewhere). Ion-selective microelectrodes in anaesthetised rat cortex, hippocampus and thalamus}
+}
+
+@article{dreyfus2010selective,
+  author  = {Dreyfus, Fanny M. and Tscherter, Anne and Errington, Adam C. and Renger, John J. and Shin, Hee-Sup and Uebele, Victor N. and Crunelli, Vincenzo and Lambert, R{\'e}gis C. and Leresche, Nathalie},
+  title   = {Selective {T}-type calcium channel block in thalamic neurons reveals channel redundancy and physiological impact of {IT}window},
+  journal = {The Journal of Neuroscience},
+  year    = {2010},
+  volume  = {30},
+  number  = {1},
+  pages   = {99--109},
+  doi     = {10.1523/JNEUROSCI.4305-09.2010},
+  pmid    = {20053892},
+  note    = {ABSTRACT ONLY. The source named in decision 9.113 for a measured resting (window) T-type calcium conductance in a central neuron; the figure itself was not read. Quoted from the abstract (PubMed record, 5 November 2026): "Using TTA-P2, we provide the first direct demonstration of the presence of a window component of Ca(2+) channels in neurons and its contribution to the resting membrane potential of thalamic neurons and to the Up state of their intrinsically generated slow (<1 Hz) oscillation". Routes tried on Fable on 5 November 2026: PubMed Central (PMC2880440) returned an empty body; Europe PMC fullTextXML answered HTTP 500 twice (Europe PMC lists it inEPMC Y, isOpenAccess N, licence "cc by-nc-sa"); jneurosci.org answered HTTP 403; PMC's article page answered a check that the visitor is human, respected. Thalamocortical and reticular thalamic neurons, not the generic neuron of the registered constants. The title's subscript "window" on I(T) is flattened here}
+}
+
+@article{hughes1999thalamocortical,
+  author  = {Hughes, S. W. and Cope, D. W. and T{\'o}th, T. I. and Williams, S. R. and Crunelli, V.},
+  title   = {All thalamocortical neurones possess a {T}-type {Ca2+} 'window' current that enables the expression of bistability-mediated activities},
+  journal = {The Journal of Physiology},
+  year    = {1999},
+  volume  = {517},
+  number  = {Pt 3},
+  pages   = {805--815},
+  doi     = {10.1111/j.1469-7793.1999.0805s.x},
+  pmid    = {10358120},
+  note    = {ABSTRACT ONLY. Cited in decision 9.113 for the ratio of window T-type conductance to leak conductance as the quantity a resting calcium conductance edge would need. Quoted from the abstract (PubMed record, 5 November 2026): "The existence of a non-negligible steady-state ('window') component of the low threshold, T-type Ca2+current (IT) and an appropriately large ratio of IT to ILeak conductance (i.e. gT/gLeak) have been shown to underlie a novel form of intrinsic bistability that is present in about 15 \% of thalamocortical (TC) neurones"; "These results demonstrate the existence of a non-negligible IT 'window' component in all TC neurones". PubMed gives PMC2269384, whose body came back empty on 5 November 2026; the Europe PMC record lists no PMCID and isOpenAccess N. PubMed's volume string is "517 ( Pt 3)"; Europe PMC's is "517 ( Pt 3)" with no issue, recorded here as volume 517, number Pt 3}
+}
+
+@article{crunelli2005window,
+  author  = {Crunelli, Vincenzo and T{\'o}th, Tibor I. and Cope, David W. and Blethyn, Kate and Hughes, Stuart W.},
+  title   = {The 'window' {T}-type calcium current in brain dynamics of different behavioural states},
+  journal = {The Journal of Physiology},
+  year    = {2005},
+  volume  = {562},
+  number  = {Pt 1},
+  pages   = {121--129},
+  doi     = {10.1113/jphysiol.2004.076273},
+  pmid    = {15498803},
+  note    = {ABSTRACT ONLY. Review cited in decision 9.113 beside Dreyfus et al. 2010 and Hughes et al. 1999 for the window T-type current. Quoted from the abstract (PubMed record, 5 November 2026): "All three forms of recombinant low voltage-activated T-type Ca(2)(+) channels (Ca(v)3.1, Ca(v)3.2 and Ca(v)3.3) exhibit a small, though clearly evident, window T-type Ca(2)(+) current (I(Twindow)) which is also present in native channels from different neuronal types". Year: PubMed's publication date is 21 October 2004 (online) and the Europe PMC journal-issue year is 2005, volume 562 Pt 1, which is used here. PubMed gives PMC1665496, whose body came back empty on 5 November 2026; the Europe PMC record lists no PMCID and isOpenAccess N}
 }
