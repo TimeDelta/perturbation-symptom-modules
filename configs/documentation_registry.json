@@ -889,6 +889,12 @@
       "recorded": "2026-11-06",
       "append_only": true,
       "what": "BRENDA's 880 human Ca2+ regulation records read into classes, per record, protein and edge, with the edge counts of three candidate rules for option (a) of decision 9.114; read on Fable"
+    },
+    "docs/curation_candidates_verification_2026-11-06.md": {
+      "class": "record",
+      "recorded": "2026-11-06",
+      "append_only": true,
+      "what": "the 38 unverified presynaptic-receptor and oxidant curation candidates each read against its source and a second source, accepted (13), rejected (23) or still unverified (2), with the exact rows proposed for the curated tables and the decisions left to the owner; read on Fable; nothing applied to the tables"
     }
   }
 }
