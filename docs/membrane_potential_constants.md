@@ -480,3 +480,83 @@ the time and the SHA-256 that the script records, are under `data/raw/public_pag
 
 Nothing of the owner's went into any request: no e-mail address, no credentials, no unpublished text. The reading
 script refuses an address that carries an e-mail address, and none was used.
+
+## Mixed-cation reversal potentials: the reconciliation of 6 November 2026 (decision 9.112)
+
+**Added 6 November 2026.** The Fable pass of 5 November 2026 that read the reversal potentials of the mixed-cation channels for decision 9.112 left its script and its report disagreeing on two values (row 9.112: "nicotinic -2.1 against +2.2 mV, NALCN +2 against +8.2 mV"). A Fable pass of 6 November 2026, asked for by the owner, reran the script, reread the sources and reconciled every mixed-cation value. Its findings are kept here, beside the constants they use, because row 9.112 is near the decision log's line ceiling; the row carries a dated pointer. These are readings and computations at the registered constants, not measurements on a graph. The script and the arithmetic are scratch files of the session (`mixed_cation/ghk_reversal.py`, `recon_weights.py`) and are not committed.
+
+### 1. What the script uses
+
+Constants: identical to `mechanistic_pathway_learning/graph/membrane_potential.py` -
+`RESTING_CONCENTRATION_MILLIMOLAR` (Na+ 145/14, K+ 3.5/122.9, Cl- 119/5.2 mM out/in), 310.15 K (RT/F 26.73 mV),
+`LEAK_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE` 20/70/20 (g_total 110), V_rest -72.6 mV. Computed E_Na +62.5,
+E_K -95.1, E_Cl -83.7 mV (the module's comment and `tests/test_reactome_import.py` carry the source's -83.8; the
+0.1 mV is rounding inside the test's `abs=0.2`). Equation: the **GHK voltage equation over monovalent ions only**,
+chloride allowed with reversed numerator/denominator; **no divalent term**, matching `IONS_IN_THE_VOLTAGE_EQUATION`.
+Ca2+ is reported separately, as a share of inward current from the GHK *current* equation with the z^2 factor
+([Ca2+] 2 / 1e-4 mM) - the script's own computation, not a source's.
+
+Inputs for the two disputed channels, as the script's `CLASSES` table holds them:
+
+- nicotinic, neuronal alpha3/alpha4 beta2/beta4: `{"Na+": 1.0, "K+": 1.0}`, i.e. **P_K = P_Na assumed**; the
+  comment says so and adds "ratio value to be read in Fucile 2004". P_Ca/P_Na 1.5.
+- NALCN: `{"Na+": 1.3, "K+": 1.0}`, i.e. **P_Na/P_K 1.3**, with the comment "Lu et al. 2007 (ratio to be read in
+  the full text or Ren 2011)". P_Ca/P_Na 0.5/1.3.
+
+Both are unread placeholders flagged as such in the script; the report used the ratios that were actually read.
+
+### 2. Reconciliation table
+
+Weights are the proposed mixed-pore weight, the chord-conductance sum times the absolute driving force over
+g_total, in mV, at the constants above. "script" = the 5 November script's value, "row" = the value in row 9.112.
+
+| channel | script value | report / row value | reconciled value | source quote and where read | reason for the difference |
+| --- | --- | --- | --- | --- | --- |
+| **nicotinic, neuronal** | E_rev +2.2 mV (P_K = P_Na), weight 19.09 | E_rev **-2.1 mV** | **-2.1 mV** (P_K/P_Na 1.2), weight 18.83; second sources -2.7 mV (1.23) and -5.8 to +4.1 mV (1.40 to 0.92) | Haghighi and Cooper 2000, Materials and Methods: "P K /P Na was 1.2 (our unpublished observations)" - full text, PMC6772427, read 5 Nov 2026 by the earlier pass, reread here in its saved page. Nutter and Adams 1995, Results: "The selectivity sequence of the neuronal nAChR channel for monovalent cations follows the order; NH4+ > Cs+ > K+ > Rb+ > Na+ > Li+, with permeability ratios of 2.09, 1.27, 1.23, 1.11, 1.00, and 0.75, respectively" (Table I gives K+ 1.23) - Europe PMC full-text XML of PMC2216957, read 6 Nov 2026 with `experiments/read_public_page.py`. Sacchi et al. 2011, abstract: "Postsynaptic neuron hyperpolarization (from -40 to -90 mV) resulted in a change of the synaptic potassium/sodium permeability ratio (P K /P Na ) from 1.40 to 0.92" - Europe PMC full-text XML of PMC3045433, read 6 Nov 2026 | **Different ratio.** The script used an acknowledged placeholder (P_K = P_Na); the report used the read ratio 1.2. **The report's -2.1 mV is right.** Both are GHK computations on the same constants, so no concentration set or equation difference is involved |
+| **NALCN** | E_rev +8.2 mV (P_Na/P_K 1.3), weight 19.44 | E_rev **+2 mV** | **+2.2 mV** (P_Na = P_K), weight 19.09; magnitude is a lower bound - P_Na is a little above P_K | Ren 2011: "NALCN is the only nonselective channel found in the 24-TM channel family and is equally permeable to Na+, K+, and Cs+. At RMPs, which are normally close to EK, the major charge-carrying ion for NALCN is Na+" - full text, PMC3247702, read 5 Nov 2026, reread here in its saved page. Chua et al. 2020: "The permeability ratios ( P Na / P X ) calculated on the basis of the E rev s revealed a permeability sequence of Na+ ~ Li+ > K+ > Cs+", with K+ current "89 +/- 11%" of Na+ at -80 mV; the numeric P_Na/P_K is only in Fig. 2D, a figure, not read - Europe PMC full-text XML of PMC7182417, read 6 Nov 2026 | **Different ratio, the script's unsourced.** 1.3 appears in no source read; Ren 2011's quoted equality gives +2.2 mV. **The report's +2 mV is right as the value backed by a quotation**, though Chua et al. 2020 shows P_Na slightly above P_K, so a few mV more positive is not excluded and +8.2 mV is the extreme of that direction. Lu et al. 2007's full text stays unread: cell.com's robots file disallows the article page (refusal respected) and Europe PMC records "Subscription required", so the second-source rule was followed with Ren 2011 and Chua et al. 2020 |
+| AMPA, GluA2-containing and GluA2-lacking | -0.8 mV, weight 18.91 | "within a few mV of 0" | -0.8 mV (P_Na/P_Cs 0.88); -1.9 mV on the CA3 value 0.84 | Jonas and Sakmann 1992: "The current reversed close to 0 mV"; "P Na /P Cs = 0.88 and 0.84" - abstract, PMID 1338788, read 5 Nov 2026 | No disagreement. Caesium stands in for potassium, which is the script's stated assumption, not a source's |
+| kainate, edited GluK1/GluK2 | -0.8 mV, weight 18.91 | "within a few mV of 0" | -0.8 mV | treated as the edited AMPA case, as the script says | No disagreement |
+| NMDA | +2.2 mV, weight 19.09 | "within a few mV of 0" | +2.2 mV, with P_K = P_Na the pass's stated assumption | Mayer and Westbrook 1987: "we calculate a value of PCa/PNa = 10.6" - abstract, PMID 2451020, read 5 Nov 2026; the monovalent ratio is not in it | No disagreement; the monovalent assumption is still unread and should be marked as such |
+| nicotinic, muscle | +2.2 mV, weight 19.09 | "within a few mV of 0" | **-0.1 mV** (P_K/P_Na 1.1), weight 18.95 | Adams, Dwyer and Hille 1980: "The selectivity among alkali metals is weak with a sequence, Cs+ greater than Rb+ greater than K+ greater than Na+ greater than Li+, and permeability ratios of 1.4, 1.3, 1.1, 1.0, and 0.9" - abstract, PMID 6247423, read 5 Nov 2026 | Same cause as the neuronal case: the script assumed P_K = P_Na while the read ratio is 1.1. Shifts E_rev by 2.3 mV, the weight by 0.14 mV, no sign |
+| 5-HT3, HTR3A homomer | -0.1 mV, weight 18.95 | "-2.2 mV" quoted | -0.1 mV computed (Yang 1990, 1.10), -0.9 mV with its P_Cl/P_Na 0.04; -2.2 mV measured | Yang 1990: "permeability ratios PX/PNa of 1.22, 1.10, 1.01, 1.00, and 0.99 for Cs+, K+, Li+, Na+, and Rb+"; "Small anions, NO3-, Cl-, and F-, were slightly permeant with permeability ratios of 0.08, 0.04" - PMC2229030, read 5 Nov 2026. Brown et al. 1998: "5-HT-induced currents ... reversed in sign (E5-HT) at a potential of -2.2 mV" - abstract, PMID 9508827, read 5 Nov 2026 | Not a disagreement but **a measured value against a computed one**: the row quotes Brown's measurement in a different solution, the script computes at the registered concentrations. 2 mV apart, same sign |
+| P2X2 | +2.2 mV, weight 19.09 | "Evans et al. 1996, PK/PNa 1.0" | +2.2 mV | Evans et al. 1996: "The relative permeabilities (PX/PNa) were 2.3, 1.0, 1.0, 0.95 ... for guanidinium, potassium, sodium, methylamine" - PMC1160993, read 5 Nov 2026 | No disagreement |
+| TRPM4/TRPM5 | +2.2 mV, weight 19.09 | "within a few mV of 0" | +2.2 mV, P_K = P_Na the pass's assumption | Launay et al. 2002: "It conducts monovalent cations such as Na+ and K+ without significant permeation of Ca2+" - abstract, PMID 12015988, read 5 Nov 2026; no ratio in it | No disagreement; the assumption is unread and should be marked as such |
+| HCN | -24.3 mV (0.33) and -36.2 mV (0.20); weights 16.87 and 14.76 | "-25 to -35 mV" | **-23 to -33 mV** (Macri's own 0.35 and 0.23); weights 17.06 and 15.45; measured -24.6 mV | Macri et al. 2012: "The measured reversal potentials were -24.6 +/- 1.8 mV for HCN2 (n = 12 cells, squares)"; "Permeability ratios (P Na /P K ) ... were 0.35 +/- 0.02 (n = 12 cells)"; Fig. 3, low extracellular K+: "-25.5 +/- 2.6 mV and 0.23 +/- 0.02" - Europe PMC full-text XML of PMC3506978, read 5 Nov 2026, reread here. Wollmuth and Hille 1992: "PX/PK ... Na+, 0.33" - abstract and PMC2229118, read 5 Nov 2026 | **A third disagreement, small and changing no sign.** The row's range mixes Macri's measured -24.6 with the script's unsourced 0.20 lower end; the salamander 0.33 is also not the mammalian value. On Macri's two ratios the computed range is -23 to -33 mV, with the measurement inside it |
+| Nav (single-ion check) | +47.9 mV, weight 22.77 | "+48 mV, not E_Na +62.5" | +47.9 mV | Hille 1972: "The ratio P(K)/P(Na) is 1/12" - abstract PMID 5025743 and PMC2203202, read 5 Nov 2026 | No disagreement |
+
+A fourth, consequential only in wording: with both placeholders dropped, the mixed pores depolarise at rest by
+**about 40 to 75 mV** (HCN in low extracellular K+ 39.7 mV up to NMDA, P2X2, TRPM4/5 and NALCN at 74.8 mV), not
+the "36 to 81 mV" the row states, which came from the HCN 0.20 and NALCN 1.3 placeholders at the two ends.
+The row's per-ion check stands: for HCN the two-term split is 10.8 against the single term 17.1 mV on Macri's 0.35
+(the row's "10 against 17").
+
+### 3. Effect on the record and on the weight rule
+
+Constants used: the registered set above (310.15 K, RT/F 26.73 mV, Na+ 145/14, K+ 3.5/122.9, Cl- 119/5.2 mM,
+leak 20/70/20 uS/cm2, g_total 110 uS/cm2, V_rest -72.6 mV); the ruled single-ion terms for comparison are
+Na+ 24.6, K+ 14.3 and Cl- 2.0 mV.
+
+- **No sign changes anywhere.** Every mixed pore still depolarises at V_rest, so decision 9.112's ruled content and
+  the corrections it lists before the build are untouched.
+- Proposed mixed-pore weight: nicotinic **19.09 to 18.83 mV** (-0.26 mV, -1.4 per cent); NALCN **19.44 to 19.09 mV**
+  (-0.35 mV, -1.8 per cent); muscle nicotinic 19.09 to 18.95 mV (-0.14 mV); HCN 16.87 to 17.06 mV on Macri's 0.35
+  (+0.19 mV) and 14.76 to 15.45 mV on 0.23 (+0.69 mV). All remain between the ruled Na+ and K+ single-ion terms, and
+  the ordering of the classes by weight is unchanged.
+- What the row records needs three corrections, none of them to a sign: nicotinic is -2.1 mV (the report's value,
+  not the script's +2.2); NALCN is +2.2 mV (the report's, not +8.2) with P_Na a little above P_K by Chua et al. 2020;
+  the HCN range is -23 to -33 mV and the depolarisation range about 40 to 75 mV.
+- Still unread, and now stated as assumptions rather than readings: the monovalent P_K/P_Na of NMDA and of
+  TRPM4/TRPM5, and NALCN's numeric P_Na/P_K (Chua et al. 2020 gives it only in a figure; Lu et al. 2007 is
+  subscription-only).
+
+### 6. Refusals and sources tried
+
+- `https://www.cell.com/cell/fulltext/S0092-8674(07)00346-0` (Lu et al. 2007): **refused** - "the site's robots file
+  disallows this address for automated readers". Respected, not read through any other route.
+- `https://doi.org/10.1016/j.cell.2007.02.041` resolved to a redirect page only;
+  `https://linkinghub.elsevier.com/retrieve/pii/S0092867407003460` returned Elsevier's "Article Not Recognized"
+  page. Europe PMC's core record for PMID 17448995 gives isOpenAccess N, inPMC N, "Subscription required".
+  Second sources taken instead: `ren2011sodium` (already in the bibliography) and `chua2020nalcn` (new).
+- `https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2713585/fullTextXML` (Albuquerque et al. 2009 review):
+  HTTP 500. Not needed once Nutter and Adams 1995 and Sacchi et al. 2011 were read; no claim rests on it.
+- No permission request was left unanswered in this pass, and no page addressed to an AI assistant was found.
