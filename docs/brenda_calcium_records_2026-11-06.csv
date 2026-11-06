@@ -1,0 +1,881 @@
+rid,ec_number,field,edge_relation,ligand_name,uniprot_accession,resolved_accession,route,in_graph,gene,compartment,class,E_subflag,brenda_reference_count,brenda_comment
+497,3.4.21.104,metals_ions,cofactor_of,Ca2+,,O00187,ec_unique,True,MASP2,ext,C,,1,required
+498,3.4.21.104,metals_ions,cofactor_of,Ca2+,O00187,O00187,stated,True,MASP2,ext,B,,1,enables dimerization
+499,3.4.21.104,metals_ions,cofactor_of,Ca2+,,O00187,ec_unique,True,MASP2,ext,B,,1,required for dimerization
+500,3.4.21.104,metals_ions,cofactor_of,Ca2+,,O00187,ec_unique,True,MASP2,ext,B,,1,"Ca2+-dependent dimerization, Ca2+ is bound to the distal end of the CUB1 module of MAp19 and of MASP-2"
+501,3.4.21.104,metals_ions,cofactor_of,Ca2+,,O00187,ec_unique,True,MASP2,ext,B,,1,"interaction of MASP-2 with mannan-binding lectin is Ca2+-dependent, the Ca2+-binding site is located in the CUB1 module, overview"
+239,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,C,,8,required
+240,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,C,,8,required
+241,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,C,,3,activates
+242,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,C,,4,dependent on
+243,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,C,,4,dependent on
+244,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,C,,1,"completely dependent on, activates"
+245,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,A,,1,"strong activation, activation in response to exercise in skeletal muscle"
+246,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,A,,2,Ca2+/calmodulin-dependent enzyme
+247,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,A,,1,Ca2+/calmodulin stimulates the autophosphorylation of elongation factor 2 kinase on Thr348 and Ser500 to regulate its activity and calcium dependence. Half-maximal activity at 140 nM Ca2+. Maximal activity 0.003 mM Ca2+
+248,2.7.11.20,metals_ions,cofactor_of,Ca2+,,O00418,ec_unique,True,EEF2K,cyt,A,,1,Ca2+/calmodulin-dependent enzyme. Ca2+/calmodulin enhance the ability of the enzyme to bind to ATP
+249,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,A,,2,a Ca2+/calmodulin-dependent protein kinase
+250,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,A,,1,required for maintaining the interaction with activator calmodulin
+251,2.7.11.20,metals_ions,cofactor_of,Ca2+,O00418,O00418,stated,True,EEF2K,cyt,A,,1,"Ca2+ enhances the affinity of calmodulin toward the enzyme, 0.15 mM Ca2+ is used in assay conditions"
+852,6.5.1.4,metals_ions,cofactor_of,Ca2+,,O00442,ec_unique,True,RTCA,cyt,F,,2,only 5% of the activation by Mg2+
+178,2.7.1.154,metals_ions,cofactor_of,Ca2+,O00750,O00750,stated,True,PIK3C2B,cyt,C,,1,phosphorylation of phosphatidylinositol but not phosphatidylinositol 4-phosphate in presence of Ca2+
+347,3.1.3.11,inhibitor,inhibits,Ca2+,O00757,O00757,stated,True,FBP2,cyt,N,,6,
+187,2.7.1.35,metals_ions,cofactor_of,Ca2+,,O00764,ec_unique,True,PDXK,cyt,F,,1,"divalent cation required, activation of the recombinant enzyme in the order of decreasing efficiency: Zn2+, Co2+, Mn2+, Mg2+, Ca2+"
+794,3.6.1.9,metals_ions,cofactor_of,Ca2+,O14638,O14638,stated,True,ENPP3,ext,C,,2,required
+709,3.4.24.81,metals_ions,cofactor_of,Ca2+,,O14672,ec_unique,True,ADAM10,ext,A,,1,ADAM10-mediated proteolysis of VE-cadherin is induced by Ca2+ influx
+710,3.4.24.81,metals_ions,cofactor_of,Ca2+,O14672,O14672,stated,True,ADAM10,ext,A,,1,activation of the enzyme can be achieved by cellular influx of Ca2+
+269,2.7.8.11,inhibitor,inhibits,Ca2+,,O14735,ec_unique,True,CDIPT,cyt,N,,5,
+484,3.4.14.9,inhibitor,inhibits,Ca2+,O14773,O14773,stated,True,TPP1,lum,E,mM,1,"activating up to 0.1, inhibitory above"
+485,3.4.14.9,metals_ions,cofactor_of,Ca2+,O14773,O14773,stated,True,TPP1,lum,B,,1,contains one Ca2+ ion
+486,3.4.14.9,metals_ions,cofactor_of,Ca2+,O14773,O14773,stated,True,TPP1,lum,D,,1,"activating up to 0.1, inhibitory above"
+424,3.1.4.4,metals_ions,cofactor_of,Ca2+,O14939,O14939,stated,True,PLD2,cyt,G,,1,potentiates the activating effect of thrombin but Ca2+ alone does not activate PLD
+660,3.4.24.14,metals_ions,cofactor_of,Ca2+,O15072,O15072,stated,True,ADAMTS3,ext,C,,2,required
+878,7.6.2.1,metals_ions,cofactor_of,Ca2+,O15162,O15162,stated,True,PLSCR1,cyt,A,,1,"activates, dependent on for redistibution of plasma membrane phospholipids, the enzyme contains a EF-hand-like Ca2+ binding motif, overview. A 1000fold increase in cytosolic Ca2+ level in response to cell activation, coagulation and apoptotic signal inactivates the ATP transporters and activates the"
+13,1.13.11.33,metals_ions,cofactor_of,Ca2+,O15296,O15296,stated,True,ALOX15B,cyt,A,,1,"Ca2+ binds to the PLAT domain of 15-LOX-2, resulting in a translocation from the cytosol to the membrane"
+811,4.6.1.1,inhibitor,inhibits,Ca2+,O43306,O43306,stated,True,ADCY6,cyt,E,cyt,1,at low concentrations
+812,4.6.1.1,inhibitor,inhibits,Ca2+,O43306,O43306,stated,True,ADCY6,cyt,E,cyt,1,inhibition by low concentrations
+815,4.6.1.1,metals_ions,cofactor_of,Ca2+,O43306,O43306,stated,True,ADCY6,cyt,C,,1,required
+509,3.4.21.118,metals_ions,cofactor_of,Ca2+,O60259,O60259,stated,True,KLK8,ext,C,,1,4fold stimulation
+510,3.4.21.118,metals_ions,cofactor_of,Ca2+,,O60259,ec_unique,True,KLK8,ext,D,,1,150.2% activity at 10 mM
+458,3.2.1.113,metals_ions,cofactor_of,Ca2+,O60476,O60476,stated,True,MAN1A2,lum,D,,1,"required for activity. Optimum concentration 15 mM. the activity of soform ManIA2 is significantly decreased after incubation at 30°C without Ca2+, which is about 30% compared with the activity of the enzyme after incubation at 5°C. The enzyme activity of ManIA2 increases with increasing Ca2+ concen"
+817,4.6.1.1,metals_ions,cofactor_of,Ca2+,O60503,O60503,stated,True,ADCY9,cyt,C,,7,activates
+127,2.4.1.66,metals_ions,cofactor_of,Ca2+,,O60568,ec_unique,True,PLOD3,lum,F,,1,"activates, 20% as effective as Mn2+"
+128,2.4.1.66,metals_ions,cofactor_of,Ca2+,,O60568,ec_unique,True,PLOD3,lum,F,,1,"10 mM, effectively substitutes for Mn2+"
+840,5.3.99.2,metals_ions,cofactor_of,Ca2+,O60760,O60760,stated,True,HPGDS,cyt,C,,1,required
+841,5.3.99.2,metals_ions,cofactor_of,Ca2+,O60760,O60760,stated,True,HPGDS,cyt,D,,1,"half maximal effective concentration at 0.4 mM, 1.5fold increase in activity"
+859,7.2.2.10,metals_ions,cofactor_of,Ca2+,O75185,O75185,stated,True,ATP2C2,pump,H,,1,the enzyme shows high affinity for Ca2+
+792,3.6.1.6,metals_ions,cofactor_of,Ca2+,O75354,O75354,stated,True,ENTPD6,ext,F,,1,"activates, slightly more effective than Mg2+"
+415,3.1.4.35,metals_ions,cofactor_of,Ca2+,O76083,O76083,stated,True,PDE9A,cyt,C,,1,slight activation of PDE9A1
+835,5.1.3.17,metals_ions,cofactor_of,Ca2+,,O94923,ec_unique,True,GLCE,lum,N,,1,
+804,4.1.2.27,inhibitor,inhibits,Ca2+,,O95470,ec_unique,True,SGPL1,cyt,N,,1,
+183,2.7.1.23,metals_ions,cofactor_of,Ca2+,O95544,O95544,stated,True,NADK,cyt,A,,1,half-maximal activity at free calcium of approximately 0.0004 mM
+184,2.7.1.23,metals_ions,cofactor_of,Ca2+,O95544,O95544,stated,True,NADK,cyt,G,,1,Ca2+/calmodulin regulates NAD kinase activity. Ca2+/calmodulin has no detectable effect on recombinant human NAD kinase
+80,2.3.2.13,metals_ions,cofactor_of,Ca2+,O95932,O95932,stated,True,TGM6,cyt,C,,10,required
+43,1.15.1.1,metals_ions,cofactor_of,Ca2+,P00441,P00441,stated,True,SOD1,cyt,D,,1,Ca2+ enhances the enzyme activity 1.9fold at 5 mM
+81,2.3.2.13,metals_ions,cofactor_of,Ca2+,P00488,P00488,stated,True,F13A1,ext,C,,10,required
+196,2.7.10.1,metals_ions,cofactor_of,Ca2+,P00533,P00533,stated,True,EGFR,cyt,A,,1,ligand-binding induced dimerization enables transautophosphorylation of ErbB1 which results in enhanced intracellular cytoplasmic Ca2+ concentration activating calmodulin which reverses autoinhibition by net charge changes in the juxtamembranes
+561,3.4.21.5,activating_compound,activates,Ca2+,,P00734,ec_unique,True,F2,ext,I,,1,"analysis of temperature dependence of pseudo-first order rate constants for enzyme-catalyzed hydrolysis of prothrombin-derived substrates, in presence and absence of Ca2+"
+560,3.4.21.5,inhibitor,inhibits,Ca2+,,P00734,ec_unique,True,F2,ext,E,mM,1,slight inhibition at 10 mM
+562,3.4.21.5,metals_ions,cofactor_of,Ca2+,,P00734,ec_unique,True,F2,ext,C,,3,required
+563,3.4.21.5,metals_ions,cofactor_of,Ca2+,,P00734,ec_unique,True,F2,ext,C,,1,activates
+564,3.4.21.5,metals_ions,cofactor_of,Ca2+,,P00734,ec_unique,True,F2,ext,C,,1,required for thrombin activation by factor Xa
+550,3.4.21.41,inhibitor,inhibits,Ca2+,,P00736,ec_unique,True,C1R,ext,I,,1,reaction with C1s
+551,3.4.21.41,metals_ions,cofactor_of,Ca2+,P00736,P00736,stated,True,C1R,ext,C,,2,dependent on
+552,3.4.21.41,metals_ions,cofactor_of,Ca2+,,P00736,ec_unique,True,C1R,ext,B,,1,the NH2-terminal alpha fragment of the enzyme contains one high affinity Ca2+ binding site
+553,3.4.21.41,metals_ions,cofactor_of,Ca2+,,P00736,ec_unique,True,C1R,ext,B,,1,binding of four Ca2+ per enzyme dimer
+523,3.4.21.22,inhibitor,inhibits,Ca2+,P00740,P00740,stated,True,F9,ext,E,mM,1,5 mM
+524,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,C,,3,activates
+525,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,C,,3,activates
+526,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,C,,1,factor IX activation is the first calcium-dependent reaction in intrinsic system clotting
+527,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,D,,1,4-8fold allosteric activation at 5 mM
+528,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,D,,1,"5 mM, optimal concentration for cleavage of factor X by factor IXa on phospholipid membranes"
+529,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,B,,1,"for proper binding of factor IXa to phospholipid and factor VIIIa, all of the Ca2+-sites in factor IXa must be filled"
+530,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,I,,1,"binding of a subpopulation of platelets to the enzyme is activated by the protease-activated receptor-1, PAR-1, requirring both release of calcium from internal stores and influx of extracellular calcium, overview"
+531,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,C,,1,hughly activating
+532,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,C,,1,the reaction is performed by the intrinsic FX-activating complex consisting of FIXa and FVIIIa on a negatively charged phospholipid surface in presence of Ca2+
+533,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,D,,1,inhibition of activation of aFIX to FIXa when lowering concentration from 1.0 to 0.5 mM
+534,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,B,,1,factor IXa contains a high-affinity Ca2+-binding site
+535,3.4.21.22,metals_ions,cofactor_of,Ca2+,,P00740,ec_unique,True,F9,ext,D,,1,Ca2+ enhances the activity of factor IXa (5 mM used in assay conditions)
+536,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,D,,1,5 mM used in assay conditions
+537,3.4.21.22,metals_ions,cofactor_of,Ca2+,P00740,P00740,stated,True,F9,ext,B,,1,"presence of Ca2+ reduces fluctuations of residues of the Ca2+-loop. Ca2+ and Na+ together reduces fluctuations in residues of the Ca2+- and Na+-loops (residues 70-80, 183-194 and 217-225)"
+568,3.4.21.6,activating_compound,activates,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,required
+569,3.4.21.6,activating_compound,activates,Ca2+,,P00742,ec_unique,True,F10,ext,B,,1,"binding to the enzyme stabilizes the binding of Na+, required for prothrombinase complex formation"
+566,3.4.21.6,inhibitor,inhibits,Ca2+,,P00742,ec_unique,True,F10,ext,I,,1,"presence of heparin enhances inhibition by protein inhibitor C up to 42fold in the presence of a physiological Ca2+ concentration. In the absence of Ca2+, no enhancement of inhibition is observed"
+567,3.4.21.6,inhibitor,inhibits,Ca2+,,P00742,ec_unique,True,F10,ext,E,mM,1,"the strength of the dimer interaction is strongly Ca2+-concentration-dependent, such that significant dimer forms in solution only at or above 5 mM Ca2+"
+570,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,6,required
+571,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,activates
+572,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,required for activity
+573,3.4.21.6,metals_ions,cofactor_of,Ca2+,P00742,P00742,stated,True,F10,ext,B,,1,"dependent on, required for coordination of the enzyme domains, residues Asp46, Gly47, Gln49, and Gly64 are involved in Ca2+ binding, modeling of the calcium-binding site within the serine protease domain"
+574,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,required as part of thr prothrombinase enzyme complex
+575,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,B,,1,"required for binding of the EGF-like domains at the catalytic C-terminus and the N-terminus, the EGF-like domain are linked via Ca2+ to the Gla-domain of the enzyme, which itself does not need Ca2+ for binding of C6PS"
+576,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,"required, part of prothrombinase complex"
+577,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,C,,1,"required, part of the prothrombinase complex"
+578,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,B,,1,Ca2+-dependent binding of factor Xa to e.g. phospholipids
+579,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,B,,1,"ion binding site structure, overview"
+580,3.4.21.6,metals_ions,cofactor_of,Ca2+,,P00742,ec_unique,True,F10,ext,E,mM,1,"the enzyme is sharply regulated by a Ca2+ switch centered at 1.16 mM, below which factor Xa is active and above which factor Xa forms inactive dimers on phosphatidylserine-exposing membranes"
+539,3.4.21.27,metals_ions,cofactor_of,Ca2+,,P03951,ec_unique,True,F11,ext,C,,3,substrate factor IX: Ca2+ activates
+540,3.4.21.27,metals_ions,cofactor_of,Ca2+,,P03951,ec_unique,True,F11,ext,C,,1,required for proteolytic activity
+541,3.4.21.27,metals_ions,cofactor_of,Ca2+,,P03951,ec_unique,True,F11,ext,C,,1,factor XIa activates factor IX upon the addition of Ca2+
+542,3.4.21.27,metals_ions,cofactor_of,Ca2+,,P03951,ec_unique,True,F11,ext,D,,2,5 mM used in assay conditions
+543,3.4.21.27,metals_ions,cofactor_of,Ca2+,P03951,P03951,stated,True,F11,ext,N,,1,
+700,3.4.24.7,metals_ions,cofactor_of,Ca2+,P03956,P03956,stated,True,MMP1,ext,C,,3,required
+701,3.4.24.7,metals_ions,cofactor_of,Ca2+,,P03956,ec_unique,True,MMP1,ext,C,,1,activates
+702,3.4.24.7,metals_ions,cofactor_of,Ca2+,,P03956,ec_unique,True,MMP1,ext,B,,1,both collagen and globular protein substrates of collagenase may bind Ca2+ and Zn2+ in the active site
+703,3.4.24.7,metals_ions,cofactor_of,Ca2+,P03956,P03956,stated,True,MMP1,ext,D,,1,optimum concentration 5 mM
+582,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,C,,5,required
+583,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,B,,1,contains gamma-carboxyglutamic acid residues required for Ca2+-dependent membrane binding
+584,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,C,,1,required for optimal activity
+585,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,C,,1,"required, calcium enhances the amidolytic activity of APC by 2fold, the Ca2+ and Na+ metal ion-binding sites are linked energetically"
+586,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,I,,1,"the activated enzyme induces cytsolic Ca2+ signals, mechanism"
+587,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,I,,1,significantly increases recombinant activated protein C binding to the neutrophil surface
+588,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,B,,1,a group of four or five divalent cation binding sites in the Gla-domain show a high specificity for Ca2+. Ca2+ interactions are essential for the anticoagulant functions of APC and are influenced by mutations in different regions of the Gla-domain
+589,3.4.21.69,metals_ions,cofactor_of,Ca2+,,P04070,ec_unique,True,PROC,ext,C,,1,the presence of Ca2+ is essential for Zn2+ to enhance protein C activation because Zn2+ alone fails to support protein C activation
+590,3.4.21.69,metals_ions,cofactor_of,Ca2+,P04070,P04070,stated,True,PROC,ext,I,,1,decreases the binding affinity of APC and Tie2 at 1 mM and 1-12 h
+203,2.7.11.13,metals_ions,cofactor_of,Ca2+,P05129,P05129,stated,True,PRKCG,cyt,G,,1,activity is independent of Ca2+
+559,3.4.21.45,metals_ions,cofactor_of,Ca2+,,P05156,ec_unique,True,CFI,ext,B,,1,"two Ca2+ ions per molecule are present, each bound to one of the LDLRA domains. Crystallization data"
+5,1.11.2.2,metals_ions,cofactor_of,Ca2+,,P05164,ec_unique,True,MPO,ext,N,,1,
+502,3.4.21.106,metals_ions,cofactor_of,Ca2+,,P05981,ec_unique,True,HPN,ext,D,,1,optimal concentration: 5 mM
+330,3.1.1.8,metals_ions,cofactor_of,Ca2+,,P06276,ec_unique,True,BCHE,ext,A,,1,"activates 9fold at 0.5 mM with substrate O-ethyl-O-(4-nitrophenyl)-phenylphosphonothioate via a specific EF-hand calcium binding site, molecular modelling of Ca2+ binding to EF-hands, disruption by H2O2-mediated oxidation"
+557,3.4.21.43,metals_ions,cofactor_of,Ca2+,,P06681,ec_unique,True,C2,ext,C,,1,dependent on
+558,3.4.21.43,metals_ions,cofactor_of,Ca2+,,P06681,ec_unique,True,C2,ext,C,,1,"formation of the bimolecular complex C4b2a, i.e. C3 convertase"
+469,3.3.2.9,inhibitor,inhibits,Ca2+,,P07099,ec_unique,True,EPHX1,cyt,E,mM,1,20% inhibition at 1 mM
+470,3.3.2.9,metals_ions,cofactor_of,Ca2+,,P07099,ec_unique,True,EPHX1,cyt,E,mM,1,20% inhibition at 1 mM
+658,3.4.23.5,metals_ions,cofactor_of,Ca2+,P07339,P07339,stated,True,CTSD,lum,F,,1,Ca2+ and Mg2+ at 5 mM promote the digestion of nucleic acids remarkably
+619,3.4.22.52,activating_compound,activates,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,1,required for activation of mu-calpain. Membrane-binding of mu-calpain is Ca2+-dependent. Membrane binding of mu-calpain is due to the exposed hydrophobic surface of the active site conformation and does not reduce the Ca2+ requirement for activation
+620,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,1,required
+621,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,2,activates
+622,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,14,dependent on
+623,3.4.22.52,metals_ions,cofactor_of,Ca2+,P07384,P07384,stated,True,CAPN1,cyt,C,,14,dependent on
+624,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,1,required for activity
+625,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,D,,1,requires 0.053 mM Ca2+ for half-maximal activity. Activation by Ca2+ promotes the separation of the two subunits of the expressed recombinant protein
+626,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,B,,1,"the primary event in Ca2+-activation corresponds to the binding of Ca2+ to eight interacting sites, of which are four in each of the two calpain subunits. Progressive binding of the metal iuon is linearly correlated with the dissociation of the proteinase, which reaches completion when all eight bin"
+627,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,D,,1,"half-maximal activity at 0.04 mM, maximal activity at 0.1 mM"
+628,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,maximal activation at about 0.002 mM
+629,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,sensitive to the frequency of fast Ca2+ oscillations in vitro
+630,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,C,,1,calcium-dependent cysteine protease
+631,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,"dependent on (0.002-0.02 mM). At resting [Ca2+], mu-calpain is present predominantly in its full-length, unautolysed/unactivated forms. Once activated, mu-calpain appears in its autolysed form. Endogenously expressed mu-calpain is activated within a physiological [Ca2+] range in a Ca2+- and time-dep"
+632,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,"dependent on, dysfunctional mitochondria increase cytosolic calcium, thereby inducing calpain activation"
+633,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,"mu-calpain is autolytically activated at micromolar Ca2+, mice muscle fibers that are partially excitation-contraction uncoupled by exposure to 0.005 mM Ca2+ for 3 min (no ATP) show the presence of autolytic activation of a proportion of the human mu-calpain present"
+634,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,requires a micromolar concentration of calcium ions
+635,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,A,,1,the enzyme requires micromolar calcium concentrations for activation
+636,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,D,,1,"dependent on, 100% activity at concentrations higher than 0.04 mM"
+637,3.4.22.52,metals_ions,cofactor_of,Ca2+,,P07384,ec_unique,True,CAPN1,cyt,D,,1,0.1 mM used in assay conditions
+137,2.4.2.7,metals_ions,cofactor_of,Ca2+,,P07741,ec_unique,True,APRT,cyt,N,,1,
+546,3.4.21.37,metals_ions,cofactor_of,Ca2+,P08246,P08246,stated,True,ELANE,ext,C,,2,required
+547,3.4.21.37,metals_ions,cofactor_of,Ca2+,,P08246,ec_unique,True,ELANE,ext,E,un,1,inhibition of SP-D protein cleavage at physiological concentrations
+679,3.4.24.24,metals_ions,cofactor_of,Ca2+,P08253,P08253,stated,True,MMP2,ext,C,,5,required
+680,3.4.24.24,metals_ions,cofactor_of,Ca2+,,P08253,ec_unique,True,MMP2,ext,C,,1,dependent on
+681,3.4.24.24,metals_ions,cofactor_of,Ca2+,,P08253,ec_unique,True,MMP2,ext,C,,1,"required, gelatinase A synthetic 19000 MW catalytic domain"
+682,3.4.24.24,metals_ions,cofactor_of,Ca2+,,P08253,ec_unique,True,MMP2,ext,B,,1,4-bladed beta-propeller protein in which the 4 blades are arranged around a channel-like opening in which Ca2+ and a Na+Cl- ion pair are bound
+683,3.4.24.24,metals_ions,cofactor_of,Ca2+,P08253,P08253,stated,True,MMP2,ext,C,,2,required for activity
+684,3.4.24.24,metals_ions,cofactor_of,Ca2+,,P08253,ec_unique,True,MMP2,ext,C,,1,active site requires calcium ions
+685,3.4.24.24,metals_ions,cofactor_of,Ca2+,,P08253,ec_unique,True,MMP2,ext,B,,1,hemopexin-like domain requires Ca2+ for fibronectin and heparin binding
+686,3.4.24.24,metals_ions,cofactor_of,Ca2+,P08253,P08253,stated,True,MMP2,ext,B,,1,"Ca2+is essential for homodimerization of enzyme MMP-2, analysis, detailed overview"
+687,3.4.24.24,metals_ions,cofactor_of,Ca2+,P08253,P08253,stated,True,MMP2,ext,C,,1,"essential for gelatinase activity, no gelatinase activity at 1 mM Ca2+"
+663,3.4.24.17,metals_ions,cofactor_of,Ca2+,,P08254,ec_unique,True,MMP3,ext,D,,1,removal of Ca2+ from the enzyme solution results in a complete loss of activity that can be fully restored by addition of 1 mM Ca2+
+664,3.4.24.17,metals_ions,cofactor_of,Ca2+,,P08254,ec_unique,True,MMP3,ext,D,,1,"Ca2+ is required to maintain the active conformation of the enzyme, full activity is detected at 1 mM Ca2+, at pH 7.5 and is retained at even higher concentrations of Ca2+, at lower concentrations the enzyme is autolyzed"
+665,3.4.24.17,metals_ions,cofactor_of,Ca2+,,P08254,ec_unique,True,MMP3,ext,B,,1,proenzyme contains 3 Ca2+
+666,3.4.24.17,metals_ions,cofactor_of,Ca2+,,P08254,ec_unique,True,MMP3,ext,C,,1,calcium-dependent
+667,3.4.24.17,metals_ions,cofactor_of,Ca2+,P08254,P08254,stated,True,MMP3,ext,B,,1,"required, the catalytic domains contain Ca2+ ions"
+512,3.4.21.20,metals_ions,cofactor_of,Ca2+,,P08311,ec_unique,True,CTSG,ext,I,,1,enzyme triggers calcium mobilization
+140,2.5.1.61,inhibitor,inhibits,Ca2+,,P08397,ec_unique,True,HMBS,cyt,E,mM,1,"25 mM CaCl2, 90% inhibition"
+141,2.5.1.61,inhibitor,inhibits,Ca2+,,P08397,ec_unique,True,HMBS,cyt,E,mM,1,"0.1 mM CaCl2, 80% inhibition"
+513,3.4.21.21,metals_ions,cofactor_of,Ca2+,P08709,P08709,stated,True,F7,ext,C,,1,required
+514,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,C,,1,activates
+515,3.4.21.21,metals_ions,cofactor_of,Ca2+,P08709,P08709,stated,True,F7,ext,B,,1,"bound to the backbone-carbonyl groups of Asp72 and Glu75, and to the side-chain carboxylate groups of Glu70 and Glu80"
+516,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,B,,1,binding structure
+517,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,B,,1,"dependent on, eight Ca2+ are bound via the Gla domain and involved in enzyme binding to the membrane with different tasks, structure and coordination, mechanism of Ca2+-mediated binding, overview"
+518,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,B,,1,one FVIIa molecule binds 8 Ca2+ in the epidermal growth factor-like and the gamma-carboxyglutamic acid-rich domains
+519,3.4.21.21,metals_ions,cofactor_of,Ca2+,P08709,P08709,stated,True,F7,ext,B,,1,"Ca2+ ions constitute an important cofactor for FVIIa and bind to a total of nine sites, seven in the N-terminal gamma-carboxyglutamic acid (Gla) domain and one each in the first EGF-like and protease domains"
+520,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,D,,1,5 mM used in assay conditions
+521,3.4.21.21,metals_ions,cofactor_of,Ca2+,,P08709,ec_unique,True,F7,ext,B,,1,the enzyme binds the phospholipid membrane in a Ca2+-dependent manner. Ca2+ ions are required for assembly and function of the tissue factor-enzyme complex
+522,3.4.21.21,metals_ions,cofactor_of,Ca2+,P08709,P08709,stated,True,F7,ext,C,,1,Ca2+ increased the hydrolytic activity of FVIIa towards substrate S-2288 by about 60fold in the absence of Na+ and by about 82fold in the presence of Na+. Ca2+ stabilizes the Ca2+-binding loop (the 70-loop) and Na+-binding loops but not the tissue factor-binding region. Na+ and Ca2+ together stabili
+429,3.1.6.2,metals_ions,cofactor_of,Ca2+,P08842,P08842,stated,True,STS,lum,D,,1,"10 mM, about 120% of initial activity"
+430,3.1.6.2,metals_ions,cofactor_of,Ca2+,P08842,P08842,stated,True,STS,lum,C,,2,Ca2+-dependent enzyme
+676,3.4.24.23,metals_ions,cofactor_of,Ca2+,,P09237,ec_unique,True,MMP7,ext,C,,4,required
+677,3.4.24.23,metals_ions,cofactor_of,Ca2+,P09237,P09237,stated,True,MMP7,ext,C,,4,required
+678,3.4.24.23,metals_ions,cofactor_of,Ca2+,,P09237,ec_unique,True,MMP7,ext,I,,1,contains a zinc ion essential for enzyme activity as well as a second zinc ion necessary for enzyme stability
+554,3.4.21.42,metals_ions,cofactor_of,Ca2+,P09871,P09871,stated,True,C1S,ext,C,,2,dependent on
+555,3.4.21.42,metals_ions,cofactor_of,Ca2+,,P09871,ec_unique,True,C1S,ext,B,,1,the NH2-terminal alpha fragment of the enzyme contains one high affinity Ca2+ binding site
+556,3.4.21.42,metals_ions,cofactor_of,Ca2+,P09871,P09871,stated,True,C1S,ext,B,,1,"recombinant CUB1-EGF-CUB2 region of enzyme C1s , dependent on, required for substrate binding. The CUB1-EGF-CUB2 domains of C1s are arranged linearly with three Ca2+: one in each CUB domain and one within the EGF-like domain, near the CUB1-EGF junction"
+14,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,C,,8,required
+15,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,C,,8,required
+16,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,C,,3,activates
+17,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,C,,6,stimulates
+18,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,D,,1,optimal concentration is 2 mM
+19,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,D,,1,"above 0.1 mM, required for maximal activity"
+20,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,D,,1,0.1 mM
+21,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,I,,1,5-lipoxygenase product formation in arachidonic acid-stimulated polymorphonuclear leukocytes is independent of Ca2+. Ca2+ and 5-lipoxygenase phosphorylation seem to be required for arachidonic acid-induced 5-lipoxygenase product formation
+22,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,A,,1,the enzyme is activated by a Ca2+-mediated translocation to membranes
+23,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,A,,1,"activates, Ca2+ induces the translocation of 5-LO from a soluble compartment to nuclear structures, where 5-LO co-localizes with 5-LO activating protein, FLAP"
+24,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,A,,1,"binds at the C2-like domain, stimulates and induces enzyme translocation from the nuclear soluble to the envelope fraction, both Ca2+ and glyceride might decrease the concentration of lipid hydroperoxide needed for activation of 5-LO, enabling cellular 5-LO product formation at a low redox tone"
+25,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,A,,1,stimulation with calcium ionophore
+26,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,A,,1,"upon stimulation with calcium ionophore, GFP-5-lipoxygenase translocates to the nuclear envelope allowing it to interact with 5-lipoxygenase activating protein (FLAP) and leukotriene C4 synthase"
+27,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,A,,1,"Ca2+ is required for 5LO activity, the enzyme contains two Ca2+, full activation is reached at 0.004-0.01 mM Ca2+"
+28,1.13.11.34,metals_ions,cofactor_of,Ca2+,,P09917,ec_unique,True,ALOX5,cyt,C,,1,Ca2+ stimulates enzyme activity
+29,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,A,,1,"5-LOX is recruited to the nuclear membrane upon cellular Ca2+ influx. Calcium binds to allosteric sites in the 5-LOX N-terminal polycystin-1/lipoxygenase/alpha-toxin (PLAT) domain, promoting attachment to the membrane via conserved tryptophan residues that embed into the lipid bilayer"
+30,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,A,,1,allosteric modulator involved in membrane binding by the enzyme
+31,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,C,,1,"phosphocholine in combination with Ca2+ markedly stimulate the formation of leukotrienes by wild-type 5-LO and C159S/C300S/C416S/C418S mutant, whereas their effect on the 5-LO 3W mutant is small"
+32,1.13.11.34,metals_ions,cofactor_of,Ca2+,P09917,P09917,stated,True,ALOX5,cyt,B,,1,"whilst the catalytic domain of wild-type 5-LO is destabilized by calcium, addition of calcium has no influence on the catalytic domain of 5-LODELTA4"
+592,3.4.21.75,inhibitor,inhibits,Ca2+,,P09958,ec_unique,True,FURIN,lum,E,mM,1,5-10 mM inhibit
+593,3.4.21.75,inhibitor,inhibits,Ca2+,,P09958,ec_unique,True,FURIN,lum,E,un,2,activation below
+594,3.4.21.75,inhibitor,inhibits,Ca2+,,P09958,ec_unique,True,FURIN,lum,E,mM,1,100 mM
+595,3.4.21.75,metals_ions,cofactor_of,Ca2+,,P09958,ec_unique,True,FURIN,lum,C,,13,required
+596,3.4.21.75,metals_ions,cofactor_of,Ca2+,P09958,P09958,stated,True,FURIN,lum,C,,13,required
+597,3.4.21.75,metals_ions,cofactor_of,Ca2+,,P09958,ec_unique,True,FURIN,lum,C,,5,dependent on
+598,3.4.21.75,metals_ions,cofactor_of,Ca2+,P09958,P09958,stated,True,FURIN,lum,C,,5,dependent on
+599,3.4.21.75,metals_ions,cofactor_of,Ca2+,,P09958,ec_unique,True,FURIN,lum,E,mM,1,5-10 mM inhibit
+600,3.4.21.75,metals_ions,cofactor_of,Ca2+,,P09958,ec_unique,True,FURIN,lum,D,,1,2.46 mM
+601,3.4.21.75,metals_ions,cofactor_of,Ca2+,,P09958,ec_unique,True,FURIN,lum,D,,1,half-maximal activity at: 0.2 mM
+602,3.4.21.75,metals_ions,cofactor_of,Ca2+,P09958,P09958,stated,True,FURIN,lum,C,,1,"strict Ca2+ dependence, calcium-dependent activity regulation of furin"
+604,3.4.21.79,metals_ions,cofactor_of,Ca2+,,P10144,ec_unique,True,GZMB,ext,N,,1,
+496,3.4.21.10,metals_ions,cofactor_of,Ca2+,,P10323,ec_unique,True,ACR,ext,C,,5,activates
+805,4.2.1.75,metals_ions,cofactor_of,Ca2+,,P10746,ec_unique,True,UROS,cyt,C,,2,activates
+4,1.1.1.49,metals_ions,cofactor_of,Ca2+,,P11413,ec_unique,True,G6PD,cyt,C,,2,activation
+483,3.4.13.9,metals_ions,cofactor_of,Ca2+,,P12955,ec_unique,True,PEPD,cyt,F,,1,can substitute for Mn2+ by less than 30%
+674,3.4.24.19,metals_ions,cofactor_of,Ca2+,,P13497,ec_unique,True,BMP1,ext,C,,1,required for activity
+675,3.4.24.21,metals_ions,cofactor_of,Ca2+,P13497,P13497,stated,True,BMP1,ext,C,,1,"activates, a positive regulator of BMP-1"
+323,3.1.1.4,metals_ions,cofactor_of,Ca2+,P14555,P14555,stated,True,PLA2G2A,ext,C,,1,the secretory isozyme is Ca2+-dependent
+694,3.4.24.56,metals_ions,cofactor_of,Ca2+,,P14735,ec_unique,True,IDE,cyt,C,,1,chelator-treated enzyme can be reactivated by Ca2+
+689,3.4.24.35,metals_ions,cofactor_of,Ca2+,,P14780,ec_unique,True,MMP9,ext,C,,4,required
+690,3.4.24.35,metals_ions,cofactor_of,Ca2+,P14780,P14780,stated,True,MMP9,ext,C,,4,required
+691,3.4.24.35,metals_ions,cofactor_of,Ca2+,,P14780,ec_unique,True,MMP9,ext,C,,2,dependent on
+692,3.4.24.35,metals_ions,cofactor_of,Ca2+,P14780,P14780,stated,True,MMP9,ext,C,,1,calcium and zinc dependent metalloproteinase
+693,3.4.24.35,metals_ions,cofactor_of,Calcium,,P14780,ec_unique,True,MMP9,ext,C,,1,required
+473,3.4.11.2,inhibitor,inhibits,Ca2+,,P15144,ec_unique,True,ANPEP,ext,N,,1,
+431,3.1.6.8,inhibitor,inhibits,Ca2+,,P15289,ec_unique,True,ARSA,lum,E,mM,1,at 30 mM
+432,3.1.6.8,inhibitor,inhibits,Ca2+,,P15289,ec_unique,True,ARSA,lum,E,mM,1,CaCl2 reduces the reaction rate in the low millimolar range
+433,3.1.6.8,metals_ions,cofactor_of,Ca2+,,P15289,ec_unique,True,ARSA,lum,D,,1,stimulates at 20 mM
+117,2.4.1.22,metals_ions,cofactor_of,Ca2+,P15291,P15291,stated,True,B4GALT1,lum,F,,1,"metal site 2 is a low affinity site that binds Mn2+ or Ca2+, which serve the primary role of enhancing the efficiency of catalysis and the binding of glucose"
+427,3.1.6.12,inhibitor,inhibits,Ca2+,,P15848,ec_unique,True,ARSB,lum,N,,1,
+428,3.1.6.12,metals_ions,cofactor_of,Ca2+,,P15848,ec_unique,True,ARSB,lum,N,,1,
+1,1.1.1.189,activating_compound,activates,Ca2+,,P16152,ec_unique,True,CBR1,cyt,C,,1,"equimolar to substrate, 15% activation"
+121,2.4.1.37,metals_ions,cofactor_of,Ca2+,,P16442,ec_unique,True,ABO,lum,D,,1,"0.1 mM, significant increase in activity, more significant acceleration at 10 mM"
+612,3.4.21.94,metals_ions,cofactor_of,Ca2+,,P16519,ec_unique,True,PCSK2,lum,D,,1,optimum concentration 2.5 mM
+400,3.1.4.11,metals_ions,cofactor_of,Ca2+,P16885,P16885,stated,True,PLCG2,cyt,A,,1,"PLCgamma2, Ca2+-dependent, highest activity at 0.005-0.01 mM"
+801,3.7.1.2,metals_ions,cofactor_of,Ca2+,,P16930,ec_unique,True,FAH,cyt,N,,2,
+464,3.2.1.49,inhibitor,inhibits,Ca2+,,P17050,ec_unique,True,NAGA,lum,N,,1,
+645,3.4.22.53,metals_ions,cofactor_of,Ca2+,P17655,P17655,stated,True,CAPN2,cyt,C,,1,Ca2+-dependent enzyme
+42,1.14.17.3,metals_ions,cofactor_of,Ca2+,P19021,P19021,stated,True,PAM,lum,B,,1,3.26 mol per mol of bifunctional enzyme
+406,3.1.4.11,metals_ions,cofactor_of,Ca2+,P19174,P19174,stated,True,PLCG1,cyt,N,,10,
+51,1.4.3.22,metals_ions,cofactor_of,Ca2+,,P19801,ec_unique,True,AOC1,ext,B,,1,"tightly bound, proposed to occupy a second metal-binding site"
+52,1.4.3.22,metals_ions,cofactor_of,Ca2+,P19801,P19801,stated,True,AOC1,ext,B,,1,enzmye contains 2 Ca2+-binding sites per subunit
+861,7.2.2.10,metals_ions,cofactor_of,Ca2+,P20020,P20020,stated,True,ATP2B1,pump,H,,1,"dependent on, at very low Ca2+ concentrations the PMCA is nearly inactive, unstimulated PMCA pumps have poor affinity for Ca2+"
+649,3.4.22.54,metals_ions,cofactor_of,Ca2+,P20807,P20807,stated,True,CAPN3,cyt,C,,1,activates
+650,3.4.22.54,metals_ions,cofactor_of,Ca2+,,P20807,ec_unique,True,CAPN3,cyt,C,,9,dependent on
+651,3.4.22.54,metals_ions,cofactor_of,Ca2+,P20807,P20807,stated,True,CAPN3,cyt,C,,9,dependent on
+652,3.4.22.54,metals_ions,cofactor_of,Ca2+,,P20807,ec_unique,True,CAPN3,cyt,D,,1,"required, K0.5 is between 0.02 and 0.03 mM"
+653,3.4.22.54,metals_ions,cofactor_of,Ca2+,P20807,P20807,stated,True,CAPN3,cyt,A,,1,"regulated by Ca2+, contains 2 EF-hand calcium-binding domains. Activated by micromolar concentrations of calcium"
+654,3.4.22.54,metals_ions,cofactor_of,Ca2+,,P20807,ec_unique,True,CAPN3,cyt,C,,1,"P94 insertion sequence 1 is a propeptide that must be autoproteolytically cleaved to provide access of substrates and inhibitors to the enzymes active site. Initial autoproteolytic cleavage is an intramolecular reaction, transient binding of two Ca2+ ions to the core would be sufficient to promote t"
+655,3.4.22.54,metals_ions,cofactor_of,Ca2+,P20807,P20807,stated,True,CAPN3,cyt,C,,1,activated by Ca2+
+656,3.4.22.54,metals_ions,cofactor_of,Ca2+,P20807,P20807,stated,True,CAPN3,cyt,C,,1,Ca2+-regulated enzyme
+657,3.4.22.54,metals_ions,cofactor_of,Ca2+,,P20807,ec_unique,True,CAPN3,cyt,D,,1,"dependent on, 10 mM used in assay conditions"
+69,2.1.1.6,inhibitor,inhibits,Ca2+,P21964,P21964,stated,True,COMT,cyt,I,,1,quantum mechanical/molecular mechanical dynamics study
+100,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,1,transglutaminase activity requires multiple Ca2+ ions
+101,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,1,calcium-dependent enzyme
+102,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,A,,1,"the enzyme is allosterically regulated by Ca2+ ions and nucleotides (GMP, GDP, GTP, GTPgammaS), which trigger opposing conformational changes. Nucleotides push transglutaminase 2 into its compact, closed state, while Ca2+ triggers an extended form"
+77,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,10,required
+84,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,16,dependent on
+95,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,2,Ca2+-dependent enzyme
+96,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,A,,1,"dependent on, the protein transamidase activity of TG2 is positively regulated by calcium and negatively regulated by GTP. The wild-type and mutant enzymes both contain six Ca2+ binding sites"
+98,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,A,,1,"required, three calcium binding sites are thought to exist on tTG, GTP/GDP and Ca2+ are able to compete with one another to convert tTG from the closed- to open-state, and vice versa"
+99,2.3.2.13,metals_ions,cofactor_of,Ca2+,P21980,P21980,stated,True,TGM2,cyt,C,,1,the enzyme is calcium-dependent
+842,5.4.99.2,inhibitor,inhibits,Ca2+,,P22033,ec_unique,True,MMUT,mito,E,un,1,at high concentrations
+795,3.6.1.9,metals_ions,cofactor_of,Ca2+,P22413,P22413,stated,True,ENPP1,ext,C,,2,required
+79,2.3.2.13,metals_ions,cofactor_of,Ca2+,P22735,P22735,stated,True,TGM1,cyt,C,,10,required
+86,2.3.2.13,metals_ions,cofactor_of,Ca2+,P22735,P22735,stated,True,TGM1,cyt,C,,2,required for activity
+688,3.4.24.34,metals_ions,cofactor_of,Ca2+,,P22894,ec_unique,True,MMP8,ext,N,,3,
+800,3.6.5.6,metals_ions,cofactor_of,Ca2+,P23258,P23258,stated,True,TUBG1,cyt,F,,1,calcium apparently competes for the magnesium binding site at the E-site to cause rapid hydrolysis of GTP to GDP
+161,2.7.1.127,metals_ions,cofactor_of,Ca2+,P23677,P23677,stated,True,ITPKA,cyt,A,,2,the enzyme is activated by Ca2+/calmodulin
+146,2.7.1.107,metals_ions,cofactor_of,Ca2+,P23743,P23743,stated,True,DGKA,cyt,C,,1,Ca2+ requirement in DGKalpha activation
+147,2.7.1.107,metals_ions,cofactor_of,Ca2+,P23743,P23743,stated,True,DGKA,cyt,A,,1,0.001 mM used in assay conditions. The enzyme is positively regulated by Ca2+
+148,2.7.1.107,metals_ions,cofactor_of,Ca2+,P23743,P23743,stated,True,DGKA,cyt,A,,1,"the enzyme is positively regulated by Ca2+ binding to its N-terminal EF-hand domains. Cooperative binding of two Ca2+ ions dissociates the dimer into a well-folded monomer, which resists to proteolysis"
+603,3.4.21.76,metals_ions,cofactor_of,Ca2+,P24158,P24158,stated,True,PRTN3,ext,C,,1,required
+335,3.1.21.1,inhibitor,inhibits,Ca2+,,P24855,ec_unique,True,DNASE1,ext,E,mM,1,80% inhibition at 0.1 mM
+336,3.1.21.1,metals_ions,cofactor_of,Ca2+,,P24855,ec_unique,True,DNASE1,ext,F,,8,activation synergistic with Mg2+
+337,3.1.21.1,metals_ions,cofactor_of,Ca2+,,P24855,ec_unique,True,DNASE1,ext,B,,1,stabilizing enzyme structure
+338,3.1.21.1,metals_ions,cofactor_of,Ca2+,P24855,P24855,stated,True,DNASE1,ext,F,,1,"activates, DNase I is a Ca2+/Mg2+-dependent enzyme, synergism"
+339,3.1.21.1,metals_ions,cofactor_of,Ca2+,,P24855,ec_unique,True,DNASE1,ext,D,,1,1 mM optimal concentration
+340,3.1.21.1,metals_ions,cofactor_of,Ca2+,,P24855,ec_unique,True,DNASE1,ext,F,,1,"highest activity at 5 mM, but only 50% activtiy compared to Mg2+"
+106,2.4.1.101,inhibitor,inhibits,Ca2+,,P26572,ec_unique,True,MGAT1,lum,N,,1,
+281,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,5,required
+283,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,4,dependent on
+284,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,2,required for activity
+285,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,Asp269 and Glu53 participate in the ligation of catalytic Ca2+
+287,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,contains Ca2+
+296,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,D,,1,1.6 mM used in assay conditions
+297,3.1.1.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,dependent on. The enzyme possesses 2 Ca2+ ions
+299,3.1.1.25,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,3,dependent on
+301,3.1.1.25,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,1,required for activity
+303,3.1.1.25,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,Asp269 and Glu53 participate in the ligation of catalytic Ca2+
+311,3.1.1.25,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,dependent on. The enzyme possesses 2 Ca2+ ions
+332,3.1.1.81,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,1,required for catalysis
+436,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,7,required
+439,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,10,dependent on
+440,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,1,required for activity
+444,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,"involved in catalysis, active site structure, overview"
+445,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,Asp269 and Glu53 participate in the ligation of catalytic Ca2+
+447,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,contains Ca2+
+448,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,required for enzyme stability and activity
+453,3.1.8.1,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,B,,1,dependent on. The enzyme possesses 2 Ca2+ ions
+802,3.8.2.2,metals_ions,cofactor_of,Ca2+,P27169,P27169,stated,True,PON1,ext,C,,7,dependent on
+807,4.2.99.18,inhibitor,inhibits,Ca2+,P27695,P27695,stated,True,APEX1,cyt,E,un,1,Ca2+ cause a complete loss of catalytic activity of APE1 with retention of binding potential
+163,2.7.1.127,metals_ions,cofactor_of,Ca2+,P27987,P27987,stated,True,ITPKB,cyt,A,,3,the enzyme is highly activated by Ca2+/calmodulin
+328,3.1.1.77,metals_ions,cofactor_of,Ca2+,,P28039,ec_unique,True,AOAH,ext,C,,1,CaCl2 enhances activity at pH 4.8 by 1.5-2 fold
+329,3.1.1.77,metals_ions,cofactor_of,Ca2+,,P28039,ec_unique,True,AOAH,ext,D,,1,"5 mM enhances activity by 30-50% at low substrate concentration, inhibitory at high substrate concentration"
+611,3.4.21.93,metals_ions,cofactor_of,Ca2+,,P29120,ec_unique,True,PCSK1,lum,C,,5,dependent on
+378,3.1.3.94,inhibitor,inhibits,Ca2+,,P29218,ec_unique,True,IMPA1,cyt,N,,1,
+35,1.14.13.39,metals_ions,cofactor_of,Ca2+,P29474,P29474,stated,True,NOS3,cyt,C,,11,required
+40,1.14.13.39,metals_ions,cofactor_of,Ca2+,P29475,P29475,stated,True,NOS1,cyt,A,,1,the raise of intracellular calcium levels increases nNOS dephosphorylation and enzymatic activity
+770,3.5.4.12,metals_ions,cofactor_of,Ca2+,,P32321,ec_unique,True,DCTD,cyt,F,,1,"divalent cations not necessary to improve activity, activation by dCTP and inhibition by dTTP both show an absolute requirement for a divalent cation. Mg2+, Ca2+ and Mn2+ almost equally effective in promoting activation by dCTP, Cu2+, Zn2+, and Co2+ are ineffective"
+771,3.5.4.12,metals_ions,cofactor_of,Ca2+,,P32321,ec_unique,True,DCTD,cyt,F,,1,"activation of enzyme by dCTP or inhibition by TTP has absolute requirement for the presence of a divalent cation. Mg2+, Ca2+ and Mn2+ are equally effective cations for enzyme activation by dCTP, Mn2+ and Ca2+ are more effective than Mg2+ in enzyme inhibition by TTP"
+809,4.4.1.1,metals_ions,cofactor_of,Ca2+,,P32929,ec_unique,True,CTH,cyt,A,,1,"Ca2+ promotes activation of CSE, H2S production by CSE is a Ca2+-dependent phenomenon"
+880,7.6.2.3,inhibitor,inhibits,Ca2+,P33527,P33527,stated,True,ABCC1,cyt,N,,1,
+358,3.1.3.17,metals_ions,cofactor_of,Ca2+,P36873,P36873,stated,True,PPP1CC,cyt,C,,1,activates
+699,3.4.24.65,metals_ions,cofactor_of,Ca2+,,P39900,ec_unique,True,MMP12,ext,N,,4,
+818,4.6.1.1,metals_ions,cofactor_of,Ca2+,P40145,P40145,stated,True,ADCY8,cyt,C,,1,stimulation
+819,4.6.1.1,metals_ions,cofactor_of,Ca2+,P40145,P40145,stated,True,ADCY8,cyt,C,,1,activation
+198,2.7.10.4,inhibitor,inhibits,Ca2+,P41240,P41240,stated,True,CSK,cyt,E,mM,1,"with Mg+, there is a steep fall in enzyme activity towards poly(Glu-Tyr) when the Ca2+ concentrations are in the millimolar range"
+487,3.4.16.2,metals_ions,cofactor_of,Ca2+,,P42785,ec_unique,True,PRCP,lum,A,,1,optimal activity at 0.01 mM
+74,2.3.1.7,inhibitor,inhibits,Ca2+,,P43155,ec_unique,True,CRAT,mito,N,,5,
+238,2.7.11.19,metals_ions,cofactor_of,Ca2+,P46019,P46019,stated,True,PHKA2,cyt,A,,1,"required, interacts with the delta subunit"
+327,3.1.1.4,metals_ions,cofactor_of,Ca2+,P47712,P47712,stated,True,PLA2G4A,cyt,N,,40,
+75,2.3.2.13,inhibitor,inhibits,Ca2+,P49221,P49221,stated,True,TGM4,ext,E,mM,1,10 mM
+82,2.3.2.13,metals_ions,cofactor_of,Ca2+,P49221,P49221,stated,True,TGM4,ext,D,,1,optimal concentration: 5 mM
+506,3.4.21.117,metals_ions,cofactor_of,Ca2+,P49862,P49862,stated,True,KLK7,ext,C,,1,slight activation
+507,3.4.21.117,metals_ions,cofactor_of,Ca2+,P49862,P49862,stated,True,KLK7,ext,C,,1,slight enhancement of activity
+508,3.4.21.117,metals_ions,cofactor_of,Ca2+,,P49862,ec_unique,True,KLK7,ext,N,,2,
+782,3.6.1.5,metals_ions,cofactor_of,Ca2+,P49961,P49961,stated,True,ENTPD1,ext,C,,11,required
+707,3.4.24.80,metals_ions,cofactor_of,Ca2+,P50281,P50281,stated,True,MMP14,ext,B,,1,enzyme-bound
+708,3.4.24.80,metals_ions,cofactor_of,Ca2+,P50281,P50281,stated,True,MMP14,ext,C,,1,a calcium- and zinc-dependent transmembrane endopeptidase
+775,3.6.1.17,inhibitor,inhibits,Ca2+,,P50583,ec_unique,True,NUDT2,cyt,E,mM,1,Ki: 0.3 mM
+776,3.6.1.17,metals_ions,cofactor_of,Ca2+,,P50583,ec_unique,True,NUDT2,cyt,D,,1,"activated by physiological concentration, maximal activity at 2 mM"
+188,2.7.1.6,metals_ions,cofactor_of,Ca2+,,P51570,ec_unique,True,GALK1,cyt,F,,1,"absolute requirement for a divalent cation, Ca2+ can be partially replaced by Co2+"
+662,3.4.24.15,metals_ions,cofactor_of,Ca2+,,P52888,ec_unique,True,THOP1,cyt,I,,1,"Ca2+-dependent interaction with calmodulin is important for the secretion of thimet oligopeptidase following stimulation. Overexpression of calmodulin in HEK293 cells is sufficient to greatly increase the A23187-stimulated secretion of EP24.15, which can be inhibited by the calmodulin inhibitor calm"
+50,1.3.1.24,inhibitor,inhibits,Ca2+,,P53004,ec_unique,True,BLVRA,cyt,E,un,1,abolishes autophosphorylation of BVR
+382,3.1.4.1,activating_compound,activates,Ca2+,P54750,P54750,stated,True,PDE1A,cyt,A,,1,stimulated by their binding to Ca2+/calmodulin
+410,3.1.4.17,metals_ions,cofactor_of,Ca2+,P54750,P54750,stated,True,PDE1A,cyt,C,,1,Ca2+ activates
+179,2.7.1.20,metals_ions,cofactor_of,Ca2+,,P55263,ec_unique,True,ADK,cyt,F,,2,can partially substitute for Mg2+
+180,2.7.1.20,metals_ions,cofactor_of,Ca2+,,P55263,ec_unique,True,ADK,cyt,C,,7,activation
+181,2.7.1.20,metals_ions,cofactor_of,Ca2+,P55263,P55263,stated,True,ADK,cyt,F,,1,can substitute for Mg2+
+471,3.4.11.14,metals_ions,cofactor_of,Ca2+,,P55786,ec_unique,True,NPEPPS,cyt,D,,1,9.8% increase of activity at 5 mM
+359,3.1.3.17,metals_ions,cofactor_of,Ca2+,P62136,P62136,stated,True,PPP1CA,cyt,C,,1,activates
+360,3.1.3.17,metals_ions,cofactor_of,Ca2+,P62140,P62140,stated,True,PPP1CB,cyt,C,,1,activates
+364,3.1.3.3,inhibitor,inhibits,Ca2+,,P78330,ec_unique,True,PSPH,cyt,E,un,1,"inhibition even in presence of Mg2+, replacement of sixfold coordinated Mg2+ in active site by Ca2+ results in sevenfold coordinated metal ion, explaining the inhibitory effect of Ca2+"
+365,3.1.3.3,metals_ions,cofactor_of,Ca2+,P78330,P78330,stated,True,PSPH,cyt,B,,1,"crystal structures have a calcium ion within the active site, with the exception of one monomer, which binds magnesium"
+806,4.2.99.18,inhibitor,inhibits,Ca2+,P78549,P78549,stated,True,NTHL1,cyt,E,mM,1,50% inhibition at 5-10 mM
+425,3.1.4.50,metals_ions,cofactor_of,Ca2+,,P80108,ec_unique,True,GPLD1,ext,C,,1,requirement
+426,3.1.4.50,metals_ions,cofactor_of,Ca2+,,P80108,ec_unique,True,GPLD1,ext,C,,3,activation
+856,7.2.2.10,metals_ions,cofactor_of,Ca2+,P98194,P98194,stated,True,ATP2C1,pump,H,,1,quantitative Ca2+ flux analysis of recombinant isozymes in COS-1 cells permeabilized by saponin
+408,3.1.4.17,metals_ions,cofactor_of,Ca2+,Q01064,Q01064,stated,True,PDE1B,cyt,A,,4,Ca2+/calmodulin stimulated
+411,3.1.4.17,metals_ions,cofactor_of,Ca2+,Q01064,Q01064,stated,True,PDE1B,cyt,C,,1,Ca2+ activates
+862,7.2.2.10,metals_ions,cofactor_of,Ca2+,Q01814,Q01814,stated,True,ATP2B2,pump,H,,1,"dependent on, at very low Ca2+ concentrations the PMCA is nearly inactive, unstimulated PMCA pumps have poor affinity for Ca2+"
+826,4.6.1.2,inhibitor,inhibits,Ca2+,Q02108,Q02108,stated,True,GUCY1A1,cyt,E,cyt,1,"Ca2+ inhibits SGC. Calcium treatment dramatically decreases Vmax and KM(GTP) for purified SGC or SGC expressed in different cell lines. Carbachol-, thrombospondin-1-, or angiotensin II-induced increase of cellular Ca2+ lowers SGC activity. Depolarization of pituitary cells by high K+ and L-type Ca2+"
+829,4.6.1.2,metals_ions,cofactor_of,Ca2+,Q02108,Q02108,stated,True,GUCY1A1,cyt,B,,1,SGC is a constitutive Ca2+-binding protein
+827,4.6.1.2,inhibitor,inhibits,Ca2+,Q02153,Q02153,stated,True,GUCY1B1,cyt,E,cyt,1,"Ca2+ inhibits SGC. Calcium treatment dramatically decreases Vmax and KM(GTP) for purified SGC or SGC expressed in different cell lines. Carbachol-, thrombospondin-1-, or angiotensin II-induced increase of cellular Ca2+ lowers SGC activity. Depolarization of pituitary cells by high K+ and L-type Ca2+"
+830,4.6.1.2,metals_ions,cofactor_of,Ca2+,Q02153,Q02153,stated,True,GUCY1B1,cyt,B,,1,SGC is a constitutive Ca2+-binding protein
+49,1.2.1.105,metals_ions,cofactor_of,Ca2+,Q02218,Q02218,stated,True,OGDH,mito,A,,1,"K0.5 value in absence of NADH is 0.00013 mM, in presence of NADH is 0.00781 mM. Component E1 has two potential Ca2+ -binding sites, site 1 (D114ADLD) and site 2 (E139SDLD). A mutated form of E1, D114A, shows a 6-fold decrease in sensitivity for Ca2+ ,whereas variantx02site1 (sequence of site 1 is re"
+831,4.6.1.2,metals_ions,cofactor_of,Ca2+,Q02846,Q02846,stated,True,GUCY2D,cyt,A,,1,"the activity of wild-type GC-E shows a strong dependency on free Ca2+ and GCAP1, but it is less sensitive to GCAP2"
+870,7.4.2.14,metals_ions,cofactor_of,Ca2+,Q03518,Q03518,stated,True,TAP1,cyt,C,,3,activates
+871,7.4.2.14,metals_ions,cofactor_of,Ca2+,Q03519,Q03519,stated,True,TAP2,cyt,C,,3,activates
+491,3.4.17.21,metals_ions,cofactor_of,Ca2+,Q04609,Q04609,stated,True,FOLH1,ext,B,,1,"even a slight disruption of the Ca2+-binding site destabilizes the three-dimensional fold of glutamate carboxypeptidase II and is associated with impaired secretion, a high propensity to form nonphysiological oligomers, and an inability to bind active site-targeted ligands. Additionally, the Ca2+-bi"
+135,2.4.2.14,metals_ions,cofactor_of,Ca2+,,Q06203,ec_unique,True,PPAT,cyt,F,,1,"activation, approx. 15% as effective as Mg2+ or Mn2+"
+477,3.4.11.7,activating_compound,activates,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,I,,1,Ca2+ up- or down-regulates the enzyme activity depending on the substrate tested
+474,3.4.11.7,inhibitor,inhibits,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,E,un,1,"inhibits activity with Gln-substrate, regulatory function and influence on substrate specificity"
+475,3.4.11.7,inhibitor,inhibits,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,E,un,1,"substrate-specific inhibition, overview"
+476,3.4.11.7,inhibitor,inhibits,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,I,,1,Ca2+ up- or down-regulates the enzyme activity depending on the substrate tested
+478,3.4.11.7,metals_ions,cofactor_of,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,C,,10,activation
+479,3.4.11.7,metals_ions,cofactor_of,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,I,,1,"activates activity with some substrates, decreases activity with other substrates, required for activity with Asp-/Glu-substrates, regulatory function and influence on substrate specificity"
+480,3.4.11.7,metals_ions,cofactor_of,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,D,,1,"activates, best at 1 mM, substrate-specific activation"
+481,3.4.11.7,metals_ions,cofactor_of,Ca2+,,Q07075,ec_unique,True,ENPEP,ext,D,,1,maximal activation at 4 mM Ca2+
+78,2.3.2.13,metals_ions,cofactor_of,Ca2+,Q08188,Q08188,stated,True,TGM3,cyt,C,,10,required
+91,2.3.2.13,metals_ions,cofactor_of,Ca2+,Q08188,Q08188,stated,True,TGM3,cyt,B,,1,"transglutaminase 3 binds 3 Ca2+ ions, Er3+, Sm3+, Tb3+ and Lu3+ can substitute for Ca2+ to retain activity"
+351,3.1.3.16,metals_ions,cofactor_of,Ca2+,Q08209,Q08209,stated,True,PPP3CA,cyt,C,,1,required for enzyme activity
+356,3.1.3.16,metals_ions,cofactor_of,Ca2+,Q08209,Q08209,stated,True,PPP3CA,cyt,C,,1,a Ca2+-dependent phosphatase
+357,3.1.3.16,metals_ions,cofactor_of,Ca2+,Q08209,Q08209,stated,True,PPP3CA,cyt,A,,1,calcineurin is a calcium- and calmodulin-dependent enzyme
+125,2.4.1.65,metals_ions,cofactor_of,Ca2+,Q11130,Q11130,stated,True,FUT7,lum,F,,1,"can replace Mn2+ for activation, optimum concentration is 10-15 mM"
+33,1.14.11.16,metals_ions,cofactor_of,Ca2+,Q12797,Q12797,stated,True,ASPH,lum,B,,1,"the enzyme binds divalent calcium, high-affinity regulatory binding site for Ca2+"
+705,3.4.24.79,metals_ions,cofactor_of,Ca2+,,Q13219,ec_unique,True,PAPPA,ext,B,,1,the LNR module reversibly binds a calcium ion and that bound calcium is required for antibody binding
+706,3.4.24.79,metals_ions,cofactor_of,Ca2+,Q13219,Q13219,stated,True,PAPPA,ext,D,,1,1 mM used in assay conditions
+423,3.1.4.4,metals_ions,cofactor_of,Ca2+,Q13393,Q13393,stated,True,PLD1,cyt,G,,1,potentiates the activating effect of thrombin but Ca2+ alone does not activate PLD
+218,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q13554,Q13554,stated,True,CAMK2B,cyt,A,,42,Ca2+/calmodulin-dependent
+216,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q13555,Q13555,stated,True,CAMK2G,cyt,C,,48,dependent on
+213,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q13557,Q13557,stated,True,CAMK2D,cyt,C,,48,dependent on
+219,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q13557,Q13557,stated,True,CAMK2D,cyt,A,,42,Ca2+/calmodulin-dependent
+465,3.2.2.29,metals_ions,cofactor_of,Ca2+,Q13569,Q13569,stated,True,TDG,cyt,D,,1,2 mM used in assay conditions
+416,3.1.4.39,metals_ions,cofactor_of,Ca2+,,Q13822,ec_unique,True,ENPP2,ext,C,,1,required
+417,3.1.4.39,metals_ions,cofactor_of,Ca2+,,Q13822,ec_unique,True,ENPP2,ext,I,,1,"check the sensitivity to metals for the human and murine isoforms, concentrations ranging from 0.1 to 1000 mM"
+418,3.1.4.39,metals_ions,cofactor_of,Ca2+,Q13822,Q13822,stated,True,ENPP2,ext,I,,1,"check the sensitivity to metals for the human and murine isoforms, concentrations ranging from 0.1 to 1000 mM"
+419,3.1.4.39,metals_ions,cofactor_of,Ca2+,Q13822,Q13822,stated,True,ENPP2,ext,F,,1,similar stimulation of LysoPLD activity by addition of Ca2+ and Mg2+ occurs. Mg2+ or Ca2+ may act to stabilize the structure of ATX or shield the electric charge of the substrate
+214,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q14012,Q14012,stated,True,CAMK1,cyt,C,,48,dependent on
+217,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q14012,Q14012,stated,True,CAMK1,cyt,A,,1,the enzyme responds directly to Ca2+-calmodulin with increased activity
+220,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q14012,Q14012,stated,True,CAMK1,cyt,A,,42,Ca2+/calmodulin-dependent
+383,3.1.4.1,activating_compound,activates,Ca2+,Q14123,Q14123,stated,True,PDE1C,cyt,A,,1,stimulated by their binding to Ca2+/calmodulin
+412,3.1.4.17,metals_ions,cofactor_of,Ca2+,Q14123,Q14123,stated,True,PDE1C,cyt,A,,1,the catalytic activity of PDE1 is stimulated by their binding to Ca2+/calmodulin
+197,2.7.10.2,activating_compound,activates,Ca2+,Q14289,Q14289,stated,True,PTK2B,cyt,A,,1,"G-protein coupled receptor PAC1 regulates the tyrosine phosphorylation of isoform PYK2 in NCI-H838 nonsmall cell lung cancer cells. PYK2 phosphorylation is dependent upon Ca2+. The ability of PAC1 to regulate PYK2 is dependent on phospholipase and Src, and partially dependent on proteinkinase C"
+618,3.4.22.49,metals_ions,cofactor_of,Ca2+,,Q14674,ec_unique,True,ESPL1,cyt,A,,1,"Ca2+-levels affect separase function, C-terminal region contains a Ca2+-binding motif"
+370,3.1.3.4,metals_ions,cofactor_of,Ca2+,Q14693,Q14693,stated,True,LPIN1,cyt,F,,1,may partly substitute for Mg2+ in binding to to serine/threonine protein phosphatase-1 catalytic subunit
+504,3.4.21.112,metals_ions,cofactor_of,Ca2+,Q14703,Q14703,stated,True,MBTPS1,lum,C,,1,required
+505,3.4.21.112,metals_ions,cofactor_of,Ca2+,,Q14703,ec_unique,True,MBTPS1,lum,C,,2,dependent
+292,3.1.1.2,metals_ions,cofactor_of,Ca2+,Q15165,Q15165,stated,True,PON2,memb,D,,1,0.5 mM used in assay conditions
+308,3.1.1.25,metals_ions,cofactor_of,Ca2+,Q15165,Q15165,stated,True,PON2,memb,D,,1,0.5 mM used in assay conditions
+300,3.1.1.25,metals_ions,cofactor_of,Ca2+,Q15166,Q15166,stated,True,PON3,ext,C,,3,dependent on
+774,3.6.1.1,inhibitor,inhibits,Ca2+,Q15181,Q15181,stated,True,PPA1,cyt,E,mM,1,over 90% inhibition at 0.12 mM
+233,2.7.11.18,metals_ions,cofactor_of,Ca2+,Q15746,Q15746,stated,True,MYLK,cyt,C,,3,"dependent on, activates"
+234,2.7.11.18,metals_ions,cofactor_of,Ca2+,Q15746,Q15746,stated,True,MYLK,cyt,C,,1,"activates, dependent on"
+215,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q16566,Q16566,stated,True,CAMK4,cyt,C,,48,dependent on
+221,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q16566,Q16566,stated,True,CAMK4,cyt,A,,42,Ca2+/calmodulin-dependent
+226,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q16566,Q16566,stated,True,CAMK4,cyt,D,,1,4.42 mM stimulates activity
+227,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q16566,Q16566,stated,True,CAMK4,cyt,A,,1,calcium-calmodulin dependent signalling via Ca2+ leads to activation of CAMKIV autoinhibition
+228,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q16566,Q16566,stated,True,CAMK4,cyt,A,,2,calcium/calmodulin-dependent enzyme
+863,7.2.2.10,metals_ions,cofactor_of,Ca2+,Q16720,Q16720,stated,True,ATP2B3,pump,H,,1,"dependent on, at very low Ca2+ concentrations the PMCA is nearly inactive, unstimulated PMCA pumps have poor affinity for Ca2+"
+133,2.4.1.80,metals_ions,cofactor_of,Ca2+,,Q16739,ec_unique,True,UGCG,cyt,C,,3,stimulates
+262,2.7.4.8,metals_ions,cofactor_of,Ca2+,,Q16774,ec_unique,True,GUK1,cyt,G,,2,no activator
+668,3.4.24.18,inhibitor,inhibits,Ca2+,,Q16819,ec_unique,True,MEP1A,ext,E,mM,1,"above 1 mM, metalloproteinase, does not require additional Ca2+"
+669,3.4.24.18,metals_ions,cofactor_of,Calcium,,Q16819,ec_unique,True,MEP1A,ext,I,,3,metalloendopeptidase
+670,3.4.24.18,metals_ions,cofactor_of,Calcium,,Q16819,ec_unique,True,MEP1A,ext,E,mM,1,Ca2+ inhibits above 1 mM
+671,3.4.24.18,metals_ions,cofactor_of,Calcium,,Q16819,ec_unique,True,MEP1A,ext,B,,2,3 mol calcium per mol subunit (atomic absorption spectroscopy)
+672,3.4.24.18,metals_ions,cofactor_of,Calcium,,Q16819,ec_unique,True,MEP1A,ext,C,,1,Ca2+ reactivates inactive apoenzyme
+673,3.4.24.18,metals_ions,cofactor_of,Ca2+,Q16819,Q16819,stated,True,MEP1A,ext,C,,1,required
+695,3.4.24.63,inhibitor,inhibits,Ca2+,Q16820,Q16820,stated,True,MEP1B,ext,E,un,1,calcium negatively regulates meprin beta activity and attenuates substrate cleavage
+696,3.4.24.63,inhibitor,inhibits,Ca2+,Q16820,Q16820,stated,True,MEP1B,ext,E,un,1,"inhibits, a negative regulator of meprin beta"
+697,3.4.24.63,metals_ions,cofactor_of,Ca2+,Q16820,Q16820,stated,True,MEP1B,ext,C,,1,required
+698,3.4.24.63,metals_ions,cofactor_of,Ca2+,Q16820,Q16820,stated,True,MEP1B,ext,E,un,1,physiologic calcium concentrations display a dual role by (1) directly inhibiting meprin beta activity and (2) supporting meprin beta folding during biosynthesis
+267,2.7.7.9,metals_ions,cofactor_of,Ca2+,,Q16851,ec_unique,True,UGP2,cyt,C,,2,activation
+268,2.7.7.9,metals_ions,cofactor_of,Ca2+,,Q16851,ec_unique,True,UGP2,cyt,F,,1,16% as effective as Mg2+ at 2 mM
+401,3.1.4.11,metals_ions,cofactor_of,Ca2+,Q4KWH8,Q4KWH8,stated,True,PLCH1,cyt,C,,1,recombinant enzyme is Ca2+-dependent
+732,3.5.1.23,metals_ions,cofactor_of,Ca2+,Q5QJU3,Q5QJU3,stated,True,ACER2,lum,N,,3,
+333,3.1.1.98,metals_ions,cofactor_of,Ca2+,Q6P988,Q6P988,stated,True,NOTUM,ext,D,,1,5 mM used in assay conditions
+746,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q6TGC4,Q6TGC4,stated,True,PADI6,cyt,C,,2,required for activity
+761,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q6TGC4,Q6TGC4,stated,True,PADI6,cyt,C,,1,"Ca2+ is not only the indispensable factor in the environment of deimination reaction, but is also considered as a major regulator of PAD genes at the transcriptional level"
+711,3.4.24.87,inhibitor,inhibits,Ca2+,Q76LX8,Q76LX8,stated,True,ADAMTS13,ext,E,un,1,"enzyme catalytic activity in blood plasma is tuned by varying buffer calcium, with lower divalent ion concentrations enhancing cleavage"
+712,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,8,required
+713,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,1,dependent on
+714,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,1,dependent
+715,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,1,activating
+716,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,B,,1,"Ca2+ binding site with coordinates Asp173, Cys281, Asp284, and Met249, activating"
+717,3.4.24.87,metals_ions,cofactor_of,Ca2+,Q76LX8,Q76LX8,stated,True,ADAMTS13,ext,B,,1,"metalloprotease, conserved binding site using Glu83, ASp173, Cys281, Asp284"
+718,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,1,cooperative role for Ca2+ and Zn2+ in supporting ADAMTS13 activity
+719,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,B,,1,ADAMTS13 has a predicted calcium-binding site
+720,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,D,,1,"in citrate-anticoagulated plasma activity is enhanced about 3fold by calcium ions (up to 5 mM), cleavage of von Willebrand factor by recombinant ADAMTS13 is activated up to 200fold by calcium ions"
+721,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,B,,1,"highly dependent on, Ca2+ induces a conformational change in ADAMTS13, but only under low-ionic-strength conditions, which is abolished in mutants E83A and D173A. The Ca2+-binding site in proximity to the ADAMTS13 active site comprises Glu184, Asp187, and Glu212, identified by homology modelling. Mu"
+722,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,D,,1,ADAMTS13 activity in the reaction buffer containing 0.9 mM Ca2+ without incubation is enhanced 2.7times compared to the value determined in the absence of Ca2+. The activity of ADAMTS13 in the presence of 10 mM Ca2+ is enhanced 3-5fold
+723,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,C,,1,Ca2+ ions are also required for enzyme function
+724,3.4.24.87,metals_ions,cofactor_of,Ca2+,,Q76LX8,ec_unique,True,ADAMTS13,ext,B,,1,the catalytic domain of the enzyme possesses up to three putative Ca2+ binding sites
+725,3.4.24.87,metals_ions,cofactor_of,Ca2+,Q76LX8,Q76LX8,stated,True,ADAMTS13,ext,B,,1,ADAMTS13 binds coiled von Willebrand factor primarily through the CUB domain in a calcium-dependent manner
+381,3.1.31.1,metals_ions,cofactor_of,Ca2+,Q7KZF4,Q7KZF4,stated,True,SND1,cyt,D,,1,5 mM CaCl2 are included in assay medium
+104,2.3.2.26,activating_compound,activates,Ca2+,Q7Z3V4,Q7Z3V4,stated,True,UBE3B,cyt,A,,1,"when the concentration of calcium is increased, calmodulin is released from UBE3B, resulting in an increase in ubiquitylation activity"
+136,2.4.2.26,metals_ions,cofactor_of,Ca2+,Q86Y38,Q86Y38,stated,True,XYLT1,lum,C,,1,activates
+211,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q8IU85,Q8IU85,stated,True,CAMK1D,cyt,C,,1,absolutely dependent on
+41,1.14.16.4,metals_ions,cofactor_of,Ca2+,Q8IWU9,Q8IWU9,stated,True,TPH2,cyt,I,,1,activates TPH2 promoter activity
+879,7.6.2.1,metals_ions,cofactor_of,Ca2+,Q8NB49,Q8NB49,stated,True,ATP11C,cyt,D,,1,2 mM used in assay conditions
+65,1.8.3.7,metals_ions,cofactor_of,Ca2+,Q8NBK3,Q8NBK3,stated,True,SUMF1,lum,B,,1,contains 2 Ca2+ ions
+66,1.8.3.7,metals_ions,cofactor_of,Ca2+,Q8NBK3,Q8NBK3,stated,True,SUMF1,lum,B,,1,contains two Ca2+ ions
+581,3.4.21.61,metals_ions,cofactor_of,Ca2+,Q8NBP7,Q8NBP7,stated,True,PCSK9,ext,C,,7,required
+275,3.1.1.116,metals_ions,cofactor_of,Ca2+,Q8NCG7,Q8NCG7,stated,True,DAGLB,cyt,C,,1,required for activity
+265,2.7.7.2,metals_ions,cofactor_of,Ca2+,Q8NFF5,Q8NFF5,stated,True,FLAD1,cyt,F,,1,Ca2+ gives maximum FAD synthesis equal to 62% of that measured with Mg2+
+849,6.3.2.25,metals_ions,cofactor_of,Ca2+,,Q8NG68,ec_unique,True,TTL,cyt,A,,1,required for the N-formyl-Met-Leu-Phe-induced and the antibiotic A23187-induced stimulation
+363,3.1.3.29,inhibitor,inhibits,Ca2+,,Q8TBE9,ec_unique,True,NANP,cyt,N,,1,
+169,2.7.1.138,activating_compound,activates,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,F,,1,"1 mM, stimulatory effect in the absence of Mg2+"
+166,2.7.1.138,inhibitor,inhibits,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,E,mM,1,above 1 mM
+167,2.7.1.138,inhibitor,inhibits,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,E,mM,1,inhibition above 1 mM
+172,2.7.1.138,metals_ions,cofactor_of,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,A,,1,"stimulation above 0.0001 mM, maximal activation at 0.5 mM"
+173,2.7.1.138,metals_ions,cofactor_of,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,F,,1,stimulates to a lesser extent than Mg2+
+176,2.7.1.138,metals_ions,cofactor_of,Ca2+,Q8TCT0,Q8TCT0,stated,True,CERK,cyt,F,,1,"1 mM, stimulatory effect in the absence of Mg2+"
+733,3.5.1.23,metals_ions,cofactor_of,Ca2+,Q8TDN7,Q8TDN7,stated,True,ACER1,memb,N,,3,
+784,3.6.1.5,metals_ions,cofactor_of,Ca2+,Q8WVQ1,Q8WVQ1,stated,True,CANT1,lum,C,,2,dependent on
+494,3.4.19.9,metals_ions,cofactor_of,Ca2+,,Q92820,ec_unique,True,GGH,ext,C,,1,slight activation
+495,3.4.19.9,metals_ions,cofactor_of,Ca2+,,Q92820,ec_unique,True,GGH,ext,C,,2,activation
+236,2.7.11.19,metals_ions,cofactor_of,Ca2+,Q93100,Q93100,stated,True,PHKB,cyt,C,,5,required
+162,2.7.1.127,metals_ions,cofactor_of,Ca2+,Q96DU7,Q96DU7,stated,True,ITPKC,cyt,A,,2,the enzyme is activated by Ca2+/calmodulin
+488,3.4.17.20,metals_ions,cofactor_of,Ca2+,,Q96IY4,ec_unique,True,CPB2,ext,C,,1,required for activation of the enzyme
+489,3.4.17.20,metals_ions,cofactor_of,Ca2+,,Q96IY4,ec_unique,True,CPB2,ext,C,,1,required for enzyme activation
+352,3.1.3.16,metals_ions,cofactor_of,Ca2+,Q96LZ3,Q96LZ3,stated,True,PPP3R2,cyt,A,,1,the regulatory subunit is an EF-hand Ca2+-binding protein
+224,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q96NX5,Q96NX5,stated,True,CAMK1G,cyt,A,,1,"dependent on, activates, the Ca2+/calmodulin-binding domain overlaps with the autoinhibition domain"
+816,4.6.1.1,metals_ions,cofactor_of,Ca2+,Q96PN6,Q96PN6,stated,True,ADCY10,cyt,C,,7,activates
+229,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q96RR4,Q96RR4,stated,True,CAMKK2,cyt,A,,2,calcium/calmodulin-dependent enzyme
+511,3.4.21.2,inhibitor,inhibits,Ca2+,Q99895,Q99895,stated,True,CTRC,ext,E,mM,1,"increasing the Ca2+ concentration from 0.025 mM to 1 mM progressively inhibits the degradation of cationic trypsin by chymotrypsin C, with essentially complete protection observed at 1 mM Ca2+"
+777,3.6.1.28,inhibitor,inhibits,Ca2+,,Q9BU02,ec_unique,True,THTPA,cyt,E,un,1,inhibits by competition with Mg2+
+778,3.6.1.28,inhibitor,inhibits,Ca2+,Q9BU02,Q9BU02,stated,True,THTPA,cyt,N,,2,
+271,2.7.8.29,metals_ions,cofactor_of,Ca2+,Q9BVG9,Q9BVG9,stated,True,PTDSS2,memb,C,,1,required
+129,2.4.1.68,metals_ions,cofactor_of,Ca2+,,Q9BYC5,ec_unique,True,FUT8,lum,C,,5,activation
+832,5.1.1.18,activating_compound,activates,Ca2+,Q9GZT4,Q9GZT4,stated,True,SRR,cyt,N,,1,
+808,4.3.1.17,metals_ions,cofactor_of,Ca2+,Q9GZT4,Q9GZT4,stated,True,SRR,cyt,C,,1,activates
+833,5.1.1.18,metals_ions,cofactor_of,Ca2+,Q9GZT4,Q9GZT4,stated,True,SRR,cyt,C,,5,activates
+834,5.1.1.18,metals_ions,cofactor_of,Ca2+,,Q9GZT4,ec_unique,True,SRR,cyt,C,,1,stimulation 5-7fold of the enzymes elimination and racemization activities
+235,2.7.11.18,metals_ions,cofactor_of,Ca2+,Q9H1R3,Q9H1R3,stated,True,MYLK2,cyt,C,,1,"activates, dependent on"
+545,3.4.21.35,metals_ions,cofactor_of,Ca2+,Q9H2R5,Q9H2R5,stated,True,KLK15,ext,D,,1,Ca2+ enhances the enzyme activity at concentrations of 2.5 and 5 mM
+773,3.6.1.1,inhibitor,inhibits,Ca2+,Q9H2U2,Q9H2U2,stated,True,PPA2,mito,E,mM,1,over 90% inhibition at 0.12 mM
+264,2.7.6.2,metals_ions,cofactor_of,Ca2+,Q9H3S4,Q9H3S4,stated,True,TPK1,cyt,F,,1,"divalent cation required, 7.3% of the activation with Mg2+"
+843,5.5.1.4,metals_ions,cofactor_of,Ca2+,,Q9NPH2,ec_unique,True,ISYNA1,cyt,D,,1,"10 mM, 2fold stimulation"
+844,5.5.1.4,metals_ions,cofactor_of,Ca2+,Q9NPH2,Q9NPH2,stated,True,ISYNA1,cyt,C,,1,moderate activation
+393,3.1.4.11,metals_ions,cofactor_of,Ca2+,Q9NQ66,Q9NQ66,stated,True,PLCB1,cyt,C,,7,required
+68,2.1.1.361,metals_ions,cofactor_of,Ca2+,Q9NQR1,Q9NQR1,stated,True,KMT5A,cyt,D,,1,5 mM used in assay conditions
+785,3.6.1.5,metals_ions,cofactor_of,Ca2+,Q9NQZ7,Q9NQZ7,stated,True,ENTPD7,lum,C,,1,absolute requirement
+457,3.2.1.113,metals_ions,cofactor_of,Ca2+,Q9NR34,Q9NR34,stated,True,MAN1C1,lum,D,,1,"required for activity. Optimum concentration 1.5 mM or 15 mM. Isoform ManIC is stable in the absence of Ca2+, even though Ca2+ is also effective for activity"
+139,2.5.1.57,inhibitor,inhibits,Ca2+,,Q9NR45,ec_unique,True,NANS,cyt,E,mM,1,"1 mM, 76% decrease of activity"
+727,3.5.1.23,metals_ions,cofactor_of,Ca2+,Q9NR71,Q9NR71,stated,True,ASAH2,ext,C,,3,required
+728,3.5.1.23,metals_ions,cofactor_of,Ca2+,Q9NR71,Q9NR71,stated,True,ASAH2,ext,C,,3,activates
+53,1.6.3.1,metals_ions,cofactor_of,Ca2+,Q9NRD8,Q9NRD8,stated,True,DUOX2,cyt,C,,4,required for full activity
+55,1.6.3.1,metals_ions,cofactor_of,Ca2+,Q9NRD8,Q9NRD8,stated,True,DUOX2,cyt,C,,13,regulates enzyme activity
+876,7.6.2.1,metals_ions,cofactor_of,Ca2+,Q9NRQ2,Q9NRQ2,stated,True,PLSCR4,cyt,C,,3,activates
+875,7.6.2.1,metals_ions,cofactor_of,Ca2+,Q9NRY6,Q9NRY6,stated,True,PLSCR3,cyt,C,,3,activates
+874,7.6.2.1,metals_ions,cofactor_of,Ca2+,Q9NRY7,Q9NRY7,stated,True,PLSCR2,cyt,C,,3,activates
+731,3.5.1.23,metals_ions,cofactor_of,Ca2+,Q9NUN7,Q9NUN7,stated,True,ACER3,memb,B,,1,"ACER3 has a catalytic Zn2+ binding site in its core and a Ca2+ binding site physically and functionally connected to the Zn2+, two residues appear to play critical roles in physically linking the Ca2+ and the Zn2+ sites, W20 and E33. E33 carboxylate interacts with the Ca2+ ion and is in close proxim"
+194,2.7.1.91,metals_ions,cofactor_of,Ca2+,Q9NYA1,Q9NYA1,stated,True,SPHK1,cyt,F,,1,"less stimulating than Mg2+, Mn2+"
+105,2.3.2.27,metals_ions,cofactor_of,Ca2+,Q9P0P0,Q9P0P0,stated,True,RNF181,cyt,A,,1,ubiquitination in the platelet is modulated by elevated intracellular calcium level
+63,1.7.1.7,inhibitor,inhibits,Ca2+,Q9P2T1,Q9P2T1,stated,True,GMPR2,cyt,E,mM,1,"1 mM, 49% inhibition"
+345,3.1.3.108,inhibitor,inhibits,Ca2+,Q9UK39,Q9UK39,stated,True,NOCT,cyt,E,un,1,NOCT is inactive in the presence of Zn2+ and Ca2+ presumably due imperfect transition state formed due to a slight size mismatch of these ions
+455,3.2.1.113,metals_ions,cofactor_of,Ca2+,Q9UKM7,Q9UKM7,stated,True,MAN1B1,lum,C,,2,required
+736,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,C,,10,required
+739,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,C,,5,dependent on
+742,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,C,,2,required for activity
+748,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,D,,1,"1 mM required for maximal deimination of filaggrin, peptidylarginine deiminase 1. Maximal deamination of benzoyl-L-Arg ethyl ester at 4 mM or above"
+756,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,C,,1,"required for activity, calcium increases the expression of PAD1 and PAD2"
+757,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULC6,Q9ULC6,stated,True,PADI1,cyt,C,,1,"Ca2+ is not only the indispensable factor in the environment of deimination reaction, but is also considered as a major regulator of PAD genes at the transcriptional level"
+743,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULW8,Q9ULW8,stated,True,PADI3,cyt,C,,2,required for activity
+749,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULW8,Q9ULW8,stated,True,PADI3,cyt,D,,1,"1.5 mM required for maximal deimination of filaggrin, peptidylarginine deiminase 3, maximal deimination of benzoyl-L-Arg ethyl ester at 4 mM or above"
+758,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULW8,Q9ULW8,stated,True,PADI3,cyt,C,,1,"Ca2+ is not only the indispensable factor in the environment of deimination reaction, but is also considered as a major regulator of PAD genes at the transcriptional level"
+768,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9ULW8,Q9ULW8,stated,True,PADI3,cyt,C,,1,Ca2+-dependent enzyme
+745,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9UM07,Q9UM07,stated,True,PADI4,cyt,C,,2,required for activity
+747,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9UM07,Q9UM07,stated,True,PADI4,cyt,B,,1,"five binding sites, Ca2+-binding induces conformational changes"
+753,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9UM07,Q9UM07,stated,True,PADI4,cyt,B,,1,PAD4 activity is highly specific for calcium. Calcium activation of PAD4 catalysis exhibits positive cooperativity. ca2+ causes conformational change
+755,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9UM07,Q9UM07,stated,True,PADI4,cyt,B,,1,"dependent on, binding structure, overview"
+760,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9UM07,Q9UM07,stated,True,PADI4,cyt,C,,1,"Ca2+ is not only the indispensable factor in the environment of deimination reaction, but is also considered as a major regulator of PAD genes at the transcriptional level"
+109,2.4.1.145,metals_ions,cofactor_of,Ca2+,Q9UM21,Q9UM21,stated,True,MGAT4A,lum,F,,1,"10 mM, about 10% of the activity compared to activity in presence of 10 mM Mn2+"
+222,2.7.11.17,metals_ions,cofactor_of,Ca2+,Q9UQM7,Q9UQM7,stated,True,CAMK2A,cyt,A,,42,Ca2+/calmodulin-dependent
+737,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,C,,10,required
+740,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,C,,5,dependent on
+744,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,C,,2,required for activity
+754,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,D,,1,"peptidylarginine deiminase 2 is activated only when sufficient Ca2+ is available (0.01 mM/l), at high concentrations that are normally not present in living cells"
+759,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,C,,1,"Ca2+ is not only the indispensable factor in the environment of deimination reaction, but is also considered as a major regulator of PAD genes at the transcriptional level"
+765,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,D,,1,"dependent on, the concentration of calcium that is required for half-maximal activity is 0.2 mM"
+766,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,D,,1,"absolutely required, K0.5 value 0.18 mM. The enzyme binds calcium in a stepwise fashion"
+767,3.5.3.15,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,D,,1,"the concentration of calcium required for in vitro activity is at least 10 times higher than cellular calcium concentrations (i.e., 0.0001-0.010 mM). Calcium binding occurs in an ordered fashion. A calcium switch (calcium binding sites 3, 4, and 5) controls the overall calcium dependence of the enzy"
+769,3.5.3.6,metals_ions,cofactor_of,Ca2+,Q9Y2J8,Q9Y2J8,stated,True,PADI2,cyt,D,,1,"the concentration of calcium required for in vitro activity is at least 10 times higher than cellular calcium concentrations (i.e., 0.0001-0.010 mM). Calcium binding occurs in an ordered fashion. A calcium switch (calcium binding sites 3, 4, and 5) controls the overall calcium dependence of the enzy"
+276,3.1.1.116,metals_ions,cofactor_of,Ca2+,Q9Y4D2,Q9Y4D2,stated,True,DAGLA,cyt,C,,1,required for activity
+791,3.6.1.5,metals_ions,cofactor_of,Ca2+,Q9Y5L3,Q9Y5L3,stated,True,ENTPD2,ext,C,,1,"activates, required"
+503,3.4.21.109,metals_ions,cofactor_of,Ca2+,,Q9Y5Y6,ec_unique,True,ST14,ext,C,,1,required for autoactivation
+108,2.4.1.117,metals_ions,cofactor_of,Ca2+,,Q9Y673,ec_unique,True,ALG5,cyt,F,,1,"divalent cation required, maximum stimulation in presence of Ca2+. Co2+, Mg2+ or Mn2+ can replace Ca2+"
+168,2.7.1.138,activating_compound,activates,Calcium,,,ec_2,False,,,N,,1,
+279,3.1.1.2,activating_compound,activates,Ca2+,,,ec_3,False,,,C,,1,required
+391,3.1.4.11,activating_compound,activates,Ca2+,,,ec_13,False,,,C,,1,"requirement of all PLCs, the delta isoenzymes are most sensitive to Ca2+"
+434,3.1.8.1,activating_compound,activates,Ca2+,,,ec_2,False,,,C,,1,required
+613,3.4.22.26,activating_compound,activates,Ca2+,,,ec_0,False,,,D,,1,"required, 7 mM"
+853,7.2.2.10,activating_compound,activates,Ca2+,,,ec_9,False,,,N,,2,
+113,2.4.1.155,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,20% of maximal activity
+114,2.4.1.155,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,35% of maximal activity
+138,2.4.3.3,inhibitor,inhibits,Ca2+,,,ec_2,False,,,N,,1,
+151,2.7.1.127,inhibitor,inhibits,Ca2+,,,ec_3,False,,,E,un,1,at higher concentrations
+185,2.7.1.32,inhibitor,inhibits,Ca2+,,,ec_2,False,,,N,,2,
+189,2.7.1.67,inhibitor,inhibits,Ca2+,,,ec_4,False,,,E,un,2,inhibits in the presence of Mg2+
+190,2.7.1.67,inhibitor,inhibits,Ca2+,,,ec_4,False,,,E,un,1,inhibition depends in Ca2+ concentration
+254,2.7.2.3,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,mM,1,inhibition above 1 mM
+255,2.7.2.3,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,partial inhibition in presence of Mg2+
+259,2.7.3.2,inhibitor,inhibits,Ca2+,,,ec_4,False,,,N,,1,
+263,2.7.6.1,inhibitor,inhibits,Ca2+,,,ec_3,False,,,N,,4,
+266,2.7.7.7,inhibitor,inhibits,Ca2+,,,ec_15,False,,,E,un,1,polymerase alpha
+270,2.7.8.2,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,mM,1,"0.1 mM (14.1% activity left) or 1 mM (1.41% activity left), estimated in presence of 20 mM Mg2+, inhibition partially reduced in presence of 0.5 mM EDTA: 33.3% or 3.70% activity left for 0.1 mM or 1 mM Ca2+, respectively (100% activity: 20 mM Mg2+, 0.5 mM EDTA, no Ca2+)"
+272,2.8.2.20,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,inhibits both isozymes
+277,3.1.1.13,inhibitor,inhibits,Ca2+,,,ec_5,False,,,E,mM,1,50% inhibition at 5 mM
+313,3.1.1.4,inhibitor,inhibits,Ca2+,,,ec_29,False,,,N,,1,
+334,3.1.13.4,inhibitor,inhibits,Ca2+,,,ec_8,False,,,E,mM,1,3 mM gradually decreases activity about 15fold
+341,3.1.22.1,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,strong inhibition
+342,3.1.26.4,inhibitor,inhibits,Ca2+,,,ec_12,False,,,E,un,1,calcium ions generally inactivate the enzyme and abolish catalysis
+344,3.1.3.1,inhibitor,inhibits,Ca2+,,,ec_4,False,,,E,mM,1,"10 mM, glycogen synthase phosphatase activity"
+346,3.1.3.11,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,"Ca2+ affects conformation of the catalytic loop 52-72 of muscle FBPase and inhibits its activity by competing with activatory divalent cations, e.g. Mg2+ and Zn2+. Aldolase associates with FBPase in its active form, i.e. with loop 52-72 in the engaged conformation, while Ca2+ stabilizes the disengag"
+366,3.1.3.36,inhibitor,inhibits,Ca2+,,,ec_9,False,,,E,un,1,competitive with Mg2+ in presence of optimal concentrations of Mg2+
+372,3.1.3.48,inhibitor,inhibits,Ca2+,,,ec_87,False,,,N,,3,
+377,3.1.3.74,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,"competitive inhibition versus Mg2+, noncompetitive versus substrate"
+380,3.1.30.1,inhibitor,inhibits,Ca2+,,,ec_0,False,,,E,mM,1,"35.1% of maximal activity with 0.1 mM denaturated DNA, 74.7% with 0.5 mM polydeoxythymidylic acid as substrate, competitive inhibition"
+389,3.1.4.11,inhibitor,inhibits,Ca2+,,,ec_13,False,,,E,un,1,at high concentrations
+390,3.1.4.11,inhibitor,inhibits,Ca2+,,,ec_13,False,,,E,mM,1,concentrations above 1 mM are inhibitory
+407,3.1.4.12,inhibitor,inhibits,Ca2+,,,ec_5,False,,,E,un,1,slight
+44,1.16.3.1,inhibitor,inhibits,Ca2+,,,ec_6,False,,,E,un,1,weak inhibitor
+46,1.2.1.105,inhibitor,inhibits,Ca2+,,,ec_0,False,,,E,cyt,1,"0.01 mM, decreases the concentration of 2-oxoglutarate required for half-maximal activity, inhibition at higher concentrations"
+460,3.2.1.18,inhibitor,inhibits,Ca2+,,,ec_4,False,,,E,mM,1,above 1 mM
+466,3.3.2.10,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,mM,1,25% inhibition at 1 mM
+467,3.3.2.10,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,inhibition of Mg2+-dependent acrtivity
+538,3.4.21.26,inhibitor,inhibits,Ca2+,,,ec_2,False,,,N,,2,
+544,3.4.21.35,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,1,linear competitive
+565,3.4.21.59,inhibitor,inhibits,Calcium,,,ec_3,False,,,E,mM,1,5 mM is needed to cause an irreversible 50% loss of activity after 60 min at room temperature
+62,1.7.1.7,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,mM,1,"10 mM, 54% inhibition"
+64,1.8.1.9,inhibitor,inhibits,Ca2+,,,ec_4,False,,,E,un,1,non-reversible by EDTA
+67,1.8.4.2,inhibitor,inhibits,Ca2+,,,ec_2,False,,,E,un,2,slight
+70,2.1.1.6,inhibitor,inhibits,Ca2+,,,ec_2,False,,,N,,3,
+71,2.3.1.125,inhibitor,inhibits,Ca2+,,,ec_0,False,,,E,mM,1,6% inhibition at 2 mM
+726,3.4.25.1,inhibitor,inhibits,Ca2+,,,ec_7,False,,,N,,1,
+734,3.5.1.4,inhibitor,inhibits,Ca2+,,,ec_0,False,,,E,un,1,1-linear competitive inhibition of the amidase activity
+813,4.6.1.1,inhibitor,inhibits,Ca2+,,,ec_10,False,,,E,cyt,1,"AC5 and AC6 are inhibited by Ca2+ at both sub- and supra-micromolar concentration, Ca2+ inhibits the soluble adenylate cyclase core composed of the C1 domain of AC5 and the C2 domain of AC2, at micromolar concentration Ca2+ inhibition is non-exclusive with respect to diphosphate, but at 0.1 mM Ca2+ "
+814,4.6.1.1,inhibitor,inhibits,Ca2+,,,ec_10,False,,,E,un,1,isoforms AC5 and AC6 are inhibited by Ca2+
+824,4.6.1.2,inhibitor,inhibits,Ca2+,,,ec_9,False,,,E,cyt,1,"modulates the membrane guanylate cyclase transduction machinery by both inhibiting and stimulating it involving the guanylate cyclae, the guanylate cyclase activating protein type 1, S100B, and neurocalcin delta, mechanism, overview"
+825,4.6.1.2,inhibitor,inhibits,Ca2+,,,ec_9,False,,,E,cyt,1,the enzyme is inhibited by high intracellular Ca2+ concentration
+851,6.5.1.1,inhibitor,inhibits,Ca2+,,,ec_3,False,,,E,un,1,CaCl2 inhibits Mg2+-catalyzed reaction
+872,7.6.2.1,inhibitor,inhibits,Ca2+,,,ec_21,False,,,E,cyt,1,"0.0002 mM, inhibits from the cytofacial surface"
+10,1.13.11.33,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,optimal activity at 2 mM or above
+103,2.3.2.2,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,G,,4,no effect
+107,2.4.1.11,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,activation in presence of glucose 6-phosphate
+11,1.13.11.33,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,50% of maximal activity at 0.1 mM Ca2+ in presence of 5 mM EGTA
+110,2.4.1.149,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,1,"about one third of the activity compared to Mn2+, recombinant enzyme"
+111,2.4.1.152,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,F,,1,alternative divalent metal cofactor
+112,2.4.1.152,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,D,,1,"activates, Km: 16 mM"
+115,2.4.1.179,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,F,,1,"activation, can replace Mn2+ with 26% efficiency"
+116,2.4.1.214,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,F,,1,less effective than Mn2+
+119,2.4.1.344,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,"10 mM, 45% of the activity with Mn2+"
+12,1.13.11.33,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,"in the presence of Ca2+, with or without calcium ionophore, the majority of 15-LO-1 is found in the membrane fraction, although significant amounts are also detected in the supernatant fraction"
+120,2.4.1.344,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,"or Mn2+, about 3fold activation, maximum activity at 20-30 mM"
+122,2.4.1.50,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,1,20% of activation by Mg2+
+123,2.4.1.50,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,1,"activates, 60% as effective as Mn2+"
+124,2.4.1.65,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,stimulates
+126,2.4.1.65,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,leads to 2.1fold activation of SFT3
+130,2.4.1.69,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,"20 mM, 50% stimulation"
+131,2.4.1.69,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,"10 mM, enzyme from gastric mucosa: 44.8% of the activation with Mn2+, enzyme from plasma: 94.2% of the activation with Mn2+"
+132,2.4.1.69,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,"10 mM, 45% of the activity with Mn2+"
+134,2.4.1.90,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,10 mM used in assay conditions
+142,2.7.1.107,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,C,,1,"plus phosphatidylserine, activates enzyme DGK-Igamma"
+143,2.7.1.107,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,B,,1,enzyme can bind approximately 2 mol of Ca2+ per mol
+144,2.7.1.107,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,G,,1,"activity is independent of Ca2+, dissociation constant is 0.00044 mM, hydrophobic region of the enzyme is masked by addition of Ca2+"
+145,2.7.1.107,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,C,,1,isoform diacylglycerol kinase alpha requires Ca2+
+149,2.7.1.113,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,4,activation
+150,2.7.1.113,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,60% of activity with Mg2+
+152,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,phosphorylation of Thr-311 of isoenzyme A by CaM kinase II results in a 25fold increase in sensitivity to the Ca2+/calmodulin complex
+153,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,"the 3 isoenzymes A, B and C can be distinguished by their sensitivity to Ca2+/calmodulin"
+154,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,isoenzyme C is regulated by Ca2+ to a lesser extend than isoenzymes A and B
+155,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,4,at physiological concentrations
+156,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,26,activation by Ca2+/calmodulin
+157,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,17fold stimulation by Ca2+/calmodulin at saturating calmodulin and 0.01 mM free Ca2+
+158,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,2,mechanism of activation
+159,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,activation by calmodulin in a Ca2+-dependent manner
+160,2.7.1.127,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,regulatory function in concert with calmodulin
+164,2.7.1.137,metals_ions,cofactor_of,Ca2+,,,ec_7,False,,,F,,1,can use either MgATP2- or CaATP2-
+165,2.7.1.137,metals_ions,cofactor_of,Ca2+,,,ec_7,False,,,F,,1,essential divalent cation in lipid kinase assays
+170,2.7.1.138,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,activation
+171,2.7.1.138,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,A,,1,"required for activity, 60 nM - 3 mM, 20fold linear increase in activity, progressive loss of activity at higher concentrations"
+174,2.7.1.138,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,at 3 mM
+175,2.7.1.138,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,at 3 mM CaCl2
+177,2.7.1.138,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,ceramide kinase is Ca2+-dependent
+182,2.7.1.21,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,5,can partially substitute for Mg2+
+186,2.7.1.32,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,required
+191,2.7.1.74,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,6,activation
+192,2.7.1.78,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,2,"divalent cation required, slight activation in absence of MgCl2"
+193,2.7.1.78,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,1,"about 17% of the activity with Mn2+, synergistic to Mn2+"
+195,2.7.10.1,metals_ions,cofactor_of,Ca2+,,,ec_49,False,,,I,,1,"L-type Ca2+ channel activity is induced by enzyme activity regulating the Ca2+ flux and intracellular Ca2+ concentration, capacitative Ca2+ entry measurements using a fluorescent method"
+2,1.1.1.42,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"divalent metal ion is required, binding structure and conformation at the isocitrate-metal-binding site"
+200,2.7.11.1,metals_ions,cofactor_of,Ca2+,,,ec_245,False,,,C,,1,"has regulatory function for NDR protein kinase, mechanism, overview"
+201,2.7.11.12,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,I,,1,"required for e.g. inhibition of inositol-1,4,5-trisphosphate-dependent Ca2+-release"
+202,2.7.11.13,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,C,,2,activates
+204,2.7.11.13,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,A,,1,"binds to C2 domain of PKC, regulatory fucntion for isozymes alpha, betaI, betaII, and gamma, overview"
+205,2.7.11.13,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,C,,1,"dependent on, depends on the isozyme, e.g. isozyme betaII and gamma are dependent on Ca2+, while isozyme delta is not"
+206,2.7.11.13,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,A,,1,"required, second messenger involved in PKC regulation, some isozymes are Ca2+-independent"
+207,2.7.11.13,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,C,,1,activation mechanism
+208,2.7.11.15,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,E,un,1,inhibits GRK2
+209,2.7.11.16,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,E,un,1,inhibits GRK5
+210,2.7.11.17,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,C,,6,required
+212,2.7.11.17,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,C,,48,dependent on
+223,2.7.11.17,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,A,,1,"dependent on, activates the nonphosphorylated CaMKIV, the autoinhibitory domain harbors the binding site for Ca2+ and calmodulin"
+225,2.7.11.17,metals_ions,cofactor_of,Ca2+,,,ec_11,False,,,A,,1,"dependent on, Ca2+/calmodulin activate CaMKII prior to autophosphorylation which renders the enzyme independent of Ca2+/calmodulin"
+230,2.7.11.18,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,5,required
+231,2.7.11.18,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,5,activates
+232,2.7.11.18,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,10,dependent on
+237,2.7.11.19,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,A,,1,Ca2+-sensitivity of the enzyme is mediated by the delta-subunit which is identical with calmodulin
+252,2.7.11.24,metals_ions,cofactor_of,Ca2+,,,ec_14,False,,,B,,1,partially restores the ability of the protein to dimerize
+253,2.7.11.31,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,A,,1,"increases in intracellular Ca2+ levels activate AMPK is via the activation of CaMKKs, mechanism, overview"
+256,2.7.2.3,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,7,can partially replace Mg2+ in activation
+257,2.7.2.3,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,CaATP2- is the true substrate
+258,2.7.2.3,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,1,30% of the activity with Mg2+
+260,2.7.4.3,metals_ions,cofactor_of,Ca2+,,,ec_6,False,,,F,,1,metal ion forms complex with di- or trinucleotide
+261,2.7.4.6,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,F,,1,"requirement, about half as effective as Mg2+, Mn2+ or Co2+, pI 7.3-enzyme variant"
+273,2.8.2.21,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,"highest stimulatory activity, optimum concentration at 10 mM"
+274,2.8.2.7,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,D,,1,enzyme is stimulated at concentrations of 5-20 mM
+278,3.1.1.13,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,1,activation for neutral cholesterol esterases
+280,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,5,required
+282,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,4,dependent on
+286,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,B,,1,"Ca2+ is required for catalytic activity and structural stability. Cd2+ or Zn2+ substitute for Ca2+, two Ca2+ binding sites"
+288,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,B,,1,"is essential for activity and stability of arylesterase, modulates oligomeric state"
+289,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,is required for catalysis
+290,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,required for the catalysis
+291,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,2 mM used in assay conditions
+293,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,1 mM used in assay conditions
+294,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,B,,1,the enzyme has two Ca2+ binding sites
+295,3.1.1.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,"dependent on, 2 mM used in assay conditions"
+298,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,C,,3,dependent on
+3,1.1.1.42,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"structure of IDH1 with bound Ca2+, overview"
+302,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,D,,1,"activates, hydrolysis is maximal at 0.01 mM , lactonization is maximal with 10 mM"
+304,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,B,,1,contains Ca2+
+305,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,B,,1,"is essential for activity and stability of lactonase, modulates oligomeric state"
+306,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,C,,1,required for the catalysis. Shows a slight protection of 10% at 5 mM on ascorbate/Cu2+-induced inactivation of lactonase activity
+307,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,D,,1,2 mM used in assay conditions
+309,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,D,,1,4.5 mM used in assay conditions
+310,3.1.1.25,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,B,,1,the enzyme has two Ca2+ binding sites
+312,3.1.1.3,metals_ions,cofactor_of,Ca2+,,,ec_15,False,,,C,,1,"activates the phospholipase A1 activity of the enzyme, overview"
+314,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,7,required
+315,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,4,dependent on
+316,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,B,,1,2 adjacent Ca2+-binding sites
+317,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,B,,2,"two Ca2+ binding sites, first Ca2+ is strongly bound and essential for enzyme activity, the second binds more weakly and improves the enzymes affinity for lipid-water interfaces"
+318,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,B,,1,structure of Ca2+-binding site
+319,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,A,,1,Ca2+-dependent PLA2-association with cellular membranes at a concentration of 300-500 nM
+320,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,2,required for catalysis
+321,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,A,,1,"calcium, phosphorylation at Ser505 and the putative phosphatidylinositol 4,5-bisphosphate binding site regulate translocation and arachidonic acid release, overview. Influx of extracellular calcium is essential for stable binding of cPLA2alpha to Golgi and arachidonic acid release. phosphatidylinosi"
+322,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,1,required by sPLA2
+324,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,1,"is required for catalytic activity. With increase in the concentration of calcium, increase of recombinant PLA2 activity"
+325,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,1,shows Ca2+-dependent hydrolytic activity
+326,3.1.1.4,metals_ions,cofactor_of,Ca2+,,,ec_29,False,,,C,,1,cytosolic isoform PLA2beta action on phosphatidylcholine vesicles displays a requirement for Ca2+ only in the presence of cardiolipin
+331,3.1.1.81,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,"activates, required"
+348,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,C,,2,activates
+349,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,C,,3,dependent on
+350,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,C,,1,phosphatase PP7 activated by Ca2+
+353,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,C,,1,isozyme PP2B is dependent on Ca2+
+354,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,A,,4,calcineurin is dependent on Ca2+/calmodulin
+355,3.1.3.16,metals_ions,cofactor_of,Ca2+,,,ec_83,False,,,C,,1,calcium-dependent protein phosphatase 2B
+36,1.14.13.39,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,activates
+361,3.1.3.17,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,A,,1,"oscillation of cytosolic Ca2+, has an important regulatory function in the phosphorylation-dephosphorylation cycle for regulation of glycogen phosphorylase activity, overview"
+362,3.1.3.25,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,required
+367,3.1.3.36,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,G,,2,no requirement
+368,3.1.3.36,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,C,,1,a Ca2+-dependent enzyme and a Mg2+-dependent enzyme
+369,3.1.3.4,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,E,un,1,moderate inhibition of cytosolic and particulate activity
+37,1.14.13.39,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,2,absolutely dependent on
+371,3.1.3.43,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,2 mM required for optimal phosphorylase activity
+373,3.1.3.48,metals_ions,cofactor_of,Ca2+,,,ec_87,False,,,C,,1,activation
+374,3.1.3.48,metals_ions,cofactor_of,Ca2+,,,ec_87,False,,,C,,1,4-6fold increase of activity
+375,3.1.3.5,metals_ions,cofactor_of,Ca2+,,,ec_7,False,,,D,,1,1 mM used in assay conditions
+376,3.1.3.56,metals_ions,cofactor_of,Ca2+,,,ec_6,False,,,G,,2,no effect
+38,1.14.13.39,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,G,,1,"no stimulation with exogenous Ca2+, inducible isoform from liver"
+384,3.1.4.1,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,activates
+385,3.1.4.1,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,5,slight activation
+386,3.1.4.1,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,4,activation
+387,3.1.4.1,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,2,"PC-1, activation"
+388,3.1.4.1,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,"0.2 mM activity in MAA cells stimulated ca. 2fold, with calmodulin"
+39,1.14.13.39,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,Ca2+/calmodulin is required for citrulline/NO formation and for superoxide formation in absence of tetrahydropterin
+392,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,C,,7,required
+394,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,C,,3,activates
+395,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,C,,5,dependent on
+396,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,C,,1,required for activity
+397,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,D,,1,significant hydrolysis of phosphatidylinositol only above 0.1 mM
+398,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,A,,1,"required, maximal hydrolysis of phosphatidylinositol 4,5-diphosphate at 0.004 mM, maximal hydrolysis of phosphatidylinositol at 0.5 mM"
+399,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,D,,1,optimal concentrations are 0.3 mM and 8 mM using 0.2 mM and 0.4 mM phosphatidylinositol
+402,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,A,,1,"Ca2+ flowing activates phospholipase C leading to the depletion of phosphatidylinositol 4,5-bisphosphate and formation of inositol 1,4,5-trisphosphate in TRPV6-expressing cells"
+403,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,C,,1,"PIPLC (cytosol) presents a total dependence on the presence of Ca2+ in the assay, which cannot be substituted by other divalent cations (Mg2+, Mn2+, Zn2+)"
+404,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,A,,1,"all PLC isozymes require calcium for their activity, the PLCdelta-type is one of the most sensitive to calcium, suggesting that the activity of the PLCdelta-type may be regulated by calcium. PLCzeta is extremely sensitive to the calcium concentration"
+405,3.1.4.11,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,D,,1,stimulates activity of isoform PLCbeta1 with saturation at 0.02 mM Ca2+
+409,3.1.4.17,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,A,,1,isoform PDE1B2 activity can be regulated by changes in Ca2+ levels
+413,3.1.4.2,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,activation at 5 mM
+414,3.1.4.3,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,A,,1,"recombinant PLC d3: maximum activity with 0.001 mM, recombinant PLC d1: maximum activity with 0.01 mM"
+421,3.1.4.4,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,G,,2,not required for activity
+422,3.1.4.4,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,3,micromolar levels for maximal activity
+435,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,7,required
+437,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,3,requirement
+438,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,10,dependent on
+441,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,"required, cannot be replaced by Mg2+, Ba2+, Cu2+, Ca2+, Mn2+, Co2+, Zn2+ or Hg2+"
+442,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"two calcium binding sites, the higher affinity site being essential for hydrolytic activity and its removal is irreversible, the lower affinity site being responsible for catalytic activity with reversible binding of Ca2+"
+443,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"dependent on, Ca2+ is required for activity and is involved in the catalytic mechanism via coordinating residues Asp54, Asn168, Asn224, and Asp269, structure, overview"
+446,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"Ca2+ is required for catalytic activity and structural stability. Cd2+ or Zn2+ substitute for Ca2+, two Ca2+ binding sites"
+449,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,"is essential for activity and stability of PON1, modulates oligomeric state"
+45,1.17.4.4,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,G,,1,"Ca2+ might play a role in stabilizing the lipid membranes that surround the VKORC1 protein, but does not affect the DTT-driven enzyme activity"
+450,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,3,required for the catalysis
+451,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,2,2 mM used in assay conditions
+452,3.1.8.1,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,B,,1,the enzyme has two Ca2+ binding sites
+454,3.2.1.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,6,required
+456,3.2.1.113,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,1,requirement
+459,3.2.1.17,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,B,,4,binding sites
+461,3.2.1.18,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,12,stimulates the activity of the enzyme
+462,3.2.1.24,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,required
+463,3.2.1.35,metals_ions,cofactor_of,Ca2+,,,ec_7,False,,,D,,1,1.8fold increasing activity at 5 mM
+468,3.3.2.10,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,E,mM,1,25% inhibition at 1 mM
+47,1.2.1.105,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,C,,1,Ca2+ and Mg2+ together synergistically reduce the Km-value for 2-oxoglutarate by over 10fold
+472,3.4.11.18,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,A,,1,"0.0001-0.001 mM, activity is enhanced 5-10fold"
+48,1.2.1.105,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,A,,1,"0.01 mM, decreases the concentration of 2-oxoglutarate required for half-maximal activity, inhibition at higher concentrations"
+490,3.4.17.21,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,I,,1,positively regulates enzyme expression
+492,3.4.17.24,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,about 120% activity at 1 mM
+54,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,13,regulates enzyme activity
+548,3.4.21.4,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,3,required
+549,3.4.21.4,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,B,,1,"activates, plays an important role in trypsin stabilization"
+56,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,C,,1,no activity without
+57,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,A,,1,Ca2+-induced conformation change of NADPH oxidase 5 N-terminus leads to enzyme activation through an intramolecular interaction
+58,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,A,,1,generation of H2O2 by transfected isoform Duox2 depends on Ca2+
+59,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,A,,1,"store-operated Ca2+ entry is required at the beginning of NADPH oxidase activation in response to N-formyl-L-methionyl-L-leucyl-Lphenylalanine in neutrophil-like HL-60 cells. When extracellular Ca2+ is initially removed, early addition of Ca2+ after stimulation causes a complete restoration of Ca2+ "
+591,3.4.21.71,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,N,,1,
+6,1.13.11.31,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,2 mM ATP + 1 mM CaCl2 stimulate approximately 2fold
+60,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,A,,1,"an increase in cytosolic calcium concentration triggers high superoxide production by Nox5. Calcium induces binding of the N-terminal domain of Nox5 to the dehydrogenase domain, thus relieving autoinhibition. Two mechanisms may increase Nox5 sensitivity, allowing activation by resting calcium concen"
+61,1.6.3.1,metals_ions,cofactor_of,Ca2+,,,ec_5,False,,,A,,1,"the activity of NOX5 appears to be regulated by a self-contained Ca2+ binding domain, residues 1-169, the conformational change of the domain upon Ca2+ binding is essential for domain-domain interaction and superoxide production. Ca2+ binding to Ca2+ binding domain induces a conformational change th"
+614,3.4.22.26,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,C,,1,dependent on
+615,3.4.22.26,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,D,,1,"requirement, 7 mM"
+616,3.4.22.26,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,F,,1,"below 1 mM Mn2+, additive effect in the presence of Mn2+"
+617,3.4.22.26,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,G,,1,immunoimmobilized enzyme does not require Ca2+
+638,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,3,required
+639,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,12,dependent on
+640,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,4,required for activity
+641,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,0.4 mM Ca2+ is required for 50% caseinolysis of recombinant enzyme
+642,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,C,,1,calcium-dependent cysteine protease
+643,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,calpain 2 is activated with addition of CaCl+ to 1 mM
+644,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,requires millimolar calcium concentrations for activation
+646,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,"dependent on, 10 mM used in assay conditions"
+647,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,0.4-0.8 mM Ca2+ is required for activation
+648,3.4.22.53,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,required in millimolar concentrations
+7,1.13.11.31,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,1 mM Ca2+-dependent activity
+704,3.4.24.71,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,I,,1,metalloprotease
+72,2.3.1.67,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,A,,1,optimal activity at 0.0002 mM
+729,3.5.1.23,metals_ions,cofactor_of,Ca2+,,,ec_6,False,,,A,,1,"activates, required by ACER2 for both its in vitro and cellular activities. Cellular ACER2 activity is inhibited by depletion of Ca2+ from Golgi lumen"
+73,2.3.1.67,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,isoform Lyso-PAF ATC is activated by 2.8 mM Ca2+ in assay conditions
+730,3.5.1.23,metals_ions,cofactor_of,Ca2+,,,ec_6,False,,,C,,1,ACER isoform activities are enhanced by Ca2+
+735,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,10,required
+738,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,5,dependent on
+741,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,2,required for activity
+750,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,"2.5 mM required for maximal deamination of filaggrin, peptidylarginine deiminase 2. Maximal deimination of benzoyl-L-Arg ethyl ester at 4 mM or above"
+751,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,increase activity of hPADI4. 50% of maximal activity at 0.75 mM
+752,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,increases activity of hPADI2. 50% of maximal activity at 0.62 mM
+76,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,C,,10,required
+762,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,1,"dependent on, phoshatidylserine and phosphatidylcholine reduce the Ca2+-dependence by almost 2fold"
+763,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,"dependent on, the concentration of calcium required for half-maximal activity is in the mid to high micromolar range"
+764,3.5.3.15,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,"high concentrations of Ca2+ (more than 0.1 mM) are required for activity, the enzyme has 5 Ca2+ binding sites"
+772,3.5.4.6,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,A,,1,activates erythrocyte AMP deaminase [isoform E (AMPD3)] through a protein-protein interaction between calmodulin and the N-terminal domain of the AMPD3 polypeptide
+779,3.6.1.29,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,D,,1,maximal activation at 0.5-1.0 mM
+780,3.6.1.39,metals_ions,cofactor_of,Ca2+,,,ec_0,False,,,F,,1,"1 mM, 70% activation compared with Mn2+"
+781,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,11,required
+783,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,7,activates
+786,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,12,either Mg2+ or Ca2+ required for activity
+787,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,D,,1,maximum activity at 0.5 mM
+788,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,4,Ca2+ preferred to Mg2+
+789,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,1,hLALP70v either Md2+ or Ca2+ dependent
+790,3.6.1.5,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,1,hLALP70 prefers Ca2+ to Mg2+
+793,3.6.1.9,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,2,required
+796,3.6.1.9,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,1,"catalytic rate is similar in presence of Ca2+ and Mg2+, NPP1"
+797,3.6.1.9,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,F,,1,"catalytic rate is similar in presence of Ca2+ and Mg2+, NPP2"
+798,3.6.5.2,metals_ions,cofactor_of,Ca2+,,,ec_121,False,,,C,,1,required
+799,3.6.5.2,metals_ions,cofactor_of,Ca2+,,,ec_121,False,,,C,,1,activates
+8,1.13.11.33,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,1 mM
+810,4.4.1.20,metals_ions,cofactor_of,Ca2+,,,ec_4,False,,,C,,1,stimulates
+820,4.6.1.1,metals_ions,cofactor_of,Ca2+,,,ec_10,False,,,C,,1,stimulates activity
+821,4.6.1.1,metals_ions,cofactor_of,Ca2+,,,ec_10,False,,,D,,1,"half-maximal activation at 0.75 mM, synergistic activation in the presence of HCO3-"
+822,4.6.1.1,metals_ions,cofactor_of,Ca2+,,,ec_10,False,,,A,,1,"during artificial or agonist-induced Ca2+ oscillations, periodic changes in cAMP that depended upon Ca2+ stimulation of AC8 with subsequent PKA-mediated phosphodiesterase 4 activity"
+823,4.6.1.1,metals_ions,cofactor_of,Ca2+,,,ec_10,False,,,C,,1,stimulates AC8
+828,4.6.1.2,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,A,,1,"modulates the membrane guanylate cyclase transduction machinery by both inhibiting and stimulating it involving the guanylate cyclae, the guanylate cyclase activating protein type 1, S100B, and neurocalcin delta, mechanism, overview"
+83,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,C,,33,requirement
+836,5.3.4.1,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,B,,1,major calcium binding protein of the endoplasmic reticulum
+837,5.3.4.1,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,D,,1,"recombinant ECaST/PDI binds 26 mol of Ca2+/mol of protein with a Kd of 2.8 mM, 1-5 mM Ca2+ augments the reactivation of rBPTI"
+838,5.3.4.1,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,B,,1,possibly bound at the C-terminal extension
+839,5.3.4.1,metals_ions,cofactor_of,Ca2+,,,ec_13,False,,,B,,1,the enzyme is a major calcium binding protein of the endoplasmic reticulum via acidic residues
+845,5.6.2.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,D,,1,activating at 1-5 mM
+846,5.6.2.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,1,preferred divalent cation
+847,5.6.2.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,required for DNA ligation
+848,5.6.2.2,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,F,,1,supports strand passage by both of the human topoisomerase II isozymes
+85,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,D,,1,1 mM
+850,6.3.4.4,metals_ions,cofactor_of,Ca2+,,,ec_2,False,,,F,,2,can replace Mg2+ with lower efficiency
+854,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,25,dependent on
+855,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,isozyme SPCA1 shows the Ca2+-preferring phenotype
+857,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,"required, activates the ATP hydrolysis activity"
+858,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,SPCA1d shows a 2.5fold higher affinity for Ca2+ compared to SPCA2
+860,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,"dependent on, at very low Ca2+ concentrations the PMCA is nearly inactive, unstimulated PMCA pumps have poor affinity for Ca2+"
+864,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,hydrolyzes ATP in a Ca2+ dependent manner
+865,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,SERCA2a transfers Ca2+ from the cytosol of the cardiomyocyte to the lumen of the sarcoplasmic reticulum during muscle relaxation
+866,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,calcium occupancy of site I is required to trigger cooperative binding to site II and catalytic activation
+867,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,"required, one calcium ion becomes occluded in the E1P-phosphorylated intermediate of the enzyme"
+868,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,"dependent on, but at high Ca2+ concentrations no significant increase in enzyme activity is observed"
+869,7.2.2.10,metals_ions,cofactor_of,Ca2+,,,ec_9,False,,,H,,1,0.1 mM used in assay conditions
+87,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,C,,1,required for catalytic activity
+873,7.6.2.1,metals_ions,cofactor_of,Ca2+,,,ec_21,False,,,C,,3,activates
+877,7.6.2.1,metals_ions,cofactor_of,Ca2+,,,ec_21,False,,,C,,1,scramblase activity is dependent on Ca2+
+88,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,B,,1,Ca2+ leads to plasma factor XIIIa dissociation into alpha- and beta-dimers
+89,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,B,,1,catalytically active monomeric metal-enzyme complex
+9,1.13.11.33,metals_ions,cofactor_of,Ca2+,,,ec_3,False,,,C,,1,"enhances activity, reversible by EGTA, inhibited by phosphatidyl serine and phosphatidyl choline"
+90,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,B,,1,Cys-thiol active binding-site identified
+92,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,C,,1,"crucial during thrombin cleavage of factor XIII for the formation of factor XIIIa and factor XIIIa activation, Ln3+ can replace Ca2+ during trypsin activation of factor XIII but not in activation of factor XIIIa"
+93,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,B,,1,crystallization data
+94,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,B,,1,wild-type binds 6 Ca2+ per monomer. GTPase activity is inhibited by Ca2+
+97,2.3.2.13,metals_ions,cofactor_of,Ca2+,,,ec_8,False,,,C,,1,"required, hTG2 is allosterically modulated by calcium ions"
+343,3.1.26.5,metals_ions,cofactor_of,Ca2+,,O15091,ec_unique,False,PRORP,,F,,1,Ca2+ can replace Mg2+
+659,3.4.24.14,metals_ions,cofactor_of,Ca2+,O95450,O95450,stated,False,ADAMTS2,,C,,2,required
+199,2.7.11.1,metals_ions,cofactor_of,Ca2+,P11801,P11801,stated,False,PSKH1,,E,cyt,1,autophosphorylation activity is repressed upon addition of Ca2+/calmodulin
+605,3.4.21.9,inhibitor,inhibits,Ca2+,,P98073,ec_unique,False,TMPRSS15,,E,mM,1,50% inhibition at 10 mM
+606,3.4.21.9,inhibitor,inhibits,Ca2+,,P98073,ec_unique,False,TMPRSS15,,E,un,1,slight inhibition of substrates with one or two Asp/Glu residues at P2-P3 positions
+607,3.4.21.9,metals_ions,cofactor_of,Ca2+,,P98073,ec_unique,False,TMPRSS15,,C,,2,required
+608,3.4.21.9,metals_ions,cofactor_of,Ca2+,,P98073,ec_unique,False,TMPRSS15,,D,,1,"50 mM, 3fold activation of hydrolysis of substrates of the general type GD4KX"
+609,3.4.21.9,metals_ions,cofactor_of,Ca2+,,P98073,ec_unique,False,TMPRSS15,,D,,1,"optimal at 0.02mM, inhibitory at 10 mM"
+610,3.4.21.9,metals_ions,cofactor_of,Ca2+,P98073,P98073,stated,False,TMPRSS15,,D,,1,CaCl2 enhances enzyme activity at 0.02 mM
+379,3.1.3.96,inhibitor,inhibits,Ca2+,,Q08623,ec_unique,False,PUDP,,N,,1,
+420,3.1.4.39,metals_ions,cofactor_of,Ca2+,Q7L5L3,Q7L5L3,stated,False,GDPD3,,A,,1,stimulated by micromolar concentrations of Ca2+
+661,3.4.24.14,metals_ions,cofactor_of,Ca2+,Q8WXS8,Q8WXS8,stated,False,ADAMTS14,,C,,2,required
+803,4.1.1.19,inhibitor,inhibits,Ca2+,Q96A70,Q96A70,stated,False,AZIN2,,E,mM,1,1 mM
+482,3.4.11.9,inhibitor,inhibits,Ca2+,Q9NQW7,Q9NQW7,stated,False,XPNPEP1,,E,mM,1,83.1% inhibition at 1 mM
+34,1.14.11.29,metals_ions,cofactor_of,Ca2+,Q9NXG6,Q9NXG6,stated,False,P4HTM,,A,,1,the crystal structure reveals an EF domain with two Ca2+-binding motifs inserted within the catalytic domain. The proximity of the EF domain to the active site suggests that Ca2+ binding is relevant to the catalytic activity. Functional analysis demonstrates that Ca2+-binding affinity of P4H-TM is w
+493,3.4.19.3,inhibitor,inhibits,Ca2+,Q9NXJ5,Q9NXJ5,stated,False,PGPEP1,,E,mM,1,"1 mM, 20% inhibition"
+118,2.4.1.221,metals_ions,cofactor_of,Ca2+,Q9Y2G5,Q9Y2G5,stated,False,POFUT2,,F,,1,"activates, but less effectiv than Mg2+ and Mn2+"

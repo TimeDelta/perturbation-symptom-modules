@@ -1,0 +1,264 @@
+uniprot_accession,gene,edge_relation,n_records,brenda_references,classes,E_subflags,compartment,compartment_note,R1_sensing,R2_sensing_or_bare,R3_all_cytosolic
+O00187,MASP2,cofactor_of,5,5,B4 C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+O00418,EEF2K,cofactor_of,13,37,A7 C6,,cyt,noCC,move:activates,move:activates,move:activates
+O00442,RTCA,cofactor_of,1,2,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+O00750,PIK3C2B,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+O00757,FBP2,inhibits,1,6,N1,,cyt,,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+O00764,PDXK,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+O14638,ENPP3,cofactor_of,1,2,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+O14672,ADAM10,cofactor_of,2,2,A2,,ext,catalytic domain extracellular; comments name cytosolic Ca2+ influx as the activator,move:activates,move:activates,move:activates
+O14735,CDIPT,inhibits,1,5,N1,,cyt,,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+O14773,TPP1,cofactor_of,2,2,B1 D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+O14773,TPP1,inhibits,1,1,E1,mM,lum,,stay_lumenal:inhibits,stay_lumenal:inhibits,stay_lumenal:inhibits
+O14939,PLD2,cofactor_of,1,1,G1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+O15072,ADAMTS3,cofactor_of,1,2,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+O15162,PLSCR1,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+O15296,ALOX15B,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+O43306,ADCY6,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+O43306,ADCY6,inhibits,2,2,E2,cyt,cyt,,move:inhibits,move:inhibits,move:inhibits
+O60259,KLK8,cofactor_of,2,2,C1 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+O60476,MAN1A2,cofactor_of,1,1,D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+O60503,ADCY9,cofactor_of,1,7,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+O60568,PLOD3,cofactor_of,2,2,F2,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+O60760,HPGDS,cofactor_of,2,2,C1 D1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+O75185,ATP2C2,cofactor_of,1,1,H1,,pump,,move:activates,move:activates,move:activates
+O75354,ENTPD6,cofactor_of,1,1,F1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+O76083,PDE9A,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+O94923,GLCE,cofactor_of,1,1,N1,,lum,,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of
+O95470,SGPL1,inhibits,1,1,N1,,cyt,,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+O95544,NADK,cofactor_of,2,2,A1 G1,,cyt,noCC,move:activates,move:activates,move:activates
+O95932,TGM6,cofactor_of,1,10,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P00441,SOD1,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P00488,F13A1,cofactor_of,1,10,C1,,ext,cytoplasmic in most tissues and secreted into plasma; the Ca2+ requirement is that of plasma FXIIIa,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P00533,EGFR,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+P00734,F2,activates,1,1,I1,,ext,,drop(no evidence),drop(no evidence),drop(no evidence)
+P00734,F2,cofactor_of,3,5,C3,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P00734,F2,inhibits,1,1,E1,mM,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+P00736,C1R,cofactor_of,3,4,B2 C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P00736,C1R,inhibits,1,1,I1,,ext,,drop(no evidence),drop(no evidence),drop(no evidence)
+P00740,F9,cofactor_of,14,18,B3 C5 D5 I1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P00740,F9,inhibits,1,1,E1,mM,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+P00742,F10,activates,2,2,B1 C1,,ext,,retarget_e:activates,retarget_e:activates,retarget_e:activates
+P00742,F10,cofactor_of,11,16,B4 C6 E1,mM,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P00742,F10,inhibits,2,2,E1 I1,mM,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+P03951,F11,cofactor_of,5,8,C3 D1 N1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P03956,MMP1,cofactor_of,4,6,B1 C2 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P04070,PROC,cofactor_of,9,13,B2 C4 I3,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P05129,PRKCG,cofactor_of,1,1,G1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+P05156,CFI,cofactor_of,1,1,B1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P05164,MPO,cofactor_of,1,1,N1,,ext,,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of
+P05981,HPN,cofactor_of,1,1,D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P06276,BCHE,cofactor_of,1,1,A1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P06681,C2,cofactor_of,2,2,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P07099,EPHX1,cofactor_of,1,1,E1,mM,cyt,,drop(sign):stay:cofactor_of,drop(sign):stay:cofactor_of,drop(sign):move:cofactor_of
+P07099,EPHX1,inhibits,1,1,E1,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+P07339,CTSD,cofactor_of,1,1,F1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P07384,CAPN1,activates,1,1,C1,,cyt,,stay:activates,move:cofactor_of,move:activates
+P07384,CAPN1,cofactor_of,18,45,A7 B1 C6 D4,,cyt,,move:activates,move:activates,move:activates
+P07741,APRT,cofactor_of,1,1,N1,,cyt,,stay_uncommented:cofactor_of,stay_uncommented:cofactor_of,move:cofactor_of
+P08246,ELANE,cofactor_of,2,3,C1 E1,un,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P08253,MMP2,cofactor_of,9,14,B3 C6,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P08254,MMP3,cofactor_of,5,5,B2 C1 D2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P08311,CTSG,cofactor_of,1,1,I1,,ext,,drop(no evidence),drop(no evidence),drop(no evidence)
+P08397,HMBS,inhibits,2,2,E2,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+P08709,F7,cofactor_of,10,10,B6 C3 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P08842,STS,cofactor_of,2,3,C1 D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P09237,MMP7,cofactor_of,3,9,C2 I1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P09871,C1S,cofactor_of,3,4,B2 C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P09917,ALOX5,cofactor_of,19,40,A8 B1 C6 D3 I1,,cyt,,move:activates,move:activates,move:activates
+P09958,FURIN,cofactor_of,8,40,C5 D2 E1,mM,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P09958,FURIN,inhibits,3,4,E3,mM un,lum,,stay_lumenal:inhibits,stay_lumenal:inhibits,stay_lumenal:inhibits
+P10144,GZMB,cofactor_of,1,1,N1,,ext,,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of
+P10323,ACR,cofactor_of,1,5,C1,,ext,"noCC acrosin, acrosomal",retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P10746,UROS,cofactor_of,1,2,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P11413,G6PD,cofactor_of,1,2,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P12955,PEPD,cofactor_of,1,1,F1,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P13497,BMP1,cofactor_of,2,2,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P14555,PLA2G2A,cofactor_of,1,1,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P14735,IDE,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P14780,MMP9,cofactor_of,5,12,C5,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P15144,ANPEP,inhibits,1,1,N1,,ext,,retarget_e_uncommented:inhibits,retarget_e_uncommented:inhibits,retarget_e_uncommented:inhibits
+P15289,ARSA,cofactor_of,1,1,D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P15289,ARSA,inhibits,2,2,E2,mM,lum,,stay_lumenal:inhibits,stay_lumenal:inhibits,stay_lumenal:inhibits
+P15291,B4GALT1,cofactor_of,1,1,F1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P15848,ARSB,cofactor_of,1,1,N1,,lum,,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of
+P15848,ARSB,inhibits,1,1,N1,,lum,,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits
+P16152,CBR1,activates,1,1,C1,,cyt,,stay:activates,move:cofactor_of,move:activates
+P16442,ABO,cofactor_of,1,1,D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P16519,PCSK2,cofactor_of,1,1,D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P16885,PLCG2,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+P16930,FAH,cofactor_of,1,2,N1,,cyt,noCC,stay_uncommented:cofactor_of,stay_uncommented:cofactor_of,move:cofactor_of
+P17050,NAGA,inhibits,1,1,N1,,lum,,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits
+P17655,CAPN2,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P19021,PAM,cofactor_of,1,1,B1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P19174,PLCG1,cofactor_of,1,10,N1,,cyt,,stay_uncommented:cofactor_of,stay_uncommented:cofactor_of,move:cofactor_of
+P19801,AOC1,cofactor_of,2,2,B2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P20020,ATP2B1,cofactor_of,1,1,H1,,pump,,move:activates,move:activates,move:activates
+P20807,CAPN3,cofactor_of,9,25,A1 C6 D2,,cyt,,move:activates,move:activates,move:activates
+P21964,COMT,inhibits,1,1,I1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+P21980,TGM2,cofactor_of,9,34,A3 C6,,cyt,"mainly cytosolic; also extracellular, where transamidation is Ca2+-permissive",move:activates,move:activates,move:activates
+P22033,MMUT,inhibits,1,1,E1,un,mito,,stay_mito:inhibits,stay_mito:inhibits,stay_mito:inhibits
+P22413,ENPP1,cofactor_of,1,2,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P22735,TGM1,cofactor_of,2,12,C2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P22894,MMP8,cofactor_of,1,3,N1,,ext,,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of
+P23258,TUBG1,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P23677,ITPKA,cofactor_of,1,2,A1,,cyt,,move:activates,move:activates,move:activates
+P23743,DGKA,cofactor_of,3,3,A2 C1,,cyt,,move:activates,move:activates,move:activates
+P24158,PRTN3,cofactor_of,1,1,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P24855,DNASE1,cofactor_of,5,12,B1 D1 F3,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P24855,DNASE1,inhibits,1,1,E1,mM,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+P26572,MGAT1,inhibits,1,1,N1,,lum,,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits,stay_uncommented_lumenal:inhibits
+P27169,PON1,cofactor_of,21,52,B10 C10 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P27695,APEX1,inhibits,1,1,E1,un,cyt,,stay:inhibits,move:inhibits,move:inhibits
+P27987,ITPKB,cofactor_of,1,3,A1,,cyt,,move:activates,move:activates,move:activates
+P28039,AOAH,cofactor_of,2,2,C1 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P29120,PCSK1,cofactor_of,1,5,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P29218,IMPA1,inhibits,1,1,N1,,cyt,,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+P29474,NOS3,cofactor_of,1,11,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P29475,NOS1,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+P32321,DCTD,cofactor_of,2,2,F2,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P32929,CTH,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+P33527,ABCC1,inhibits,1,1,N1,,cyt,,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+P36873,PPP1CC,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P39900,MMP12,cofactor_of,1,4,N1,,ext,,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of,retarget_e_uncommented:cofactor_of
+P40145,ADCY8,cofactor_of,2,2,C2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P41240,CSK,inhibits,1,1,E1,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+P42785,PRCP,cofactor_of,1,1,A1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+P43155,CRAT,inhibits,1,5,N1,,mito,,stay_uncommented_mito:inhibits,stay_uncommented_mito:inhibits,stay_uncommented_mito:inhibits
+P46019,PHKA2,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+P47712,PLA2G4A,cofactor_of,1,40,N1,,cyt,,stay_uncommented:cofactor_of,stay_uncommented:cofactor_of,move:cofactor_of
+P49221,TGM4,cofactor_of,1,1,D1,,ext,noCC prostate secretory transglutaminase,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P49221,TGM4,inhibits,1,1,E1,mM,ext,noCC prostate secretory transglutaminase,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+P49862,KLK7,cofactor_of,3,4,C2 N1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P49961,ENTPD1,cofactor_of,1,11,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P50281,MMP14,cofactor_of,2,2,B1 C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P50583,NUDT2,cofactor_of,1,1,D1,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P50583,NUDT2,inhibits,1,1,E1,mM,cyt,noCC,stay:inhibits,stay:inhibits,move:inhibits
+P51570,GALK1,cofactor_of,1,1,F1,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P52888,THOP1,cofactor_of,1,1,I1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+P53004,BLVRA,inhibits,1,1,E1,un,cyt,,stay:inhibits,move:inhibits,move:inhibits
+P54750,PDE1A,activates,1,1,A1,,cyt,noCC,move:activates,move:activates,move:activates
+P54750,PDE1A,cofactor_of,1,1,C1,,cyt,noCC,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P55263,ADK,cofactor_of,3,10,C1 F2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P55786,NPEPPS,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P62136,PPP1CA,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P62140,PPP1CB,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+P78330,PSPH,cofactor_of,1,1,B1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+P78330,PSPH,inhibits,1,1,E1,un,cyt,,stay:inhibits,move:inhibits,move:inhibits
+P78549,NTHL1,inhibits,1,1,E1,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+P80108,GPLD1,cofactor_of,2,4,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+P98194,ATP2C1,cofactor_of,1,1,H1,,pump,,move:activates,move:activates,move:activates
+Q01064,PDE1B,cofactor_of,2,5,A1 C1,,cyt,,move:activates,move:activates,move:activates
+Q01814,ATP2B2,cofactor_of,1,1,H1,,pump,,move:activates,move:activates,move:activates
+Q02108,GUCY1A1,cofactor_of,1,1,B1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q02108,GUCY1A1,inhibits,1,1,E1,cyt,cyt,,move:inhibits,move:inhibits,move:inhibits
+Q02153,GUCY1B1,cofactor_of,1,1,B1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q02153,GUCY1B1,inhibits,1,1,E1,cyt,cyt,,move:inhibits,move:inhibits,move:inhibits
+Q02218,OGDH,cofactor_of,1,1,A1,,mito,,stay_mito:cofactor_of,stay_mito:cofactor_of,stay_mito:cofactor_of
+Q02846,GUCY2D,cofactor_of,1,1,A1,,cyt,catalytic domain cytosolic (photoreceptor outer segment),move:activates,move:activates,move:activates
+Q03518,TAP1,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q03519,TAP2,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q04609,FOLH1,cofactor_of,1,1,B1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q06203,PPAT,cofactor_of,1,1,F1,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q07075,ENPEP,activates,1,1,I1,,ext,,drop(no evidence),drop(no evidence),drop(no evidence)
+Q07075,ENPEP,cofactor_of,4,13,C1 D2 I1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q07075,ENPEP,inhibits,3,3,E2 I1,un,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+Q08188,TGM3,cofactor_of,2,11,B1 C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q08209,PPP3CA,cofactor_of,3,3,A1 C2,,cyt,,move:activates,move:activates,move:activates
+Q11130,FUT7,cofactor_of,1,1,F1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q12797,ASPH,cofactor_of,1,1,B1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q13219,PAPPA,cofactor_of,2,2,B1 D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q13393,PLD1,cofactor_of,1,1,G1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+Q13554,CAMK2B,cofactor_of,1,42,A1,,cyt,,move:activates,move:activates,move:activates
+Q13555,CAMK2G,cofactor_of,1,48,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q13557,CAMK2D,cofactor_of,2,90,A1 C1,,cyt,,move:activates,move:activates,move:activates
+Q13569,TDG,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q13822,ENPP2,cofactor_of,4,4,C1 F1 I2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q14012,CAMK1,cofactor_of,3,91,A2 C1,,cyt,,move:activates,move:activates,move:activates
+Q14123,PDE1C,activates,1,1,A1,,cyt,UniProt lists Lysosome; PDE1C is a Ca2+/calmodulin phosphodiesterase of the cytosol,move:activates,move:activates,move:activates
+Q14123,PDE1C,cofactor_of,1,1,A1,,cyt,UniProt lists Lysosome; PDE1C is a Ca2+/calmodulin phosphodiesterase of the cytosol,move:activates,move:activates,move:activates
+Q14289,PTK2B,activates,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+Q14674,ESPL1,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+Q14693,LPIN1,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q14703,MBTPS1,cofactor_of,2,3,C2,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q15165,PON2,cofactor_of,2,2,D2,,memb,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q15166,PON3,cofactor_of,1,3,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q15181,PPA1,inhibits,1,1,E1,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+Q15746,MYLK,cofactor_of,2,4,C2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q16566,CAMK4,cofactor_of,5,94,A3 C1 D1,,cyt,,move:activates,move:activates,move:activates
+Q16720,ATP2B3,cofactor_of,1,1,H1,,pump,,move:activates,move:activates,move:activates
+Q16739,UGCG,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q16774,GUK1,cofactor_of,1,2,G1,,cyt,,drop(no evidence),drop(no evidence),drop(no evidence)
+Q16819,MEP1A,cofactor_of,5,8,B1 C2 E1 I1,mM,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q16819,MEP1A,inhibits,1,1,E1,mM,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+Q16820,MEP1B,cofactor_of,2,2,C1 E1,un,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q16820,MEP1B,inhibits,2,2,E2,un,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+Q16851,UGP2,cofactor_of,2,3,C1 F1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q4KWH8,PLCH1,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q5QJU3,ACER2,cofactor_of,1,3,N1,,lum,,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of
+Q6P988,NOTUM,cofactor_of,1,1,D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q6TGC4,PADI6,cofactor_of,2,3,C2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q76LX8,ADAMTS13,cofactor_of,14,21,B6 C6 D2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q76LX8,ADAMTS13,inhibits,1,1,E1,un,ext,,retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+Q7KZF4,SND1,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q7Z3V4,UBE3B,activates,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+Q86Y38,XYLT1,cofactor_of,1,1,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q8IU85,CAMK1D,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q8IWU9,TPH2,cofactor_of,1,1,I1,,cyt,noCC,drop(no evidence),drop(no evidence),drop(no evidence)
+Q8NB49,ATP11C,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q8NBK3,SUMF1,cofactor_of,2,2,B2,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q8NBP7,PCSK9,cofactor_of,1,7,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q8NCG7,DAGLB,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q8NFF5,FLAD1,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q8NG68,TTL,cofactor_of,1,1,A1,,cyt,noCC,move:activates,move:activates,move:activates
+Q8TBE9,NANP,inhibits,1,1,N1,,cyt,noCC,stay_uncommented:inhibits,stay_uncommented:inhibits,move:inhibits
+Q8TCT0,CERK,activates,1,1,F1,,cyt,,stay:activates,stay:activates,move:activates
+Q8TCT0,CERK,cofactor_of,3,3,A1 F2,,cyt,,move:activates,move:activates,move:activates
+Q8TCT0,CERK,inhibits,2,2,E2,mM,cyt,,stay:inhibits,stay:inhibits,move:inhibits
+Q8TDN7,ACER1,cofactor_of,1,3,N1,,memb,,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of,stay_uncommented_lumenal:cofactor_of
+Q8WVQ1,CANT1,cofactor_of,1,2,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q92820,GGH,cofactor_of,2,3,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q93100,PHKB,cofactor_of,1,5,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q96DU7,ITPKC,cofactor_of,1,2,A1,,cyt,,move:activates,move:activates,move:activates
+Q96IY4,CPB2,cofactor_of,2,2,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q96LZ3,PPP3R2,cofactor_of,1,1,A1,,cyt,UniProt lists Mitochondrion; calcineurin B-like regulatory subunit,move:activates,move:activates,move:activates
+Q96NX5,CAMK1G,cofactor_of,1,1,A1,,cyt,,move:activates,move:activates,move:activates
+Q96PN6,ADCY10,cofactor_of,1,7,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q96RR4,CAMKK2,cofactor_of,1,2,A1,,cyt,,move:activates,move:activates,move:activates
+Q99895,CTRC,inhibits,1,1,E1,mM,ext,"noCC chymotrypsin C, pancreatic",retarget_e:inhibits,retarget_e:inhibits,retarget_e:inhibits
+Q9BU02,THTPA,inhibits,2,3,E1 N1,un,cyt,,stay:inhibits,move:inhibits,move:inhibits
+Q9BVG9,PTDSS2,cofactor_of,1,1,C1,,memb,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9BYC5,FUT8,cofactor_of,1,5,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9GZT4,SRR,activates,1,1,N1,,cyt,noCC,stay_uncommented:activates,stay_uncommented:activates,move:activates
+Q9GZT4,SRR,cofactor_of,3,7,C3,,cyt,noCC,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9H1R3,MYLK2,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9H2R5,KLK15,cofactor_of,1,1,D1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q9H2U2,PPA2,inhibits,1,1,E1,mM,mito,,stay_mito:inhibits,stay_mito:inhibits,stay_mito:inhibits
+Q9H3S4,TPK1,cofactor_of,1,1,F1,,cyt,noCC,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q9NPH2,ISYNA1,cofactor_of,2,2,C1 D1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NQ66,PLCB1,cofactor_of,1,7,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NQR1,KMT5A,cofactor_of,1,1,D1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q9NQZ7,ENTPD7,cofactor_of,1,1,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9NR34,MAN1C1,cofactor_of,1,1,D1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9NR45,NANS,inhibits,1,1,E1,mM,cyt,noCC,stay:inhibits,stay:inhibits,move:inhibits
+Q9NR71,ASAH2,cofactor_of,2,6,C2,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q9NRD8,DUOX2,cofactor_of,2,17,C2,,cyt,EF-hands cytosolic,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NRQ2,PLSCR4,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NRY6,PLSCR3,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NRY7,PLSCR2,cofactor_of,1,3,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9NUN7,ACER3,cofactor_of,1,1,B1,,memb,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9NYA1,SPHK1,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
+Q9P0P0,RNF181,cofactor_of,1,1,A1,,cyt,noCC,move:activates,move:activates,move:activates
+Q9P2T1,GMPR2,inhibits,1,1,E1,mM,cyt,noCC,stay:inhibits,stay:inhibits,move:inhibits
+Q9UK39,NOCT,inhibits,1,1,E1,un,cyt,,stay:inhibits,move:inhibits,move:inhibits
+Q9UKM7,MAN1B1,cofactor_of,1,2,C1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9ULC6,PADI1,cofactor_of,6,20,C5 D1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9ULW8,PADI3,cofactor_of,4,5,C3 D1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9UM07,PADI4,cofactor_of,5,6,B3 C2,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9UM21,MGAT4A,cofactor_of,1,1,F1,,lum,,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of,stay_lumenal:cofactor_of
+Q9UQM7,CAMK2A,cofactor_of,1,42,A1,,cyt,,move:activates,move:activates,move:activates
+Q9Y2J8,PADI2,cofactor_of,9,23,C4 D5,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9Y4D2,DAGLA,cofactor_of,1,1,C1,,cyt,,stay:cofactor_of,move:cofactor_of,move:cofactor_of
+Q9Y5L3,ENTPD2,cofactor_of,1,1,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q9Y5Y6,ST14,cofactor_of,1,1,C1,,ext,,retarget_e:cofactor_of,retarget_e:cofactor_of,retarget_e:cofactor_of
+Q9Y673,ALG5,cofactor_of,1,1,F1,,cyt,,stay:cofactor_of,stay:cofactor_of,move:cofactor_of
