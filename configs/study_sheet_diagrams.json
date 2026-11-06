@@ -94,12 +94,12 @@
       },
       "fingerprints": {
         "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
-        "decision:9.81": "389a71167c6ddcd8c3503d312b71c3a13590cba7aa643ecfa804a762fe6755a5",
+        "decision:9.81": "04386be0a65afb72b5ba2421dd0c414097759add7c584e34315094c4e7a43c33",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
       },
-      "checked": "2026-11-05",
-      "checked_at_commit": "d600be0"
+      "checked": "2026-11-06",
+      "checked_at_commit": "a38b671"
     },
     "14499161-f021": {
       "title": "A knockout travels as signed shares to one fixed point",
