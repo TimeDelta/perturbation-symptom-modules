@@ -157,12 +157,12 @@
       "fingerprints": {
         "decision:9.87": "ffed67c6ab7d20163fe2aa193f4a00fb93b549011e6c8b4ee10761f0926e2d88",
         "decision:9.112": "5142d6be6f75e5349ee7af1ffa06f432497af41cd5be1462e1aa4988b3f97c19",
-        "decision:9.113": "ae59ee511beac42874a3149f9c7178ee870eb0f19ec9034400be88fdc2767be3",
+        "decision:9.113": "77306b4f6340964c2c464f0df4f6f63a689f3309900018981dd9036659396442",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c",
         "file:mechanistic_pathway_learning/graph/reactome_import.py": "c23a9ddc0c4addbe12a539add7a8c8a3229d0fef0f9139ac183674167f1183bd"
       },
       "checked": "2026-11-06",
-      "checked_at_commit": "d2d861d"
+      "checked_at_commit": "fb7324f"
     },
     "88631e83-33d4": {
       "title": "Membrane potential, as decided (9.112)",
@@ -179,11 +179,11 @@
       },
       "fingerprints": {
         "decision:9.112": "5142d6be6f75e5349ee7af1ffa06f432497af41cd5be1462e1aa4988b3f97c19",
-        "decision:9.113": "ae59ee511beac42874a3149f9c7178ee870eb0f19ec9034400be88fdc2767be3",
+        "decision:9.113": "77306b4f6340964c2c464f0df4f6f63a689f3309900018981dd9036659396442",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c"
       },
       "checked": "2026-11-06",
-      "checked_at_commit": "d2d861d"
+      "checked_at_commit": "fb7324f"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
