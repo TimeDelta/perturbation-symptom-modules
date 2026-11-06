@@ -5357,10 +5357,28 @@
 %% Model: the PubMed queries of 24 October 2026 and the two arXiv records and the
 %% Trefethen and Embree ISBN read the same day were read on claude-opus-5, not on
 %% Fable. Under CLAUDE.md "Models" (25 October 2026) that is research done on
-%% another model before the rule was recorded, so these locators are flagged here
-%% and are due a Fable recheck before they are relied on. The deduplication against
-%% this file, the register entry and the generated pages are engineering, which that
-%% rule allows on any model.
+%% another model before the rule was recorded, so a Fable recheck was owed before
+%% they were relied on. RECHECKED ON FABLE, 6 NOVEMBER 2026, all 73 entries: every
+%% work exists and every locator identifies it, nothing was not found, and 66 of
+%% the 73 stand exactly as written. Each PubMed-indexed entry was checked field by
+%% field against PubMed and confirmed against Europe PMC (one query carrying all 66
+%% PMIDs); the three non-PubMed journal records against Crossref; the two arXiv
+%% records against arXiv and the NeurIPS proceedings; the two books against Open
+%% Library, NACSIS-CAT and Crossref; the label against DailyMed. Three corrections
+%% came out of it: bowden1997effect carried the wrong author list (twelve names for
+%% seven), sztainberg2015reversal had Xue, M. for Rigo, F., and the Trefethen and
+%% Embree note quoted the J. Fluid Mech. review's title with normalized punctuation.
+%% Four locators the October pass could not get are now in: DOIs for
+%% pippig1995sequestration, vonzastrow1992ligand and porchet1988pharmacodynamic,
+%% found on Crossref and matched to each entry's own fields, and the ISBN of the Kokotovic et al. printing. Of the
+%% thirteen quoted fragments in the notes, twelve are verbatim in the source each
+%% names and the thirteenth is the Trefethen review title above. No entry in this
+%% block is a preprint: the two arXiv-numbered records are NeurIPS conference
+%% papers, which decision 9.101 counts as peer reviewed. One trap recorded for the
+%% next pass: Europe PMC returns DOI 10.1159/000350910 for liu1996hyponatremia's
+%% PMID 8804257, and that DOI belongs to another paper, so this entry stays without
+%% one. The deduplication against this file, the register entry and the generated
+%% pages are engineering, which that rule allows on any model.
 %% ---------------------------------------------------------------------------
 
 @article{barkai1997robustness,
@@ -5480,6 +5498,7 @@
   pages   = {666--676},
   year    = {1995},
   pmid    = {7723728},
+  doi     = {10.1016/s0026-895x(25)08615-8},
   url     = {https://pubmed.ncbi.nlm.nih.gov/7723728/},
   note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 08}
 }
@@ -5493,6 +5512,7 @@
   pages   = {3530--3538},
   year    = {1992},
   pmid    = {1371121},
+  doi     = {10.1016/s0021-9258(19)50762-1},
   url     = {https://pubmed.ncbi.nlm.nih.gov/1371121/},
   note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 09}
 }
@@ -5524,7 +5544,7 @@
 }
 
 @article{bowden1997effect,
-  author  = {Bowden, C. L. and Janicak, P. G. and Orsulak, P. and Swann, A. C. and Davis, J. M. and Calabrese, J. R. and Goodnick, P. and Small, J. G. and Rush, A. J. and Kimmel, S. E. and Risch, S. C. and Morris, D. D.},
+  author  = {Bowden, C. L. and Davis, J. and Morris, D. and Swann, A. and Calabrese, J. and Lambert, M. and Goodnick, P.},
   title   = {Effect size of efficacy measures comparing divalproex, lithium and placebo in acute mania},
   journal = {Depression and Anxiety},
   volume  = {6},
@@ -5592,6 +5612,7 @@
   pages   = {231--236},
   year    = {1988},
   pmid    = {3336000},
+  doi     = {10.1016/s0022-3565(25)24269-0},
   url     = {https://pubmed.ncbi.nlm.nih.gov/3336000/},
   note    = {docs/steady_state_readout_alternatives.md reference 16}
 }
@@ -5719,7 +5740,7 @@
 }
 
 @article{sztainberg2015reversal,
-  author  = {Sztainberg, Y. and Chen, H.-M. and Swann, J. W. and Hao, S. and Tang, B. and Wu, Z. and Tang, J. and Wan, Y.-W. and Liu, Z. and Xue, M. and Zoghbi, H. Y.},
+  author  = {Sztainberg, Y. and Chen, H.-M. and Swann, J. W. and Hao, S. and Tang, B. and Wu, Z. and Tang, J. and Wan, Y.-W. and Liu, Z. and Rigo, F. and Zoghbi, H. Y.},
   title   = {Reversal of phenotypes in {MECP2} duplication mice using genetic rescue or antisense oligonucleotides},
   journal = {Nature},
   volume  = {528},
@@ -5988,12 +6009,12 @@
   title     = {Singular Perturbation Methods in Control: Analysis and Design},
   publisher = {Academic Press},
   year      = {1986},
+  isbn    = {0-12-417635-6},
   url       = {https://ci.nii.ac.jp/ncid/BA00437443},
   note      = {docs/fixed_point_against_pharmacological_steady_state.md reference [24], which cites this
                book together with A. N. Tikhonov, Systems of differential equations containing small
                parameters in the derivatives, Mat. Sb. 31:575--586 (1952), for Tikhonov's theorem. Not a
-               PubMed record. The ISBN of the 1986 Academic Press printing was not established from the
-               catalogues searched on 24 October 2026, so the locator is the NACSIS-CAT record}
+               PubMed record. The ISBN of the 1986 Academic Press printing is 0-12-417635-6, read on the Open Library edition record OL2234192M (LCCN 89103039, LC class TJ213 .K5924 1986, "xi, 371 p") on Fable on 6 November 2026, which agrees with the NACSIS-CAT record cited here; the 1999 SIAM Classics reissue is doi 10.1137/1.9781611971118, ISBN 978-0-89871-444-9}
 }
 
 @article{segel1989quasi,
@@ -6005,7 +6026,7 @@
   pages   = {446--477},
   year    = {1989},
   doi     = {10.1137/1031091},
-  note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 26; VERIFY (not a PubMed record)}
+  note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 26; not a PubMed record, verified against Crossref 10.1137/1031091 on Fable on 6 November 2026}
 }
 
 % ===== Frequency response and signal filtering =====
@@ -6019,7 +6040,7 @@
   pages   = {1143--1152},
   year    = {2004},
   doi     = {10.1021/jp036567u},
-  note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 27; VERIFY (not a PubMed record)}
+  note    = {docs/fixed_point_against_pharmacological_steady_state.md reference 27; not a PubMed record, verified against Crossref 10.1021/jp036567u on Fable on 6 November 2026}
 }
 
 @article{hersen2008signal,
@@ -6134,9 +6155,16 @@
 
 % ===== Added here, not in either report's PubMed pass =====
 % Report 1 flagged these three as gaps the owner should fill from arXiv.
-% Bibliographic details confirmed by web lookup on 24 October 2026 for the two
-% arXiv records; the Trefethen and Embree book is from general knowledge and is
-% the one entry here with nothing checked against a source this session.
+% Bibliographic details were confirmed by web lookup on 24 October 2026 for the two
+% arXiv records, and the Trefethen and Embree book was written from general
+% knowledge, the one entry here with nothing checked against a source that day.
+% RECHECKED ON FABLE, 6 NOVEMBER 2026: the two arXiv records are confirmed on their
+% own arXiv abstract pages and on proceedings.neurips.cc, which also shows that each
+% is a NeurIPS conference paper and so peer reviewed, not a preprint; the Trefethen
+% and Embree book is confirmed against the Open Library edition record OL3424097M
+% and the J. Fluid Mech. review record (doi 10.1017/s0022112006008718), with its
+% note's quotation corrected to the review's own wording, so no entry here now rests
+% on general knowledge.
 
 @inproceedings{bai2019deep,
   author    = {Bai, S. and Kolter, J. Z. and Koltun, V.},
@@ -6170,9 +6198,7 @@
   isbn      = {0-691-11946-5},
   note      = {Cited by docs/steady_state_readout_alternatives.md for its transient-growth statements and
                named there as a gap. Not a PubMed record. Author list, publisher, year and ISBN read on
-               24 October 2026 from the J. Fluid Mech. review record, which gives "Spectra and
-               Pseudospectra by Lloyd N. Trefethen, Mark Embree, Princeton University Press, 2005, 606
-               pp, ISBN 0-691-11946-5"}
+               24 October 2026 from the J. Fluid Mech. review record, which reads "Spectra and Pseudospectra. By Lloyd N. Trefethen & Mark Embree. Princeton University Press, 2005. 606 pp. ISBN 0 691 11946 5" (J. Fluid Mech. 552:441--442, 2006, doi 10.1017/s0022112006008718, read on Crossref on Fable 6 November 2026; the ISBN is printed there unhyphenated). Author list, subtitle, publisher, place and year confirmed independently against the Open Library edition record OL3424097M (LCCN 2005046573)}
 }
 
 @article{perogamvros2010cbgvariant,
