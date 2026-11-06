@@ -560,3 +560,15 @@ Na+ 24.6, K+ 14.3 and Cl- 2.0 mV.
 - `https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2713585/fullTextXML` (Albuquerque et al. 2009 review):
   HTTP 500. Not needed once Nutter and Adams 1995 and Sacchi et al. 2011 were read; no claim rests on it.
 - No permission request was left unanswered in this pass, and no page addressed to an AI assistant was found.
+
+**Added 6 November 2026: Lu et al. 2007 read in full.** The owner supplied the PDF
+(`data/raw/supplied_papers/pmid17448995_lu2007.pdf`, SHA-256 a23f4f2f...5fa1), read on Fable that day; the NALCN row
+of the table above has it unread. p. 374: "The selectivity sequence was P_Na (1.3, n = 12) > P_K (1.2, n = 5) > P_Cs (1.0,
+n = 12) > P_Ca (0.5, n = 7)". **The denominator is caesium**: the pipette held 155 Cs and the bath 155 of the
+test cation isotonically replaced, so P_X/P_Cs = exp(E_rev F/RT) (p. 381, equation 1). So **P_Na/P_K = 1.3/1.2
+= 1.08**, and the script's unsourced 1.3 was this paper's P_Na/P_Cs misread as P_Na/P_K. At the registered
+constants that gives **E_rev +4.0 mV** and weight **19.19 mV**, against +2.2 and 19.09 at equal permeability
+and +8.2 and 19.44 for the placeholder. **No sign changes**, the weight moves +0.57 per cent and stays between
+the ruled Na+ and K+ terms. The +2.2 mV entry stands as the quoted lower bound; the paper confirms P_Na above
+P_K and sizes it. P_Ca/P_Na is "0.38" (p. 381), excluded by the registered law, not by physiology. Room
+temperature, "20-25 degrees C"; the ratio crosses to 310.15 K, not an E_rev. (c)2007 Elsevier Inc.
