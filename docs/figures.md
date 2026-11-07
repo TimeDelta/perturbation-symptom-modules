@@ -18,6 +18,11 @@ from which the build decision 9.106 names was made, so they read an earlier `_v5
 readings of that build, not of v5, and the figures are to be redrawn on the real v5 once it is built. Whether readings
 of those builds are reported as history only is the owner's open question 9.106 (a).
 
+**Added 7 November 2026.** The v5 the registration means was built on 5 November 2026
+(`graph_full_neuronal_split_binders_drugs_v5`, decision 9.106), before decision 9.112 is built. The figures have not
+been redrawn on it, and since 9.112 will change the membrane-potential layer and force another rebuild, redrawing them
+waits for that build.
+
 ## 1. The model
 
 ![model pipeline](figures/model_pipeline.png)

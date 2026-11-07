@@ -492,7 +492,7 @@ today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (ta
 
 **The cheapest checks.**
 - Trace, on the current build, whether a seed on a cycle enzyme reaches any oxidant node, and by which relations.
-  This is engineering and needs the real v5 build, which does not exist yet (decision 9.106).
+  This is engineering and needed the v5 build, made on 5 November 2026; it was done on 7 November 2026 (below).
 - A Fable pass on the literature: which cycle enzymes are themselves oxidant sources in human or mammalian
   mitochondria, which are oxidant targets beyond ACO2, and whether the effect of cycle flux on respiratory-chain
   superoxide is stated with a sign that a graph edge could carry. Nothing on this page asserts any of it yet.

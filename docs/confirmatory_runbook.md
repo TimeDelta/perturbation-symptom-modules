@@ -37,9 +37,11 @@ these changes touches says so where it applies:
 - The membrane potential is computed from the pools (decision 9.87, 26 October 2026): the registered rule
   `membrane_potential_build` is `computed_from_the_pools`, and `scripts/rebuild_data_layer.sh` passes it to every
   neuronal variant it builds, so the graph a run reads is the one that script writes.
-- The v5 graph named above has not been built. The directories of that name written on 20 October 2026 came from a
-  build the owner had not asked for and are not v5 (decision 9.106); the real v5 is what `scripts/rebuild_data_layer.sh`
-  writes. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
+- The v5 graph named above was built by `scripts/rebuild_data_layer.sh` on 5 November 2026
+  (`graph_full_neuronal_split_binders_drugs_v5`, decision 9.106). It carries the membrane-potential layer that decision
+  9.112 ruled on and has not built, so it is rebuilt from `graph_full_neuronal` when 9.112 is built, and no run reads it
+  as the registered graph before then. The directories of that name written on 20 October 2026 came from a build the
+  owner had not asked for and are not v5. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
   ("A measurement carries the graph it was taken on") points toward, is the owner's open question 9.106 (a).
 - The Reactome release is the latest Reactome serves until the lockbox is drawn (decision 9.111, 4 November 2026). **Before
   the held-out set is drawn**, pin the release the registered graph was built from: read it from that graph's summary

@@ -91,6 +91,13 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   register and stays; nothing is deleted from the record.
 - A living document that `docs/status.md` lists as due is read against the repository, corrected by overwriting, and
   its `reviewed` date and `as_of_commit` are updated in the register.
+- The study sheet's diagrams are checked with the decisions and code they depict (the owner, 5 November 2026;
+  `CLAUDE.md`, Documents). `configs/study_sheet_diagrams.json` lists each diagram of the owner's Claude Docs study sheet
+  with the decision rows and code files it depicts and a SHA-256 of each, taken when a session last checked it;
+  `tests/test_study_sheet_diagrams_current.py` fails while any of them has changed since. A commit that changes a
+  depicted row or file therefore checks the diagram in the doc, corrects it there if it is wrong, and re-stamps it with
+  `PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget id>`. Each diagram shows the
+  architecture as last built or as decided, with one of each where the two differ.
 
 ## Defects repaired, and what is left to the owner
 

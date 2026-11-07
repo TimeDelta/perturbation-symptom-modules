@@ -32,8 +32,10 @@ in `configs/registered_rules.json`); flux sampling was dropped from the confirma
 Two rulings bear on every number in it. The measurements of the slice-pilot period are history and not evidence about
 the current graph or encoders (the owner, 27 October 2026: "ANY numbers from that time are to have the same treatment",
 decision 9.103); exactly which measurements "that time" covers is open (9.104). And the v5 graph the
-registration names has not yet been built: the directories of that name written in October came from a build the
-owner had not asked for (decision 9.106, 28 October 2026).
+registration names was built on 5 November 2026 (`graph_full_neuronal_split_binders_drugs_v5`, 49,834 nodes and
+275,006 edges, decision 9.106), before decision 9.112's membrane-potential change is built, so it is rebuilt when
+9.112 is; the directories of that name written in October came from a build the owner had not asked for and are not
+v5 (decision 9.106, 28 October 2026).
 
 Phase 1 is measured and Phases 2 and 3 have started on the monogenic slice. The slice is a pilot; the confirmatory test is the full graph with every layer (docs/preregistration.md, amendment of 7 October 2026). Implemented and tested:
 the noisy-OR pathway module head (sum or mean pooling over hard-concrete supports), soft constraint
