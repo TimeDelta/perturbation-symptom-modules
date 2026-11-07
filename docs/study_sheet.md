@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 44, 7 November 2026). The text is the doc's own Markdown export; the 19 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 45, 7 November 2026). The text is the doc's own Markdown export; the 20 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -88,6 +88,10 @@ A module is a set of nodes the fit chooses, through a gate per node pushed towar
 ![noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/physiological_adherence_review.md section 13](study_sheet_figures/09_modules.png)
 
 *noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/physiological_adherence_review.md section 13*
+
+![modules, as decided · decision 9.119 ruled 7 Nov 2026 (option 2), not built; design questions open](study_sheet_figures/09b_modules_as_decided.png)
+
+*modules, as decided · decision 9.119 ruled 7 Nov 2026 (option 2), not built; design questions open*
 
 This is where the nosology would come from, and also where the clearest negative result sits. Modules overlap, so two symptoms become related when one module explains both. But the sufficiency test found the own-ablation interval excluding zero in 0 of 62 symptom-module rows, so no module yet explains any symptom on its own, which is the premise of the noisy-OR form failing on its own terms. Every symptom is also a monotone function of the same 8 activations, so untrained symptoms rank the perturbations identically, at correlation 1.000000.
 
