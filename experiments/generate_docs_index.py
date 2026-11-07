@@ -64,7 +64,7 @@ TOPICS = (
                               "docs/knowledge_graph_practices_review.md", "docs/channel_conduction_audit.md", "docs/regulation_sign_recuration.md",
                               "docs/node_descriptor_columns.md", "docs/protein_descriptor_report.md", "docs/brain_expression_descriptors.md",
                               "docs/linear_response_sign_check.md", "docs/tissue_saturation.md", "docs/data_sources.md", "docs/alternative_sources.md",
-                              "docs/curation_candidates_*.md", "docs/krebs_oxidant_*.md", "docs/endosomal_nhe_*.md", "docs/phosphosite_*.md", "docs/shunting_inhibition_*.md", "docs/nalcn_extracellular_calcium_*.md")),
+                              "docs/curation_candidates_*.md", "docs/krebs_oxidant_*.md", "docs/endosomal_nhe_*.md", "docs/phosphosite_*.md", "docs/shunting_inhibition_*.md", "docs/nalcn_extracellular_calcium_*.md", "docs/signor_disputed_signs_*.md")),
     ("Drugs: targets, exposure and entry", ("docs/drug_*.md", "docs/central_action_rule.md", "docs/label_central_action*.md", "docs/effect_site_data_coverage.md",
                                             "docs/fraction_unbound_coverage.md", "docs/occupancy_*.md", "docs/target_occupancy_measured.md", "docs/off_target*.md",
                                             "docs/pet_occupancy_feasibility.md", "docs/pk_coverage_check_*.md", "docs/placeholder_concentration_calibration.md", "docs/orosomucoid_label_stake.md",

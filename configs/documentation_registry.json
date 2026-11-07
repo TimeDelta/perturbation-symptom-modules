@@ -925,6 +925,12 @@
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "second sources for decision 9.114 on which calcium regulates NALCN: the compartment (extracellular) confirmed by five laboratories, the mechanism (direct pore block against a CaSR route) contested, the faithful edge proposed and the v5 nodes it would need; read on Fable"
+    },
+    "docs/signor_disputed_signs_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "the 16 kinase-to-substrate edges whose v5 sign SIGNOR disputes, read at the primary papers: 8 right, 4 wrong with proposed override rows (not applied), 1 unsigned, 3 left as is; and that 9 of the 16 rest on SIGNOR rows their cited paper does not support; read on Fable"
     }
   }
 }

@@ -9230,3 +9230,462 @@
   pmid    = {31665479},
   note    = {The database through which the VAMP1 and VAMP2 protein intensities of item 8 of docs/exploration_queue.md (addition of 7 November 2026) were read, by its OData API (proteinexpression.xsodata, CALCULATION_METHOD=0, MS_LEVEL=1) with experiments/read_public_page.py on Fable on 7 November 2026. The paper describes the resource ("the real-time exploration and retrieval of protein abundance values across different tissues, cell lines, and body fluids via interactive expression heat maps and body maps") but does not define the API's NORMALIZED_INTENSITY field, and the API metadata lists CALCULATION_METHOD without naming it, so THE UNIT OF THE INTENSITIES (iBAQ by default, according only to third-party wrappers) IS UNVERIFIED from the provider's own text; within-sample ratios of two proteins are what the item uses. Full text PMC7145565 read on Fable on 7 November 2026. Sixteen authors on both records, shortened here. Every other field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (volume 48, issue D1, pages D1153-D1163, DOI; Europe PMC isOpenAccess Y, licence CC BY-NC)}
 }
+
+% **31 entries. Keys checked against all 705 keys in `docs/references.bib`: none of these 31 papers is present**
+% (checked both by key and by PMID — no `pmid` field in `docs/references.bib` matches any of the 31). Every author
+% list, journal, year, volume, issue and page range was read from the PubMed record (PubMed MCP
+% `get_article_metadata`, 7 November 2026) and confirmed against the Europe PMC record
+% (`ebi.ac.uk/europepmc/webservices/rest/search`, read with `experiments/read_public_page.py` the same day). The
+% check found **no discrepancies** between the two for any of the 31. Following the convention of commit `8ad304c`:
+% no field is completed from inference, a field the records did not supply is absent, and each `note` states what
+% is held (abstract only, or full text and where it was read).
+% 
+% Three of the PubMed publication years disagree with the journal-issue year, as `8ad304c` warned they can; per
+% that commit's rule the **journal-issue year of the Europe PMC record is used and the discrepancy is stated in the
+% note**: Katayama et al. (PubMed 2003-12-14, journal issue 2004), Hsueh et al. (PubMed 2012-11-28, journal issue
+% 2013), Luo et al. (PubMed 2008-12-21, journal issue 2009), Laulajainen et al. (PubMed 2007-12-10, journal issue
+% 2008), Chen et al. 1999 (PubMed 1999-02, journal issue 1999 — no disagreement), Goto et al. (PubMed 2002-01,
+% journal issue 2002 — no disagreement), Feng et al. (PubMed 2013-02-27, journal issue 2013 — no disagreement),
+% Wijnker et al. (PubMed 2014-02-28, journal issue 2014 — no disagreement).
+@article{li2015cabl,
+  author  = {Li, Dapei and Dong, Qincai and Tao, Qingping and Gu, Jing and Cui, Yan and Jiang, Xuefeng and Yuan, Jing and Li, Weihua and Xu, Rao and Jin, Yanwen and Li, Ping and Weaver, David T and Ma, Qingjun and Liu, Xuan and Cao, Cheng},
+  title   = {c-Abl regulates proteasome abundance by controlling the ubiquitin-proteasomal degradation of {PSMA7} subunit},
+  journal = {Cell Reports},
+  year    = {2015},
+  volume  = {10},
+  number  = {4},
+  pages   = {484--496},
+  doi     = {10.1016/j.celrep.2014.12.044},
+  pmid    = {25620702},
+  note    = {ABSTRACT ONLY is held; no PMC body, and the publisher route was not attempted. The up-regulating Tyr106 site of the ABL1 to PSMA7 edge (edge 1 of the disputed-sign pass): "the 20S proteasome subunit PSMA7 is subjected to ubiquitination and proteasomal degradation, which was suppressed by PSMA7 phosphorylation at Y106 mediated by the nonreceptor tyrosine kinases c-Abl/Arg"; "Downregulated PSMA7 level results in decreased proteasome abundance in c-Abl/Arg RNAi-knockdown or c-abl/arg-deficient cells". This is an effect on PSMA7 abundance, where PMID 16678104 reports an effect on proteasome activity in the other direction; v5's inhibits was left as is on the activity axis}
+}
+
+@article{liu2006cabl,
+  author  = {Liu, Xuan and Huang, Wei and Li, Chufang and Li, Ping and Yuan, Jing and Li, Xiaorong and Qiu, Xiao-Bo and Ma, Qingjun and Cao, Cheng},
+  title   = {Interaction between c-Abl and Arg tyrosine kinases and proteasome subunit {PSMA7} regulates proteasome degradation},
+  journal = {Molecular Cell},
+  year    = {2006},
+  volume  = {22},
+  number  = {3},
+  pages   = {317--327},
+  doi     = {10.1016/j.molcel.2006.04.007},
+  pmid    = {16678104},
+  note    = {ABSTRACT ONLY is held; no PMC body. The down-regulating Tyr153 site of the ABL1 to PSMA7 edge: "c-Abl and Arg (abl-related gene) tyrosine kinases associate with and phosphorylate the proteasome PSMA7 (alpha4) subunit at Tyr-153. Consequently, proteasome-dependent proteolysis is compromised." The activity-axis evidence on which v5's inhibits was left standing}
+}
+
+@article{slee2013requirement,
+  author  = {Slee, Elizabeth A and Lu, Xin},
+  title   = {Requirement for phosphorylation of {P53} at {Ser312} in suppression of chemical carcinogenesis},
+  journal = {Scientific Reports},
+  year    = {2013},
+  volume  = {3},
+  pages   = {3105},
+  doi     = {10.1038/srep03105},
+  pmid    = {24173284},
+  pmcid   = {PMC3813944},
+  note    = {FULL TEXT held, read in Europe PMC (PMC3813944) with experiments/read_public_page.py on 7 November 2026; CC BY-NC-ND per the Europe PMC licence field. Cited in the disputed-sign pass as the source SIGNOR gives for an up-regulating AURKA to TP53 Ser315 row that this paper does not support: it is a mouse Ser312 knock-in study and mentions Aurora-A only in passing, "The interaction between p53 and E2F1 is enhanced by phosphorylation of p53 on Ser315, a residue within the E2F1 binding region that is phosphorylated by cell cycle kinases such as cdk1, cdk2, cdk9 and Aurora kinase A", while its own reference list names the primary paper (PMID 14702041) as "Phosphorylation by aurora kinase A induces Mdm2-mediated destabilization and inhibition of p53"}
+}
+
+@article{katayama2004phosphorylation,
+  author  = {Katayama, Hiroshi and Sasai, Kaori and Kawai, Hidehiko and Yuan, Zhi-Min and Bondaruk, Jolanta and Suzuki, Fumio and Fujii, Satoshi and Arlinghaus, Ralph B and Czerniak, Bogdan A and Sen, Subrata},
+  title   = {Phosphorylation by aurora kinase {A} induces {Mdm2}-mediated destabilization and inhibition of p53},
+  journal = {Nature Genetics},
+  year    = {2004},
+  volume  = {36},
+  number  = {1},
+  pages   = {55--62},
+  doi     = {10.1038/ng1279},
+  pmid    = {14702041},
+  note    = {ABSTRACT ONLY is held; no PMC body. The primary paper for Aurora-A's p53 Ser315 site, found by PubMed search after Slee and Lu 2013 (PMID 24173284) was found to be only a secondary citation. It settles edge 2 of the disputed-sign pass in v5's favour: "we show that aurora kinase A phosphorylates p53 at Ser315, leading to its ubiquitination by Mdm2 and proteolysis"; "Silencing of aurora kinase A results in less phosphorylation of p53 at Ser315, greater stability of p53 and cell-cycle arrest at G2-M". So Ser315 is inhibiting, and SIGNOR's up-regulating row for it is a mis-signing. PubMed dates this 14 December 2003; the journal issue is 2004, which is the year used here per the convention of commit 8ad304c}
+}
+
+@article{liu2004auroraa,
+  author  = {Liu, Qiyuan and Kaneko, Satoshi and Yang, Lin and Feldman, Richard I and Nicosia, Santo V and Chen, Jiandong and Cheng, Jin Q},
+  title   = {Aurora-A abrogation of p53 {DNA} binding and transactivation activity by phosphorylation of serine 215},
+  journal = {The Journal of Biological Chemistry},
+  year    = {2004},
+  volume  = {279},
+  number  = {50},
+  pages   = {52175--52182},
+  doi     = {10.1074/jbc.M406802200},
+  pmid    = {15469940},
+  note    = {ABSTRACT ONLY is held: no PMC body, and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). The down-regulating Ser215 site of edge 2: "the phosphorylation of p53 by Aurora-A at Ser-215 abrogates p53 DNA binding and transactivation activity"; "Downstream target genes of p53, such as p21Cip/WAF1 and PTEN, were inhibited by Aurora-A in a Ser-215 phosphorylation-dependent manner"}
+}
+
+@article{hsueh2013novel,
+  author  = {Hsueh, Kai-Wei and Fu, Shu-Ling and Chang, Chirn-Bin and Chang, Yu-Ling and Lin, Chao-Hsiung},
+  title   = {A novel {Aurora-A}-mediated phosphorylation of p53 inhibits its interaction with {MDM2}},
+  journal = {Biochimica et Biophysica Acta},
+  year    = {2013},
+  volume  = {1834},
+  number  = {2},
+  pages   = {508--515},
+  doi     = {10.1016/j.bbapap.2012.11.005},
+  pmid    = {23201157},
+  note    = {ABSTRACT ONLY is held; no PMC body. The up-regulating Ser106 site of edge 2: "Ser-106 phosphorylation of p53 decreases its interaction with MDM2 and prolongs the half-life of p53". The one genuinely activating Aurora-A site on p53, outweighed by Ser215 and Ser315. PubMed dates this 28 November 2012; the journal issue is 2013, which is the year used here per the convention of commit 8ad304c}
+}
+
+@article{martens2003cascade,
+  author  = {Martens, Joost H A and Verlaan, Matty and Kalkhoven, Eric and Zantema, Alt},
+  title   = {Cascade of distinct histone modifications during collagenase gene activation},
+  journal = {Molecular and Cellular Biology},
+  year    = {2003},
+  volume  = {23},
+  number  = {5},
+  pages   = {1808--1816},
+  doi     = {10.1128/MCB.23.5.1808-1816.2003},
+  pmid    = {12588998},
+  pmcid   = {PMC151710},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. One of the two sources SIGNOR gives for the activating histone H3 Ser11 (H3S10ph) site of edge 3: "in addition to acetylation, histone H3 lysine 4 di- and trimethylation and histone H3 serine 10 phosphorylation are important steps in the activation of this gene"}
+}
+
+@article{allison2003loss,
+  author  = {Allison, Simon J and Milner, Jo},
+  title   = {Loss of p53 has site-specific effects on histone {H3} modification, including serine 10 phosphorylation important for maintenance of ploidy},
+  journal = {Cancer Research},
+  year    = {2003},
+  volume  = {63},
+  number  = {20},
+  pages   = {6674--6679},
+  pmid    = {14583461},
+  url     = {https://pubmed.ncbi.nlm.nih.gov/14583461/},
+  note    = {ABSTRACT ONLY is held; no PMC body and no DOI in either the PubMed or the Europe PMC record, so no doi field is given. The second source SIGNOR gives for the activating histone H3 Ser11 site of edge 3: "Phosphorylation of S10 is known to be linked with the initiation of chromosome condensation in G(2) and is also important for proper chromosome segregation at mitosis"}
+}
+
+@article{lau2011histone,
+  author  = {Lau, Priscilla Nga Ieng and Cheung, Peter},
+  title   = {Histone code pathway involving {H3} {S28} phosphorylation and {K27} acetylation activates transcription and antagonizes polycomb silencing},
+  journal = {Proceedings of the National Academy of Sciences of the United States of America},
+  year    = {2011},
+  volume  = {108},
+  number  = {7},
+  pages   = {2801--2806},
+  doi     = {10.1073/pnas.1012798108},
+  pmid    = {21282660},
+  pmcid   = {PMC3041124},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. Load-bearing for the AURKB to H3C11 correction (edge 3, override row A): SIGNOR cites this paper for a DOWN-regulating H3 Ser29 row, but its title and abstract say the opposite, "H3 S28 phosphorylation not only displaces binding of the polycomb-repressive complexes, but it also induces a methyl-acetylation switch of the adjacent K27 residue". Also the primary MSK1 paper, and so the basis of the adjacent observation that v5's inhibits for RPS6KA5 to H3-3A is likely wrong too: "the H3 kinase MSK1 is a direct and potent transcriptional activator. Targeting of this H3 kinase to the endogenous c-fos promoter is sufficient to activate its expression without the need of upstream signaling"}
+}
+
+@article{goto2002aurorab,
+  author  = {Goto, Hidemasa and Yasui, Yoshihiro and Nigg, Erich A and Inagaki, Masaki},
+  title   = {{Aurora-B} phosphorylates {Histone} {H3} at serine28 with regard to the mitotic chromosome condensation},
+  journal = {Genes to Cells},
+  year    = {2002},
+  volume  = {7},
+  number  = {1},
+  pages   = {11--17},
+  doi     = {10.1046/j.1356-9597.2001.00498.x},
+  pmid    = {11856369},
+  note    = {ABSTRACT ONLY is held; no PMC body. The second paper SIGNOR cites for a down-regulating AURKB to H3 Ser29 row that it does not support (edge 3, override row A): the paper reports only that "With regard to mitotic chromosome condensation, Aurora-B directly phosphorylated H3, not only at Ser10 but also at Ser28", with no down-regulation claim}
+}
+
+@article{zhang2007aurorab,
+  author  = {Zhang, Xin and Lan, Weijie and Ems-McClung, Stephanie C and Stukenberg, P Todd and Walczak, Claire E},
+  title   = {{Aurora} {B} phosphorylates multiple sites on mitotic centromere-associated kinesin to spatially and temporally regulate its function},
+  journal = {Molecular Biology of the Cell},
+  year    = {2007},
+  volume  = {18},
+  number  = {9},
+  pages   = {3264--3276},
+  doi     = {10.1091/mbc.e07-01-0086},
+  pmid    = {17567953},
+  pmcid   = {PMC1951741},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. The single source for all three rows of the AURKB to KIF2C edge (edge 4), left as is because the readout is localisation rather than activity and the work is in Xenopus laevis: "MCAK association with chromosome arms is promoted by phosphorylation of T95 on MCAK, whereas phosphorylation of S196 on MCAK promotes dissociation from the arms"; "Our study reveals a new role for Aurora B, which is to prevent excess MCAK binding to chromatin to facilitate chromatin-nucleated spindle assembly". The paper's residue numbers (T95, S110, S196) differ from SIGNOR's human mapping (Ser95, Ser111, Ser192)}
+}
+
+@article{chen2023pin1,
+  author  = {Chen, Jiayi and Li, Mei and Liu, Yeqing and Guan, Tangming and Yang, Xiao and Wen, Yalei and Zhu, Yingjie and Xiao, Zeyu and Shen, Xiangchun and Zhang, Haoxing and Tang, Hui and Liu, Tongzheng},
+  title   = {{PIN1} and {CDK1} cooperatively govern {pVHL} stability and suppressive functions},
+  journal = {Cell Death and Differentiation},
+  year    = {2023},
+  volume  = {30},
+  number  = {4},
+  pages   = {1082--1095},
+  doi     = {10.1038/s41418-023-01128-x},
+  pmid    = {36813923},
+  pmcid   = {PMC10070344},
+  note    = {FULL TEXT held, read in Europe PMC (PMC10070344) with experiments/read_public_page.py on 7 November 2026; CC BY per the Europe PMC licence field. The single source for both rows of the CDK1 to VHL edge (edge 5), settling it in v5's favour: "CDK1 directly phosphorylates pVHL at Ser80, which primes the recognition of pVHL by PIN1. PIN1 then binds to phosphorylated pVHL and facilitates the recruitment of the E3 ligase WSB1, therefore targeting pVHL for ubiquitination and degradation" (abstract), and in the body "The phosphorylation of pVHL at Ser80 promotes its ubiquitination and degradation" and "the phosphorylation of pVHL at Ser80 is pivotal to promote tumor progression through destabilizing pVHL". SIGNOR's up-regulates-activity row at the same residue quotes the same priming sentence and reads it as activation}
+}
+
+@article{biggs2005phosphorylation,
+  author  = {Biggs, Joseph R and Zhang, Youhong and Peterson, Luke F and Garcia, Marileila and Zhang, Dong-Er and Kraft, Andrew S},
+  title   = {Phosphorylation of {AML1}/{RUNX1} regulates its degradation and nuclear matrix association},
+  journal = {Molecular Cancer Research},
+  year    = {2005},
+  volume  = {3},
+  number  = {7},
+  pages   = {391--401},
+  doi     = {10.1158/1541-7786.MCR-04-0184},
+  pmid    = {16046550},
+  note    = {ABSTRACT ONLY is held; no PMC body. Load-bearing for the CDK2 to RUNX1 correction (edge 6, override row B) and for leaving MAPK1 to RUNX1 alone (edge 11). It is the paper behind both the up-regulating and the down-regulating rows of those edges, and it states both readouts at once: "Thus, phosphorylation of AML1c on specific serine/threonine residues controls both transcriptional activity and rate of degradation"; and on the activity axis, "mutation of these four sites (serine 276, serine 293, serine 303, and threonine 300) to alanine abolishes transcriptional activation, whereas mutation of these sites to aspartic acid (which mimics phosphorylation) results in a hyperactive protein" (quoted from SIGNOR's sentence field, which reproduces the paper). Note the paper numbers the sites 276/293/303/300 where SIGNOR maps them to Ser249/Ser266/Ser276/Thr273}
+}
+
+@article{biggs2006aml1,
+  author  = {Biggs, Joseph R and Peterson, Luke F and Zhang, Youhong and Kraft, Andrew S and Zhang, Dong-Er},
+  title   = {{AML1}/{RUNX1} phosphorylation by cyclin-dependent kinases regulates the degradation of {AML1}/{RUNX1} by the anaphase-promoting complex},
+  journal = {Molecular and Cellular Biology},
+  year    = {2006},
+  volume  = {26},
+  number  = {20},
+  pages   = {7420--7429},
+  doi     = {10.1128/MCB.00597-06},
+  pmid    = {17015473},
+  pmcid   = {PMC1636878},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. The stability-only evidence behind the down-regulating row of the CDK2 to RUNX1 edge (edge 6, override row B): "phosphorylation of AML1 serines 276 and 303 can be blocked in vivo by inhibitors of the cyclin-dependent kinases (CDKs) Cdk1 and Cdk2"; "Mutant AML1 protein which cannot be phosphorylated at these sites (AML1-4A) is more stable than wild-type AML1". It measures degradation, not transcriptional activity, which is why the activity axis of PMID 16046550 governs the correction}
+}
+
+@article{lee2008cdk5,
+  author  = {Lee, Hye Young and Jung, Hyuntae and Jang, Il Ho and Suh, Pann-Ghill and Ryu, Sung Ho},
+  title   = {{Cdk5} phosphorylates {PLD2} to mediate {EGF}-dependent insulin secretion},
+  journal = {Cellular Signalling},
+  year    = {2008},
+  volume  = {20},
+  number  = {10},
+  pages   = {1787--1794},
+  doi     = {10.1016/j.cellsig.2008.06.009},
+  pmid    = {18625302},
+  note    = {ABSTRACT ONLY is held; no PMC body. The single source for both rows of the CDK5 to PLD2 edge (edge 7), settling it in v5's favour: "we suggest that the phosphorylation and activation of PLD2 by cyclin-dependent kinase 5 (Cdk5) is critical for EGF-dependent insulin secretion"; "PLD2-S134A did not show EGF-dependent phosphorylation and activation by Cdk5". SIGNOR's down-regulates-activity row at the same residue quotes the very sentence containing "activation" and signs it negative, one of the curation conflicts the record of 7 November 2026 named ("CDK5 to PLD2 Ser134")}
+}
+
+@article{yu2011chk2,
+  author  = {Yu, Ting-Xi and Wang, Peng-Yuan and Rao, Jaladanki N and Zou, Tongtong and Liu, Lan and Xiao, Lan and Gorospe, Myriam and Wang, Jian-Ying},
+  title   = {{Chk2}-dependent {HuR} phosphorylation regulates occludin {mRNA} translation and epithelial barrier function},
+  journal = {Nucleic Acids Research},
+  year    = {2011},
+  volume  = {39},
+  number  = {19},
+  pages   = {8472--8487},
+  doi     = {10.1093/nar/gkr567},
+  pmid    = {21745814},
+  pmcid   = {PMC3201881},
+  note    = {FULL TEXT held, read in Europe PMC (PMC3201881) with experiments/read_public_page.py on 7 November 2026; CC BY-NC per the Europe PMC licence field. The single source for all three rows of the CHEK2 to ELAVL1 edge (edge 8), settling it in v5's favour: the abstract gives the net direction, "Reduced HuR phosphorylation by Chk2 silencing or by reduction of Chk2 through polyamine depletion decreased HuR-binding to the occludin mRNA and repressed occludin translation, whereas Chk2 overexpression enhanced (HuR/occludin mRNA) association and stimulated occludin expression", and the body shows the two sites SIGNOR signs negative had no measurable effect, "In contrast, S88A and T118A mutations did not affect their binding to the occludin mRNA" and "The association of HuR(WT) with occludin mRNA was disrupted by the S100A mutation, but not by the S88A or T118A mutations"}
+}
+
+@article{okochi2000constitutive,
+  author  = {Okochi, M and Walter, J and Koyama, A and Nakajo, S and Baba, M and Iwatsubo, T and Meijer, L and Kahle, P J and Haass, C},
+  title   = {Constitutive phosphorylation of the {Parkinson's} disease associated alpha-synuclein},
+  journal = {The Journal of Biological Chemistry},
+  year    = {2000},
+  volume  = {275},
+  number  = {1},
+  pages   = {390--397},
+  doi     = {10.1074/jbc.275.1.390},
+  pmid    = {10617630},
+  note    = {ABSTRACT ONLY is held: no PMC body, and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). The single source for both rows of the CSNK2A1 to SNCA edge (edge 9), and it makes NO directional claim, which is why that edge is recommended for an unsigned state rather than either sign: "In vitro experiments and two-dimensional phosphopeptide mapping provided further evidence that serine 129 was phosphorylated by ck-1 and ck-2"; "An additional site, which was phosphorylated less efficiently, was mapped to serine 87"; and only the hedge "These data demonstrate that alpha-synuclein is constitutively phosphorylated within its C terminus and may indicate that the function of alpha-synuclein is regulated by phosphorylation/dephosphorylation". Both of SIGNOR's opposite-signed rows are curator inference from this one site-mapping paper}
+}
+
+@article{cavallarin2010role,
+  author  = {Cavallarin, Nadia and Vicario, Mattia and Negro, Alessandro},
+  title   = {The role of phosphorylation in synucleinopathies: focus on {Parkinson's} disease},
+  journal = {CNS and Neurological Disorders Drug Targets},
+  year    = {2010},
+  volume  = {9},
+  number  = {4},
+  pages   = {471--481},
+  doi     = {10.2174/187152710791556140},
+  pmid    = {20522010},
+  note    = {ABSTRACT ONLY is held; no PMC body. A review, used as the second source for the CSNK2A1 to SNCA edge (edge 9) after the primary paper (PMID 10617630) was found to make no directional claim. It frames the two sites as opposing effects on aggregation rather than on activity, which is the basis of the undecidable verdict: "the majority of -synuclein within inclusions from patients with Parkinson's disease and other synucleinopathies is phosphorylated at Ser129"; "While phosphorylation at Ser87 is enhanced in synucleinopathies, it inhibits -synuclein oligomerization, and influences synuclein-membrane interactions"; "an imbalance between the detrimental, oligomer-promoting effect of Ser129 phosphorylation and a neuroprotective action of Ser87/Tyr125 phosphorylation that inhibits toxic oligomer formation". The elisions are the source's own rendering of the alpha prefix in the PubMed abstract}
+}
+
+@article{chen2011novel,
+  author  = {Chen, Mei-Chuan and Chen, Chun-Han and Chuang, Hsiao-Ching and Kulp, Samuel K and Teng, Che-Ming and Chen, Ching-Shih},
+  title   = {Novel mechanism by which histone deacetylase inhibitors facilitate topoisomerase {II}alpha degradation in hepatocellular carcinoma cells},
+  journal = {Hepatology},
+  year    = {2011},
+  volume  = {53},
+  number  = {1},
+  pages   = {148--159},
+  doi     = {10.1002/hep.23964},
+  pmid    = {21254166},
+  pmcid   = {PMC3058595},
+  note    = {FULL TEXT held, read through the PubMed MCP's PMC full text (PMC3058595) on 7 November 2026 after Europe PMC's fullTextXML answered HTTP 500. The down-regulating Ser1365 site of the CSNK2A1 to TOP2A edge, and the surviving sourced effect behind override row C (edge 10): "CK2 serves as a priming kinase, through phosphorylation at Ser1365, for GSK3beta-mediated phosphorylation at Ser1361. This double phosphorylation facilitated the recruitment of Fbw7 to the phospho-degron pSPKLpS of topoIIalpha, leading to its ubiquitin-dependent degradation" (abstract), with the mutational evidence in the body, "only S1361A, S1365A, and E1368A abrogated the suppressive effect of CK2alpha overexpression on topoIIalpha expression"}
+}
+
+@article{daum1998casein,
+  author  = {Daum, J R and Gorbsky, G J},
+  title   = {Casein kinase {II} catalyzes a mitotic phosphorylation on threonine 1342 of human {DNA} topoisomerase {II}alpha, which is recognized by the {3F3}/2 phosphoepitope antibody},
+  journal = {The Journal of Biological Chemistry},
+  year    = {1998},
+  volume  = {273},
+  number  = {46},
+  pages   = {30622--30629},
+  doi     = {10.1074/jbc.273.46.30622},
+  pmid    = {9804834},
+  note    = {ABSTRACT ONLY is held: no PMC body, and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). One of two CK2 to TOP2A site mappings that SIGNOR annotates with effect "unknown" and that therefore carry no direction for edge 10: "Recombinant CKII catalyzed the formation of the 3F3/2 phosphoepitope on fragments of HsTIIalpha containing threonine 1342"}
+}
+
+@article{wells1994serine,
+  author  = {Wells, N J and Addison, C M and Fry, A M and Ganapathi, R and Hickson, I D},
+  title   = {Serine 1524 is a major site of phosphorylation on human topoisomerase {II} alpha protein in vivo and is a substrate for casein kinase {II} in vitro},
+  journal = {The Journal of Biological Chemistry},
+  year    = {1994},
+  volume  = {269},
+  number  = {47},
+  pages   = {29746--29751},
+  pmid    = {7961967},
+  url     = {https://pubmed.ncbi.nlm.nih.gov/7961967/},
+  note    = {ABSTRACT ONLY is held: no PMC body, no DOI in either the PubMed or the Europe PMC record (so no doi field is given), and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). The second CK2 to TOP2A site mapping SIGNOR annotates with effect "unknown" (edge 10): "Site-directed mutagenesis studies identified these casein kinase II-specific phosphorylation sites as serine 1524 and serine 1376." Relevant because Luo et al. 2008 (PMID 19098900) later found CK2 inhibitors did not reduce pSer1524 in cells}
+}
+
+@article{luo2008topoisomerase,
+  author  = {Luo, Kuntian and Yuan, Jian and Chen, Junjie and Lou, Zhenkun},
+  title   = {Topoisomerase {II}alpha controls the decatenation checkpoint},
+  journal = {Nature Cell Biology},
+  year    = {2009},
+  volume  = {11},
+  number  = {2},
+  pages   = {204--210},
+  doi     = {10.1038/ncb1828},
+  pmid    = {19098900},
+  pmcid   = {PMC2712943},
+  note    = {FULL TEXT held, read through the PubMed MCP's PMC full text (PMC2712943) on 7 November 2026 after Europe PMC's fullTextXML answered HTTP 500. Load-bearing for the CSNK2A1 to TOP2A correction (edge 10, override row C) because it is the paper SIGNOR cites for the UP-regulating Ser1525 row and it denies both the activity effect and the kinase: "we did not observe any marked difference in activity between Topo IIalpha[WT] and Topo IIalpha[S1524A], which suggests that Topo IIalpha phosphorylation at Ser 1524 does not have a major regulatory role in Topo IIalpha decatenation activity"; and "when cells were treated with either of the CK2 inhibitors 5,6-dichlorobenzimidazole riboside (DRB) or 4,5,6,7-tetrabromobenzotriazole (TBB), we did not observe any decrease in pSer 1524 (data not shown), suggesting that kinases other than CK2 may be responsible for Topo IIalpha Ser 1524 phosphorylation". The paper says Ser1524 where SIGNOR says Ser1525. PubMed dates this 21 December 2008; the journal issue is 2009, which is the year used here per the convention of commit 8ad304c}
+}
+
+@article{michalides2004tamoxifen,
+  author  = {Michalides, Rob and Griekspoor, Alexander and Balkenende, Astrid and Verwoerd, Desiree and Janssen, Lennert and Jalink, Kees and Floore, Arno and Velds, Arno and van't Veer, Laura and Neefjes, Jacques},
+  title   = {Tamoxifen resistance by a conformational arrest of the estrogen receptor alpha after {PKA} activation in breast cancer},
+  journal = {Cancer Cell},
+  year    = {2004},
+  volume  = {5},
+  number  = {6},
+  pages   = {597--605},
+  doi     = {10.1016/j.ccr.2004.05.016},
+  pmid    = {15193262},
+  note    = {ABSTRACT ONLY is held; no PMC body. The up-regulating Ser305 site of the PRKACA to ESR1 edge (edge 12), and the reason that edge is called context-dependent rather than corrected: the up-regulation is conditional on tamoxifen being present. "We show that phosphorylation of serine-305 in the hinge region of ERalpha by protein kinase A (PKA) induced resistance to tamoxifen"; "PKA activity thus induces a switch from antagonistic to agonistic effects of tamoxifen on ERalpha"; "Activation of PKA by downregulation of PKA-RIalpha converts tamoxifen from an ERalpha inhibitor into a growth stimulator, without any effect on ICI 182780 (Fulvestrant)"}
+}
+
+@article{chen1999phosphorylation,
+  author  = {Chen, D and Pace, P E and Coombes, R C and Ali, S},
+  title   = {Phosphorylation of human estrogen receptor alpha by protein kinase {A} regulates dimerization},
+  journal = {Molecular and Cellular Biology},
+  year    = {1999},
+  volume  = {19},
+  number  = {2},
+  pages   = {1002--1015},
+  doi     = {10.1128/MCB.19.2.1002},
+  pmid    = {9891036},
+  pmcid   = {PMC116031},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. The down-regulating Ser236 site of the PRKACA to ESR1 edge (edge 12), with the ligand condition that makes the edge context-dependent stated in the abstract itself: "ERalpha is phosphorylated by protein kinase A (PKA) on serine-236 within the DNA binding domain. Mutation of serine-236 to glutamic acid prevents DNA binding by inhibiting dimerization by ERalpha"; "PKA overexpression or activation of endogenous PKA inhibits dimerization in the absence of ligand. This inhibition is overcome by the addition of 17beta-estradiol or the partial agonist 4-hydroxy tamoxifen". Note the PubMed and Europe PMC records give the DOI in different letter case (10.1128/MCB.19.2.1002 and 10.1128/mcb.19.2.1002); the PubMed form is used}
+}
+
+@article{ozer2000phosphorylation,
+  author  = {Ozer, R S and Halpain, S},
+  title   = {Phosphorylation-dependent localization of microtubule-associated protein {MAP2c} to the actin cytoskeleton},
+  journal = {Molecular Biology of the Cell},
+  year    = {2000},
+  volume  = {11},
+  number  = {10},
+  pages   = {3573--3587},
+  doi     = {10.1091/mbc.11.10.3573},
+  pmid    = {11029056},
+  pmcid   = {PMC15014},
+  note    = {ABSTRACT ONLY is held, and this is a stated limit of override row D: the PMC body is EMPTY in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP, and the publisher route is robots-disallowed, so the PRKACA to MAP2 correction (edge 13) rests on this abstract for PKA specifically. Its measured result is a disruption: "cAMP-dependent protein kinase activity disrupts the MAP2-microtubule interaction in living HeLa cells and promotes MAP2c localization to peripheral membrane ruffles enriched in actin"; "Biochemical and microscopy-based assays indicated that mutation of a single residue was adequate to disrupt the MAP2-microtubule interaction in HeLa cells"; and "Phosphorylation at two of these sites was detected in brain tissue". SIGNOR's single up-regulating row instead quotes the paper's speculative closing sentence about a different binding partner, "Specific phosphorylation states may enhance the interaction of MAP2 with the actin cytoskeleton, thereby providing a regulated mechanism for MAP2 function within distinct cytoskeletal domains". The experiments are in HeLa, not neurons}
+}
+
+@article{lopez1995microtubule,
+  author  = {L{\'o}pez, L A and Sheetz, M P},
+  title   = {A microtubule-associated protein ({MAP2}) kinase restores microtubule motility in embryonic brain},
+  journal = {The Journal of Biological Chemistry},
+  year    = {1995},
+  volume  = {270},
+  number  = {21},
+  pages   = {12511--12517},
+  doi     = {10.1074/jbc.270.21.12511},
+  pmid    = {7759496},
+  note    = {ABSTRACT ONLY is held: no PMC body, and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). The second source for the direction of the PRKACA to MAP2 correction (edge 13, override row D), found by PubMed search after the primary paper's full text could not be read. IT DOES NOT CORROBORATE PKA SPECIFICALLY, which is stated in the override's reason: its kinase is explicitly "c-AMP independent". What it corroborates is that MAP2 phosphorylation detaches MAP2 from microtubules, in embryonic brain rather than HeLa: "The MAP2 inhibition is reversed by a kinase that is co-purified with chicken embryonic MAP2, completely releasing MAP2 from the microtubules"; "Only the phosphorylation produced by embryonic MAP2 kinase can change the affinity of MAP2 by microtubules. Bovine MAP2 kinase, Cdc2 kinase, mitogenic activated protein kinase, and the NIMA kinase are able to phosphorylate MAP2 but do not change the affinity for microtubules"}
+}
+
+@article{laulajainen2008protein,
+  author  = {Laulajainen, M and Muranen, T and Carp{\'e}n, O and Gr{\"o}nholm, M},
+  title   = {Protein kinase {A}-mediated phosphorylation of the {NF2} tumor suppressor protein merlin at serine 10 affects the actin cytoskeleton},
+  journal = {Oncogene},
+  year    = {2008},
+  volume  = {27},
+  number  = {23},
+  pages   = {3233--3243},
+  doi     = {10.1038/sj.onc.1210988},
+  pmid    = {18071304},
+  note    = {ABSTRACT ONLY is held; no PMC body. The single source SIGNOR gives for both rows of the PRKACA to NF2 edge (edge 14), left as is at inhibits. Its own finding is about actin rather than merlin's growth-suppressive activity, which is why the up-regulating Ser10 row does not outweigh Ser518: "we identify a novel PKA phosphorylation site, serine 10, in the N terminus of merlin"; "merlin S10A reduces the amount of cellular F-actin and merlin S10D stabilizes F-actin filaments"; "dephosphorylation of serine 10 leads to defects in migration". SIGNOR's down-regulating Ser518 row quotes this paper's introduction summarising others, so three independent second sources were read for that direction (PMIDs 11719502, 17891137, 25043298). PubMed dates this 10 December 2007; the journal issue is 2008, which is the year used here per the convention of commit 8ad304c}
+}
+
+@article{xiao2001p21,
+  author  = {Xiao, Guang-Hui and Beeser, Alexander and Chernoff, Jonathan and Testa, Joseph R},
+  title   = {p21-activated kinase links {Rac}/{Cdc42} signaling to merlin},
+  journal = {The Journal of Biological Chemistry},
+  year    = {2002},
+  volume  = {277},
+  number  = {2},
+  pages   = {883--886},
+  doi     = {10.1074/jbc.C100553200},
+  pmid    = {11719502},
+  note    = {ABSTRACT ONLY is held: no PMC body, and jbc.org is robots-disallowed for experiments/read_public_page.py (recorded as a refusal on 7 November 2026). The first of three second sources read for the direction of merlin Ser518 phosphorylation (edge 14), after SIGNOR's row was found to quote a secondary passage: "Pak can directly phosphorylate merlin at serine 518, a site that affects merlin activity and localization". PubMed dates this 21 November 2001; the journal issue is 2002, which is the year used here per the convention of commit 8ad304c}
+}
+
+@article{tang2007akt,
+  author  = {Tang, Xiaoling and Jang, Sung-Wuk and Wang, Xuerong and Liu, Zhixue and Bahr, Scott M and Sun, Shi-Yong and Brat, Daniel and Gutmann, David H and Ye, Keqiang},
+  title   = {{Akt} phosphorylation regulates the tumour-suppressor merlin through ubiquitination and degradation},
+  journal = {Nature Cell Biology},
+  year    = {2007},
+  volume  = {9},
+  number  = {10},
+  pages   = {1199--1207},
+  doi     = {10.1038/ncb1641},
+  pmid    = {17891137},
+  note    = {ABSTRACT ONLY is held; no PMC body. The second of three second sources for the direction of merlin Ser518 phosphorylation (edge 14), and the most explicit: "Merlin is partially regulated by phosphorylation of Ser 518, such that hyperphosphorylated merlin is inactive and fails to form productive intramolecular and intermolecular interactions"}
+}
+
+@article{guerrero2014oncogenic,
+  author  = {Guerrero, P A and Yin, W and Camacho, L and Marchetti, D},
+  title   = {Oncogenic role of {Merlin}/{NF2} in glioblastoma},
+  journal = {Oncogene},
+  year    = {2014},
+  volume  = {34},
+  number  = {20},
+  pages   = {2621--2630},
+  doi     = {10.1038/onc.2014.185},
+  pmid    = {25043298},
+  pmcid   = {PMC4302072},
+  note    = {ABSTRACT ONLY is held; the PMC body was not retrieved. The third second source for the direction of merlin Ser518 phosphorylation (edge 14), treating phospho-Ser518 merlin as the oncogenic form: "high expression of phosphorylated Merlin at serine 518 (S518-Merlin), NOTCH1 and epidermal growth factor receptor (EGFR) correlated with increased cell proliferation and tumorigenesis"; "the phosphorylation of S518-Merlin in glioblastoma promotes oncogenic properties". The Europe PMC record gives volume 34, number 20, pages 2621-2630 against a PubMed publication date of 21 July 2014; the journal-issue year 2014 of the Europe PMC record is used per the convention of commit 8ad304c}
+}
+
+@article{sumandea2008tyrosine,
+  author  = {Sumandea, Marius P and Rybin, Vitalyi O and Hinken, Aaron C and Wang, Chaojian and Kobayashi, Tomoyoshi and Harleton, Erin and Sievert, Gail and Balke, C William and Feinmark, Steven J and Solaro, R John and Steinberg, Susan F},
+  title   = {Tyrosine phosphorylation modifies protein kinase {C} delta-dependent phosphorylation of cardiac troponin {I}},
+  journal = {The Journal of Biological Chemistry},
+  year    = {2008},
+  volume  = {283},
+  number  = {33},
+  pages   = {22680--22689},
+  doi     = {10.1074/jbc.M802396200},
+  pmid    = {18550549},
+  pmcid   = {PMC2504892},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP, and jbc.org is robots-disallowed. The source for three of the four rows of the PRKCD to TNNI3 edge (edge 15), left as is at inhibits because BOTH sets of sites depress force in this paper, contrary to SIGNOR's up-regulating Ser23/Ser24 rows: "Treatment of detergent-extracted single cardiomyocytes with lipid-activated PKCdelta induces depressed tension at submaximum but not maximum [Ca2+] as expected for cTnI-Ser23/Ser24 phosphorylation"; "Treatment of myocytes with Src-activated PKCdelta leads to depressed maximum tension and cross-bridge kinetics, attributable to a dominant effect of cTnI-Thr144 phosphorylation". The paper writes Thr144 where SIGNOR maps Thr143}
+}
+
+@article{wijnker2014length,
+  author  = {Wijnker, Paul J M and Sequeira, Vasco and Foster, D Brian and Li, Yuejin and Dos Remedios, Cristobal G and Murphy, Anne M and Stienen, Ger J M and van der Velden, Jolanda},
+  title   = {Length-dependent activation is modulated by cardiac troponin {I} bisphosphorylation at {Ser23} and {Ser24} but not by {Thr143} phosphorylation},
+  journal = {American Journal of Physiology. Heart and Circulatory Physiology},
+  year    = {2014},
+  volume  = {306},
+  number  = {8},
+  pages   = {H1171--H1181},
+  doi     = {10.1152/ajpheart.00580.2013},
+  pmid    = {24585778},
+  pmcid   = {PMC3989756},
+  note    = {ABSTRACT ONLY is held: the PMC body is empty in both Europe PMC (fullTextXML answered HTTP 500) and the PubMed MCP. The second source for the PRKCD to TNNI3 edge (edge 15), and it DISAGREES IN DIRECTION with Sumandea et al. 2008 on a different readout, which is recorded rather than resolved: "Pseudo-phosphorylation of Thr143 increased myofilament Ca2+ sensitivity compared with WT without affecting LDA in failing and donor cardiomyocytes", against Sumandea's depressed maximum tension. Ca2+ sensitivity up and maximum tension down do not reduce to one sign; v5's inhibits was left standing on the tension readout. Also the source of SIGNOR's second Thr143 down-regulating row. The page range is given as H1171-81 in both records and is expanded here}
+}
+
+@article{feng2013actinin,
+  author  = {Feng, Yunfeng and Ngu, Hai and Alford, Shannon K and Ward, Michael and Yin, Frank and Longmore, Gregory D},
+  title   = {alpha-actinin1 and 4 tyrosine phosphorylation is critical for stress fiber establishment, maintenance and focal adhesion maturation},
+  journal = {Experimental Cell Research},
+  year    = {2013},
+  volume  = {319},
+  number  = {8},
+  pages   = {1124--1135},
+  doi     = {10.1016/j.yexcr.2013.02.009},
+  pmid    = {23454549},
+  pmcid   = {PMC4142059},
+  note    = {FULL TEXT held, read through the PubMed MCP's PMC full text (PMC4142059) on 7 November 2026 after Europe PMC's fullTextXML answered HTTP 500. The single source for all three rows of the PTK2 to ACTN4 edge (edge 16), left as is at activates. All three SIGNOR rows quote the paper's INTRODUCTION reviewing others ("Phosphorylation at y4 or y31 decreases its binding to actin while phosphorylation of y265 increases its affinity for actin"), whereas the paper's own result supports the positive site: "the tyrosine phosphorylation of alpha-actinin1 at Y12 and alpha-actinin4 at Y265 is critical for dorsal stress fiber establishment, transverse arc maintenance and focal adhesion maturation"; "the alpha-actinin4.Y265F mutant was not able to rescue either cytoskeletal defects". Two caveats from the body: "neither alpha-actinin4.Y265F nor Y265E could reconstitute subcellular localization of wt alpha-actinin4, it was obvious that alpha-actinin4.Y265E was not real phosphomimetic", and the FAK-attributed site in this paper is alpha-actinin1 Y12, not the alpha-actinin4 sites}
+}
