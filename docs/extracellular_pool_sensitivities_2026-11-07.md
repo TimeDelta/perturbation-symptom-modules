@@ -133,8 +133,8 @@ Full text closed on every route today: `https://journals.physiology.org/doi/full
 disallowed by the site's robots file (refused 19:43 UTC); Europe PMC's record (saved `5428466fc1f87281.txt`):
 isOpenAccess N, inPMC N, the only "Free" link an abstract page and the DOI "Subscription required"; no PMC version.
 The abstract gives the structure: "The neuron was surrounded by an interstitial space where extracellular potassium
-and sodium concentration ([K(+)](o) and [Na(+)](o)) could rise or fall ... A Na-K exchange pump operated to restore
-ion balances. In addition, extracellular potassium concentration, [K(+)](o), was also controlled by a 'glial'
+and sodium concentration ([K(+)]<sub>o</sub> and [Na(+)]<sub>o</sub>) could rise or fall ... A Na-K exchange pump operated to restore
+ion balances. In addition, extracellular potassium concentration, [K(+)]<sub>o</sub>, was also controlled by a 'glial'
 uptake function." Hübel and Dahlem 2014 re-implemented it ("the physiologically much more detailed KWS model")
 with "The morphological parameters (compartmental volumes and membrane surface area) are the same as for the
 reduced model", i.e. 3:1, and took its glial buffer ("the buffer model from Ref. [12]", with K_cr 15 mM and the
