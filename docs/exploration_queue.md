@@ -327,9 +327,11 @@ synthesis under one learned gain, 49 de novo edges against 1,030 redistribution 
 the biopterin family 2 against 37. Splitting it is computable from the stoichiometry and needs no sourcing.
 
 **Known limits (do not overstate these in writing).**
-- Seven of the timescale record's sources were read through Consensus rather than PubMed and are marked as such;
-  they are not to be relied on in a registered document until re-read.
-- Its relation counts are v4's; v5 was not rebuilt for it.
+- Seven of the timescale record's sources were read through Consensus rather than PubMed; they were re-read through
+  PubMed on Fable on 6 November 2026, and every quote and use held (the record's dated addition of that day).
+- Its relation counts were v4's; re-counted on v5 on 7 November 2026 (a dated addition to the record): the
+  relations that straddle about 2 h hold 42.9 per cent of v5's stored edges, and `encodes` and `member_of`, the
+  6-week straddlers, 7.1 per cent.
 - Choosing an interpretable basis for the stoichiometric null space is a known hard problem and was not attempted;
   that claim is itself unsourced and would need a Fable pass.
 - Conservation relations exist only for the stoichiometric sublayer, so signalling, transcription and binding get
