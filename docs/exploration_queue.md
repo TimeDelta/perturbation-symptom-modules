@@ -24,6 +24,32 @@ against 1,030 redistribution edges on the v0.4 slice" (`docs/coproduct_of_de_nov
 "Modelling" requires, and the owner may extend the ruling to it. No item cites finding 10 or any other number of the
 retired table.
 
+## Priority order (7 November 2026)
+
+The owner asked on 7 November 2026 to "prioritize the exploration queue and start the next few items". The order is
+the session's (on Opus), by four tests: how much closer to physiology the item brings the model (CLAUDE.md
+"Modelling"), whether its first step can run now that the v5 drug graph exists (decision 9.106), what it costs, and
+whether the owner can follow it. Items 7, 9 and 6 were started that day (their measurements are dated additions in
+each item); item 5's Fable recheck was started the same day. So the sentence above that "nothing here is started" no
+longer holds for those four.
+
+1. **Item 7, endosomal pH (SLC9A6, SLC9A9).** A monogenic gene with psychiatric phenotypes turns out to be absent from
+   the graph, so its labels are lost; cheap to measure, a data-layer change to fix.
+2. **Item 9, the Krebs cycle and oxidative burden.** The route the physiology needs is missing by construction; the
+   fix is one owner ruling (a metabolite-driven `produces_oxidant`) plus sourced rows.
+3. **Item 6, the fast/slow partition and the `coproduct_of` split.** Its sources were re-read on 6 November 2026 and
+   the split is computable from the stoichiometry, so it is ready for the owner's ruling on the split.
+4. **Item 5, occupancy as the drug seed magnitude.** Most of the data exists; its literature needed a Fable recheck,
+   started 7 November 2026; then the cheap field-level measurement.
+5. **Item 10, the shunt.** A literature pass to count the perturbations whose main mechanism is shunting inhibition,
+   so the 9.112 limit is counted rather than described.
+6. **Item 4, phosphorylation.** One Fable count decides whether to drop it.
+7. **Item 2, CollecTRI sign recuration.** Cheap research; it feeds a sign prior rather than a mechanism.
+8. **Item 1, sensitivity-matrix rank.** Methodologically strong but heavy; better after the 9.112 rebuild, when
+   the operator it would factor is the one that will be tested.
+9. **Item 8, the VAMP1 share.** Small expected effect on one membership weight.
+10. **Item 3, protein electrostatics.** The largest change and the hardest to follow; stays parked.
+
 ---
 
 ## 1. Sensitivity-matrix rank as a bound on multiverse degrees of freedom
@@ -290,6 +316,16 @@ observation time rather than a list.
 **Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
 arms R0, R1 and R5.
 
+**Measured 7 November 2026 on `graph_full_neuronal_split_binders_drugs_v5` (engineering, on Opus; started at the
+owner's request)**, with `experiments/measure_coproduct_de_novo_split.py --graph` pointed at v5: 965 carrier
+`product_of` (`coproduct_of`) edges, 146 regeneration, 62 de novo and 757 under the recurring-pair clause, which is a
+redistribution by construction; within the biopterin family 3 de novo (the three SPR reactions that make
+tetrahydrobiopterin) against 20 regeneration. The family split: acyl carrier 30 de novo and 0 regeneration, folate 14
+and 28, lipoamide 8 and 3, ascorbate 0 and 36. The v0.4 slice counts above (49 against 1,030; 2 against 37) are
+history and are not compared with these. The first limit listed above is discharged: the seven Consensus-only sources
+were re-read through PubMed on Fable on 6 November 2026 and every quote and use held (the timescale record's dated
+addition of that day). What remains is the owner's: whether to split `coproduct_of`.
+
 ---
 
 ## 7. Endosomal pH: SLC9A6 (NHE6), SLC9A9 (NHE9) and the endolysosome node
@@ -340,6 +376,17 @@ registered-model matter.
 
 **Status.** Parked. Measure first, on the current graph: SLC9A6's and SLC9A9's edges out and reach, and whether a
 perturbation of either gets past its own protein.
+
+**Measured 7 November 2026 on `graph_full_neuronal_split_binders_drugs_v5` (engineering, on Opus; started at the
+owner's request).** SLC9A6 has no node in the graph: no edge source of the build names it (not Human-GEM's gene
+rules, not Reactome release 98's SBML, not OmniPath or CollecTRI; HuRI's one SLC9A6 pair, with ENSG00000027697, feeds
+only the edge priors of `graph/edge_negative_evidence.py`). So the 113 SLC9A6 rows of
+`data/raw/hpo/genes_to_phenotype.txt` yield no evidence report in `data/processed/evidence_full_v5`. SLC9A9 is
+present only as one of six catalysts of Human-GEM `MAR05430`, "transport of H+ and Na+ (cytosol to extracellular)",
+with SLC9A1 to SLC9A5, so a SLC9A9 perturbation moves the plasma-membrane Na+ pools and extracellular H+, not an
+endosome. The endolysosome store `NEURON_MAM01413l` still has 0 edges in and 2 out. Reach is not informative here: a
+SLC9A9 seed reaches 41,117 of 49,834 nodes, as almost every seed does. A Fable pass on NHE6 and NHE9 localisation,
+direction and disease association was started the same day.
 
 ---
 
@@ -413,6 +460,19 @@ today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (ta
 `produces_oxidant` edge, which today starts only from a gene. That would be a new kind of edge for that relation.
 
 **Status.** Parked. Not on the critical path of the v5 rebuild, the 9.97 cyclase work or the lockbox sequence.
+
+**Measured 7 November 2026 on `graph_full_neuronal_split_binders_drugs_v5` (engineering, on Opus; started at the
+owner's request).** Counting reach, every one of 18 cycle and pyruvate-dehydrogenase gene seeds reaches all 14
+oxidant nodes (the targets of `produces_oxidant` and sources of `oxidatively_modifies`), so reach decides nothing: the
+shortest routes run through protein binding (for example OGDH `binds` ABL1, `activates` SHC1, `produces_oxidant`
+H2O2) or through four to nine metabolic hops. **The route the physiology needs is absent by construction.** Complex I
+and complex III superoxide are `produces_oxidant` edges from `PROTEIN:NDUFV1` and `PROTEIN:UQCRFS1`, and neither
+protein node receives any edge from a metabolite; mitochondrial NADH (`MAM02553m`) is a currency node and passes
+nothing on. So a change in cycle flux or in the NADH supplied to complex I cannot move respiratory-chain superoxide in
+this graph, whatever the gains. That makes the owner ruling named below (whether a metabolite pool may drive a
+`produces_oxidant` edge) the gate. A Fable pass on the cycle's oxidant sources and targets was started the same day.
+Reachability here follows stored edges plus the encoder's `depletes_substrate` and `product_opposes`, never leaving
+a currency node, and ignores signs.
 
 ## 10. The shunt: inhibition by conductance that no edge into `VM_c` carries
 
