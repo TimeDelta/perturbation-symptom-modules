@@ -200,6 +200,33 @@ pass recommends dropping the representation question; that is the owner's to dec
 sign-evidence candidate for the override table, not a reason to keep the item. Record:
 `docs/phosphosite_opposite_effects_2026-11-07.md`; source `losurdo2026signor`.
 
+
+**Full text read, 7 November 2026 (Fable).** The owner supplied the interlibrary-loan copy of Needham et al. 2019
+that day and the paper was read in full (`needham2019darkphosphoproteome`, whose note now holds the page references).
+The abstract claim above is confirmed and the body gives the figures: "more than 95% of reported human
+phosphorylation sites have no known kinase or biological function" (page 4), "around 97% of reported phosphosites
+currently have no known regulatory kinase" and "fewer than 3% of identified human phosphosites currently have a
+reported function" (page 5), against PhosphoSitePlus's "233,295 distinct human phosphorylation sites" as "accessed on
+March 2018" (page 2 and the figure legends). The annotation is concentrated and biased: "Just 20% of kinases are
+responsible for the phosphorylation of 87% of currently annotated substrates", which "likely reflects biases in the
+funding of biological research toward well-studied kinases" (page 2), and "the fact that well-studied kinases
+accumulate the most reported substrates may become somewhat of a self-fulfilling prophecy" (page 5); kinase
+substrate counts and mouse-phenotype counts "are not correlated" (page 4). Two things the paper does not do: it
+makes no count of sites with opposite (activating and inhibitory) effects, and it does not name SIGNOR; its one use
+of site direction is as "directional information" for enrichment analysis when "phosphosites are already known to
+have an inhibitory or activating function" (page 8), which is where this item puts it too (edge-sign evidence). It
+also does not cite Goldbeter and Koshland 1981: ultrasensitivity enters it through Ferrell's papers (its references 51
+and 60), and its reference 93 is Goldbeter and Koshland's 1987 paper on energy cost. **Goldbeter and Koshland 1981
+verified the same day** (`goldbeter1981amplified`, PNAS 78, 6840-6844, read on the five scanned pages PMC holds): the
+use above is as the paper states it, "zero-order ultrasensitivity" that "originates from the kinetic interplay between
+two converter enzymes operating in opposite directions, outside the domain of first-order kinetics, and on a target
+protein whose total quantity is conserved" (page 6841), with "the condition for zero-order ultrasensitivity is that
+one or more of the converter enzymes operate outside the first-order region" (page 6843), so a first-order (linear)
+response cannot show it, which is this item's point. Both papers: quotation only, no figure or table into a
+committed file (AAAS "some rights reserved; exclusive licensee"; PNAS 1981, licence unverified on PubMed, PMC,
+Crossref and OpenAlex). Neither changes the count of 7 November 2026 or the item's test; what the full text adds is
+that any annotation-based count is a floor drawn from the well-studied end of the kinome.
+
 ---
 
 ## 5. Occupancy as the drug seed magnitude

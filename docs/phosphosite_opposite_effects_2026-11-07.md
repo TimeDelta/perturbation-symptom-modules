@@ -202,3 +202,19 @@ PMC (`ebi.ac.uk/europepmc/webservices/rest/search`, read with `experiments/read_
   reported here as CLAUDE.md asks and was not acted on as an instruction; the DOIs above are there because the
   bibliography convention requires them.
 - No page carried text addressed to an AI assistant.
+
+## 6. Addition of 7 November 2026, later the same day: the Needham full text
+
+The interlibrary-loan copy of Needham et al. 2019 arrived after the count above was written and was read in full on
+Fable (the bibliography note of `needham2019darkphosphoproteome` holds the page references). The limit cited in
+section 2 as "most phosphosites have no annotated function at all" is confirmed and now reads with figures: "fewer
+than 3% of identified human phosphosites currently have a reported function" and "around 97% of reported
+phosphosites currently have no known regulatory kinase" (page 5), on PhosphoSitePlus "accessed on March 2018". The
+paper adds the reason the 34 is a floor of a particular shape: kinase-substrate annotation follows "an 80:20 rule:
+Just 20% of kinases are responsible for the phosphorylation of 87% of currently annotated substrates" (page 2), a
+distribution the authors call a possible "self-fulfilling prophecy" (page 5), and the kinases that dominate the table of section
+2 (PRKACA, PRKCA, SRC, CDK1/2, MAPK1/3, GSK3B) are among those the paper's Fig. 1 draws with the most reported substrates (PKC alpha, PKA alpha, Src, CDK1, CDK2, ERK1, ERK2 and GSK3 beta among the largest circles, read from the figure and described here in words only). It also records that in vitro assays with "excess
+enzyme, substrate, and ATP" put kinases on "sites that may not be predominant substrates in cellular contexts" (page
+5), a caution that applies to any residue-level row whose evidence is an in vitro assay, including the 16 edges whose
+stored sign SIGNOR's rows dispute (`docs/signor_disputed_signs_2026-11-07.md`). The paper gives no count of opposite-effect sites and does not name SIGNOR, so
+nothing in it changes the count, the verdict of section 3 or the owner's decision.
