@@ -98,6 +98,9 @@ The current recuration rests on 11 decidable pairs, with the stored sign right o
 latent-sign prior from. A larger seeded sample is cheap and would be worth more than further analysis of the
 existing 11.
 
+
+**Added 7 November 2026.** A second seeded sample was read on Fable: seed 20261107, 30 labels from each stratum of the frame rebuilt on the v5 build of 5 November 2026 (2,166 labels whose releases state opposite signs, 1,688 following CollecTRI2 and 478 the 2023 release; the 16 already read excluded). 60 pairs, 38 decidable, the stored sign right for 17. **Pooled with the 11 of 17 October: 24 of 49, 0.49; exact 95% interval 0.34 to 0.64; Beta(1,1) posterior mean 0.49, 95% 0.36 to 0.63**, half the width of before. The interval straddles 0.5: on a disputed label the stored sign is no better than a coin flip, so a latent-sign prior for these labels would sit near 0.5, or near 0.6 for CollecTRI2's sign and 0.4 for the 2023 release's (right for 30 and 19 of 49; the 2023 sign decided from a paper 11 of 22, its default 12 of 24). Neither this item nor the record states a width standard, so whether that is narrow enough is the owner's call; the reading of the pass is that more sampling would sharpen a prior that is already nearly flat. Nine verdicts are judgement calls flagged with their alternative (scored the other way: 22 of 42, 0.38 to 0.67). The sample, the quotes and the 108 bib entries are in the dated addition at the end of `docs/regulation_sign_recuration.md` and the record `docs/collectri_sign_recuration_sample_2026-11-07.md`.
+
 ---
 
 ## 3. Protein electrostatics and molecular interaction mechanisms as inputs
