@@ -7,7 +7,7 @@ limits that must not be overstated when it is written up.
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
 (**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, item 10 on 4 November 2026, and items 11 and 12 on 7 November 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, item 10 on 4 November 2026, and items 11, 12 and 13 on 7 November 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8's literature, read on Opus on 24 October
 2026, and item 5's, read on Opus on 26 October 2026, were both rechecked on Fable on 7 November 2026
@@ -52,9 +52,9 @@ longer holds: it is true only of items 1 and 3.
 9. **Item 8, the VAMP1 share.** Small expected effect on one membership weight.
 10. **Item 3, protein electrostatics.** The largest change and the hardest to follow; stays parked.
 
-Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-number plasticity) were queued at the
-owner's request after this order was set, and are not placed in it. Both are literature passes, so their first step can
-run now; their place in the order is the owner's.
+Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-number plasticity), and then item 13
+(co-prescription confounding in FAERS), were queued at the owner's request after this order was set, and are not placed in it. Items 11 and 12 are literature passes, so their first step can
+run now; item 13's first form is an hour of engineering on rows already read; their place in the order is the owner's.
 
 ---
 
@@ -673,3 +673,37 @@ most nodes, so a design that needs it per node needs a prior or a default, and t
 measurement at all.
 
 **Status.** Queued for a Fable pass; not started.
+
+---
+
+## 13. Co-prescription confounding in the FAERS reader
+
+Tagged 2026-11-07, at the owner's request: "Drop the coprescription option for now but put it in the exploration
+queue" (decision 9.115(f)).
+
+**The idea.** A FAERS report names every drug the patient was taking, so a reaction caused by one drug is reported with
+every drug prescribed beside it. The FAERS reader skips a drug and symptom only when the drug is indicated for the
+symptom (`indicated_symptoms_by_drug` in `mechanistic_pathway_learning/evidence/faers_disproportionality.py`, the one
+correction decision 9.96 admits). The case that raised it: benztropine, procyclidine and trihexyphenidyl carry 184, 84
+and 70 FAERS reports of tardive dyskinesia, but every one of their labels places tardive dyskinesia outside the
+indication (`docs/anticholinergic_indications_faers_2026-11-07.md`, quotes read on Fable), so the reports come from the
+antipsychotic the patients are also taking.
+
+**Two forms, of different size.**
+- The minimal form: a curated table of drug and symptom pairs confounded by a co-prescription that the drug's own label
+  names, read into the reader's skip beside the indications. The rows are already proposed, with their quotes, in
+  section 4 of the record. About an hour of engineering, and a dated addition to 9.96, which as worded admits only the
+  indication.
+- The general form: an adjustment for co-reported drugs over every drug and symptom, which needs the co-medication of
+  each report from openFDA (1,000 queries a day without a key), a method from the pharmacovigilance literature (the
+  record lists Avillach et al. 2014, Shaffer et al. 2004 and Fusaroli et al. 2026, read as abstracts) read on Fable,
+  and a decision of its own. Days.
+
+**Known limits (do not overstate these in writing).**
+- FAERS is grade C: masked from the registered label selection and outside the registered model, which runs no soft
+  priors. Either form changes a soft validation stratum, not a label.
+- The labels state an effect as well as a bias: anticholinergics "may aggravate" tardive dyskinesia, so a skip
+  discards a real signal with the confounded one.
+- No paper read measures anticholinergic co-prescription confounding in tardive dyskinesia pharmacovigilance itself.
+
+**Status.** Parked by the owner's ruling; not started.

@@ -914,6 +914,12 @@
       "append_only": true,
       "what": "the decisive count of exploration item 4: kinase-to-substrate edges on the v5 graph whose substrate SIGNOR annotates with both activating and inhibiting residues for that kinase (34 of 84,866), the licences of the site-level sources, and the verdict by the item's own test; read on Fable"
     },
+    "docs/anticholinergic_indications_faers_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "the label indication sentences of benztropine, trihexyphenidyl and procyclidine and what each says about tardive dyskinesia, the two readings of decision 9.96 for their FAERS reports, their current mapping, proposed curated rows and the co-prescription literature; read on Fable, with the owner's ruling added"
+    },
     "docs/tardive_dyskinesia_construct_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",

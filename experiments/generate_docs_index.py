@@ -73,7 +73,7 @@ TOPICS = (
                                             "docs/brain_exposure_data_feasibility.md", "docs/exposure_sources/*.md", "docs/label_plasma_binders*.md")),
     ("Labels, evidence and symptoms", ("docs/evidence_reports_spec.md", "docs/label_source_review.md", "docs/allele_perturbations.md", "docs/soft_priors.md",
                                        "docs/monogenic_negative_report_pairs_*.md",
-                                       "docs/fine_symptom_constructs.md", "docs/parkinsonism_symptom.md", "docs/tardive_dyskinesia_*.md", "docs/hpo_term_audit.md", "docs/onsides_label_slice*.md",
+                                       "docs/fine_symptom_constructs.md", "docs/parkinsonism_symptom.md", "docs/tardive_dyskinesia_*.md", "docs/anticholinergic_indications_*.md", "docs/hpo_term_audit.md", "docs/onsides_label_slice*.md",
                                        "docs/literature_*.md", "docs/clinical_trial_*.md", "docs/faers_*.md", "docs/impc_*.md", "docs/laboratory_label_coverage.md",
                                        "docs/open_targets_class_composition.md", "docs/combined_perturbations.md", "docs/set_aside_pair_sensitivity.md",
                                        "docs/ctd_notice_draft.md", "docs/label_negative_sources_measured.md", "docs/mouse_sources_measured_*.md")),
