@@ -895,6 +895,12 @@
       "recorded": "2026-11-06",
       "append_only": true,
       "what": "the 38 unverified presynaptic-receptor and oxidant curation candidates each read against its source and a second source, accepted (13), rejected (23) or still unverified (2), with the exact rows proposed for the curated tables and the decisions left to the owner; read on Fable; nothing applied to the tables"
+    },
+    "docs/krebs_oxidant_literature_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "the literature of exploration item 9 (the Krebs cycle and oxidative burden): which cycle and adjacent dehydrogenases are oxidant sources or targets in mammalian and brain mitochondria, eight rows that fit the curated schema and the metabolite-driven edges that do not; read on Fable; nothing applied to the tables"
     }
   }
 }

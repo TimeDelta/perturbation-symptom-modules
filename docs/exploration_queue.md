@@ -487,6 +487,22 @@ this graph, whatever the gains. That makes the owner ruling named below (whether
 Reachability here follows stored edges plus the encoder's `depletes_substrate` and `product_opposes`, never leaving
 a currency node, and ignores signs.
 
+**The Fable literature pass, recorded 7 November 2026 in `docs/krebs_oxidant_literature_2026-11-07.md` (24
+peer-reviewed sources, every field confirmed against Europe PMC; no row applied to the curated tables).** Eight
+candidate rows fit today's schema and need no new edge kind. Oxidant sources (gene to oxidant): DLD and DLST, from
+heterozygous-knockout brain mitochondria; SDHA, at the complex II flavin site; GPD2. Oxidant targets (oxidant to
+gene): H2O2 on OGDH (weak, at or above 100 µM, so below the existing ACO2 rows), H2O2 and 4-hydroxynonenal on the
+DLST and DLAT lipoic-acid sites, peroxynitrite and superoxide on SDHA. Three findings bear on item 9's own framing.
+H2O2 on SDHA is **rejected** as a direct edge: it acts through oxaloacetate (Moser et al. 2009). **NADH cannot be the
+route**, confirming the measurement above from the other side: it is a currency node, while succinate (`MAM02943m`)
+and 2-oxoglutarate (`MAM01306m`) are not, so the cheapest metabolite-driven edge would be succinate to superoxide by
+reverse electron transport, or 2-oxoglutarate to H2O2, not NADH. But succinate's sign holds only above a membrane-
+potential threshold that no graph node carries, and the reverse-transport site "is not in equilibrium with the NAD
+reduction state", so it needs a ruling of its own, separate from any NADH edge. Four further rows (OGDH, PDHA1 and
+DLAT as sources; DLD, OGDH and PDHA1 as targets) are flagged where the evidence is complex-level or rests on a single
+source. The pass read the oxoacid-dehydrogenase sources and targets in brain and mammalian mitochondria; one source
+set (T-6) is a single group, and one (S-5) has no brain preparation.
+
 ## 10. The shunt: inhibition by conductance that no edge into `VM_c` carries
 
 Tagged 2026-11-04, at the owner's request ("I'd actually say add the shunt to the exploration queue to find other,
