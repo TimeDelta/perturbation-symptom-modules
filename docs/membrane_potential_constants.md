@@ -574,3 +574,37 @@ P_K and sizes it. P_Ca/P_Na is "0.38" (p. 381), excluded by the registered law, 
 temperature, "20-25 degrees C"; the ratio crosses to 310.15 K, not an E_rev. (c)2007 Elsevier Inc.
 
 **Added 6 November 2026: the four selectivity gaps, read on Fable.** A pass asked for by the owner closed gap (a) for two families and bounded the rest; its script reproduced all eight weights above, NALCN 19.09 and nicotinic 18.83 mV included. **ASIC** is read for the first time and is nearly a sodium pore, not a nonselective one: P_Na/P_K **5.5 ± 0.6** (rat ASIC2a) and **7.4 ± 0.6** (ASIC1a/2a heteromer), Lynagh et al. 2020, "reduced P Na + / P K + from 5.5 ± 0.6 at WT" and "P Na + / P K + = 7.4 ± 0.6, n = 4" (PMC7062507), with P_Na/P_K 5-13 (ASIC1a) and 14.0 (ASIC1b) in the Concise Guide (PMC11339754) and "K/Na permeability ratios around 0.2" in Vallée et al. 2021 (PMC8536179). That gives **E_rev +35.5 to +49.5 mV and weight 21.5 to 23.0 mV**, the weight **+12.5 to +20.3 per cent** above the nonselective 19.09. **TRPA1** is P_K/P_Na **0.98** (Bobkov et al. 2011, PMC3062711, single-channel, human, symmetrical 140 mM NaCl), so E_rev +2.65 mV and weight 19.11: the assumption was right to 0.03 mV. **TRPV1, TRPC, NMDA and TRPM4/TRPM5 stay assumptions** (P_K = P_Na); for NMDA that assumption is the primary literature's own, Perszyk et al. 2020 Methods, "We assumed that the relative permeabilities of K and Na are the same" (PMC6986806). The assumptions are now **bounded**: over P_K/P_Na 0.8 to 1.3 the weight moves under ±2 per cent and E_rev stays within -4.0 to +7.3 mV, so **no sign can change**. Refused: `www.jbc.org` and `www.annualreviews.org` (robots; HTTP 403). **A flag for the build:** in the v5 graph the reactions these ratios attach to are ASIC `RCT_2671885`, TRPM4/5 `RCT_3295580`, TRPV1 `RCT_9701141`, TRPA1 `RCT_9701055`, `RCT_3295579` (shared by TRPV1, TRPA1 and the six TRPCs) and NMDA `RCT_432164`. Four of the six (TRPV1, TRPA1, TRPC and NMDA) are written by Reactome as Ca2+ transport, which the registered monovalent-only equation excludes, so the monovalent ratio has no row `VM_c` can see for them until 9.112's correction that classifies the Ca2+-only mixed pores by catalyst is built.
+
+## Extracellular pools: the ruling of 7 November 2026
+
+Decision 9.112 left the three extracellular pools (Na+, K+ and Cl- outside the cell) without a weight, since the
+registered constants source (Düsterwald et al. 2018) holds them constant. A Fable pass of 7 November 2026
+(`docs/extracellular_pool_sensitivities_2026-11-07.md`; derivations in `experiments/derive_extracellular_pool_sensitivity.py`
+and, for the cytosolic weights of 4 November, `experiments/derive_pump_leak_pool_sensitivity.py`) derived them from
+Hübel and Dahlem 2014, Cressman et al. 2009 and the registered constants with an interstitial space added, against
+experimental anchors. On the definition the cytosolic weights use (the steady state of a sustained flux of the ion,
+pump active), every model that gives the extracellular space an exchange route gives exactly 0, whatever the exchange
+rate; only closed-space models give non-zero values (per µA/cm² of the ion's own inward current: K+ -0.17 to -0.22,
+Na+ 0 to -0.09, Cl- 0 to -0.35).
+
+**Ruled by the owner, 7 November 2026** ("Commit the pass and record it that way"):
+
+| pool | weight from neuronal currents at the registered steady-state readout | kept for decision 9.118 (an earlier reading) |
+| --- | --- | --- |
+| K+ outside | 0 | closed-space -0.19 (3:1) to -0.22 (7:1), range -0.17 to -0.22; clearance time constants 0.9 and 4.2 s (Ransom et al. 2000) |
+| Na+ outside | 0 | -0.003 to -0.09, set by the water assumption; -0.010 on the registered constants at 4:1 with a K+ bath |
+| Cl- outside | 0 | -0.01 to -0.35 likewise; -0.059 on the registered constants at 4:1 with a K+ bath |
+
+The extracellular pools are kept as inputs: perturbations of the clearance system (glial K+ buffering, the pump
+subunits that clear K+, and for calcium the CASR and parathyroid axis of decision 9.114) move them, while neuronal
+currents do not at steady state. **Gaps stated with the build:** no transient is carried, and on the seconds scale
+extracellular K+ is the most sensitive pool of the six; for Na+ and Cl- the 0 rests on a blood-brain-barrier route the
+models omit and the anchors document only for K+; a reaction that moves only an extracellular pool reaches `VM_c` by no
+concentration route.
+
+## Text moved from row 9.112
+
+Moved verbatim from decision 9.112 of `docs/open_decisions.md` on 7 November 2026, when the row reached its length
+ceiling; the row keeps a pointer here.
+
+> **Added 6 November 2026: the two values reconciled on Fable** (the owner: "Yes please"), in full in `docs/membrane_potential_constants.md`, section "Mixed-cation reversal potentials". In each case the cause was an unread placeholder in the 5 November script, and no sign changes. The report's values are the ones to keep: nicotinic -2.1 mV (Haghighi and Cooper 2000, P_K/P_Na 1.2; second sources Nutter and Adams 1995, 1.23, and Sacchi et al. 2011, 1.40 to 0.92) and NALCN +2.2 mV (Ren 2011, "equally permeable"; Chua et al. 2020 puts P_Na a little above P_K, so the magnitude is a lower bound; Lu et al. 2007 is still unread, refused by a robots rule and subscription-only). Three smaller corrections to this row, none changing a sign: muscle nicotinic is -0.1 mV (Adams, Dwyer and Hille 1980, 1.1); HCN is -23 to -33 mV on Macri et al. 2012's 0.35 and 0.23, not -25 to -35; and the mixed pores depolarise at rest by about 40 to 75 mV, not 36 to 81. The proposed mixed-pore weight moves by under 2 per cent and stays between the ruled Na+ and K+ terms. The monovalent ratios of NMDA and TRPM4/5 are assumptions, not readings. 3 references added.

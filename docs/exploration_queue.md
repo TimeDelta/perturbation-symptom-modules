@@ -666,6 +666,12 @@ reduce the module supports symptom parameters bears on this though".
   little; trial time frames and FAERS onset fields are candidates).
 - The bearing on the module-support choice (`docs/module_support_reduction_2026-11-07.md`): how many readings per
   symptom each option can take without the parameter count growing.
+- **Added 7 November 2026 (decision 9.112's extracellular pools):** the clearance of the extracellular ion pools is a
+  timescale any multi-reading design must carry. At the registered steady-state readout the extracellular pools take
+  weight 0 from neuronal currents, but before clearance acts (time constants of about 1 to 4 s for K+) they behave
+  as a closed space, where extracellular K+ is the most sensitive pool of the six; the values are kept in
+  `docs/membrane_potential_constants.md` ("Extracellular pools: the ruling of 7 November 2026"). A design that cannot
+  express that clearance cannot express a seizure or spreading-depolarisation transient either.
 
 **Known limits (do not overstate these in writing).** Nothing here is measured. The DRD2 supersensitivity account of
 tardive dyskinesia is the held mechanism, not the only one proposed, and the pass should say which accounts the
