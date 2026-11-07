@@ -9,9 +9,10 @@ This document moved into the repository on 26 October 2026 from the Project note
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
 were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, and item 10 on 4 November 2026.
 
-Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Items 5 and 8 carry
-literature read on Opus and not yet rechecked on Fable (item 5's read on 26 October 2026, item 8's source
-`lee2015cytoplasmic` on 24 October 2026), flagged where they stand; both items are parked, so nothing relies on them.
+Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8 carries
+literature read on Opus and not yet rechecked on Fable (its source `lee2015cytoplasmic`, read on 24 October 2026),
+flagged where it stands; the item is parked, so nothing relies on it. Item 5's literature, read on Opus on 26 October
+2026, was rechecked on Fable on 7 November 2026.
 
 Added 27 October 2026: the owner retired the two readout records (`docs/steady_state_readout_alternatives.md`,
 `docs/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
@@ -181,8 +182,8 @@ sweep of 9.86 before 9.80 is decided.
 ## 5. Occupancy as the drug seed magnitude
 
 Tagged 2026-10-26. The owner's question of 26 October 2026, on reading that a drug enters at magnitude 1: "But
-complete removal seems harsh". Written on Opus from repository files; the literature below was read on Opus and is
-**not yet rechecked on Fable** (CLAUDE.md "Models").
+complete removal seems harsh". Written on Opus from repository files; the literature below was read on Opus and
+rechecked on Fable on 7 November 2026 (CLAUDE.md "Models").
 
 **The idea.** Replace the unit seed magnitude of a drug perturbation by the drug's occupancy at each target, so a
 drug that engages 40 percent of one target and 95 percent of another enters as 0.40 and 0.95 rather than as a unit
@@ -224,20 +225,32 @@ rescaling a drug's seeds is a reweighting of the per-target responses and the ne
 fixed-point solve wherever per-target responses are cached. That gives the size of the change on the field for
 nothing. The head is not linear, so a prediction-level reading needs a pass.
 
-**What the literature says, read on Opus on 26 October 2026 and awaiting a Fable recheck.**
+**What the literature says, read on Opus on 26 October 2026 and rechecked on Fable on 7 November 2026.** The recheck
+read each PubMed record and confirmed it against Europe PMC; every number below is in the abstract as both hold it.
+None of the four is open access, so only the abstracts are held. All four are peer-reviewed journal articles
+(decision 9.101). The recheck corrected one word (Meyer: "mean") and added the experimental design to Ghabrial.
 - Occupancy at therapeutic doses is high but far from complete, and it varies within one drug: haloperidol at 1.0
-  or 2.5 mg/day gave D2 occupancies of 38 to 87 percent across 22 patients, with response, hyperprolactinaemia and
-  extrapyramidal effects becoming likely above 65, 72 and 78 percent (Kapur et al. 2000,
-  [doi:10.1176/appi.ajp.157.4.514](https://doi.org/10.1176/appi.ajp.157.4.514)).
-- Five selective serotonin reuptake inhibitors at their minimum therapeutic doses occupied 76 to 85 percent of the
-  serotonin transporter, with occupancy rising nonlinearly and plateauing at higher doses (Meyer et al. 2004,
+  or 2.5 mg/day gave D2 occupancies of 38 to 87 percent across 22 first-episode patients, measured at two weeks on
+  the assigned dose (non-responders were then raised to 5.0 mg/day for the four-week evaluation), with the
+  likelihood of response, hyperprolactinaemia and extrapyramidal effects increasing significantly as occupancy
+  exceeded 65, 72 and 78 percent (Kapur et al. 2000,
+  [doi:10.1176/appi.ajp.157.4.514](https://doi.org/10.1176/appi.ajp.157.4.514); `kapur2000relationship` in
+  `docs/references.bib`).
+- Five serotonin reuptake inhibitors (citalopram, fluoxetine, sertraline, paroxetine and extended-release
+  venlafaxine, which the paper counts as its five SSRIs) at their minimum therapeutic doses gave a mean striatal
+  serotonin-transporter occupancy of 76 to 85 percent, and for each drug "as the dose (or plasma level) increased,
+  occupancy increased nonlinearly, with a plateau for higher doses" (Meyer et al. 2004,
   [doi:10.1176/appi.ajp.161.5.826](https://doi.org/10.1176/appi.ajp.161.5.826)).
 - Dose is the wrong anchor, which is why the measured concentration is the right one: saturable presystemic
   metabolism is "one of the more important sources of nonlinearity", named for verapamil, propranolol and
-  hydralazine, and makes concentration depend on the rate of absorption as well as the dose, though the same review
-  notes that only a few drugs in use show nonlinear behaviour with clinical implications (Ludden 1991,
-  [doi:10.2165/00003088-199120060-00001](https://doi.org/10.2165/00003088-199120060-00001)). In perfused rat liver
-  propranolol's bioavailability rose from 0.012 to 0.288 over a four-fold concentration range (Ghabrial et al. 1994,
+  hydralazine, and makes circulating concentration "sensitive not only to dose size but also to rate of
+  absorption", though the same review closes by noting that "only a few of the many hundreds of drugs in use
+  exhibit nonlinear behaviour that leads to clinical implications", so the argument holds for a minority of drugs
+  (Ludden 1991, [doi:10.2165/00003088-199120060-00001](https://doi.org/10.2165/00003088-199120060-00001)). In the
+  isolated perfused rat liver propranolol's bioavailability rose from 0.012 to 0.288 as the inflow concentration
+  rose about four-fold (4.97 to 20.4 micromolar) in a recirculating design, and from 0.0077 to 0.136 in a single-pass
+  design; the paper attributes the difference to product inhibition by accumulating metabolites, so the larger rise
+  is partly an artefact of recirculation (Ghabrial et al. 1994,
   [doi:10.1002/jps.2600830704](https://doi.org/10.1002/jps.2600830704)).
 
 **Known limits (do not overstate these in writing).**
