@@ -53,7 +53,7 @@ TOPICS = (
                                              "docs/pathway_test_options.md", "docs/target_split_options.md", "docs/nosology_discovery_options.md",
                                              "docs/exploration_queue.md",
                                              "docs/comparative_checks.md", "docs/open_decision_triage_*.md", "docs/development_sessions.md",
-                                             "docs/reconstruction_errata.md", "docs/research_summary.md", "README.md", "CLAUDE.md")),
+                                             "docs/reconstruction_errata.md", "docs/research_summary.md", "docs/exam_real_world_problems_*.md", "README.md", "CLAUDE.md")),
     ("Documentation and jobs", ("docs/documentation_process.md", "docs/job_harness.md", "docs/figures.md", "docs/data_layer_rebuild.md",
                                 "docs/technology_audit.md")),
     ("The physiology graph", ("docs/graph_summary.md", "docs/graph_reliance.md", "docs/gene_protein_split.md", "docs/cell_state_representation.md",
