@@ -914,6 +914,18 @@
       "append_only": true,
       "what": "the decisive count of exploration item 4: kinase-to-substrate edges on the v5 graph whose substrate SIGNOR annotates with both activating and inhibiting residues for that kinase (34 of 84,866), the licences of the site-level sources, and the verdict by the item's own test; read on Fable"
     },
+    "docs/tardive_dyskinesia_construct_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "the scoping of tardive dyskinesia as a fine symptom construct: its HPO, MedDRA, MeSH, ICD-10-CM and SNOMED identifiers, the evidence held for it on evidence_full_v5, the proposed additions row, the graph reach of its inducers and relievers on the v5 drug graph and the owner's questions; read on Fable, with the owner's rulings (decisions 9.115 and 9.116) and what was built added"
+    },
+    "docs/module_support_reduction_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "options for reducing the module-support parameters of the noisy-OR head by orders of magnitude (pathway-set supports, candidate sets, amortised and attention supports, graph smoothing, fewer modules, the published interpretable architectures), the count recomputed from the code on v5, the registered and lockbox implications and the owner's questions; read on Fable"
+    },
     "docs/shunting_inhibition_count_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",

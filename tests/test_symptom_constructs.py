@@ -212,8 +212,10 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     fine = read_rows(root / "docs/symptom_crosswalk_fine.csv")
     coarse = read_rows(root / "docs/symptom_crosswalk.csv")
     extra_roots = read_rows(root / "configs/fine_construct_extra_roots.csv")
-    assert len(fine) == sum(max(1, len([part for part in row["hpo_ids"].split(";") if part])) for row in coarse) + 1 + len(extra_roots)
-    assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | {"intellectual_disability"}
+    additions = {row["target_symptom"] for row in read_rows(root / "configs/symptom_construct_additions.csv")}
+    assert {"intellectual_disability", "tardive_dyskinesia", "orofacial_dyskinesia", "extrapyramidal_dyskinesia"} <= additions  # 9.58, 9.115, 9.116
+    assert len(fine) == sum(max(1, len([part for part in row["hpo_ids"].split(";") if part])) for row in coarse) + len(additions) + len(extra_roots)
+    assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | additions
 
 
 def test_the_literature_table_is_rekeyed_to_the_namesakes_without_a_row_moving():

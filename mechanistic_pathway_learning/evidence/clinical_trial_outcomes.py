@@ -6,8 +6,10 @@ drug-to-construct measurement: a placebo-controlled difference on the ADHD-RS hy
 says what the drug did to hyperactivity, whatever disorder the trial enrolled for.
 
 What a report is. One outcome measure of one placebo-controlled study, for one study drug, mapped by
-configs/trial_outcome_scale_crosswalk.csv (a regular expression on the outcome title, the construct it measures and
-whether a higher score is worse). The drug arms and placebo arms are chosen by the same title rule as the adverse-event
+configs/trial_outcome_scale_crosswalk.csv (a regular expression on the outcome title, the construct it measures,
+whether a higher score is worse and, optionally, a regular expression on the study's brief title that keeps the rule
+from reading that study: the AIMS rule of decision 9.115 does not read a Parkinson's disease trial, where the scale
+measures levodopa-induced dyskinesia and not the tardive form). The drug arms and placebo arms are chosen by the same title rule as the adverse-event
 arms (clinical_trial_adverse_events.select_arms: a group naming the drug and not placebo, against a group naming
 placebo and not the drug; a group naming another study drug is left out). The comparison is the sponsor's own
 between-group analysis where it names exactly those two groups and gives a mean difference with an interval; else the
@@ -61,24 +63,32 @@ class ScaleRule:
     construct: str
     higher_is_worse: bool
     note: str
+    excluded_study_titles: re.Pattern | None = None
 
 
 def read_scale_crosswalk(path: Path = DEFAULT_SCALE_CROSSWALK) -> list[ScaleRule]:
     """Rows: pattern (a regular expression matched against the outcome title, case-insensitive), scale, construct,
-    higher_is_worse (true/false), note. The first matching row decides, so a subscale row precedes its total."""
+    higher_is_worse (true/false), note and excluded_study_titles (optional: a regular expression matched against the
+    study's brief title, case-insensitive; a study it matches is not read by that row). The first matching row
+    decides, so a subscale row precedes its total."""
     rules = []
     with open(path, newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
             if not row.get("pattern", "").strip():
                 continue
             rules.append(ScaleRule(re.compile(row["pattern"], re.IGNORECASE), row["scale"].strip(), row["construct"].strip(),
-                                   row["higher_is_worse"].strip().lower() in ("true", "1", "yes"), row.get("note", "")))
+                                   row["higher_is_worse"].strip().lower() in ("true", "1", "yes"), row.get("note", ""),
+                                   re.compile(row["excluded_study_titles"], re.IGNORECASE) if (row.get("excluded_study_titles") or "").strip() else None))
     return rules
 
 
-def rule_for(title: str, rules: list[ScaleRule]) -> ScaleRule | None:
+def rule_for(title: str, rules: list[ScaleRule], study_title: str = "") -> ScaleRule | None:
+    """The first rule whose pattern matches the outcome title and whose excluded_study_titles, if any, does not match
+    the study's brief title."""
     for rule in rules:
         if rule.pattern.search(title):
+            if rule.excluded_study_titles is not None and rule.excluded_study_titles.search(study_title):
+                continue
             return rule
     return None
 
@@ -246,7 +256,7 @@ def build_reports(studies: Iterable[dict], drug_name: str, perturbation: dict, r
         title = study.get("protocolSection", {}).get("identificationModule", {}).get("briefTitle", "")
         for outcome in study.get("resultsSection", {}).get("outcomeMeasuresModule", {}).get("outcomeMeasures", []):
             counts["outcome_measures"] += 1
-            rule = rule_for(str(outcome.get("title", "")), rules)
+            rule = rule_for(str(outcome.get("title", "")), rules, title)
             if rule is None:
                 continue
             counts["crosswalked"] += 1

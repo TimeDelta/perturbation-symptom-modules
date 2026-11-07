@@ -4,7 +4,8 @@
 Three kinds of query, all cached under data/raw/faers (resumable; --refresh re-queries):
   the reactions reported with each drug (count of patient.reaction.reactionmeddrapt.exact) and the number of reports
   naming the drug (openFDA's normalised generic name, falling back to the verbatim medicinal product);
-  the number of reports carrying each reaction the crosswalk names, over all drugs (the background);
+  the number of reports carrying each reaction the crosswalk names, over all drugs (the background; a term the
+  cached background lacks is queried alone and merged, with its own query time under supplemented_at);
   the number of reports in the system.
 openFDA allows 40 requests a minute and 1,000 a day without a key, and refuses a count limit above 100 without one;
 --pause keeps under the first, and a reaction outside a drug's 100 most reported enters at the smallest listed count
@@ -128,6 +129,15 @@ def main() -> int:
     background_path = arguments.cache_dir / "_background.json"
     if background_path.exists() and not arguments.refresh:
         background_counts = json.loads(background_path.read_text(encoding="utf-8"))
+        # a crosswalk term added after the background was fetched (tardive dyskinesia, decision 9.115) is queried
+        # alone and merged, with the time of its own query beside it; all_reports keeps its first reading
+        missing = sorted(term for term in preferred_term_to_symptom if term.upper() not in background_counts["reaction_totals"])
+        if missing:
+            supplement = background(missing, arguments.pause)["reaction_totals"]
+            background_counts["reaction_totals"].update(supplement)
+            requested_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            background_counts.setdefault("supplemented_at", {}).update({term: requested_at for term in supplement})
+            background_path.write_text(json.dumps(background_counts, indent=1), encoding="utf-8")
     else:
         background_counts = background(sorted(preferred_term_to_symptom), arguments.pause)
         background_counts["requested_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

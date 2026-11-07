@@ -137,3 +137,7 @@ def test_the_committed_scale_crosswalk_reads_and_orders_its_rules():
     assert facit.higher_is_worse is False and fatigue.higher_is_worse is True
     assert rule_for("Changes in Sexual Functioning Questionnaire", rules).higher_is_worse is False and rule_for("Arizona Sexual Experience Scale", rules).higher_is_worse is True
     assert rule_for("Mini-Mental State Examination", rules).higher_is_worse is False and rule_for("ADAS-Cog", rules).higher_is_worse is True
+    aims = "Change From Baseline in Abnormal Involuntary Movement Scale (AIMS) Total Score"
+    assert rule_for(aims, rules, "Aripiprazole in the Treatment of Patients With Psychosis Associated With Dementia").construct == "tardive_dyskinesia"
+    assert rule_for(aims, rules, "Levodopa-Carbidopa Intestinal Gel Open-Label Study in Advanced Parkinson's Disease") is None, "9.115: no levodopa-induced dyskinesia"
+    assert rule_for("Anesthesia Information Management System (AIMS) record", rules) is None, "the bare AIMS is an anaesthesia record system"

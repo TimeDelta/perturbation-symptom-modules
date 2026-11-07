@@ -7,7 +7,7 @@ limits that must not be overstated when it is written up.
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
 (**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
-were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, and item 10 on 4 November 2026.
+were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, item 10 on 4 November 2026, and items 11 and 12 on 7 November 2026.
 
 Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8's literature, read on Opus on 24 October
 2026, and item 5's, read on Opus on 26 October 2026, were both rechecked on Fable on 7 November 2026
@@ -51,6 +51,10 @@ longer holds: it is true only of items 1 and 3.
    the operator it would factor is the one that will be tested.
 9. **Item 8, the VAMP1 share.** Small expected effect on one membership weight.
 10. **Item 3, protein electrostatics.** The largest change and the hardest to follow; stays parked.
+
+Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-number plasticity) were queued at the
+owner's request after this order was set, and are not placed in it. Both are literature passes, so their first step can
+run now; their place in the order is the owner's.
 
 ---
 
@@ -598,3 +602,74 @@ inhibition is the shunt.
 **Status.** Parked. Not on the critical path: 9.112's build goes ahead without it, with the shunt stated as a limit.
 
 **Measured 7 November 2026** (Fable pass; full record `docs/shunting_inhibition_count_2026-11-07.md`; on the v5 split-binders drug graph and `evidence_full_v5`). Of the 46 GABA_A / glycine-receptor perturbations in the v5 evidence (35 drugs, 11 genes, 438 labelled pairs), **10 have a source stating a conductance-dominated main mechanism**: propofol and thiopental (Bieda & MacIver 2004, gabazine "failed to block the propofol-induced depression of intrinsic excitability"), etomidate (Cheng et al. 2006), isoflurane (Caraiscos et al. 2004), ganaxolone (class only, Stell et al. 2003, which names no drug), and `GABRD`, `GABRA5`, `GLRA1`, `GLRA2`, `GLRB`. They carry **38 labelled pairs, 56 reports, all `induces`**, across 19 constructs, none carried only by them. **Benzodiazepines and Z-drugs are not among them**: Nusser & Mody 2002 report zolpidem "augmented phasic inhibition by 66%, while leaving the mean tonic conductance unchanged". **The labels-and-the-head option is partly answered and cuts the wrong way.** `VM_c` sits five hops from every seed, by the one route `catalyzed_by` -> `changes_ion_pool` (Cl- pools) -> `driving_force`; a shorter conductance-independent route exists at hop 3, the `regulates_release` edges of `RCPT_GABRA1`, `RCPT_GABRB2`, `RCPT_GABRG2` (GABA, glutamate, serotonin, histamine) and `RCPT_GLRA1` (glutamate). **37 of the 46 have it; the nine that do not include four of the ten shunt cases** (`GABRA5`, `GABRD`, `GLRA2`, `GLRB`), whose only exit is the chloride pool. **No shunting-to-hyperpolarising ratio was found.** The nearest is Staley & Mody 1992, cited by 9.112: 50 percent of excitatory charge shunted with the GABA_A reversal 19 mV **above** rest, so no hyperpolarising part. **Counterweight**: Pavlov et al. 2009 find tonic GABA_A currents in CA1 pyramidal cells "exclusively affect offset and not gain".
+
+---
+
+## 11. Chronic exposure as a represented quantity
+
+Tagged 2026-11-07, at the owner's request (decision 9.118): "I want to try representing both. Please add fable passes
+to the queue to research designs for implementing them", answering whether the model should represent chronic exposure
+or receptor-number plasticity (question 10 of `docs/tardive_dyskinesia_construct_2026-11-07.md`).
+
+**The idea.** A perturbation now enters as a signed seed whose field settles to one readout. Nothing in the encoder or
+the readout knows how long the perturbation has lasted, so an effect that appears only after weeks of exposure cannot be
+told from one that appears at once. Tardive dyskinesia against drug-induced parkinsonism is the case that raised it:
+both are reached by the same DRD2 antagonism edge with the same sign. The gabapentin and pregabalin effect of 9.69, seen
+"only when applied chronically", is a second.
+
+**The owner's proposal, to be tested first:** "one thing could be doing readings at each propagation round that the
+perturbation reaches back to a previously visited node but this would cause a bunch of other issues like how to know
+which round should actually produce the symptoms though maybe that could be solved by using MDL? The decision in how to
+reduce the module supports symptom parameters bears on this though".
+
+**What the pass should read and answer.**
+- Whether a propagation round of the encoder corresponds to any physical time, given that the registered readout is the
+  settled field, and what `docs/relation_timescale_ordering_2026-10-26.md` (the project's record of the relations'
+  physical timescales) allows. The owner's remark of 6 November 2026 is the readout side of the same question: "the
+  contraction coefficient should either be different for each drug or be removed completely and find a way to
+  determine read out timings".
+- How often a perturbation's field returns to a node it has already reached, measured on the v5 drug graph, so that a
+  reading at each return is counted rather than assumed.
+- What an MDL choice of the reading round costs: a discrete parameter per symptom, or per drug and symptom, and how the
+  description length of design section 5.5 would charge for it.
+- What exposure-duration models the pharmacology literature uses (time-dependent pharmacodynamics, tolerance and
+  sensitisation models, and indirect-response models with a slow compartment), and which of them can sit on a signed
+  graph that is linear in the field.
+- Which labels carry an onset or a duration that a duration-aware readout could be scored on (SIDER and OnSIDES carry
+  little; trial time frames and FAERS onset fields are candidates).
+- The bearing on the module-support choice (`docs/module_support_reduction_2026-11-07.md`): how many readings per
+  symptom each option can take without the parameter count growing.
+
+**Known limits (do not overstate these in writing).** Nothing here is measured. The DRD2 supersensitivity account of
+tardive dyskinesia is the held mechanism, not the only one proposed, and the pass should say which accounts the
+literature holds before a design is chosen for one of them.
+
+**Status.** Queued for a Fable pass; not started.
+
+---
+
+## 12. Receptor-number plasticity
+
+Tagged 2026-11-07 with item 11, on the same ruling (decision 9.118).
+
+**The idea.** A receptor node now carries an activity, not an amount. Chronic blockade of D2 receptors is held to
+increase their number, and chronic agonism to decrease it, and the adapted amount then changes what every later input
+to that receptor does: a change of gain, as the shunt of item 10 is, rather than of value. No relation of the graph means
+"sustained occupancy changes receptor density".
+
+**What the pass should read and answer.**
+- What is measured about receptor up- and down-regulation under chronic drug exposure for the receptors the drug
+  graph's perturbations enter at (DRD2 first; then the 5-HT2A downregulation under antidepressants, beta-adrenoceptor
+  downregulation, and GABA_A changes under benzodiazepines), with magnitudes and time courses where sources give them.
+- Designs that keep the propagation linear in the field: a slow per-node gain driven by integrated occupancy and read
+  in a second, adapted pass (the two-pass device the 9.81 review describes); a receptor-amount node with an adaptive
+  edge from the receptor's own activity; or an adaptation term at entry, as a per-perturbation scaling of the seed.
+- Whether an adapted pass can predict withdrawal-emergent effects (a supersensitive receptor after the drug is
+  stopped), which would give the design a test on labels the project already holds.
+- How saturation (9.81) and the module-support choice bear on it, as for item 11.
+
+**Known limits (do not overstate these in writing).** Nothing here is measured. Receptor number is not observed for
+most nodes, so a design that needs it per node needs a prior or a default, and the pass should say which nodes have any
+measurement at all.
+
+**Status.** Queued for a Fable pass; not started.
