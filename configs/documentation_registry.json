@@ -919,6 +919,12 @@
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "exploration item 10: the GABA_A and glycine-receptor perturbations in the v5 evidence whose main published mechanism is conductance-dominated (shunting) inhibition, the labelled pairs they carry and the relations by which each leaves its own nodes in the v5 graph; read on Fable"
+    },
+    "docs/nalcn_extracellular_calcium_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "second sources for decision 9.114 on which calcium regulates NALCN: the compartment (extracellular) confirmed by five laboratories, the mechanism (direct pore block against a CaSR route) contested, the faithful edge proposed and the v5 nodes it would need; read on Fable"
     }
   }
 }
