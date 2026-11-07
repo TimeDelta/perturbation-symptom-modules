@@ -630,3 +630,28 @@ Decision 9.112's three remaining sub-questions, as the session briefed them that
   interstitial HCO3- and the permeability ratios before the owner rules. Until then the registered law's E_Cl
   (-83.7 mV, a Cl- term of 2.0 mV) stands as the default.
 
+## Bicarbonate through GABA_A and glycine receptors: the ruling of 7 November 2026
+
+Three Fable passes of 7 November 2026 took the owner's "source the bicarbonate first" to the primary literature
+(`docs/bicarbonate_gaba_2026-11-07.md`, `docs/anion_permeability_pdfs_2026-11-07.md`,
+`docs/per_class_chloride_2026-11-07.md`; computations in `experiments/derive_gaba_reversal_with_bicarbonate.py` and
+`experiments/derive_gaba_reversal_from_permeability_tables.py`). HCO3- is 23.5 to 26 mM outside and 11 to 17 mM inside
+mature central neurons; the HCO3-/Cl- permeability ratio is 0.18 for GABA_A and 0.11 for glycine receptors in Bormann
+et al. 1987, 0.44 and 0.40 in Fatima-Shad and Barry 1993. At the registered constants E_rev - V_rest then runs from
+-6.6 to +12.6 mV, mixed in sign, and the sign changes at a ratio of 0.156 to 0.283, the band Bormann's GABA_A value
+falls in. Measured E_GABA - V_rest also differs in sign between preparations and between cells of one class (Kaila et
+al. 1993, +6.0 mV in rat neocortex; Selfe et al. 2024, -4.5 to -5.9 mV in mouse hippocampal pyramidal neurons and both
+signs across interneurons in vivo).
+
+The owner asked for per-cell-class chloride data, the encoder running one channel per cell class, and otherwise the
+recommendation. The search found sourced mature values for 7 of the 17 classes (one only qualitative), disagreement
+within classes including on sign, and differences between classes no larger than those within them, so per-class
+chloride is not feasible now.
+
+**Ruled, on the owner's fallback** ("if you can't find it, then use the rec you just gave"): the GABA_A and glycine
+receptor pores keep E_Cl (-83.7 mV, a Cl- term of 2.0 mV). **Stated limit:** bicarbonate permeation can only shrink
+this term, to anywhere between 0 and 2.29 mV across the sourced values, and in some cells reverses its sign; E_Cl is
+the conservative end of that range. **Noted for a later decision:** astrocytes are the one documented class exception,
+a depolarising anion driving force (+11.7 mV) where neurons on the same preparation carry a hyperpolarising one (Selfe
+et al. 2024), at a measured astrocyte V_m (-72.25 mV) matching the registered V_rest.
+
