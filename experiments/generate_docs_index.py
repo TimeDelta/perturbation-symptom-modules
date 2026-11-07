@@ -57,7 +57,7 @@ TOPICS = (
     ("Documentation and jobs", ("docs/documentation_process.md", "docs/job_harness.md", "docs/figures.md", "docs/data_layer_rebuild.md",
                                 "docs/technology_audit.md")),
     ("The physiology graph", ("docs/graph_summary.md", "docs/graph_reliance.md", "docs/gene_protein_split.md", "docs/cell_state_representation.md",
-                              "docs/complex_*.md", "docs/brenda_*.md", "docs/membrane_potential_*.md", "docs/extracellular_pool_sensitivities_*.md", "docs/plasma_*.md", "docs/transporter_connectivity_audit.md",
+                              "docs/complex_*.md", "docs/brenda_*.md", "docs/membrane_potential_*.md", "docs/extracellular_pool_sensitivities_*.md", "docs/bicarbonate_gaba_*.md", "docs/anion_permeability_pdfs_*.md", "docs/plasma_*.md", "docs/transporter_connectivity_audit.md",
                               "docs/superfluous_physiology_review.md", "docs/missing_physiology_review.md", "docs/physiological_adherence_review.md",
                               "docs/physiology_audit.md", "docs/family_in_graph.md", "docs/edge_priors.md", "docs/edge_gate_simulation.md",
                               "docs/binds_resource_precision.md", "docs/coproduct_of_de_novo_split_*.md", "docs/study_sheet.md",

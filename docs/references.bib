@@ -3291,7 +3291,7 @@
   pages   = {419},
   doi     = {10.3389/fncel.2015.00419},
   pmid    = {26539081},
-  note    = {Table 1, "Typical ion concentrations at rest and during an epileptic seizure", gives for typical rest "K+ | 96 mM | 4 mM | −85 mV", "Na+ | 10 mM | 145 mM | +71 mV" and "Cl− | 7 mM | 145 mM | −80 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The paper states no temperature and no resting potential, and says the table's numbers are "averages that have been derived from different cell-types, brain areas and seizure models". CC BY, verified from the article's permissions block. Set B of docs/membrane_potential_constants.md. Read again on Fable on 5 November 2026 for decision 9.113, in the PubMed Central full text (PMC4612498): Table 1, typical rest, also gives "Ca2+ | 70 nM | 2 mM | +137 mV" (reference cell "Pumain et al. () and Pal et al. ()", the citation markers stripped by the text extraction) and the seizure peak "700 nM | 100 μM | +66 mV"; the Calcium section states "Under typical baseline conditions the free Ca2+ concentration within neurons is below 100 nM". At the registered 310.15 K those concentrations give E_Ca +137.1 mV.}
+  note    = {Table 1, "Typical ion concentrations at rest and during an epileptic seizure", gives for typical rest "K+ | 96 mM | 4 mM | −85 mV", "Na+ | 10 mM | 145 mM | +71 mV" and "Cl− | 7 mM | 145 mM | −80 mV" (JATS of the Europe PMC REST service, read 12 October 2026). The paper states no temperature and no resting potential, and says the table's numbers are "averages that have been derived from different cell-types, brain areas and seizure models". CC BY, verified from the article's permissions block. Set B of docs/membrane_potential_constants.md. Read again on Fable on 5 November 2026 for decision 9.113, in the PubMed Central full text (PMC4612498): Table 1, typical rest, also gives "Ca2+ | 70 nM | 2 mM | +137 mV" (reference cell "Pumain et al. () and Pal et al. ()", the citation markers stripped by the text extraction) and the seizure peak "700 nM | 100 μM | +66 mV"; the Calcium section states "Under typical baseline conditions the free Ca2+ concentration within neurons is below 100 nM". At the registered 310.15 K those concentrations give E_Ca +137.1 mV. Read again on Fable on 7 November 2026 for decision 9.112's bicarbonate question, in the PubMed Central full text (PMC4612498): Table 1, typical rest, also gives the row whose ion label is "pH/HCO3-" as "7.2/15 mM" intracellular, "7.4/24 mM" extracellular and "-13 mV/-13 mV" (reference cell "Caspers and Speckmann () and Raimondo et al. ()", the citation markers stripped by the text extraction), with the seizure peak "7.05/10 mM", "7.405/25 mM" and "-25 mV/-25 mV"; and a second block, "Receptor | Relative Permeability | E_receptor", gives "AMPAR | K:Na/1:1 | 9.1 mV | 0.4 mV" and "GABAR | Cl:HCO3-/4:1 | -70.6 mV | -45.8 mV", so this source's P_HCO3/P_Cl is 0.25. The table is self-consistent at the registered RT/F of 26.73 mV, checked by the pass: 26.73 ln(15/24) = -12.6 mV (its -13), 26.73 ln(7/145) = -81.0 (its -80), and the GHK voltage equation over the two anions, 26.73 ln((4 x 7 + 15)/(4 x 145 + 24)) = -70.6 mV, exactly its E_receptor. Its intracellular 15 mM is also Henderson-Hasselbalch from pH_i 7.2 at the pCO2 its own 7.4 / 24 mM extracellular pair implies, about 40 mmHg. The table's own caveat quoted in this note applies to these cells as it does to the others, and the paper is a review, so the pH_i is anchored on primary measurements elsewhere (boffi2018kcc2, kintner1999invivo, amos1996role).}
 }
 
 @article{um2021trpc3,
@@ -7756,7 +7756,46 @@
   pages   = {243--286},
   doi     = {10.1113/jphysiol.1987.sp016493},
   pmid    = {2443667},
-  note    = {The anion selectivity of GABA-A and glycine receptor channels, used by the 9.112 reading of 5 November 2026 for the single-ion check of the chloride pores. "The reversal potential of whole-cell currents shifted 56 mV per tenfold change in internal Cl- activity indicating activation of Cl(-)-selective channels. The permeability ratio of K+ to Cl- (PK/PCl) was smaller than 0.05 for both channels"; "The permeability sequence for large polyatomic anions was formate greater than bicarbonate greater than acetate" (abstract, PubMed 2443667, read 5 November 2026). The bicarbonate ratio itself is in the full text, which was not read (scan; reader refused); the pass took the 0.2-0.4 range from kaila2014cation. Not open access}
+  note    = {The anion selectivity of {GABA}-{A} and glycine receptor channels, used by the 9.112 reading of
+             5 November 2026 for the single-ion check of the chloride pores. "The reversal potential of
+             whole-cell currents shifted 56 {mV} per tenfold change in internal {Cl-} activity indicating
+             activation of {Cl(-)}-selective channels. The permeability ratio of {K+} to {Cl-}
+             ({PK}/{PCl}) was smaller than 0.05 for both channels"; "The permeability sequence for large
+             polyatomic anions was formate greater than bicarbonate greater than acetate" (abstract,
+             {PubMed} 2443667, read 5 November 2026).
+             **FULL TEXT NOW HELD, read on Fable on 7 November 2026** in the {PDF} the owner supplied that
+             day (44-page scan, pinned under data/raw/supplied\_papers/, which is gitignored and so not
+             redistributed; the pin file carries its {SHA}-256), replacing the earlier note that the
+             bicarbonate ratio "was not read (scan; reader refused)" and that the pass took the 0.2-0.4
+             range from kaila2014cation. **Table 2, page 258**, "Reversal potentials and permeability ratios
+             from whole-cell measurements", gives for bicarbonate **{P\_A}/{P\_Cl} = 0.18 for {GABA}
+             ({GABAR}), from {E\_rev} -40 +/- 2 {mV}, and 0.11 for glycine ({GlyR}), from {E\_rev}
+             -49 +/- 2 {mV}**; the errors are standard deviations (page 258 gives "+/- s.d." for the
+             companion isethionate value) and **the table prints no error on the ratio itself and no n**.
+             Propagating the +/- 2 {mV} through the paper's own eqn. (1) in its own conditions gives
+             +/- 0.017 and +/- 0.012 (the 7 November 2026 pass's arithmetic, not the paper's).
+             **Conditions**: mouse **embryonic ({E}13-14) spinal cord** primary culture, 3-12 weeks in
+             vitro (page 245); **"All experiments were carried out at 20-23 degrees {C}" (page 245)**;
+             whole cell, bi-ionic, 140 {mM} test anion plus 4 {mM} {Cl-} inside against 145 {mM} {Cl-}
+             outside, {HEPES} at {pH} 7.4 on both sides (page 246, Table 1, solution {I4}); the {GHK}
+             **voltage** equation, eqn. (1), applied in **activities** rather than concentrations
+             ({Cl-} measured with a {Cl-}-selective electrode, 145 {mM} giving about 110 {mM}; others about
+             0.75). **The paper neither measures nor discusses temperature dependence.** On the two
+             receptors, page 283, quoted: "the bore of the {GlyR} channel is somewhat smaller than that of
+             the {GABAR} channel" (5.2 against 5.6 {A}), which is the pore-size reason its bicarbonate ratio
+             is lower for {GlyR}. **A limit on using the ratio**, page 267, quoted: "the i-V curves
+             (Figs. 13 and 14, continuous lines) do not agree with the predictions of the constant-field
+             current equation (dashed lines)", and page 279, "the channels have at least two binding sites
+             ... and anions are transported in a single file" - so the paper's own data say {GHK} does not
+             describe the current, while the ratio is nonetheless extracted with the {GHK} voltage equation.
+             **Its 0.18 and fatimashad1993anion's 0.44 straddle the sign boundary** that the registered
+             constants place at a {P\_HCO3}/{P\_Cl} of 0.156-0.283, which is why decision 9.112's
+             bicarbonate sign is still not robust. **Licence verified, quotation only, not open access**:
+             {PubMed}'s copyright record holds no statement and records is\_open\_access false; Europe
+             {PMC}'s core record gives isOpenAccess "N" and a null licence; {PMC1192346} carries no licence
+             statement and says only "Articles from The Journal of Physiology are provided here courtesy of
+             The Physiological Society"; and the scan itself carries no copyright line. Every field read
+             from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
 }
 
 @article{chatelain2012twik1,
@@ -11797,4 +11836,476 @@
   pmid    = {24482245},
   pmcid   = {PMC4302754},
   note    = {Abstract only (Europe {PMC} isOpenAccess N, checked on Fable 7 November 2026); every field read from the PubMed record and confirmed against Europe {PMC}. Experimental anchor in decision 9.112 for the mechanism of the extracellular K+ reservoir route: "inhibition of the different isoforms of Na(+)/K(+)-ATPase reduced post-stimulus clearance of K(+) transients" and "Kir4.1 and Na(+)/K(+)-ATPase serve temporally distinct roles" (rat hippocampal slices)}
+}
+
+@article{kaila1989influence,
+  author  = {Kaila, K. and Pasternack, M. and Saarikoski, J. and Voipio, J.},
+  title   = {Influence of {GABA}-gated bicarbonate conductance on potential, current and intracellular chloride in crayfish muscle fibres},
+  journal = {The Journal of Physiology},
+  year    = {1989},
+  volume  = {416},
+  pages   = {161--181},
+  doi     = {10.1113/jphysiol.1989.sp017755},
+  pmid    = {2481729},
+  note    = {ABSTRACT ONLY is held. {PMC1189209} is a page scan of the 1989 issue with no machine-readable body: the
+             {PubMed} {MCP} full-text call returns an empty body, and Europe {PMC}'s {fullTextXML} for it answers
+             {HTTP} 500 (both tried on Fable, 7 November 2026); Europe {PMC} records isOpenAccess N. **The primary
+             source of the {P\_HCO3}/{P\_Cl} range decision 9.112 had been taking from kaila2014cation**, and the only
+             primary paper found that states the ratio in its abstract. Quoted from the abstract: "Assuming
+             constant-field conditions, the conductance data yielded a permeability ratio {PHCO3}/{PCl} of 0.42 for the
+             {GABA}-activated channels" and "Simultaneous measurements of {EGABA}, aiCl and aiHCO3 ({pHi}) gave a
+             {PHCO3}/{PCl} value of 0.33". Also quoted: "In a solution containing 30 {mM-HCO3-} (equilibrated with 5\%
+             {CO2} + 95\% air; {pH} 7.4), the {GABA}-induced increase in conductance was associated with a
+             depolarization of about 15 {mV}"; "In a {Cl(-)}-containing, {HCO3(-)}-free solution, the reversal potential
+             of the {GABA}-activated current ({EGABA}) was, by about 1 {mV}, less negative than the resting membrane
+             potential ({RP}). In a solution containing {Cl-} and 30 {mM-HCO3-}, {EGABA-RP} was 12 {mV}". PREPARATION,
+             stated because it is not a mammalian neuron: **crayfish muscle fibre**, three-microelectrode voltage clamp
+             with {Cl-}- and {pH}-selective microelectrodes, intracellular {HCO3-} activity estimated from {pHi}.
+             Every field read from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{kaila1993role,
+  author  = {Kaila, K. and Voipio, J. and Paalasmaa, P. and Pasternack, M. and Deisz, R. A.},
+  title   = {The role of bicarbonate in {GABAA} receptor-mediated {IPSPs} of rat neocortical neurones},
+  journal = {The Journal of Physiology},
+  year    = {1993},
+  volume  = {464},
+  pages   = {273--289},
+  doi     = {10.1113/jphysiol.1993.sp019634},
+  pmid    = {8229801},
+  note    = {ABSTRACT ONLY is held, for the same reason as kaila1989influence: {PMC1175385} is a page scan and Europe
+             {PMC}'s {fullTextXML} answers {HTTP} 500 (tried on Fable, 7 November 2026); isOpenAccess N. **The
+             measurement of {E\_GABA} - {V\_rest} in a mature mammalian central neuron that decision 9.112's
+             bicarbonate question turns on, and it is DEPOLARISING.** Preparation: rat neocortical neurones, slices,
+             intracellular recording, orthodromic stimulation, constant extracellular {Cl-}; no temperature in the
+             abstract. Quoted: "The resting membrane potential was -76.2 +/- 1.0 {mV} (mean +/- {S.E.M.}, n = 32) and in
+             most cells {IPSPA} was depolarizing. The reversal potential of {IPSPA} ({EIPSP-A}) was -70.2 +/- 0.9 {mV}
+             (n = 32)", so {E\_GABA} - {V\_rest} = +6.0 {mV}; "Application of 20 {mM} trimethylamine ({TriMA}), a
+             membrane-permeant weak base which is expected to produce a rise in {pHi} (and hence in intracellular
+             {HCO3-}), induced a reversible positive shift in {EIPSP-A} of up to +9.0 {mV} (mean + 4.2 {mV}) at an
+             extracellular {pH} ({pHo}) of 7.4. In some experiments, the shift in reversal potential was associated with
+             a change in the polarity of {IPSPA} from hyperpolarizing to depolarizing"; "Application of 20 {mM} lactate
+             ... produced a hyperpolarizing shift in {EIPS-A} of up to -7.5 {mV}"; "The results obtained indicate that
+             {HCO3-} ions contribute significantly to the {IPSPA}, thereby making {EIPSP-A} more positive than the {Cl-}
+             equilibrium potential". GAP, named where it is used: the paper states no numeric {P\_HCO3}/{P\_Cl} in its
+             abstract. Every field read from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{selfe2024alloptical,
+  author  = {Selfe, Joshua S. and Steyn, Teresa J. S. and Shorer, Eran F. and Burman, Richard J. and D{\"u}sterwald, Kira M. and Kraitzick, Ariel Z. and Abdelfattah, Ahmed S. and Schreiter, Eric R. and Newey, Sarah E. and Akerman, Colin J. and Raimondo, Joseph V.},
+  title   = {All-optical reporting of inhibitory receptor driving force in the nervous system},
+  journal = {Nature Communications},
+  year    = {2024},
+  volume  = {15},
+  number  = {1},
+  pages   = {8913},
+  doi     = {10.1038/s41467-024-53074-y},
+  pmid    = {39414774},
+  note    = {FULL TEXT HELD AND READ on Fable on 7 November 2026, in Europe {PMC}'s {fullTextXML} of {PMC11484818}
+             (read with experiments/read\_public\_page.py, {SHA-256} 3e03a9334d51d475...); isOpenAccess Y. **This is
+             dusterwald2018biophysical, the project's own registered constants source, extended to bicarbonate and
+             {pH}**: "For details of the simulation equations for ionic flux and volume change, see {D{\"u}sterwald}
+             et al. 32. In addition, {GABA\_A} {Rs}, {HCO3-}, and {pH} regulation were added to the model in
+             {D{\"u}sterwald} et al." **Kira M. {D{\"u}sterwald} and Joseph V. Raimondo are authors of both papers**,
+             so this is the same group extending its own model, which is why the constants match the registered set
+             exactly. Its Table 1 repeats the registered constants ({F} 96485.33 {C/mol}, {R} 8.31446
+             {J/(K.mol)}, {T} 310.15 {K}) and adds, for decision 9.112's bicarbonate question: g\_HCO3 4 {uS/cm2} beside
+             g\_Na 25, g\_K 70, g\_Cl 20 and g\_KCC2 20; {PCO2} 0.05 atm, k\_H 0.031 {M/atm}; {pH\_o} 7.4 and {pH\_i} 7.2;
+             {[HCO3-]\_o} 31 {mM} and, as a steady-state variable, {[HCO3-]\_i} 9.7 {mM}, with {[Cl-]\_i} 5.3 {mM} and
+             {V\_m} -67.2 {mV}. Methods: "Using the Henderson Hasselbalch equation and a {pK} a value of 6.1 as the
+             dissociation constant for {H2CO3}, {[HCO3-]o} was calculated at a {pH} of 7.4 ... This gives a {[HCO3-]o}
+             of 31 {mM}. Inside the compartment, {pH} was held constant at 7.2". Discussion, the permeability ratio:
+             {GABA\_A} {Rs} and {GlyRs} "are also permeable to {HCO3-}, and exhibit a {Cl-}-to-{HCO3-} permeability
+             ratio of five to one". MEASUREMENTS, mouse hippocampal organotypic slices at 32 degrees {C} in {aCSF}
+             with "{NaHCO3} (23)" {mM} and carbogen, by the authors' convention "{DF} {GABAA} = {V} m - {E} {GABAA}":
+             "{CaMKIIalpha+}: 4.52 +/- 0.57 {mV} vs {GAD2+}: 6.88 +/- 0.72 {mV}" (n = 51 and 49 cells), both
+             hyperpolarising, and "{CaMKIIalpha+} pyramidal neurons and {GFAP+} astrocytes (4.52 +/- 0.57 {mV} vs
+             -11.73 +/- 1.03 {mV}" (n = 51 and 28), the astrocytes depolarising; by {GABA} application,
+             "{CaMKIIalpha+}: 5.85 +/- 0.62 {mV} vs {GAD2+}: 8.52 +/- 0.79 {mV}" (n = 62 and 60). IN VIVO, mouse
+             somatosensory cortex layer 1 {GAD2+} interneurons: "we observed a range of {DF} {GABAA} polarities and
+             magnitudes across different neurons, including hyperpolarizing, purely shunting, and depolarising {DF}
+             {GABAA}". A DISCREPANCY INSIDE THE SOURCE, found by the pass of 7 November 2026 and recorded because the
+             project may reuse its Table 1: the tabulated {[HCO3-]o} 31 {mM} follows Henderson-Hasselbalch at {pKa}
+             6.1, but the paper's own kinetic constants ({K\_f} 1e3 s-1, {K\_r} 2.539e9 s-1 {M-1}) imply an effective
+             {pKa} of log10({K\_r}/{K\_f}) = 6.405, which is what reproduces the tabulated 9.7 {mM} inside at {pH} 7.2
+             and would give 15.3 {mM} rather than 31 outside; so its two bicarbonate concentrations are not on one
+             constant. Every field read from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026
+             (volume 15, issue 1, page 8913)}
+}
+
+@article{lombardi2019interactions,
+  author  = {Lombardi, Aniello and Jedlicka, Peter and Luhmann, Heiko J. and Kilb, Werner},
+  title   = {Interactions between membrane resistance, {GABA-A} receptor properties, bicarbonate dynamics and {Cl-}-transport shape activity-dependent changes of intracellular {Cl-} concentration},
+  journal = {International Journal of Molecular Sciences},
+  year    = {2019},
+  volume  = {20},
+  number  = {6},
+  pages   = {1416},
+  doi     = {10.3390/ijms20061416},
+  pmid    = {30897846},
+  note    = {FULL TEXT HELD AND READ on Fable on 7 November 2026, in Europe {PMC}'s {fullTextXML} of {PMC6471822}
+             (experiments/read\_public\_page.py, {SHA-256} 3ca39791e89975d5...); isOpenAccess Y, {MDPI} {CC BY}. A
+             compartmental-{NEURON} modelling paper, so **its numbers are parameter choices, not measurements**; its
+             value for decision 9.112 is that it names the primary paper behind each. Materials and Methods, quoted:
+             "Parameters used in our simulations were as follows: {[Cl-]o} = 133.5 {mM}, {[HCO3-]i} = 14.1 {mM},
+             {[HCO3-]o} = 24 {mM}, temperature = 31 degrees {C}, {P} = 0.44 [49]"; "the {GDP}-induced {[Cl-]i} changes
+             were recalculated using {P} {HCO3} values of 0.0, 0.18 (determined in spinal cord neurons [48]) and 0.44
+             (determined in adult hippocampal neurons [49])"; and "we used a {[Cl-]e} of 133.5 {mM}, an extracellular
+             {HCO3-} concentration ({[HCO3-]e}) of 24 {mM} and assumed a constant {[HCO3-]i} of 14.1 {mM} (calculated
+             from an intracellular {pH} of 7.2 [90], a {CO2} pressure ({pCO2}) of 38 {mmHg}, a Henry coefficient
+             (alpha) of 0.0318 {mM/mmHg} and a {pKs} of 6.128 [91] with the Henderson-Hasselbalch equation), if not
+             otherwise mentioned". Its equation (8) is the {GHK} voltage equation this project needs for a mixed anion
+             pore: "{E} {GGABA} = {RT}/{ZF} x ln( ({P} {Cl} {[Cl-]e} + {P} {HCO3} {[HCO3-]e}) / ({P} {Cl} {[Cl-]i} +
+             {P} {HCO3} {[HCO3-]i}) )". **Its reference list, read in the same {XML}, resolves the four citations**:
+             [48] is bormann1987mechanism (so **0.18 is Bormann, Hamill and Sakmann 1987**, mouse spinal neurones),
+             [49] is fatimashad1993anion (so **0.44 is Fatima-Shad and Barry 1993**, rat cultured hippocampal
+             neurons), [90] is ruusuvuori2010spontaneous (the {pH\_i} 7.2) and [91] is mitchell1965acidbase (the
+             {pKs} 6.128 and alpha 0.0318 {mM/mmHg}). Every field read from the {PubMed} record and confirmed against
+             Europe {PMC} on 7 November 2026 (Europe {PMC}'s pageInfo reads E1416 for the same article)}
+}
+
+@article{boffi2018kcc2,
+  author  = {Boffi, Juan C. and Knabbe, Johannes and Kaiser, Michaela and Kuner, Thomas},
+  title   = {{KCC2}-dependent steady-state intracellular chloride concentration and {pH} in cortical layer 2/3 neurons of anesthetized and awake mice},
+  journal = {Frontiers in Cellular Neuroscience},
+  year    = {2018},
+  volume  = {12},
+  pages   = {7},
+  doi     = {10.3389/fncel.2018.00007},
+  pmid    = {29422838},
+  note    = {FULL TEXT HELD AND READ on Fable on 7 November 2026, in Europe {PMC}'s {fullTextXML} of {PMC5788967}
+             (experiments/read\_public\_page.py, {SHA-256} e93171eb325214c1...); isOpenAccess Y, Frontiers {CC BY}.
+             **The best-matched {pH\_i} source for decision 9.112's bicarbonate question: a mature mammalian central
+             neuron, in vivo.** Preparation: adult mouse, layer 2/3 pyramidal cells of motor cortex ({M1}), through a
+             cranial window, 2-photon microscopy, genetically encoded superecliptic {pHluorin} ({SE-pHluorin}) for
+             {pH\_i} and {Superclomeleon} for {[Cl-]i}; anaesthetized and awake; body temperature, since the
+             measurement is in the intact brain and no {CO2}/{HCO3-} bath applies. Quoted, Results: "Using the best fit
+             parameters we calculated the {pH} i corresponding to the average ratios recorded in vivo at the somas of
+             27 {L2/3} pyramidal neurons from three mice. We found {pH} i values ranging from 6.5 to 7.5 with a mean of
+             7.1 +/- 0.2 (mean +/- 95\% {C.I.}, Figure {3C})". Abstract: "an average resting {[Cl-]i} of 6 +/- 2 {mM}
+             with no evidence of subcellular gradients in the proximal somato-dendritic domain and an average somatic
+             {pH} i of 7.1 +/- 0.2. Neither {[Cl-]i} nor {pH} i were affected by isoflurane anesthesia"; and "We
+             deleted the cation-{Cl-} co-transporter {KCC2} in single identified neurons of adult mice and found an
+             increase of {[Cl-]i} to approximately 26 +/- 8 {mM}". Discussion: "We found a steady-state {pH} i of
+             7.1 +/- 0.2 at the neuronal soma which is consistent with in vitro reports (Caspers and Speckmann, 1972;
+             Raimondo et al., 2012)". GAP, named where it is used: the paper reports no extracellular {pH}, so the
+             {pH} difference that sets {E\_HCO3} cannot be taken from this source alone; and the cell-to-cell range
+             6.5 to 7.5 is much wider than the 95\% {CI} of the mean. Every field read from the {PubMed} record and
+             confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{kintner1999invivo,
+  author  = {Kintner, D. B. and Anderson, M. E. and Sailor, K. A. and Dienel, G. and Fitzpatrick, J. H. and Gilboe, D. D.},
+  title   = {In vivo microdialysis of 2-deoxyglucose 6-phosphate into brain: a novel method for the measurement of interstitial {pH} using {31P-NMR}},
+  journal = {Journal of Neurochemistry},
+  year    = {1999},
+  volume  = {72},
+  number  = {1},
+  pages   = {405--412},
+  doi     = {10.1046/j.1471-4159.1999.0720405.x},
+  pmid    = {9886094},
+  note    = {ABSTRACT ONLY is held; Europe {PMC} records isOpenAccess N, inPMC N, so no full text was available on
+             7 November 2026. **The single most useful source for decision 9.112's bicarbonate question: the only one
+             found that measures intracellular and interstitial {pH} IN THE SAME ANIMALS in vivo, and reports a brain
+             bicarbonate value beside them.** Preparation: lightly anaesthetized, ventilated rats, 4-mm microdialysis
+             probe in the right frontal lobe within a 31P-{NMR} surface coil; body temperature. Quoted: "The average in
+             vivo {pHe} was 7.24+/-0.01, whereas the average {pHi} was 7.05+/-0.01 (n = 7). The average {pHe} value and
+             the average {CSF} bicarbonate value (23.5+/-0.1 {mEq/L}) were used to calculate an interstitial {Pco2} of
+             55 {mm} {Hg}"; and "{pHe} responded inversely to arterial {Pco2} and was well described (r2 = 0.91) by the
+             Henderson-Hasselbalch equation, assuming a {pKa} for the bicarbonate buffer system of 6.1 and a solubility
+             coefficient for {CO2} of 0.031. This confirms the view that the bicarbonate buffer system is dominant in
+             the interstitial space". So {pH\_i} - {pH\_e} = -0.19, which at the registered {RT/F} of 26.73 {mV} gives
+             {E\_HCO3} = -11.7 {mV} (computed by the pass, not the paper's number). GAPS, named: the {pHi} is a
+             tissue-compartment average from the inorganic-phosphate chemical shift, so it includes glia as well as
+             neurons; the 23.5 {mEq/L} is a {CSF} value the authors bring in, not one they measured in the
+             interstitium; and the interstitial {Pco2} of 55 {mm} {Hg} they derive is higher than the 38-40 {mmHg}
+             other sources assume. Every field read from the {PubMed} record and confirmed against Europe {PMC} on
+             7 November 2026}
+}
+
+@article{korzowski2020volumetric,
+  author  = {Korzowski, Andreas and Weinfurtner, Nina and Mueller, Sebastian and Breitling, Johannes and Goerke, Steffen and Schlemmer, Heinz-Peter and Ladd, Mark E. and Paech, Daniel and Bachert, Peter},
+  title   = {Volumetric mapping of intra- and extracellular {pH} in the human brain using {31P} {MRSI} at {7T}},
+  journal = {Magnetic Resonance in Medicine},
+  year    = {2020},
+  volume  = {84},
+  number  = {4},
+  pages   = {1707--1723},
+  doi     = {10.1002/mrm.28255},
+  pmid    = {32237169},
+  note    = {ABSTRACT ONLY is held; Europe {PMC} records isOpenAccess N, inPMC N (checked 7 November 2026). Used by the
+             bicarbonate pass of 7 November 2026 as the human, in vivo end of the {pH} difference that sets {E\_HCO3},
+             and as the second reputable source beside kintner1999invivo under {CLAUDE.md}'s rule that a failed or
+             single source is not a finished search. Preparation: human brain in vivo, 3D 31P {MRSI} at 7T, a
+             two-compartment quantification model of the intra- and extracellular inorganic-phosphate signals, three
+             healthy volunteers and three glioma patients, voxels of 5.7 {mL}. Quoted: "The average intra- and
+             extracellular {pH} measured in white matter of healthy volunteers were 7.00 +/- 0.00 and 7.33 +/- 0.03,
+             respectively"; and, for the contrast the paper is about, "In tumor tissue of glioma patients, both the
+             average intra- and extracellular {pH} increased to 7.12 +/- 0.01 and 7.44 +/- 0.01, respectively". So
+             {pH\_i} - {pH\_e} = -0.33, giving {E\_HCO3} = -20.3 {mV} at the registered {RT/F} (computed by the pass).
+             GAPS, named where it is used: white matter rather than grey, a tissue-compartment average rather than a
+             neuron, and three volunteers. Every field read from the {PubMed} record and confirmed against Europe
+             {PMC} on 7 November 2026}
+}
+
+@article{kjallquist1969regulation,
+  author  = {Kj{\"a}llquist, A. and Nardini, M. and Siesj{\"o}, B. K.},
+  title   = {The regulation of extra- and intracellular acid-base parameters in the rat brain during hyper- and hypocapnia},
+  journal = {Acta Physiologica Scandinavica},
+  year    = {1969},
+  volume  = {76},
+  number  = {4},
+  pages   = {485--494},
+  doi     = {10.1111/j.1748-1716.1969.tb04495.x},
+  pmid    = {5344908},
+  note    = {ABSTRACT ONLY is held; Europe {PMC} records isOpenAccess N, inPMC N. **The only direct measurement of a
+             brain INTRACELLULAR bicarbonate concentration this pass found**, and so the corroboration of the
+             Henderson-Hasselbalch route decision 9.112's bicarbonate question needs. Preparation: rats anaesthetized
+             with nitrous oxide, arterial {CO2} tension held constant at values between 12 and 90 {mm} {Hg} for 45 min;
+             {CSF} and tissue analysed. Quoted: "Assuming a 12 per cent extracellular volume, the intracellular buffer
+             capacity (beta = d log {Pco2}/d {pH}) could be calculated to 2.27, the intracellular bicarbonate
+             concentration to 14.3 {meq/kg} of cell water and the equivalent intracellular {pH} to 7.10 at a tissue
+             {C02} tension of 40 {mm} {Hg}"; and "Between the tissue {Pco2} levels of 20 to 90 {mm} {Hg} the {CSF}
+             bicarbonate varied by 19.5 {meq/kg} while the corresponding change in the intracellular bicarbonate
+             concentration could be calculated to 12 {meq/kg} of intracellular water". GAPS, named: the values are
+             calculated from whole-tissue acid-base measurements on an assumed 12 per cent extracellular volume, so
+             they are a tissue-compartment average and not a neuronal measurement, and "equivalent intracellular {pH}"
+             is the authors' own term for that average. AUTHOR LIST CORRECTED HERE: a secondary index gave this paper
+             as "Nardini and Siesjo"; Europe {PMC}'s authorString is "Kjallquist A, Nardini M, Siesjo {BK}", which is
+             what {PubMed} gives and what is used. Every field read from the {PubMed} record and confirmed against
+             Europe {PMC} on 7 November 2026}
+}
+
+@article{arnold1986invivo,
+  author  = {Arnold, J. B. and Kraig, R. P. and Rottenberg, D. A.},
+  title   = {In vivo measurement of regional brain and tumor {pH} using {[14C]dimethyloxazolidinedione} and quantitative autoradiography. {II}: Characterization of the extracellular fluid compartment using {pH}-sensitive microelectrodes and {[14C]sucrose}},
+  journal = {Journal of Cerebral Blood Flow and Metabolism},
+  year    = {1986},
+  volume  = {6},
+  number  = {4},
+  pages   = {435--440},
+  doi     = {10.1038/jcbfm.1986.76},
+  pmid    = {3733903},
+  note    = {ABSTRACT ONLY is held; Europe {PMC} records isOpenAccess N, inPMC N. Used by the bicarbonate pass of
+             7 November 2026 as the microelectrode measurement of brain extracellular {pH}, to pair with boffi2018kcc2's
+             {pH\_i} and as a third source on the {pH} difference beside kintner1999invivo and korzowski2020volumetric.
+             Preparation: rats in vivo, {H+}-sensitive microelectrodes; the paper's subject is {RG-2} glioma, and the
+             value used here is its normal-brain control. Quoted: "The average {RG-2} {pHe} was 7.63 +/- 0.15 (mean
+             +/- {SD}, n = 6), whereas the average {pHe} of contralateral brain tissue was 7.34 +/- 0.10 (n = 3) and
+             arterial {pH} was 7.36 +/- 0.02". GAPS, named where it is used: n = 3 for the normal-brain value, and the
+             paper reports no neuronal intracellular {pH} (its {pHi} values, 6.80 to 6.94 across nine grey and white
+             matter regions, are whole-tissue {[14C]dimethyloxazolidinedione} estimates in separate animals). Every
+             field read from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{langer2022cerebrospinal,
+  author  = {Langer, Thomas and Zadek, Francesco and Carbonara, Marco and Caccioppola, Alessio and Brusatori, Serena and Zoerle, Tommaso and Bottazzini, Francesco and Ferraris Fusarini, Chiara and di Modugno, Adriana and Zanella, Alberto and Zanier, Elisa R. and Fumagalli, Roberto and Pesenti, Antonio and Stocchetti, Nino},
+  title   = {Cerebrospinal fluid and arterial acid-base equilibrium of spontaneously breathing patients with aneurismal subarachnoid hemorrhage},
+  journal = {Neurocritical Care},
+  year    = {2022},
+  volume  = {37},
+  number  = {1},
+  pages   = {102--110},
+  doi     = {10.1007/s12028-022-01450-1},
+  pmid    = {35199305},
+  note    = {ABSTRACT ONLY is held, which carries the values used; Europe {PMC} records isOpenAccess Y, {PMC9283163},
+             so the full text is available if the owner wants it. Used by the bicarbonate pass of 7 November 2026 as a
+             human measurement of the extracellular ({CSF}) side of decision 9.112's bicarbonate pair, and as the
+             second reputable source beside kintner1999invivo's 23.5 {mEq/L}. The values used are the paper's CONTROL
+             group: 25 patients of {ASA} physical status 1 and 2 undergoing elective surgery under spinal anaesthesia,
+             spontaneously breathing, {CSF} and arterial samples taken simultaneously. Quoted, with the control value
+             second in each pair: "a lower {SID} (23.1 +/- 2.3 vs. 26.5 +/- 1.4 {mmol/L}, p < 0.001) and {PCO2}
+             (40 +/- 4 vs. 46 +/- 3 {mm} {Hg}, p < 0.001), whereas no differences in {ATOT} (1.2 +/- 0.5 vs. 1.2 +/- 0.2
+             {mmol/L}, p = 0.95) and {pH} (7.34 +/- 0.06 vs. 7.35 +/- 0.02, p = 0.69) were observed". COMPUTED BY THE
+             PASS, not a number in the paper: at {pK} 6.1 and alpha 0.0301 {mM/mmHg} the control {pH} 7.35 and {PCO2}
+             46 {mm} {Hg} give a {CSF} bicarbonate of about 24.6 {mM}, which is the quantity the project needs and
+             which the paper reports only through {SID} and {PCO2}. GAPS, named: lumbar {CSF} in surgical patients
+             rather than brain interstitial fluid, and the control {PCO2} of 46 {mm} {Hg} is higher than the 38-40
+             other sources assume. Every field read from the {PubMed} record and confirmed against Europe {PMC} on
+             7 November 2026}
+}
+
+@article{amos1996role,
+  author  = {Amos, B. J. and Pocock, G. and Richards, C. D.},
+  title   = {On the role of bicarbonate as a hydrogen ion buffer in rat {CNS} neurones},
+  journal = {Experimental Physiology},
+  year    = {1996},
+  volume  = {81},
+  number  = {4},
+  pages   = {623--632},
+  doi     = {10.1113/expphysiol.1996.sp003963},
+  pmid    = {8853270},
+  note    = {ABSTRACT ONLY is held; Europe {PMC} records isOpenAccess N, inPMC N. Used by the bicarbonate pass of
+             7 November 2026 as a {BCECF} measurement of neuronal {pH\_i} in a {CO2}/{HCO3-}-buffered medium, which is
+             the measurement decision 9.112's question asked for, and as a second source beside boffi2018kcc2.
+             Preparation: individual rat cerebellar, hippocampal and neocortical neurones maintained in culture,
+             {BCECF} fluorescence. Quoted: "The steady-state intracellular {pH} ({pHi}) was estimated to be 7.07 +/-
+             0.05 (n = 22) in {CO2-HCO3(-)}-buffered media. Buffering power (beta) estimated from the addition and
+             removal of weak bases was ca 10 {mM} ({pH} unit)-1 and was found to be similar in both {CO2-HCO3(-)}- and
+             Hepes-buffered media"; and, bearing on whether a bicarbonate pool would be clamped, "The
+             membrane-permeant carbonic anhydrase inhibitor, acetazolamide (10-20 {microM}), did not affect estimates
+             of beta. The results indicate that {CO2-HCO3-} does not act as an open buffer system in these neurones".
+             GAPS, named: the abstract states no temperature and no extracellular {pH}, so this source fixes {pH\_i}
+             but not the {pH} difference, and cultured neurones are not necessarily mature. Every field read from the
+             {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{mitchell1965acidbase,
+  author  = {Mitchell, R. A. and Herbert, D. A. and Carman, C. T.},
+  title   = {Acid-base constants and temperature coefficients for cerebrospinal fluid},
+  journal = {Journal of Applied Physiology},
+  year    = {1965},
+  volume  = {20},
+  pages   = {27--30},
+  doi     = {10.1152/jappl.1965.20.1.27},
+  pmid    = {14257556},
+  note    = {NOTHING IS HELD BUT THE {PubMed} RECORD: {PubMed} carries no abstract for this 1965 article ("[Abstract
+             not available]") and Europe {PMC} records isOpenAccess N, inPMC N, so neither abstract nor full text was
+             read on 7 November 2026. It is entered because it is the **primary source of the two
+             Henderson-Hasselbalch constants for cerebrospinal fluid that lombardi2019interactions uses to convert
+             {pH\_i} into {[HCO3-]\_i}** - a {pKs} of 6.128 and a Henry coefficient of 0.0318 {mM/mmHg} - which that
+             paper attributes to it as its reference [91], read in its Europe {PMC} {XML} on 7 November 2026. **The
+             attribution is Lombardi et al.'s, not this paper's own text, and the two constants are therefore
+             SECOND-HAND here**; nothing in the pass of 7 November 2026 rests on them, because the identity
+             {E\_HCO3} = 2.303 x ({RT/F}) x ({pH\_i} - {pH\_o}) makes {E\_HCO3} independent of {pK}, of the Henry
+             coefficient and of {pCO2}. A CLOSED FULL TEXT for the owner to supply if the project later needs
+             absolute bicarbonate concentrations rather than their ratio. Its {MeSH} terms (Carbon Dioxide,
+             Cerebrospinal Fluid, Hydrogen-Ion Concentration, Solubility, Temperature) and keywords are consistent
+             with that use. Every field read from the {PubMed} record and confirmed against Europe {PMC} on
+             7 November 2026}
+}
+
+@article{chesler1994determination,
+  author  = {Chesler, M. and Chen, J. C. and Kraig, R. P.},
+  title   = {Determination of extracellular bicarbonate and carbon dioxide concentrations in brain slices using carbonate and {pH}-selective microelectrodes},
+  journal = {Journal of Neuroscience Methods},
+  year    = {1994},
+  volume  = {53},
+  number  = {2},
+  pages   = {129--136},
+  doi     = {10.1016/0165-0270(94)90169-4},
+  pmid    = {7823615},
+  note    = {ABSTRACT ONLY is held. {PMC2807131} exists but Europe {PMC}'s {fullTextXML} for it answers {HTTP} 500
+             (tried on Fable, 7 November 2026) and Europe {PMC} records isOpenAccess N, so the numeric extracellular
+             bicarbonate values this paper measured in brain slices were NOT read: **a CLOSED FULL TEXT for the owner
+             to supply.** It is entered because it is the one source found that measures brain extracellular
+             bicarbonate directly rather than taking it from a bath or a {CSF} sample, which is what decision 9.112's
+             bicarbonate question asked for on the extracellular side. Quoted from the abstract: "In principle, this
+             can be accomplished using {CO3(2-)} and {pH}-sensitive microelectrodes; however, interference from
+             {HCO3-} and {Cl-}, and physiological changes in {[HCO3-]}, complicate measurements with {CO3(2-)}
+             electrodes"; "Measurement of {CO3(2-)} slope response by this method yielded a value of 28.5 +/- 0.72 {mV}
+             per decade change in {[CO3(2-)]}"; "The mean interference constants corresponded to selectivity ratios of
+             245:1 and 1150:1 for {CO3(2-)} over {HCO3-} and {Cl-} respectively"; and "These methods were tested by
+             measuring {[HCO3-]} and {[CO2]} in experimental solutions, and in the extracellular fluid of rat
+             hippocampal slices". Every field read from the {PubMed} record and confirmed against Europe {PMC} on
+             7 November 2026}
+}
+
+@article{jun2016pore,
+  author  = {Jun, Ikhyun and Cheng, Mary Hongying and Sim, Eunji and Jung, Jinsei and Suh, Bong Lim and Kim, Yonjung and Son, Hankil and Park, Kyungsoo and Kim, Chul Hoon and Yoon, Joo-Heon and Whitcomb, David C. and Bahar, Ivet and Lee, Min Goo},
+  title   = {Pore dilatation increases the bicarbonate permeability of {CFTR}, {ANO1} and glycine receptor anion channels},
+  journal = {The Journal of Physiology},
+  year    = {2016},
+  volume  = {594},
+  number  = {11},
+  pages   = {2929--2955},
+  doi     = {10.1113/JP271311},
+  pmid    = {26663196},
+  note    = {ABSTRACT AND KEY POINTS HELD, plus one full-text excerpt; the numeric {P\_HCO3}/{P\_Cl} values for the
+             glycine receptor were NOT read, so this is a CLOSED FULL TEXT for the owner to supply. Routes tried on
+             Fable, 7 November 2026: the {PubMed} {MCP}'s full-text call for {PMC4887682} returns an empty body;
+             Europe {PMC}'s {fullTextXML} for it answers {HTTP} 500 and records isOpenAccess N;
+             pmc.ncbi.nlm.nih.gov/articles/PMC4887682/ answered with a check that the visitor is human, which
+             experiments/read\_public\_page.py reports as a refusal and which was respected. Used by the bicarbonate
+             pass of 7 November 2026 for the direction of the glycine receptor's bicarbonate permeability relative to
+             {GABA\_A}'s, which decision 9.112 needs and which no source states numerically. Quoted from the Key
+             points: "Pore dilatation increases the bicarbonate permeability ({P} {HCO3}/{Cl}) of {CFTR}, {ANO1} and
+             {GlyR}"; "Ion selectivity of {CFTR}, {ANO1} and {GlyR} is critically affected by the electric
+             permittivity and diameter of the channel pore"; and from the abstract, "pore dilatation by a mutation in
+             the pore-lining region alters the anion selectivity of {GlyR}". Quoted from the one full-text excerpt
+             read (through the Consensus {MCP}), which gives the method and the companion cation ratio but not the
+             bicarbonate numbers: "The {P} {Na}/{P} {Cl} values of {WT} and {P-2} {GlyRs} are 0.07 and 0.24,
+             respectively"; "the bicarbonate permeability ({P} {HCO3}/{P} {Cl}) of {WT} ({C}) and {P-2} {GlyRs} ({D})
+             was examined using whole-cell patch clamp recordings. Currents were activated with 10 {microM} ({WT}) and
+             1 {mM} ({P-2}) glycine. The initial bath solution containing 150 {mM} {Cl-} was replaced with a solution
+             containing 4 {mM} {Cl-} and 146 {mM} {HCO3-}". GAP, named where it is used: these are recombinant
+             receptors in a heterologous expression system and the paper's subject is a pore-lining mutation, so its
+             wild-type value is the relevant one and it was not read. Every field read from the {PubMed} record and
+             confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{ruusuvuori2010spontaneous,
+  author  = {Ruusuvuori, Eva and Kirilkin, Ilya and Pandya, Nikhil and Kaila, Kai},
+  title   = {Spontaneous network events driven by depolarizing {GABA} action in neonatal hippocampal slices are not attributable to deficient mitochondrial energy metabolism},
+  journal = {The Journal of Neuroscience},
+  year    = {2010},
+  volume  = {30},
+  number  = {46},
+  pages   = {15638--15642},
+  doi     = {10.1523/JNEUROSCI.3355-10.2010},
+  pmid    = {21084619},
+  note    = {ABSTRACT ONLY is held: {PMC6633692} exists but Europe {PMC}'s {fullTextXML} for it answers {HTTP} 500
+             (tried on Fable, 7 November 2026) and Europe {PMC} records isOpenAccess N. Entered because it is the
+             source lombardi2019interactions cites (its reference [90]) for the **intracellular {pH} of 7.2** from
+             which that paper computes {[HCO3-]\_i} = 14.1 {mM}, an attribution read in Lombardi et al.'s own
+             reference list on 7 November 2026. **The numeric {pH\_i} value is therefore SECOND-HAND here**; the
+             pass of 7 November 2026 does not rely on it, using boffi2018kcc2 (7.1 +/- 0.2, mature mouse cortex in
+             vivo), kintner1999invivo (7.05, rat in vivo) and amos1996role (7.07 +/- 0.05, rat {CNS} neurones in
+             culture) instead. PREPARATION, which is why it is not relied on: **neonatal** rat hippocampal slices,
+             {CA3} neurons - not a mature neuron. Quoted from the abstract: "we made electrophysiological recordings
+             of {GDPs} and monitored the mitochondrial membrane potential (Psi m) and intracellular {pH} ({pH(i)}) in
+             {CA3} neurons in neonatal rat hippocampal slices"; "The suppression of {GDPs} was strictly proportional
+             to the fall in {pH(i)} caused by weak carboxylic acids (l-lactate, d-lactate, or propionate) or by an
+             elevated {CO(2)}"; "Notably, changes in {pH(i)} appear to have a very powerful modulatory effect on
+             {GDPs}". A CLOSED FULL TEXT for the owner to supply if the 7.2 is wanted at first hand. Every field read
+             from the {PubMed} record and confirmed against Europe {PMC} on 7 November 2026}
+}
+
+@article{fatimashad1993anion,
+  author  = {Fatima-Shad, K. and Barry, P. H.},
+  title   = {Anion permeation in {GABA}- and glycine-gated channels of mammalian cultured hippocampal neurons},
+  journal = {Proceedings. Biological Sciences},
+  year    = {1993},
+  volume  = {253},
+  number  = {1336},
+  pages   = {69--75},
+  doi     = {10.1098/rspb.1993.0083},
+  pmid    = {7690484},
+  note    = {FULL TEXT HELD, read on Fable on 7 November 2026 in the {PDF} the owner supplied that day
+             (a {JSTOR} copy, stable id 49704, pinned under data/raw/supplied\_papers/, which is gitignored
+             and so not redistributed; the pin file carries its {SHA}-256). **This is the primary source of
+             the upper end of decision 9.112's permeability range.** Its **Table 1, page 71**, gives, for
+             bicarbonate relative to {Cl-}, {P\_x}/{P\_Cl} = **0.44 +/- 0.02 for {GABA}** and **0.4 +/- 0.02
+             for glycine**, both s.e.m. at **n = 15 for both agonists** (page 70), with conductance ratios
+             0.26 +/- 0.008 and 0.25 +/- 0.007 measured at -72 {mV} ({E\_Cl}). The table's title, quoted:
+             "Permeability ratios for both {GABA}- and glycine-gated {Cl-} channels were calculated by using
+             the Goldman-Hodgkin-Katz equation from reversal potential shifts that result from substituting
+             132 {mM} of test ion in the bath along with 8 {mM} of {Cl-}, the pipette solution remaining
+             constant with 140 {mM} {Cl-} plus agonist". Preparation, page 69: tissue culture from
+             **one-day-old rat pups**, used from the third day of culture - so
+             **lombardi2019interactions's "0.44 (determined in adult hippocampal neurons)" names the right
+             value and the right receptor but the wrong preparation; the neurons are neonatal**, and that
+             correction should travel with the citation. **A condition no secondary source carries**,
+             page 70, quoted: "The {pH} of the bath solution was 7.4 except when phosphate or bicarbonate
+             was present in the bath as a test ion, where the {pH} was changed to 6.0 and 8.5,
+             respectively, to have these anions primarily in the monovalent form" - so the bicarbonate point
+             alone was taken at **bath {pH} 8.5**. **The recording temperature is not stated anywhere in the
+             paper** (the only temperature is the 37 degrees {C} culture incubator, page 69), and **the
+             paper neither measures nor discusses temperature dependence**. On the two receptors, page 69,
+             quoted: "Our present study reveals that the relative anion permeabilities for both {GABA}- and
+             glycine-gated channels were similar and were consistent with earlier studies on {IPSPs} (Eccles
+             et al. 1977)"; and, naming its disagreement with bormann1987mechanism, "In contrast, in
+             pre-natal tissue-cultured spinal neurons, Bormann et al. (1987) found no rectification of
+             single-channel currents of {GABA}- and glycine-gated channels, and found that the pore size of
+             the open {GABA}-gated channel was slightly larger than glycine-gated channel. These differences
+             could be due to the age of the preparation or any of the other reasons which we discuss later
+             on". Summary, page 69: "both agonist-activated channels act as multi-ion pathways and have
+             similar permeation characteristics" - so the bi-ionic {GHK} ratio is not a mixture-independent
+             constant, which the pass records as a limit on using it. **Licence verified, quotation only**:
+             {PubMed}'s copyright record holds no statement and records is\_open\_access false; Europe
+             {PMC}'s core record gives isOpenAccess "N", inPMC "N" and a null licence (there is no {PMC}
+             copy); the {JSTOR} cover page states "Your use of the {JSTOR} archive indicates your acceptance
+             of the Terms \& Conditions of Use, available at https://about.jstor.org/terms"; and page 69
+             carries "(c) 1993 The Royal Society". Every field read from the {PubMed} record and confirmed
+             against Europe {PMC} on 7 November 2026}
 }
