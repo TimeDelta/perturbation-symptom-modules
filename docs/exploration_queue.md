@@ -177,6 +177,21 @@ cyclase handoff is worked through: both of 9.97's questions were ruled on 2 Nove
 changes on them; what remains of 9.97 is the form of the G beta gamma conjunction and, after the rebuild, the sign
 sweep of 9.86 before 9.80 is decided.
 
+**The decisive count, measured 7 November 2026 on v5 (Fable).** SIGNOR 4.0, October 2026 release (CC BY 4.0,
+"SIGNOR 4.0 is licensed under Creative Commons Attribution 4.0 International", signor.uniroma2.it/documentation,
+read that day), is the one open source that states per residue which kinase and which effect: of its 5,514 human
+kinase-substrate phosphorylation pairs, 76 carry at least one up-regulating and one down-regulating residue (61 at
+distinct residues, 15 with one residue annotated both ways). **34 of the 76 are v5 `activates`/`inhibits` edges**
+(0.04 percent of 84,866 protein-to-protein signalling edges, 22 kinases); **28 touch a perturbed gene or drug
+target** (SCN5A, TP53). v5 has no symptom nodes, so "paths to labelled symptoms" was read as paths from
+perturbed genes. The stored sign agrees with SIGNOR's site majority on 18, disagrees on 6, ties on 9, and v5 holds
+both signs for 1. OmniPath's `enzsub` carries sites with no effect field; PhosphoSitePlus answered with a sign-in
+form (a refusal); iPTMnet's files carry no effect field and its licence pages contradict each other (CC BY-NC-SA
+4.0 on the site, CC BY 4.0 at the foot of the README). **By the item's own test the count is small, so the
+pass recommends dropping the representation question; that is the owner's to decide.** The 16 edges whose sign SIGNOR disputes are a
+sign-evidence candidate for the override table, not a reason to keep the item. Record:
+`docs/phosphosite_opposite_effects_2026-11-07.md`; source `losurdo2026signor`.
+
 ---
 
 ## 5. Occupancy as the drug seed magnitude
