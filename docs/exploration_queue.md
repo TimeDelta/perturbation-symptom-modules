@@ -437,6 +437,20 @@ frictions the record names: reactome.org's robots file blocks the reader (the SB
 so a fetch needs its hash pinned; and Reactome's late-endosome compartment for NHE9 follows a 2005 reading that a 2013
 astrocyte study puts on recycling endosomes instead, a disagreement to rule on rather than import unseen.
 
+**What fetching `R-HSA-425986` as the importer stands would do (engineering, on Opus, 7 November 2026; code and v5
+read, the pathway's SBML export parsed from the pass's scratchpad copy, sha256 `5bc23c49...c33f6e`).** The export
+holds four reactions: the plasma-membrane exchange (SLC9A1-5), SLC9A6,7 on the early endosome, SLC9A9 on the late
+endosome, and SLC9A7/8 on the trans-Golgi. But `graph/reactome_import.py`'s `compartment_letter` sends every
+compartment name containing "endosom" to `l`, the endolysosome lumen it shares with the lysosome, so the early and
+late endosome would be merged back into one compartment with the lysosome on import. And on v5 every proton node in
+`l` is a currency node that passes nothing on (Human-GEM's `MAM02039l`, 17 out-edges dropped by the encoder, and
+Reactome's `CHEBI15378l`, none), while no Na+ node exists in `l`. So a plain fetch would give SLC9A6 a node and a
+reaction, and an NHE6 or NHE9 perturbation would then move only the cytosolic Na+ pool; the luminal acidification
+that the literature above makes the mechanism would reach nothing. Representing it needs three things beyond the
+fetch: an endosome compartment letter of its own in the importer, a non-currency endosomal proton (or pH) node, and
+sourced edges from it to what luminal pH governs (TrkB signalling, lysosomal proteolysis). Whether the pH node joins
+the compartment pH weight of `linear_response_encoder.py`, which is still uncalibrated (9.75), is a further question.
+
 ---
 
 ## 8. A measured per-cell-type VAMP1 share
