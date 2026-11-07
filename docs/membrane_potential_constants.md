@@ -608,3 +608,25 @@ Moved verbatim from decision 9.112 of `docs/open_decisions.md` on 7 November 202
 ceiling; the row keeps a pointer here.
 
 > **Added 6 November 2026: the two values reconciled on Fable** (the owner: "Yes please"), in full in `docs/membrane_potential_constants.md`, section "Mixed-cation reversal potentials". In each case the cause was an unread placeholder in the 5 November script, and no sign changes. The report's values are the ones to keep: nicotinic -2.1 mV (Haghighi and Cooper 2000, P_K/P_Na 1.2; second sources Nutter and Adams 1995, 1.23, and Sacchi et al. 2011, 1.40 to 0.92) and NALCN +2.2 mV (Ren 2011, "equally permeable"; Chua et al. 2020 puts P_Na a little above P_K, so the magnitude is a lower bound; Lu et al. 2007 is still unread, refused by a robots rule and subscription-only). Three smaller corrections to this row, none changing a sign: muscle nicotinic is -0.1 mV (Adams, Dwyer and Hille 1980, 1.1); HCN is -23 to -33 mV on Macri et al. 2012's 0.35 and 0.23, not -25 to -35; and the mixed pores depolarise at rest by about 40 to 75 mV, not 36 to 81. The proposed mixed-pore weight moves by under 2 per cent and stays between the ruled Na+ and K+ terms. The monovalent ratios of NMDA and TRPM4/5 are assumptions, not readings. 3 references added.
+
+## Mixed pores, Nav and bicarbonate: the rulings of 7 November 2026
+
+Decision 9.112's three remaining sub-questions, as the session briefed them that day:
+
+- **The mixed-pore weight, ruled** (the owner: "2 yes. Go with that rec"). A channel that passes more than one ion
+  takes one conductance edge at its own reversal potential, with weight (sum_j f_j g_j) |E_rev - V_rest| / g_total,
+  f_j each ion's share of the channel's current at rest; for a single-ion pore this is the ruled rule. The values are
+  the reconciled ones of the section "Mixed-cation reversal potentials" above (nicotinic -2.1 mV, weight 18.83 mV;
+  NALCN +2.2 mV, 19.09 mV, or +4.0 mV and 19.19 mV on Lu et al. 2007; AMPA and kainate -0.8 mV; NMDA, P2X2 and
+  TRPM4/5 +2.2 mV; HCN -23 to -33 mV). The per-ion split is not built.
+- **The reversal potential of every pore, ruled** (the owner: "4 B. Perm ratio then ideal reversal, disclosed makes
+  sense"). A pore takes its GHK reversal potential from a permeability ratio that has been read, and the ideal
+  single-ion reversal potential where none has, and the build discloses which pores take which. For Nav this gives
+  +47.9 mV and weight 22.77 mV (Hille 1972, P_K/P_Na 1/12) in place of the ideal E_Na +62.5 mV and 24.6 mV; no sign
+  changes. The rule covers K+ channels with a read P_Na/P_K as well.
+- **Bicarbonate through GABA_A and glycine receptors, not ruled** (the owner: "source the bicarbonate first"). With
+  P_HCO3/P_Cl 0.2-0.4 and an assumed HCO3- of 25 mM outside and 15 mM inside, E_GABA lies 4 mV below to 7 mV above
+  V_rest, so the edge's sign is not robust; a Fable pass started on 7 November 2026 sources the neuronal and
+  interstitial HCO3- and the permeability ratios before the owner rules. Until then the registered law's E_Cl
+  (-83.7 mV, a Cl- term of 2.0 mV) stands as the default.
+
