@@ -6,12 +6,12 @@
     "CLAUDE.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "README.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/README.md": {
       "class": "generated",
@@ -159,7 +159,7 @@
     "docs/confirmatory_runbook.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86",
+      "as_of_commit": "aa35ab0",
       "names_absent_paths": {
         "docs/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
         "docs/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
@@ -183,7 +183,7 @@
     "docs/data_sources.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/decision_history.md": {
       "class": "generated",
@@ -216,7 +216,7 @@
     "docs/documentation_process.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/drug_administration_routes.md": {
       "class": "generated",
@@ -267,12 +267,12 @@
     "docs/evidence_reports_spec.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/experiment_design.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86",
+      "as_of_commit": "aa35ab0",
       "names_absent_paths": {
         "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
       }
@@ -280,7 +280,7 @@
     "docs/exploration_queue.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86",
+      "as_of_commit": "aa35ab0",
       "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
     },
     "docs/exposure_sources/benet2011_bddcs.md": {
@@ -330,7 +330,7 @@
     "docs/figures.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/file_index.md": {
       "class": "generated",
@@ -406,7 +406,7 @@
     "docs/job_harness.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/knowledge_graph_practices_review.md": {
       "class": "record",
@@ -465,7 +465,7 @@
     "docs/literature_appraisal_staging.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/literature_survey.md": {
       "class": "generated",
@@ -739,7 +739,7 @@
     "docs/preregistration.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/preregistration_amendment_draft.md": {
       "class": "draft",
@@ -795,7 +795,7 @@
     "docs/research_summary.md": {
       "class": "living",
       "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "as_of_commit": "aa35ab0"
     },
     "docs/rewiring_null_distribution.md": {
       "class": "generated",

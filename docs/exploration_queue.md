@@ -30,9 +30,10 @@ retired table.
 The owner asked on 7 November 2026 to "prioritize the exploration queue and start the next few items". The order is
 the session's (on Opus), by four tests: how much closer to physiology the item brings the model (CLAUDE.md
 "Modelling"), whether its first step can run now that the v5 drug graph exists (decision 9.106), what it costs, and
-whether the owner can follow it. Items 7, 9 and 6 were started that day (their measurements are dated additions in
-each item); item 5's Fable recheck was started the same day. So the sentence above that "nothing here is started" no
-longer holds for those four.
+whether the owner can follow it. Items 7, 9, 6, 5, 10, 4, 8 and 2 were all worked that day (their findings are dated additions in
+each item, read on Fable where they needed sources); only items 1 and 3 are not started, both held deliberately
+(1 for after the 9.112 rebuild, 3 as the largest change). So the sentence above that "nothing here is started" no
+longer holds: it is true only of items 1 and 3.
 
 1. **Item 7, endosomal pH (SLC9A6, SLC9A9).** A monogenic gene with psychiatric phenotypes turns out to be absent from
    the graph, so its labels are lost; cheap to measure, a data-layer change to fix.
