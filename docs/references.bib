@@ -7199,6 +7199,7 @@
 % recorded in the repository. The passes of 20 and 24 October ran on Opus 5.5; on 25 October 2026 a Fable 5.1 pass
 % re-read every entry below except lee2015cytoplasmic through the PubMed connector (PMC full text where it exists,
 % otherwise the PubMed record) and found each quoted claim to hold. Quotes are copied from that Fable pass.
+% lee2015cytoplasmic was rechecked on Fable on 7 November 2026; its note says what that found.
 % Bibliographic fields are from the PubMed records (get_article_metadata). Author lists longer than ten are
 % shortened to the first author and "others".
 
@@ -7375,13 +7376,13 @@
   author  = {Lee, Ji-Ann and Damianov, Andrey and Lin, Chia-Ho and Fontes, Mariana and Parikshak, Neelroop N. and Anderson, Erik S. and Geschwind, Daniel H. and Black, Douglas L. and Martin, Kelsey C.},
   title   = {Cytoplasmic {Rbfox1} Regulates the Expression of Synaptic and Autism-Related Genes},
   journal = {Neuron},
-  year    = {2015},
+  year    = {2016},
   volume  = {89},
   number  = {1},
   pages   = {113--128},
   doi     = {10.1016/j.neuron.2015.11.025},
   pmid    = {26687839},
-  note    = {Cited on 24 October 2026 for the untested hypothesis that nuclear RNA understates VAMP1 in interneurons. "Cytoplasmic Rbfox1 binding increased target mRNA stability and translation" (abstract). READ ON OPUS 5.5 ON 24 OCTOBER 2026 AND NOT RECHECKED ON FABLE (CLAUDE.md "Models"); not to be relied on until re-read. The year is the PubMed record's publication date (10 December 2015)}
+  note    = {Cited on 24 October 2026 for the untested hypothesis that nuclear RNA understates VAMP1 in interneurons (decision 9.68, item 8 of docs/exploration_queue.md). RE-READ ON FABLE 5.1 ON 7 NOVEMBER 2026 (the Opus reading of 24 October 2026 is superseded): the paper does not name Vamp1, interneurons or inhibitory neurons anywhere in its full text, and does not compare nuclear with whole-cell RNA; it establishes the mechanism in general, in cultured mouse hippocampal and forebrain neurons: "Cytoplasmic Rbfox1 binding increased target mRNA stability and translation" (abstract); "cytoplasmically localized Rbfox1 promotes the stability and/or translation of target transcripts by binding to their 3′ UTRs"; "Over 90% of the changes in mRNA level detected by microarray analysis represented decreases in expression induced by KD of Rbfox1 and 3, reflecting a role for Rbfox in stabilizing mRNAs"; "a set of 109 directly bound Rbfox1-increased transcripts" named by example as Camk2a, Camk2b, Camk2g, Camk4, Ppp3r1 and Camta1. The VAMP1-specific link is vuong2018rbfox1, which cites this paper for the mechanism and for its cytoplasmic iCLIP dataset; the step from cytoplasmic stabilisation to a nuclear-RNA understatement is the repository's inference and is tested by neither paper. Whether Vamp1 is among the 109 targets is in the supplementary table NIHMS745298-supplement-3.xls, NOT READ: Elsevier's ars.els-cdn.com robots file disallows it, Europe PMC serves no supplementary files for this non-open-access article, and PMC's download answered with its human-check gate on 7 November 2026. Full text PMC4858412 (NIH author manuscript), read in full on Fable on 7 November 2026. Every field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (same nine authors in order, title, journal, volume 89, issue 1, pages 113-128, DOI); year 2016 is the journal-issue year of the Europe PMC record (issue January 2016), PubMed records the electronic publication as 10 December 2015, and the key keeps its 2015}
 }
 
 % Four entries for the papers that docs/open_decisions.md 9.79 cites in its text without a bibliography entry, added
@@ -9176,4 +9177,56 @@
   pmid    = {35387979},
   pmcid   = {PMC8986805},
   note    = {The second structural source for decision 9.114, from a laboratory independent of kang2022structure, confirming the same four-protein architecture. Every field read from the PubMed record (get_article_metadata) and confirmed against the Europe PMC core record; PubMed gives Cell Discovery, 2022-04-06, doi 10.1038/s41421-022-00392-4, PMID 35387979, PMCID PMC8986805, authors Zhou, Liu, Zhao, Wu, Yan. VOLUME, ISSUE AND PAGE (8(1):33) WERE TAKEN FROM THE ARTICLE'S OWN FULL-TEXT RECORD AND SHOULD BE RECONFIRMED against a core Europe PMC query before this entry is relied on, since the Europe PMC core record was not fetched for this PMID in the pass of 7 November 2026. Full text read on Fable 7 November 2026 as the Europe PMC full-text XML of PMC8986805 with experiments/read_public_page.py. Quoted for 9.114: "NALCN regulates the resting membrane potential by mediating the Na+ leak current in neurons, and it functions as a channelosome in complex with FAM155A, UNC79, and UNC80." (Abstract); "The UNC79-UNC80 assembly specifically associates with the NALCN-FAM155A subcomplex through the intracellular II-III linker of NALCN." (Abstract); "Previous studies indicate that UNC80 directly interacts with NALCN and forms a binding scaffold for UNC79 and other potential regulators such as the Src family of tyrosine kinases (SFKs)20,21." (Introduction). Europe PMC isOpenAccess Y, inPMC Y, licence cc by}
+}
+
+@article{carlyle2017multiregional,
+  author  = {Carlyle, Becky C. and Kitchen, Robert R. and Kanyo, Jean E. and Voss, Edward Z. and Pletikos, Mihovil and Sousa, Andr{\'e} M. M. and Lam, TuKiet T. and Gerstein, Mark B. and Sestan, Nenad and Nairn, Angus C.},
+  title   = {A multiregional proteomic survey of the postnatal human brain},
+  journal = {Nature Neuroscience},
+  year    = {2017},
+  volume  = {20},
+  number  = {12},
+  pages   = {1787--1795},
+  doi     = {10.1038/s41593-017-0011-2},
+  pmid    = {29184206},
+  note    = {The human regional brain proteome named by item 8 of docs/exploration_queue.md for a VAMP1 to VAMP2 protein share. Label-free quantification of seven regions ("cerebellum (CBC), striatum (STR), mediodorsal thalamic nucleus (MD), amygdala (AMY), hippocampus (HIP), primary visual cortex (V1C), and dorsolateral prefrontal cortex (DFC)") from 16 individuals; "A large fraction (5,151; 71%) of the 7,244 total proteins were reliably quantified by LFQ"; data "deposited to the ProteomeXchange Consortium via the PRIDE partner repository with the data set identifier PXD005445". Full text PMC5894337 read on Fable on 7 November 2026; it does not mention VAMP1 or VAMP2. THE PER-PROTEIN TABLE WAS NOT READ: Nature's article page and its static-content ESM files refuse automated readers, the PMC supplement (Europe PMC supplementaryFiles, 52 MB) holds the figures only, and PRIDE PXD005445 holds raw files, a sample table and a 6.2 GB MaxQuant archive (routes recorded in the item 8 addition of 7 November 2026). Every field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (ten authors in order, volume 20, issue 12, pages 1787-1795, DOI; Europe PMC isOpenAccess Y, no licence field)}
+}
+
+@article{kim2014draft,
+  author  = {Kim, Min-Sik and others},
+  title   = {A draft map of the human proteome},
+  journal = {Nature},
+  year    = {2014},
+  volume  = {509},
+  number  = {7502},
+  pages   = {575--581},
+  doi     = {10.1038/nature13302},
+  pmid    = {24870542},
+  note    = {The source of ProteomicsDB's adult frontal cortex samples (project "Pandey_Nature_2014") behind the VAMP1 protein share of item 8 of docs/exploration_queue.md, addition of 7 November 2026. "In-depth proteomic profiling of 30 histologically normal human samples, including 17 adult tissues, 7 fetal tissues and 6 purified primary haematopoietic cells" (abstract). Read for the item through ProteomicsDB's API on Fable on 7 November 2026, where its samples Adult_Frontalcortex_bRP_Elite_85 and Adult_Frontalcortex_Gel_Elite_80 give log10 intensities of 6.590 and 6.602 for VAMP1 (P23763) against 6.856 and 6.713 for VAMP2 (P63027); the paper itself was read by abstract only. Seventy-two authors on the PubMed and Europe PMC records (both 72, same order), shortened here. Every other field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (volume 509, issue 7502, pages 575-581, DOI; Europe PMC isOpenAccess Y, PMC4403737)}
+}
+
+@article{wang2019deep,
+  author  = {Wang, Dongxue and others},
+  title   = {A deep proteome and transcriptome abundance atlas of 29 healthy human tissues},
+  journal = {Molecular Systems Biology},
+  year    = {2019},
+  volume  = {15},
+  number  = {2},
+  pages   = {e8503},
+  doi     = {10.15252/msb.20188503},
+  pmid    = {30777892},
+  note    = {The source of ProteomicsDB's whole-brain sample (project "WANG_MSB-2019") behind the VAMP1 protein share of item 8 of docs/exploration_queue.md, addition of 7 November 2026. "we generated a quantitative proteome and transcriptome abundance atlas of 29 paired healthy human tissues from the Human Protein Atlas project representing human genes by 18,072 transcripts and 13,640 proteins" (abstract). Read for the item through ProteomicsDB's API on Fable on 7 November 2026, where its brain sample gives log10 intensities of 5.624 for VAMP1 (P23763) against 6.386 for VAMP2 (P63027), a share of 0.148; the paper itself was read by abstract only. Nineteen authors on both records, shortened here. Every other field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (volume 15, issue 2, article e8503, DOI; Europe PMC isOpenAccess Y, licence CC BY, PMC6379049)}
+}
+
+@article{samaras2020proteomicsdb,
+  author  = {Samaras, Patroklos and others},
+  title   = {{ProteomicsDB}: a multi-omics and multi-organism resource for life science research},
+  journal = {Nucleic Acids Research},
+  year    = {2020},
+  volume  = {48},
+  number  = {D1},
+  pages   = {D1153--D1163},
+  doi     = {10.1093/nar/gkz974},
+  pmid    = {31665479},
+  note    = {The database through which the VAMP1 and VAMP2 protein intensities of item 8 of docs/exploration_queue.md (addition of 7 November 2026) were read, by its OData API (proteinexpression.xsodata, CALCULATION_METHOD=0, MS_LEVEL=1) with experiments/read_public_page.py on Fable on 7 November 2026. The paper describes the resource ("the real-time exploration and retrieval of protein abundance values across different tissues, cell lines, and body fluids via interactive expression heat maps and body maps") but does not define the API's NORMALIZED_INTENSITY field, and the API metadata lists CALCULATION_METHOD without naming it, so THE UNIT OF THE INTENSITIES (iBAQ by default, according only to third-party wrappers) IS UNVERIFIED from the provider's own text; within-sample ratios of two proteins are what the item uses. Full text PMC7145565 read on Fable on 7 November 2026. Sixteen authors on both records, shortened here. Every other field read from the PubMed record and confirmed against Europe PMC on 7 November 2026 (volume 48, issue D1, pages D1153-D1163, DOI; Europe PMC isOpenAccess Y, licence CC BY-NC)}
 }

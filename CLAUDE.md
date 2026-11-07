@@ -180,8 +180,9 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   ("All rights reserved", from PubMed's copyright record) was wrong; the version of record is CC BY-NC-ND 4.0, read on
   the publisher's PDF in the Radboud Repository and matched by Crossref, Europe PMC and OpenAlex (the row and
   `docs/label_source_review.md` section 36 hold the quote); and `lee2015cytoplasmic` in `docs/references.bib`, read on
-  Opus 5.5 on 24 October 2026 and flagged in its note and in item 8 of `docs/exploration_queue.md`, which has had no
-  Fable recheck; item 8 is parked, so nothing relies on it (found in the review of 4 November 2026).
+  Opus 5.5 on 24 October 2026 (found in the review of 4 November 2026), rechecked on Fable on 7 November 2026, which
+  found it does not bear on VAMP1 at all, only on cytoplasmic Rbfox1 targets in general; its note and item 8 of
+  `docs/exploration_queue.md` are corrected, and item 8 is parked.
 - **One case ran under a waiver, which is not the same thing** (recorded 27 October 2026). The bullet above covers
   research done before the rule existed. A second kind has since arisen: research done on another model after the
   rule, with the owner's explicit permission for that piece of work (26 October 2026: "Don't worry about fable this
@@ -189,10 +190,11 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   own row, and was rechecked on Fable on 1 November 2026, which left it standing: every citation exists and every
   quotation is in the source named, nothing is withdrawn, and the two gaps that remain (a subscription-only table in
   Torpy et al. 2001 and a paraphrase of Mendel 1989) are named in the row and relied on by nothing. So nothing written under the
-  waiver awaits a recheck. One reading on Opus still does, flagged where it stands: `lee2015cytoplasmic` (the
-  bullet above), whose item is parked (found 4 November 2026; this sentence had said none did). The second named
-  then, the literature of item 5 of `docs/exploration_queue.md`, read on Opus on 26 October 2026, was rechecked on
-  Fable on 7 November 2026: every number held, one word was corrected and one design detail added. **How a waiver works is the owner's to set
+  waiver awaits a recheck, and no reading on Opus now does. The two that did were rechecked on Fable on 7 November
+  2026: `lee2015cytoplasmic` (the bullet above), which bears on cytoplasmic Rbfox1 targets in general and not on
+  VAMP1 (the VAMP1 link is `vuong2018rbfox1`), its note and item 8 of `docs/exploration_queue.md` corrected; and the
+  literature of item 5 of `docs/exploration_queue.md`, read on Opus on 26 October 2026, where every number held, one
+  word was corrected and one design detail added. Both items are parked. **How a waiver works is the owner's to set
   and is not stated here**: whether a waived pass still needs a later Fable recheck before it is relied on, and
   whether a waiver covers one turn or a session, are both open. Until they are settled, a waived pass is flagged where
   it is recorded, as 9.68 is.

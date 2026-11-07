@@ -9,10 +9,10 @@ This document moved into the repository on 26 October 2026 from the Project note
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
 were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, and item 10 on 4 November 2026.
 
-Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8 carries
-literature read on Opus and not yet rechecked on Fable (its source `lee2015cytoplasmic`, read on 24 October 2026),
-flagged where it stands; the item is parked, so nothing relies on it. Item 5's literature, read on Opus on 26 October
-2026, was rechecked on Fable on 7 November 2026.
+Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8's literature, read on Opus on 24 October
+2026, and item 5's, read on Opus on 26 October 2026, were both rechecked on Fable on 7 November 2026
+(`lee2015cytoplasmic` bears on Rbfox1 targets in general, not on VAMP1, which rests on `vuong2018rbfox1`; item 8's
+entries say so); both items are parked, so nothing relies on them.
 
 Added 27 October 2026: the owner retired the two readout records (`docs/steady_state_readout_alternatives.md`,
 `docs/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
@@ -477,8 +477,13 @@ non-PV cortical neurons at about half the PV level of VAMP1 mRNA (`chung2024rbfo
 - A knockdown effect size is not a share: the same VAMP1 knockdown lowered mIPSC and mEPSC frequency by about 50%
   each (`vuong2018rbfox1`).
 - An mRNA share does not carry VAMP1's lower efficiency (`zimmermann2014synaptobrevin`).
-- The idea that cytoplasmic Rbfox1 makes nuclear RNA understate interneuron VAMP1 is a hypothesis, and its one
-  source (`lee2015cytoplasmic`) was read on Opus and is not yet rechecked on Fable.
+- The idea that cytoplasmic Rbfox1 makes nuclear RNA understate interneuron VAMP1 is a hypothesis that no source
+  tests. Its VAMP1 half rests on `vuong2018rbfox1` (RBFOX1 binds the Vamp1 3′ UTR; cytoplasmic Rbfox1 is sufficient
+  to restore Vamp1; Vamp2 is unchanged) and its mechanism half on `lee2015cytoplasmic` (cytoplasmic Rbfox1 stabilises
+  3′ UTR targets in general; the paper never names Vamp1). Both were re-read on Fable on 7 November 2026; neither
+  compares nuclear with whole-cell RNA, so the nuclear-understatement step is this repository's inference.
+
+**Added 7 November 2026 (Fable): the proteome check.** The second cheap check was run as far as open sources allow. Carlyle et al. 2017's per-protein table was not reached (`carlyle2017multiregional`: Nature's article page and its static-content ESM files refuse automated readers, the PMC supplement is figures only, and PRIDE PXD005445 holds raw files and a 6.2 GB MaxQuant archive). ProteomicsDB (`samaras2020proteomicsdb`, read by its API, log10 intensities, VAMP1 P23763 against VAMP2 P63027 in the same sample) gives a VAMP1 share VAMP1/(VAMP1+VAMP2) of 0.35 and 0.44 in the two adult frontal cortex samples of `kim2014draft` and 0.15 in whole brain in `wang2019deep` (fetal brain 0.19 and 0.39). A third cortex sample holds VAMP2 only. Limits: the intensity's definition (iBAQ by default) is not confirmed from ProteomicsDB's own documentation; VAMP1 and VAMP2 share tryptic peptides; two cortex samples. The whole-brain value matches the 0.145 mRNA share; the cortex values are 2 to 3 times higher. Not a measured per-cell-type share.
 
 **What would need an owner ruling.** Whether a per-transmitter share replaces the single share, once one is measured.
 The owner's call on keeping 0.145 is open in decision 9.68.
