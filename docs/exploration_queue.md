@@ -401,6 +401,25 @@ endosome. The endolysosome store `NEURON_MAM01413l` still has 0 edges in and 2 o
 SLC9A9 seed reaches 41,117 of 49,834 nodes, as almost every seed does. A Fable pass on NHE6 and NHE9 localisation,
 direction and disease association was started the same day.
 
+**Added 7 November 2026** (the Fable pass; full record `docs/endosomal_nhe_literature_2026-11-07.md`, 16 references).
+`MAR05430`'s SLC9A9 catalysis is **not physiological**: Human-GEM's `genes.tsv` sources its "Cell membrane;Lysosome"
+to DeepLoc2, a prediction, while UniProt Q8IVB4 puts NHE9 on endosomal membranes and gives "Cell membrane" only by
+similarity to a mouse hair-bundle study. NHE6 (Q92581) reaches the surface only during vesicular recycling
+(`ohgaki2008rack1`). Direction under loss, with signs an edge could carry: luminal pH falls, and with it TrkB
+signalling (`ouyang2013nhe6trkb`, with independent labs `kucharava2020nhe6hearing`, `gao2025nhe6trkbagonist`,
+`lizarraga2021csipscneurons`); lysosomal proteolysis falls while endosomal cathepsin D rises
+(`pescosolido2021nhe6lysosome`); tau rises (`lee2022nhe6ratlysosome`, human post-mortem `garbern2010slc9a6tau`).
+NHE9's disease association is now sourced: autism (`morrow2008autismloci`, `kondapalli2013nhe9`, loss-of-function
+variants) and ADHD (`laskysu2008adhdgwas`, `markunas2010slc9a9adhd`), the ADHD link suggestive only with one negative
+GWAS. **The premise of this item is corrected: Reactome release 98 is current and already holds both genes**, in
+`R-HSA-425986` "Sodium/Proton exchangers", which the build's fetch list omits; its reactions put SLC9A6 (grouped with
+SLC9A7, a membership question like 9.68's) on the early endosome and SLC9A9 on the late endosome, with the early
+endosome, late endosome and plasma membrane as separate compartments. So no later release is needed; what is missing
+is fetching that pathway, keeping its plasma-membrane reaction distinct from the endosomal ones, and a pH node. Two
+frictions the record names: reactome.org's robots file blocks the reader (the SBML export route was used, respected),
+so a fetch needs its hash pinned; and Reactome's late-endosome compartment for NHE9 follows a 2005 reading that a 2013
+astrocyte study puts on recycling endosomes instead, a disagreement to rule on rather than import unseen.
+
 ---
 
 ## 8. A measured per-cell-type VAMP1 share

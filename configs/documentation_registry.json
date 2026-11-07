@@ -901,6 +901,12 @@
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "the literature of exploration item 9 (the Krebs cycle and oxidative burden): which cycle and adjacent dehydrogenases are oxidant sources or targets in mammalian and brain mitochondria, eight rows that fit the curated schema and the metabolite-driven edges that do not; read on Fable; nothing applied to the tables"
+    },
+    "docs/endosomal_nhe_literature_2026-11-07.md": {
+      "class": "record",
+      "recorded": "2026-11-07",
+      "append_only": true,
+      "what": "the literature of exploration item 7 (endosomal Na+/H+ exchangers SLC9A6 and SLC9A9): localisation, direction and disease association, and the finding that Reactome release 98 already holds both genes in the unfetched pathway R-HSA-425986 with endosomal compartments; read on Fable; nothing applied to the graph"
     }
   }
 }
