@@ -199,13 +199,13 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "ab1409ae29662eb0f560d0b0afa77b48716dc3b0ec7bc33edafd8ecaa62dfb43",
+        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
         "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569"
       },
       "checked": "2026-11-07",
-      "checked_at_commit": "457f231b"
+      "checked_at_commit": "a22d70c5"
     },
     "012dc8f5-8ee9": {
       "title": "A module is a learned set of nodes",
@@ -219,11 +219,11 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "ab1409ae29662eb0f560d0b0afa77b48716dc3b0ec7bc33edafd8ecaa62dfb43",
+        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35"
       },
       "checked": "2026-11-07",
-      "checked_at_commit": "457f231b",
+      "checked_at_commit": "a22d70c5",
       "partner": "713638b8-497a"
     },
     "15448121-6479": {
@@ -241,14 +241,14 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "ab1409ae29662eb0f560d0b0afa77b48716dc3b0ec7bc33edafd8ecaa62dfb43",
+        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
         "file:experiments/run_main_model.py": "d40fdeea26f8c27aad669ae25068a5ef6f23bb8b33c01bbee6801ef07814d2ea",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af"
       },
       "checked": "2026-11-07",
-      "checked_at_commit": "457f231b"
+      "checked_at_commit": "a22d70c5"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
@@ -310,11 +310,11 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "ab1409ae29662eb0f560d0b0afa77b48716dc3b0ec7bc33edafd8ecaa62dfb43",
+        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35"
       },
       "checked": "2026-11-07",
-      "checked_at_commit": "457f231b"
+      "checked_at_commit": "a22d70c5"
     }
   },
   "records": {
