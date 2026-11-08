@@ -4,27 +4,32 @@
   "diagrams": {
     "d282955a-f81a": {
       "title": "From perturbation to symptom score in seven stages",
-      "state": "built_and_decided",
+      "state": "built",
       "depicts": {
         "decisions": [
           "1.1",
-          "9.106"
+          "9.106",
+          "9.117"
         ],
         "files": [
           "experiments/run_main_model_batch.py",
           "scripts/rebuild_data_layer.sh",
-          "mechanistic_pathway_learning/evidence/assemble_evidence_table.py"
+          "mechanistic_pathway_learning/evidence/assemble_evidence_table.py",
+          "mechanistic_pathway_learning/evidence/curated_drug_wiring.py"
         ]
       },
       "fingerprints": {
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
+        "decision:9.117": "2a61bbb8c406f2b67288f80a4db2414d3e5dc6bed7b9710e82117f5a2ee9f9fe",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
-        "file:scripts/rebuild_data_layer.sh": "2f277917e22cf8770ff26858ed09430d7e7f1e892a16e59fb71334b2465460c7",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "35f6783dff4ec91283153bb9191a39881d927e9c5693085b3a0a4cfee84a203c"
+        "file:scripts/rebuild_data_layer.sh": "0c2cd367f544f8eed66918c7b885f4c96144a07b973de71031fdef3170b1f581",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "1b08f5a83b0b5e026ee7023b07464f5c95ff471e0eda84794754a142cdabe954",
+        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "02dfef7f9fabd1014b066bf3b65e9867d5ed61f591829546b2a9d5eaa3fd24c1"
       },
-      "checked": "2026-11-05",
-      "checked_at_commit": "1e98f5d"
+      "checked": "2026-11-08",
+      "checked_at_commit": "965728ae",
+      "partner": "64d7b2e6-81e2"
     },
     "2d0e94ac-2bbc": {
       "title": "How the model is fit and tested",
@@ -315,6 +320,35 @@
       },
       "checked": "2026-11-07",
       "checked_at_commit": "a22d70c5"
+    },
+    "64d7b2e6-81e2": {
+      "title": "Seven stages, as decided (9.117)",
+      "state": "decided",
+      "partner": "d282955a-f81a",
+      "depicts": {
+        "decisions": [
+          "1.1",
+          "9.106",
+          "9.117"
+        ],
+        "files": [
+          "experiments/run_main_model_batch.py",
+          "scripts/rebuild_data_layer.sh",
+          "mechanistic_pathway_learning/evidence/assemble_evidence_table.py",
+          "mechanistic_pathway_learning/evidence/curated_drug_wiring.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
+        "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
+        "decision:9.117": "2a61bbb8c406f2b67288f80a4db2414d3e5dc6bed7b9710e82117f5a2ee9f9fe",
+        "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
+        "file:scripts/rebuild_data_layer.sh": "0c2cd367f544f8eed66918c7b885f4c96144a07b973de71031fdef3170b1f581",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "1b08f5a83b0b5e026ee7023b07464f5c95ff471e0eda84794754a142cdabe954",
+        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "02dfef7f9fabd1014b066bf3b65e9867d5ed61f591829546b2a9d5eaa3fd24c1"
+      },
+      "checked": "2026-11-08",
+      "checked_at_commit": "965728ae"
     }
   },
   "records": {

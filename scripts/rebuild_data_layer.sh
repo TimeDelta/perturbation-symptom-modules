@@ -252,18 +252,23 @@ fi
 # docs/symptom_crosswalk_fine.csv is derived from the coarse crosswalk by experiments/build_fine_symptom_crosswalk.py
 # (committed, held to a fresh build by tests/test_symptom_constructs.py). The same pipeline as v4, pointed at it: the
 # label sources, the label selections, the three absence sources (their raw caches are per drug and are reused) and the
-# release's literature table re-keyed to the namesake constructs (its raw cache is not on this disk). The drugs and
-# their targets are those of v4. Since 16 October the gene perturbations are alleles (decision 9.54: --allele-perturbations,
+# release's literature table re-keyed to the namesake constructs (its raw cache is not on this disk). Until 8 November
+# 2026 the drugs and their targets were those of v4; decision 9.117 adds the drug wiring below. Since 16 October the gene perturbations are alleles (decision 9.54: --allele-perturbations,
 # with Orphadata product 1 and configs/neomorphic_alleles.csv), so the v5 tables have their own drug-entry graph, which
 # adds the neomorphic alleles' nodes, with its per-node tables and its edge evidence.
 if [ "$stage" = "fine" ]; then
+  # Decision 9.117 (8 November 2026): the drugs the owner admitted that the label sources alone leave out. Group N plus
+  # the rule-14 substances, lithium's ATC code from its other SIDER identifier, the curated mechanism targets of a drug
+  # ChEMBL holds none for, and (OnSIDES only) the enantiomers and the isotopologue filed as drugs of their own.
+  drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv"
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
-      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0
+      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring \
+      --perturbation-identity-overrides configs/perturbation_identity_overrides.csv
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
-      --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations
+      --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations $drug_wiring
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"

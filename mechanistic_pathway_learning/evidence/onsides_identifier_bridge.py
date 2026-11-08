@@ -58,7 +58,10 @@ OMOP_IDENTIFIER_PREFIX = "OMOP"
 UNIFICATION_METHOD_CHEMBL_PARENT = "chembl_parent"
 UNIFICATION_METHOD_SIDER_DRUG_NAME = "sider_drug_name"
 UNIFICATION_METHOD_NONE = "none"
-UNIFICATION_METHODS: tuple[str, ...] = (UNIFICATION_METHOD_CHEMBL_PARENT, UNIFICATION_METHOD_SIDER_DRUG_NAME, UNIFICATION_METHOD_NONE)
+UNIFICATION_METHOD_OVERRIDE_SPLIT = "identity_override_split"  # configs/perturbation_identity_overrides.csv (decision 9.117)
+UNIFICATION_METHOD_OVERRIDE_MERGE = "identity_override_merge"
+UNIFICATION_METHODS: tuple[str, ...] = (UNIFICATION_METHOD_CHEMBL_PARENT, UNIFICATION_METHOD_SIDER_DRUG_NAME, UNIFICATION_METHOD_NONE,
+                                        UNIFICATION_METHOD_OVERRIDE_SPLIT, UNIFICATION_METHOD_OVERRIDE_MERGE)
 
 RXCLASS_INGREDIENT_TERM_TYPES = ("IN", "PIN")  # RxNorm ingredient and precise ingredient; MIN is a multi-ingredient concept
 
@@ -78,6 +81,7 @@ class IngredientBridge:
     chembl_pref_name: str | None = None
     atc_codes_rxnav: list[str] = field(default_factory=list)  # ATC classes of the ingredient itself from RxNav
     atc_codes_sider: list[str] = field(default_factory=list)  # drug_atc.tsv codes of the unified SIDER drug
+    atc_codes_curated: list[str] = field(default_factory=list)  # configs/atc_code_supplements.csv, applied at load (evidence/curated_drug_wiring.py)
     perturbation_id: str = ""
     unified_with_sider: bool = False
     unification_method: str = UNIFICATION_METHOD_NONE  # one of UNIFICATION_METHODS
@@ -86,14 +90,15 @@ class IngredientBridge:
     sider_collision_pubchem_cids: list[int] = field(default_factory=list)
     sider_cid_chembl_parents: list[str] = field(default_factory=list)  # every ChEMBL parent behind the chosen (stereo-flattened) SIDER CID
     sider_cid_merges_distinct_parents: bool = False  # the chosen CID carries more than one ChEMBL parent
+    split_from_sider_pubchem_cid: int | None = None  # the SIDER CID an identity override split this ingredient from (decision 9.117)
     mechanism_target_ids: list[str] = field(default_factory=list)
     single_mechanism_target: bool = False
     nervous_system_atc: bool = False
 
     @property
     def atc_codes(self) -> list[str]:
-        """Union of the RxNav and SIDER codes, sorted, for the ATC N test and for display."""
-        return sorted(set(self.atc_codes_rxnav) | set(self.atc_codes_sider))
+        """Union of the RxNav, SIDER and curated codes, sorted, for the ATC test and for display."""
+        return sorted(set(self.atc_codes_rxnav) | set(self.atc_codes_sider) | set(self.atc_codes_curated))
 
 
 def identifier_system_for_ingredient(ingredient_id: str) -> str:

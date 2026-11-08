@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 45, 7 November 2026). The text is the doc's own Markdown export; the 20 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 47, 8 November 2026). The text is the doc's own Markdown export; the 21 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -21,9 +21,13 @@ The cheapest experiment nobody has run is **R0**, the rate-invariance check: min
 
 A perturbation enters as a signed seed, settles through one damped linear operator and is read out per symptom; only stage 4 holds learned propagation, and the labels meet the predictions only at scoring.
 
-![registered pipeline · 7 stages · from registered_rules.json and the 21 Oct rebuild chain](study_sheet_figures/01_pipeline.png)
+![registered pipeline, as built · 7 stages · from registered_rules.json and the rebuild chain; v5 graph of 5 Nov 2026, before decisions 9.112 and 9.117](study_sheet_figures/01_pipeline.png)
 
-*registered pipeline · 7 stages · from registered_rules.json and the 21 Oct rebuild chain*
+*registered pipeline, as built · 7 stages · from registered_rules.json and the rebuild chain; v5 graph of 5 Nov 2026, before decisions 9.112 and 9.117*
+
+![registered pipeline, as decided · decision 9.117 ruled 8 Nov 2026, not built: DrugCentral targets for zuclopenthixol and mianserin](study_sheet_figures/01b_pipeline_as_decided.png)
+
+*registered pipeline, as decided · decision 9.117 ruled 8 Nov 2026, not built: DrugCentral targets for zuclopenthixol and mianserin*
 
 The nonlinearities switched on by default (bottleneck, pH weight) sit after the loop; the in-loop aggregators and edge gates are off, so none of them can change the route a signal takes, only its size at the end.
 

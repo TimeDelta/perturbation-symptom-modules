@@ -18,6 +18,13 @@ from pathlib import Path
 
 import pandas as pd
 
+from mechanistic_pathway_learning.evidence.curated_drug_wiring import (
+    apply_atc_code_supplements,
+    apply_perturbation_identity_overrides,
+    read_atc_code_supplements,
+    read_curated_mechanism_targets,
+    read_perturbation_identity_overrides,
+)
 from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, load_sider_events, read_admitted_atc_prefixes, read_preferred_term_to_target_symptom
 from mechanistic_pathway_learning.evidence.load_onsides_label_events import (
     ONSIDES_RELEASE,
@@ -65,10 +72,11 @@ def qualified_sider_pairs(evidence_directory: Path) -> set[tuple[str, str]]:
 
 
 def sider_identifiers_by_perturbation(bridges: dict[str, IngredientBridge]) -> dict[str, set[str]]:
-    """perturbation_id -> every STITCH flat identifier the bridge links to it (the unified CID and its collisions)."""
+    """perturbation_id -> every STITCH flat identifier the bridge links to it (the unified CID and its collisions, and
+    for an ingredient an identity override split off, the CID whose stereo-flattened 2015 labels pooled it)."""
     identifiers: dict[str, set[str]] = {}
     for bridge in bridges.values():
-        linked = {stitch_flat_id_from_pubchem_cid(cid) for cid in [bridge.sider_pubchem_cid, *bridge.sider_collision_pubchem_cids] if cid is not None}
+        linked = {stitch_flat_id_from_pubchem_cid(cid) for cid in [bridge.sider_pubchem_cid, bridge.split_from_sider_pubchem_cid, *bridge.sider_collision_pubchem_cids] if cid is not None}
         if linked:
             identifiers.setdefault(bridge.perturbation_id, set()).update(linked)
     return identifiers
@@ -118,6 +126,13 @@ def main() -> None:
     parser.add_argument("--max-drug-targets", type=int, default=1, help="most mechanism targets a qualifying ingredient may have; 0 lifts the single-target rule")
     parser.add_argument("--admitted-atc-prefixes", type=Path, default=None,
                         help="written list of the ATC groups and substances admitted in place of group N alone (atc_prefix column); pass the same file to the assembler")
+    parser.add_argument("--atc-code-supplements", type=Path, default=None,
+                        help="decision 9.117: ATC codes a label source holds for a substance under another identifier (configs/atc_code_supplements.csv); pass the same file to the assembler")
+    parser.add_argument("--curated-drug-targets", type=Path, default=None,
+                        help="decision 9.117: the role-mechanism rows of a drug-to-target table (configs/psychiatric_drug_additions_v4_draft.csv), "
+                             "read for an ingredient whose ChEMBL route finds no target; pass the same file to the assembler")
+    parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
+                        help="decision 9.117: the perturbation an ingredient is filed under where the bridge's unification is overridden (configs/perturbation_identity_overrides.csv)")
     parser.add_argument("--narrow-complex-targets", action=argparse.BooleanOptionalAction, default=True,
                         help="decision 8.11: narrow an ingredient's ChEMBL complex targets to the subunits the Guide to PHARMACOLOGY names, as the "
                              "evidence assembly does for SIDER drugs; pass it the same choice")
@@ -135,6 +150,16 @@ def main() -> None:
     lower_level_to_preferred = sider_lower_level_to_preferred_terms(arguments.sider_dir) if (arguments.sider_dir / "meddra_all_se.tsv.gz").exists() else None
     statements = aggregate_label_statements(tables, preferred_term_to_symptom, lower_level_to_preferred)
     bridges = load_ingredient_identifier_bridge(arguments.bridge)
+    wiring: dict = {}
+    if arguments.perturbation_identity_overrides is not None:
+        wiring["identity_overrides"] = {"file": str(arguments.perturbation_identity_overrides),
+                                        "ingredients": apply_perturbation_identity_overrides(bridges, read_perturbation_identity_overrides(arguments.perturbation_identity_overrides))}
+    if arguments.atc_code_supplements is not None:
+        wiring["atc_code_supplements"] = {"file": str(arguments.atc_code_supplements),
+                                          "ingredients": apply_atc_code_supplements(bridges, read_atc_code_supplements(arguments.atc_code_supplements))}
+    curated_targets = read_curated_mechanism_targets(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None
+    if curated_targets is not None:
+        wiring["curated_drug_targets"] = {"file": str(arguments.curated_drug_targets), "perturbations": sorted(curated_targets)}
     mechanisms_by_molecule = mechanisms_by_parent_and_molecule(json.loads((arguments.chembl_dir / "mechanisms.json").read_text()))
     targets = json.loads((arguments.chembl_dir / "targets.json").read_text())
     node_lookup = GraphNodeLookup.from_nodes(pd.read_parquet(arguments.graph_dir / "nodes.parquet"), arguments.non_protein_targets)
@@ -143,7 +168,7 @@ def main() -> None:
     admitted_atc_prefixes = read_admitted_atc_prefixes(arguments.admitted_atc_prefixes) if arguments.admitted_atc_prefixes is not None else NERVOUS_SYSTEM_ATC_PREFIXES
     narrowing = ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None
     reports, counts = onsides_reports(statements, bridges, mechanisms_by_molecule, targets, node_lookup, compounds_by_chembl_id, arguments.max_drug_targets or None, admitted_atc_prefixes,
-                                      complex_target_narrowing=narrowing)
+                                      complex_target_narrowing=narrowing, curated_targets_by_perturbation=curated_targets)
 
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     reports.to_parquet(arguments.output_dir / "onsides_reports.parquet", index=False)
@@ -158,14 +183,15 @@ def main() -> None:
                "reports_by_section": qualifying.label_section.value_counts().to_dict(), "reports_by_term_type": qualifying.meddra_term_type.value_counts().to_dict(),
                "reports_by_unification_method": {method: int(count) for method, count in qualifying.ingredient_id.map(lambda ingredient_id: bridges[ingredient_id].unification_method).value_counts().items()},
                "qualifying_drugs_unified_with_sider": int(qualifying[qualifying.unified_with_sider].perturbation_id.nunique()),
-               "qualifying_drugs_onsides_only": int(qualifying[~qualifying.unified_with_sider].perturbation_id.nunique())}
+               "qualifying_drugs_onsides_only": int(qualifying[~qualifying.unified_with_sider].perturbation_id.nunique()),
+               "curated_wiring": wiring}
     (arguments.output_dir / "onsides_summary.json").write_text(json.dumps(summary, indent=1))
 
     lines = [f"# OnSIDES {ONSIDES_RELEASE} later label slice (generated by experiments/build_onsides_reports.py)", "",
              f"Data release {ONSIDES_RELEASE_DATE} (CC BY 4.0). One report per deduplicated label statement (ingredient, target symptom, MedDRA term, label section, country); "
              "the bridge routes, the report schema, the qualification rule and the label-section semantics are specified in docs/onsides_label_slice_spec.md. "
              f"Statements: {counts['statements']} ({statements_by_term_type.get('PT', 0)} PT-coded, {statements_by_term_type.get('LLT', 0)} LLT-coded and matched through the PT their LLT falls under); "
-             f"qualifying reports (the SIDER rule: single mechanism target and an ATC N code; target gene in the graph; at least one single-ingredient label): {counts['qualifying_reports']} "
+             f"qualifying reports (the SIDER rule: a mechanism target within --max-drug-targets and an ATC code in {'group N' if admitted_atc_prefixes == NERVOUS_SYSTEM_ATC_PREFIXES else 'the admitted list ' + str(arguments.admitted_atc_prefixes)}; target gene in the graph; at least one single-ingredient label): {counts['qualifying_reports']} "
              f"from {counts['qualifying_ingredients']} ingredients and {counts['qualifying_perturbations']} perturbations ({summary['qualifying_drugs_unified_with_sider']} shared with SIDER, {summary['qualifying_drugs_onsides_only']} OnSIDES-only). "
              f"Disqualified statements by reason: {counts['disqualified']}; statements of ingredients without a bridge entry: {counts['ingredients_without_bridge']}.", "",
              "Label sections exist for US labels only (AR, BW, WP); every UK, EU and JP event carries label_section NA, OnSIDES' value for the undivided non-US label, "
