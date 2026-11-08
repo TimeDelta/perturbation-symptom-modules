@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 47, 8 November 2026). The text is the doc's own Markdown export; the 21 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 49, 8 November 2026). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -69,9 +69,13 @@ Two things in the code are worth knowing for the nonlinearity question. The bott
 
 ### Robustness and exploratory arms
 
-![robustness and exploratory arms · registered_rules.json, run_main_model_batch.py, models/edge_gates.py on main at e6ea5f5; built and decided agree](study_sheet_figures/07_robustness_arms.png)
+![robustness and exploratory arms, as built · registered_rules.json, run_main_model_batch.py, models/edge_gates.py on main; before decision 9.122](study_sheet_figures/07_robustness_arms.png)
 
-*robustness and exploratory arms · registered_rules.json, run_main_model_batch.py, models/edge_gates.py on main at e6ea5f5; built and decided agree*
+*robustness and exploratory arms, as built · registered_rules.json, run_main_model_batch.py, models/edge_gates.py on main; before decision 9.122*
+
+![robustness and exploratory arms, as decided · decision 9.122 ruled 8 Nov 2026, not built: one categorical gate per contested pair](study_sheet_figures/07b_robustness_arms_as_decided.png)
+
+*robustness and exploratory arms, as decided · decision 9.122 ruled 8 Nov 2026, not built: one categorical gate per contested pair*
 
 Neither arm can change the confirmatory verdict: the message-passing reading is reported beside it, and the edge-gate arms are not part of the registered model.
 

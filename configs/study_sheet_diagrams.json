@@ -257,12 +257,13 @@
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
-      "state": "built_and_decided",
+      "state": "built",
       "depicts": {
         "decisions": [
           "9.57",
           "9.62",
-          "9.77"
+          "9.77",
+          "9.122"
         ],
         "files": [
           "mechanistic_pathway_learning/models/edge_gates.py",
@@ -273,11 +274,13 @@
         "decision:9.57": "f6309bf9c169723ed912e5fa637ea756dc1f326feef5258452376161915fd3aa",
         "decision:9.62": "0df230af3831ea935acb135be0916610c4d7c8e92deab199150e6e2c61372764",
         "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
+        "decision:9.122": "1a7015cc144182ef1ce5ea00cfb1e8a53a62e07afcfb4fabb92cee5c7a61035a",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
         "file:configs/registered_rules.json": "49d388d1ed746f96ecb99d1a83880f0cf328138dc835568bfe9cb2a9d084247e"
       },
-      "checked": "2026-11-05",
-      "checked_at_commit": "d600be0"
+      "checked": "2026-11-08",
+      "checked_at_commit": "219a14d5",
+      "partner": "a2c305c9-428b"
     },
     "a7538790-dcbd": {
       "title": "What the graph holds, as built",
@@ -349,6 +352,33 @@
       },
       "checked": "2026-11-08",
       "checked_at_commit": "a815793e"
+    },
+    "a2c305c9-428b": {
+      "title": "Robustness and exploratory arms, as decided (9.122)",
+      "state": "decided",
+      "partner": "e45d7aa9-175e",
+      "depicts": {
+        "decisions": [
+          "9.57",
+          "9.62",
+          "9.77",
+          "9.122"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/edge_gates.py",
+          "configs/registered_rules.json"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.57": "f6309bf9c169723ed912e5fa637ea756dc1f326feef5258452376161915fd3aa",
+        "decision:9.62": "0df230af3831ea935acb135be0916610c4d7c8e92deab199150e6e2c61372764",
+        "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
+        "decision:9.122": "1a7015cc144182ef1ce5ea00cfb1e8a53a62e07afcfb4fabb92cee5c7a61035a",
+        "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
+        "file:configs/registered_rules.json": "49d388d1ed746f96ecb99d1a83880f0cf328138dc835568bfe9cb2a9d084247e"
+      },
+      "checked": "2026-11-08",
+      "checked_at_commit": "219a14d5"
     }
   },
   "records": {
