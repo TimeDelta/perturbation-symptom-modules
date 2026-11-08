@@ -926,6 +926,12 @@
       "append_only": true,
       "what": "the scoping of tardive dyskinesia as a fine symptom construct: its HPO, MedDRA, MeSH, ICD-10-CM and SNOMED identifiers, the evidence held for it on evidence_full_v5, the proposed additions row, the graph reach of its inducers and relievers on the v5 drug graph and the owner's questions; read on Fable, with the owner's rulings (decisions 9.115 and 9.116) and what was built added"
     },
+    "docs/dessauer2017_cyclase_edges_2026-11-08.md": {
+      "class": "record",
+      "recorded": "2026-11-08",
+      "append_only": true,
+      "what": "decision 9.97's G-protein-to-adenylyl-cyclase edges against Dessauer et al. 2017, Sunahara et al. 1996 and Taussig et al. 1994: whether reconstituted or transfected systems are the standard test (they are for admitting an effect, not for removing an edge), G beta gamma per isoform, the absent resting-Gs weight, and an edge-by-edge proposal; read on Fable"
+    },
     "docs/per_class_chloride_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
