@@ -20,8 +20,10 @@ config with its source per row:
                                              models (decision 9.121 C4), each with the label sentences that say so
   configs/perturbation_identity_overrides.csv
                                              the perturbation an OnSIDES ingredient reports on, where the bridge's
-                                             ChEMBL-parent unification put an enantiomer or an isotopologue under another
-                                             drug (split), left a salt of the same active ion as a drug of its own (merge),
+                                             ChEMBL-parent unification put an enantiomer under another drug and the
+                                             enantiomers act differently or are not known to act alike (split; decision
+                                             9.121 C5, where the sources show they act the same the merge stands),
+                                             left a salt of the same active ion as a drug of its own (merge),
                                              or gave it a ChEMBL parent with no mechanism row where the drug's own
                                              record holds one (parent; decision 9.121)
 

@@ -259,7 +259,8 @@ fi
 if [ "$stage" = "fine" ]; then
   # Decision 9.117 (8 November 2026): the drugs the owner admitted that the label sources alone leave out. Group N plus
   # the rule-14 substances, lithium's ATC code from its other SIDER identifier, the curated mechanism targets of a drug
-  # ChEMBL holds none for, and the identity overrides: the enantiomers and the isotopologue filed as drugs of their own,
+  # ChEMBL holds none for, and the identity overrides: the enantiomers that act differently from their racemate, or are not
+  # known to act alike, filed as drugs of their own (9.121 C5),
   # and (decision 9.121) the ChEMBL parents that replace a stereo record without a mechanism row, which the assembler's
   # SIDER fallback reads as well; and (9.121 C3, C4) the curated targets of drugs no database holds a mechanism for and
   # the drugs excluded as acting outside the brain. --curated-drug-targets takes several files, so it stays last.
