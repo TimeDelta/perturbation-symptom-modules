@@ -49,3 +49,17 @@ def test_the_hand_readings_are_well_formed() -> None:
     assert len(readings) == len({reading["drug"] for reading in readings})  # one reading per drug
     assert all(0 <= reading["percent_bound_low"] <= reading["percent_bound_high"] <= 100 for reading in readings)
     assert {reading["qualifier"] for reading in readings} == {"", "at least", "at most"}
+
+
+def test_the_friden_2011_chembl_file_is_excluded_from_the_exposure_tables() -> None:
+    """Decision 9.123: its deposited "Kp" is the brain slice volume times the homogenate unbound fraction, not a
+    brain-to-plasma ratio, so it is dropped from the counts and from the exposure table (the owner, 8 November 2026)."""
+    import sys
+    from pathlib import Path as _Path
+    sys.path.insert(0, str(_Path("experiments/label_review").resolve()))
+    from effect_site_coverage import EXCLUDED_FILES, UNCHECKED_FILES, WRONG_QUANTITY_FILES
+
+    assert "friden2011_via_chembl.csv" in WRONG_QUANTITY_FILES
+    assert WRONG_QUANTITY_FILES <= EXCLUDED_FILES and UNCHECKED_FILES <= EXCLUDED_FILES
+    assert not (WRONG_QUANTITY_FILES & UNCHECKED_FILES)  # the two reasons stay apart: unread against the paper, against read and wrong
+    assert "friden2009_via_chembl.csv" not in EXCLUDED_FILES  # checked clean by the Fable pass of 8 November 2026

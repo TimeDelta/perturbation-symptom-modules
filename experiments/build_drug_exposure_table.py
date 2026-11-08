@@ -59,7 +59,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "label_review"))
-from effect_site_coverage import UNCHECKED_FILES, normalise, species_class, study_keys
+from effect_site_coverage import EXCLUDED_FILES, normalise, species_class, study_keys
 
 EXPOSURE_DIRECTORY = Path("data/raw/exposure")
 BRAIN_EXPOSURE_DIRECTORY = Path("data/raw/label_review/effect_site_tables/kpuu")
@@ -203,7 +203,7 @@ def brain_exposure_summary(key_to_drug: dict[str, str]) -> dict[str, dict]:
     """Per drug: the median Kp,uu,brain of the best species class available, with how many values and from which files."""
     values: dict[str, dict[str, list[tuple[float, str]]]] = {}
     for path in sorted(BRAIN_EXPOSURE_DIRECTORY.glob("*.csv")):
-        if path.name in UNCHECKED_FILES:
+        if path.name in EXCLUDED_FILES:  # not read against their paper, or read and found not to be Kp,uu,brain (decision 9.123)
             continue
         for row in pd.read_csv(path, dtype=str).fillna("").to_dict("records"):
             quantity, species = row.get("quantity", ""), row.get("species", "")

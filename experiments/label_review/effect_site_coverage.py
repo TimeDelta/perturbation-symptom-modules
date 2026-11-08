@@ -72,6 +72,17 @@ OCCUPANCY_COURSE_NOT_WITHIN_DAYS_OF_A_DOSE = {
 SOFTWARE_DEFAULT_FILES = {"shafer2026.csv"}  # a dosing-simulation program's defaults, several marked provisional in the source; counted apart
 WITHIN_DAYS = "occupancy: at more than one time within hours to days of a dose"
 UNCHECKED_FILES = {"chembl_kpuu_typed_other_documents.csv"}  # ChEMBL activity records typed Kp,uu whose assay descriptions were not read against the papers
+# Files whose values were read against their paper and are NOT Kp,uu,brain. These are excluded from every count and
+# from the exposure table, which is what decision 9.123 means by dropping them (the owner, 8 November 2026: "Dropping
+# the Friden values seems the only option since they are not plasma bound values").
+#   friden2011_via_chembl.csv: ChEMBL deposits, from Fridén et al. 2011 (Drug Metab Dispos 39:353-362, PMID 21149540),
+#   a unitless "Kp" its assay description calls a brain-to-plasma ratio of unbound concentrations. The paper measures
+#   no plasma: it compares the brain slice method's unbound volume of distribution (Vu,brain) with the brain homogenate
+#   method's unbound fraction (fu,brain), and for 55 of its 56 compounds the deposited value is Vu,brain x fu,brain to
+#   within 3 per cent, the slice-to-homogenate discrepancy the paper is about. Four independent sources give the real
+#   values of two of its drugs (atenolol 0.026, nadolol 0.037) against this file's 2.25 and 2.63.
+WRONG_QUANTITY_FILES = {"friden2011_via_chembl.csv"}
+EXCLUDED_FILES = UNCHECKED_FILES | WRONG_QUANTITY_FILES
 
 
 def normalise(name: str) -> str:
@@ -149,7 +160,7 @@ def main() -> int:
         if drug is None:
             unmatched["kpuu"].add(normalise(row["compound_as_printed"]))
             continue
-        if row["file"] in UNCHECKED_FILES:
+        if row["file"] in EXCLUDED_FILES:
             flags[drug]["extent, unchecked ChEMBL record only"].add(row["file"])
             continue
         in_cerebrospinal_fluid = "csf" in row["quantity"].lower() or row["method"].strip().lower().startswith("csf")
