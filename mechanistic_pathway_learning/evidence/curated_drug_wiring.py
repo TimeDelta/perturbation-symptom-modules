@@ -18,6 +18,8 @@ config with its source per row:
                                              (a label-stated or single-source target accepted, the owner, 8 November 2026)
   configs/excluded_drug_perturbations.csv    drugs admitted on their ATC code that act outside the brain, which nothing
                                              models (decision 9.121 C4), each with the label sentences that say so
+  configs/rejected_sider_indications.csv     SIDER indication rows that misread a label: a condition the drug does not
+                                             treat, read from its indication's wording (decision 9.124)
   configs/perturbation_identity_overrides.csv
                                              the perturbation an OnSIDES ingredient reports on, where the bridge's
                                              ChEMBL-parent unification put an enantiomer under another drug and the
@@ -46,6 +48,7 @@ ATC_CODE_SUPPLEMENTS_PATH = Path("configs/atc_code_supplements.csv")
 CURATED_DRUG_TARGETS_PATH = Path("configs/psychiatric_drug_additions_v4_draft.csv")
 CURATED_DRUG_TARGETS_PATHS = (CURATED_DRUG_TARGETS_PATH, Path("configs/curated_drug_targets.csv"))
 EXCLUDED_DRUG_PERTURBATIONS_PATH = Path("configs/excluded_drug_perturbations.csv")
+REJECTED_SIDER_INDICATIONS_PATH = Path("configs/rejected_sider_indications.csv")
 PERTURBATION_IDENTITY_OVERRIDES_PATH = Path("configs/perturbation_identity_overrides.csv")
 CURATED_TARGET_PREFIX = "CURATED:"  # target id of a curated row that names no ChEMBL target
 IDENTITY_OVERRIDE_KINDS = ("split", "merge", "parent")
@@ -221,3 +224,18 @@ def read_excluded_drug_perturbations(path: Path) -> dict[str, str]:
                 raise ValueError(f"{path} lists {perturbation_id} twice")
             excluded[perturbation_id] = row["reason"].strip()
     return excluded
+
+
+def read_rejected_sider_indications(path: Path) -> set[tuple[str, str]]:
+    """{(STITCH flat id, MedDRA preferred term lowercase)} of SIDER indication rows to drop; every row names its reason
+    and its source. Only "relieves" events are matched: the same term as an adverse event of the drug is untouched."""
+    rejected: set[tuple[str, str]] = set()
+    with open(path, encoding="utf-8", newline="") as rejected_file:
+        for row in csv.DictReader(rejected_file):
+            key = (row["stitch_flat_id"].strip(), row["meddra_preferred_term"].strip().lower())
+            if not row["reason"].strip() or not row["source"].strip():
+                raise ValueError(f"{path}: the rejection of {key} names no reason or no source")
+            if key in rejected:
+                raise ValueError(f"{path} lists {key} twice")
+            rejected.add(key)
+    return rejected

@@ -249,3 +249,17 @@ def test_the_committed_curation_of_9_121_c3_holds_the_drugs_ruled_and_not_lisuri
     assert len(gaba_a.gene_symbols) == 14 and gaba_a.sign == 0.5
     assert {target.gene_symbols[0] for target in curated["RXCUI:2121751"]} == {"SLC6A2", "SLC6A3"}  # solriamfetol, no longer left out
     assert "MAOB" not in {symbol for target in curated["RXCUI:19832"] for symbol in target.gene_symbols}  # budipine's disputed row held
+
+
+def test_every_rejected_indication_names_a_sider_indication_event() -> None:
+    """Decision 9.124: a rejection that matches no event would drop nothing and pass silently."""
+    from mechanistic_pathway_learning.evidence.curated_drug_wiring import REJECTED_SIDER_INDICATIONS_PATH, read_rejected_sider_indications
+    from mechanistic_pathway_learning.evidence.load_drug_label_events import load_sider_events
+    rejected = read_rejected_sider_indications(REJECTED_SIDER_INDICATIONS_PATH)
+    assert len(rejected) == 3
+    sider = Path("data/raw/sider_4.1")
+    if not (sider / "meddra_all_indications.tsv.gz").exists():
+        pytest.skip("SIDER 4.1 is not on this disk")
+    indications = {(event.stitch_flat_id, event.meddra_preferred_term.lower()) for event in load_sider_events(sider, Path("docs/symptom_crosswalk_fine.csv"))
+                   if event.relation == "relieves"}
+    assert rejected <= indications

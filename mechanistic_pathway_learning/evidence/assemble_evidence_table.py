@@ -99,7 +99,8 @@ from mechanistic_pathway_learning.evidence.allele_mechanisms import (
     read_neomorphic_alleles,
 )
 from mechanistic_pathway_learning.evidence.gene_disease_association_types import genes_with_gain_of_function_associations_only
-from mechanistic_pathway_learning.evidence.curated_drug_wiring import read_atc_code_supplements, read_curated_mechanism_targets_from, read_excluded_drug_perturbations, supplemented_atc_codes
+from mechanistic_pathway_learning.evidence.curated_drug_wiring import (read_atc_code_supplements, read_curated_mechanism_targets_from, read_excluded_drug_perturbations,
+                                                                    read_rejected_sider_indications, supplemented_atc_codes)
 from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, drug_label_reports, has_admitted_atc_code, load_sider_events, read_admitted_atc_prefixes, read_two_column_tsv
 from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
 from mechanistic_pathway_learning.evidence.load_monogenic_phenotype_annotations import (
@@ -696,6 +697,7 @@ def assemble(
     curated_targets_by_perturbation: dict[str, list] | None = None,
     identity_overrides_path: Path | None = None,
     excluded_perturbations: dict[str, str] | None = None,
+    rejected_indications: set[tuple[str, str]] | None = None,
 ) -> AssembledEvidence:
     """Build the report table, aggregate it to observations, fit the report-level reliability model and weight the observations.
 
@@ -720,8 +722,9 @@ def assemble(
     before the ATC test, and curated_targets_by_perturbation gives the targets of a SIDER drug whose ChEMBL route finds
     none (evidence/curated_drug_wiring.py, decision 9.117); identity_overrides_path applies configs/perturbation_identity_overrides.csv
     to the bridge parents the SIDER route falls back to (decision 9.121); excluded_perturbations (configs/excluded_drug_perturbations.csv,
-    decision 9.121 C4) drops the SIDER drugs that act outside the brain; all four None build as every table before 8 November
-    2026 was built."""
+    decision 9.121 C4) drops the SIDER drugs that act outside the brain; rejected_indications ((STITCH flat id, preferred term
+    lowercase), configs/rejected_sider_indications.csv, decision 9.124) drops SIDER indication rows that misread a label; all
+    five None build as every table before 8 November 2026 was built."""
     if allele_perturbations and seed_gain_of_function_genes_positive:
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
     if weighting not in WEIGHTINGS:
@@ -790,6 +793,8 @@ def assemble(
         check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule)
         for event in load_sider_events(sider_directory, crosswalk_path):
             if excluded_perturbations and event.stitch_flat_id in excluded_perturbations:
+                continue
+            if rejected_indications and event.relation == "relieves" and (event.stitch_flat_id, event.meddra_preferred_term.lower()) in rejected_indications:
                 continue
             drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id)
             target_source = "ChEMBL"
@@ -979,6 +984,8 @@ def main() -> None:
                              "configs/curated_drug_targets.csv), read for a SIDER drug whose ChEMBL route finds no target; pass the same files to build_onsides_reports.py")
     parser.add_argument("--excluded-drug-perturbations", type=Path, default=None,
                         help="decision 9.121 C4: configs/excluded_drug_perturbations.csv, drugs that act outside the brain; pass the same file to build_onsides_reports.py")
+    parser.add_argument("--rejected-indications", type=Path, default=None,
+                        help="decision 9.124: configs/rejected_sider_indications.csv, SIDER indication rows that misread a label")
     parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
                         help="decisions 9.117 and 9.121: configs/perturbation_identity_overrides.csv, applied to the bridge parents the SIDER route falls back to; "
                              "pass the same file to build_onsides_reports.py")
@@ -1012,7 +1019,8 @@ def main() -> None:
                          atc_code_supplements=read_atc_code_supplements(arguments.atc_code_supplements) if arguments.atc_code_supplements is not None else None,
                          curated_targets_by_perturbation=read_curated_mechanism_targets_from(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None,
                          identity_overrides_path=arguments.perturbation_identity_overrides,
-                         excluded_perturbations=read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None)
+                         excluded_perturbations=read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None,
+                         rejected_indications=read_rejected_sider_indications(arguments.rejected_indications) if arguments.rejected_indications is not None else None)
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     for name, table in (("evidence_records.parquet", assembled.observations), ("unmapped_records.parquet", assembled.unmapped), ("evidence_reports.parquet", assembled.reports)):  # atomic replace for concurrent readers
         table.to_parquet(arguments.output_dir / (name + ".tmp"), index=False)

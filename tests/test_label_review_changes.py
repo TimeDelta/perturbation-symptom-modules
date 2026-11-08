@@ -292,3 +292,20 @@ def test_the_loader_marks_the_relabelled_pairs_as_evidenced_negatives(tmp_path: 
     assert data.evidenced_negative[0, insomnia] and not data.evidenced_negative[0, anxiety]
     assert data.outcomes[0, insomnia] == 0 and data.label_mask[0, insomnia]
     assert load_experiment_data(graph_directory, evidence_directory).evidenced_negative is None  # no selection: nothing marked
+
+
+def test_a_qualitative_band_does_not_enter_an_arm_of_the_placebo_comparison() -> None:
+    """Decision 9.124: entacapone's parkinsonism entry gave the drug arm 13.9 percent and "common" (0.01 to 1.0, midpoint
+    0.505) against 14.8 percent on placebo; averaged, the drug arm read 32 percent and the pair as above placebo."""
+    from mechanistic_pathway_learning.evidence.load_drug_label_events import SiderFrequencyRow
+    from mechanistic_pathway_learning.evidence.placebo_arm_comparison import states_a_number
+
+    def row(placebo: str, text: str, lower: float, upper: float, ordinal: int) -> SiderFrequencyRow:
+        return SiderFrequencyRow("CID100000001", "C1", placebo, text, lower, upper, "C2", "Parkinsonism", ordinal)
+
+    rows = {("CID100000001", "parkinsonism"): [row("", "13.9%", 0.139, 0.139, 1), row("", "common", 0.01, 1.0, 2), row("placebo", "14.8%", 0.148, 0.148, 1)]}
+    comparison = compare_drug_arm_with_placebo_arm(rows, {"parkinsonism": "parkinsonism"})[("CID100000001", "parkinsonism")]
+    assert comparison.never_above_placebo
+    assert not states_a_number(row("", "postmarketing", 0.0, 0.001, 1)) and states_a_number(row("", "<1%", 0.0, 0.01, 1))
+    only_bands = {("CID100000001", "parkinsonism"): [row("", "common", 0.01, 1.0, 1), row("placebo", "14.8%", 0.148, 0.148, 1)]}
+    assert compare_drug_arm_with_placebo_arm(only_bands, {"parkinsonism": "parkinsonism"}) == {}  # no numeric drug arm, not judged
