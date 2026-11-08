@@ -100,7 +100,8 @@ from mechanistic_pathway_learning.evidence.allele_mechanisms import (
 )
 from mechanistic_pathway_learning.evidence.gene_disease_association_types import genes_with_gain_of_function_associations_only
 from mechanistic_pathway_learning.evidence.curated_drug_wiring import read_atc_code_supplements, read_curated_mechanism_targets, supplemented_atc_codes
-from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, drug_label_reports, has_admitted_atc_code, load_sider_events, read_admitted_atc_prefixes
+from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, drug_label_reports, has_admitted_atc_code, load_sider_events, read_admitted_atc_prefixes, read_two_column_tsv
+from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
 from mechanistic_pathway_learning.evidence.load_monogenic_phenotype_annotations import (
     load_hpo_annotation_rows,
     load_hpo_is_a_parents_from_obo,
@@ -539,18 +540,28 @@ def summarize_reports(reports: pd.DataFrame, fit: ReportReliabilityFit, defaults
     }
 
 
-def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None) -> dict[int, list[str]]:
+def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None, identity_overrides_path: Path | None = None,
+                                       sider_directory: Path | None = None) -> dict[int, list[str]]:
     """SIDER PubChem CID -> the ChEMBL parents the OnSIDES bridge unified with it (empty without a bridge file).
 
     The SIDER route reaches ChEMBL through UniChem; for a CID UniChem leaves without a usable ChEMBL id, the parent
     the bridge found for the same drug by RxNorm, UNII or name is the fallback (docs/drug_targets_any_type.md).
+    identity_overrides_path (configs/perturbation_identity_overrides.csv, decisions 9.117 and 9.121) is applied to the
+    bridge first, as build_onsides_reports.py applies it, so a parent override or a merge reaches the SIDER drug too.
     """
     if onsides_bridge_path is None or not Path(onsides_bridge_path).exists():
         return {}
     from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import load_ingredient_identifier_bridge
 
+    bridges = load_ingredient_identifier_bridge(onsides_bridge_path)
+    if identity_overrides_path is not None:
+        from mechanistic_pathway_learning.evidence.curated_drug_wiring import apply_perturbation_identity_overrides, read_perturbation_identity_overrides
+        sider_names = {}
+        if sider_directory is not None and (Path(sider_directory) / "drug_names.tsv").exists():
+            sider_names = corrected_drug_names({key: values[0] for key, values in read_two_column_tsv(Path(sider_directory) / "drug_names.tsv").items()})
+        apply_perturbation_identity_overrides(bridges, read_perturbation_identity_overrides(identity_overrides_path), sider_names)
     parents_by_cid: dict[int, set[str]] = {}
-    for bridge in load_ingredient_identifier_bridge(onsides_bridge_path).values():
+    for bridge in bridges.values():
         if bridge.unified_with_sider and bridge.sider_pubchem_cid is not None and bridge.chembl_parent:
             parents_by_cid.setdefault(int(bridge.sider_pubchem_cid), set()).add(bridge.chembl_parent)
     return {cid: sorted(parents) for cid, parents in parents_by_cid.items()}
@@ -683,6 +694,7 @@ def assemble(
     complex_target_narrowing=None,
     atc_code_supplements: dict[str, list[str]] | None = None,
     curated_targets_by_perturbation: dict[str, list] | None = None,
+    identity_overrides_path: Path | None = None,
 ) -> AssembledEvidence:
     """Build the report table, aggregate it to observations, fit the report-level reliability model and weight the observations.
 
@@ -705,7 +717,9 @@ def assemble(
 
     atc_code_supplements (perturbation_id -> ATC codes) adds the codes of configs/atc_code_supplements.csv to a SIDER drug
     before the ATC test, and curated_targets_by_perturbation gives the targets of a SIDER drug whose ChEMBL route finds
-    none (evidence/curated_drug_wiring.py, decision 9.117); both None build as every table before 8 November 2026 was built."""
+    none (evidence/curated_drug_wiring.py, decision 9.117); identity_overrides_path applies configs/perturbation_identity_overrides.csv
+    to the bridge parents the SIDER route falls back to (decision 9.121); all three None build as every table before 8 November
+    2026 was built."""
     if allele_perturbations and seed_gain_of_function_genes_positive:
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
     if weighting not in WEIGHTINGS:
@@ -769,7 +783,7 @@ def assemble(
     narrowing_by_perturbation: dict[str, dict] = {}
     if sider_directory is not None and chembl_directory is not None and (chembl_directory / "targets.json").exists():
         caches = load_chembl_caches(chembl_directory)
-        bridge_parents_by_cid = bridge_chembl_parents_by_sider_cid(onsides_bridge_path)
+        bridge_parents_by_cid = bridge_chembl_parents_by_sider_cid(onsides_bridge_path, identity_overrides_path, sider_directory)
         compounds_by_pubchem_cid, compounds_by_chembl_id = load_drugs_acting_as_graph_compounds(drugs_acting_as_graph_compounds_path) if drugs_acting_as_graph_compounds_path else ({}, {})
         check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule)
         for event in load_sider_events(sider_directory, crosswalk_path):
@@ -959,6 +973,9 @@ def main() -> None:
     parser.add_argument("--curated-drug-targets", type=Path, default=None,
                         help="decision 9.117: the role-mechanism rows of a drug-to-target table (configs/psychiatric_drug_additions_v4_draft.csv), read for a SIDER drug "
                              "whose ChEMBL route finds no target; pass the same file to build_onsides_reports.py")
+    parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
+                        help="decisions 9.117 and 9.121: configs/perturbation_identity_overrides.csv, applied to the bridge parents the SIDER route falls back to; "
+                             "pass the same file to build_onsides_reports.py")
     parser.add_argument("--narrow-complex-targets", action=argparse.BooleanOptionalAction, default=True,
                         help="decision 8.11 (the owner, 13 October 2026): a drug's ChEMBL complex target is narrowed to the subunits the Guide to PHARMACOLOGY "
                              "names for it, with the binding site's obligate subunits restored; GtoPdb targets outside every ChEMBL row are not added. "
@@ -987,7 +1004,8 @@ def main() -> None:
                          mechanism_adjudications_path=None if str(arguments.mechanism_adjudications).lower() == "none" else Path(arguments.mechanism_adjudications),
                          complex_target_narrowing=ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None,
                          atc_code_supplements=read_atc_code_supplements(arguments.atc_code_supplements) if arguments.atc_code_supplements is not None else None,
-                         curated_targets_by_perturbation=read_curated_mechanism_targets(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None)
+                         curated_targets_by_perturbation=read_curated_mechanism_targets(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None,
+                         identity_overrides_path=arguments.perturbation_identity_overrides)
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     for name, table in (("evidence_records.parquet", assembled.observations), ("unmapped_records.parquet", assembled.unmapped), ("evidence_reports.parquet", assembled.reports)):  # atomic replace for concurrent readers
         table.to_parquet(arguments.output_dir / (name + ".tmp"), index=False)

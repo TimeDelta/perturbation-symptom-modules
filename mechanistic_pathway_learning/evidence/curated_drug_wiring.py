@@ -17,7 +17,9 @@ config with its source per row:
   configs/perturbation_identity_overrides.csv
                                              the perturbation an OnSIDES ingredient reports on, where the bridge's
                                              ChEMBL-parent unification put an enantiomer or an isotopologue under another
-                                             drug (split) or left a salt of the same active ion as a drug of its own (merge)
+                                             drug (split), left a salt of the same active ion as a drug of its own (merge),
+                                             or gave it a ChEMBL parent with no mechanism row where the drug's own
+                                             record holds one (parent; decision 9.121)
 
 None of them changes what a label says; each changes which perturbation a label is filed under, or whether the
 qualification can read the drug at all.
@@ -38,7 +40,7 @@ ATC_CODE_SUPPLEMENTS_PATH = Path("configs/atc_code_supplements.csv")
 CURATED_DRUG_TARGETS_PATH = Path("configs/psychiatric_drug_additions_v4_draft.csv")
 PERTURBATION_IDENTITY_OVERRIDES_PATH = Path("configs/perturbation_identity_overrides.csv")
 CURATED_TARGET_PREFIX = "CURATED:"  # target id of a curated row that names no ChEMBL target
-IDENTITY_OVERRIDE_KINDS = ("split", "merge")
+IDENTITY_OVERRIDE_KINDS = ("split", "merge", "parent")
 SEED_ROLE = "mechanism"
 
 
@@ -100,6 +102,7 @@ class IdentityOverride:
     kind: str  # one of IDENTITY_OVERRIDE_KINDS
     perturbation_id: str
     reason: str
+    chembl_parent: str = ""  # the ChEMBL parent the ingredient takes instead of the bridge's; required for kind "parent"
 
 
 def read_perturbation_identity_overrides(path: Path) -> dict[str, IdentityOverride]:
@@ -107,9 +110,14 @@ def read_perturbation_identity_overrides(path: Path) -> dict[str, IdentityOverri
     overrides: dict[str, IdentityOverride] = {}
     with open(path, encoding="utf-8", newline="") as override_file:
         for row in csv.DictReader(override_file):
-            override = IdentityOverride(row["ingredient_id"].strip(), row["ingredient_name"].strip(), row["kind"].strip(), row["perturbation_id"].strip(), row["reason"].strip())
+            override = IdentityOverride(row["ingredient_id"].strip(), row["ingredient_name"].strip(), row["kind"].strip(), row["perturbation_id"].strip(),
+                                        row["reason"].strip(), (row.get("chembl_parent") or "").strip())
             if override.kind not in IDENTITY_OVERRIDE_KINDS:
                 raise ValueError(f"{path}: kind {override.kind!r} for {override.ingredient_name}; choose from {IDENTITY_OVERRIDE_KINDS}")
+            if override.kind == "parent" and not override.chembl_parent:
+                raise ValueError(f"{path}: the parent override of {override.ingredient_name} names no chembl_parent")
+            if override.kind == "split" and override.chembl_parent:
+                raise ValueError(f"{path}: a split keeps the ingredient's own parent; {override.ingredient_name} names one")
             if not override.reason:
                 raise ValueError(f"{path}: the override of {override.ingredient_name} states no reason")
             if override.ingredient_id in overrides:
@@ -118,7 +126,8 @@ def read_perturbation_identity_overrides(path: Path) -> dict[str, IdentityOverri
     return overrides
 
 
-def apply_perturbation_identity_overrides(bridges: Mapping[str, "IngredientBridge"], overrides: Mapping[str, IdentityOverride]) -> list[str]:
+def apply_perturbation_identity_overrides(bridges: Mapping[str, "IngredientBridge"], overrides: Mapping[str, IdentityOverride],
+                                          sider_drug_names: Mapping[str, str] | None = None) -> list[str]:
     """Refile each overridden ingredient under its override's perturbation, in place; returns the ingredient ids changed.
 
     A split gives the ingredient the perturbation_id of an OnSIDES-only drug (fallback_perturbation_id) and drops the
@@ -126,7 +135,12 @@ def apply_perturbation_identity_overrides(bridges: Mapping[str, "IngredientBridg
     keeps its 2015 labels, which SIDER's stereo-flattened identifier pools across the forms; the former SIDER CID is kept
     as split_from_sider_pubchem_cid, so the time split still finds the ingredient's pairs on those 2015 labels. A merge files the
     ingredient under an existing SIDER perturbation, taking that drug's name and identifier from a bridge already
-    unified with it. An override naming an ingredient the bridge lacks is an error, so a stale row cannot pass silently."""
+    unified with it, or, where no ingredient is unified with that SIDER drug, its name from sider_drug_names (STITCH
+    flat id -> name, drug_names.tsv as corrected) and no SIDER ATC codes beyond the ones the supplement table adds. A
+    parent override keeps the perturbation and replaces the ChEMBL parent the bridge chose (a stereo-specific record or
+    none at all) by the drug's own record, which holds the mechanism; a merge may name a parent too. The parent the
+    bridge chose is kept as chembl_parent_overridden_from. An override naming an ingredient the bridge lacks is an error,
+    so a stale row cannot pass silently."""
     from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import (
         UNIFICATION_METHOD_OVERRIDE_MERGE, UNIFICATION_METHOD_OVERRIDE_SPLIT, fallback_perturbation_id)
     from mechanistic_pathway_learning.perturbation.gtopdb_drug_targets import pubchem_cid_from_perturbation_id
@@ -142,13 +156,22 @@ def apply_perturbation_identity_overrides(bridges: Mapping[str, "IngredientBridg
                 raise ValueError(f"the split of {override.ingredient_name} must take {fallback_perturbation_id(ingredient_id)}, not {override.perturbation_id}")
             bridge.perturbation_id, bridge.unified_with_sider, bridge.unification_method = override.perturbation_id, False, UNIFICATION_METHOD_OVERRIDE_SPLIT
             bridge.split_from_sider_pubchem_cid, bridge.sider_pubchem_cid, bridge.sider_drug_name = bridge.sider_pubchem_cid, None, None
+        elif override.kind == "parent":
+            if override.perturbation_id != bridge.perturbation_id:
+                raise ValueError(f"the parent override of {override.ingredient_name} names {override.perturbation_id}, but the bridge files it under {bridge.perturbation_id}")
         else:
             partners = [other for other in bridges.values() if other.perturbation_id == override.perturbation_id and other.unified_with_sider and other.ingredient_id not in overrides]
-            if not partners:
-                raise ValueError(f"the merge of {override.ingredient_name} names {override.perturbation_id}, which no unified ingredient holds")
+            if partners:
+                sider_drug_name, atc_codes_sider = partners[0].sider_drug_name, list(partners[0].atc_codes_sider)
+            elif sider_drug_names and override.perturbation_id in sider_drug_names:
+                sider_drug_name, atc_codes_sider = sider_drug_names[override.perturbation_id], []
+            else:
+                raise ValueError(f"the merge of {override.ingredient_name} names {override.perturbation_id}, which no unified ingredient holds and no SIDER name is given for")
             bridge.perturbation_id, bridge.unified_with_sider, bridge.unification_method = override.perturbation_id, True, UNIFICATION_METHOD_OVERRIDE_MERGE
-            bridge.sider_pubchem_cid, bridge.sider_drug_name = pubchem_cid_from_perturbation_id(override.perturbation_id), partners[0].sider_drug_name
-            bridge.atc_codes_sider = list(partners[0].atc_codes_sider)
+            bridge.sider_pubchem_cid, bridge.sider_drug_name = pubchem_cid_from_perturbation_id(override.perturbation_id), sider_drug_name
+            bridge.atc_codes_sider = atc_codes_sider
+        if override.chembl_parent:
+            bridge.chembl_parent_overridden_from, bridge.chembl_parent = bridge.chembl_parent, override.chembl_parent
         changed.append(ingredient_id)
     return changed
 

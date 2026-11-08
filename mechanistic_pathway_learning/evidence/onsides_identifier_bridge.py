@@ -91,6 +91,7 @@ class IngredientBridge:
     sider_cid_chembl_parents: list[str] = field(default_factory=list)  # every ChEMBL parent behind the chosen (stereo-flattened) SIDER CID
     sider_cid_merges_distinct_parents: bool = False  # the chosen CID carries more than one ChEMBL parent
     split_from_sider_pubchem_cid: int | None = None  # the SIDER CID an identity override split this ingredient from (decision 9.117)
+    chembl_parent_overridden_from: str | None = None  # the parent the bridge chose, where an identity override replaced it (decision 9.121)
     mechanism_target_ids: list[str] = field(default_factory=list)
     single_mechanism_target: bool = False
     nervous_system_atc: bool = False

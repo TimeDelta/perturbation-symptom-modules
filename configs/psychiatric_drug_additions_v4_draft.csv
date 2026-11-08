@@ -77,10 +77,10 @@ CID100092786,brexanolone,DRUG:CID100092786,PROTEIN:GABRA4,GABRA4,mechanism,Poten
 CID100092786,brexanolone,DRUG:CID100092786,PROTEIN:GABRA5,GABRA5,mechanism,Potentiation,0.5,0.166667,,,,CHEMBL2093872,True,"GtoPdb, narrowing a ChEMBL complex","GtoPdb names GABRA1 to GABRA6 and no beta, gamma or delta subunit, so the narrowing drops every obligate partner of the neurosteroid site, which configs/binding_sites.csv does not list"
 CID100092786,brexanolone,DRUG:CID100092786,PROTEIN:GABRA6,GABRA6,mechanism,Potentiation,0.5,0.166667,6.81,EC50,DrugCentral:DRUG LABEL,CHEMBL2093872,True,"GtoPdb, narrowing a ChEMBL complex","GtoPdb names GABRA1 to GABRA6 and no beta, gamma or delta subunit, so the narrowing drops every obligate partner of the neurosteroid site, which configs/binding_sites.csv does not list"
 CID100068870,tianeptine,DRUG:CID100068870,PROTEIN:OPRM1,OPRM1,other,,,1.0,6.417,Ki,DrugCentral:PDSP,,True,"DrugCentral:PDSP, measured, no action named",no mechanism row in any of the three sources; the one measured human row is OPRM1 and it names no action
-CID105281881,flupentixol,DRUG:CID105281881,PROTEIN:DRD1,DRD1,mechanism,ANTAGONIST,-1.0,1.0,8.4,Ki,DrugCentral:IUPHAR,,True,"DrugCentral:IUPHAR, mechanism of action",
-CID105281881,flupentixol,DRUG:CID105281881,PROTEIN:DRD2,DRD2,mechanism,ANTAGONIST,-1.0,1.0,8.82,Ki,DrugCentral:IUPHAR,,True,"DrugCentral:IUPHAR, mechanism of action",
-CID105281881,flupentixol,DRUG:CID105281881,PROTEIN:DRD3,DRD3,other,Antagonist,-1.0,1.0,8.96,Ki,DrugCentral:IUPHAR,,True,"GtoPdb, outside every ChEMBL mechanism row",
-CID105281881,flupentixol,DRUG:CID105281881,PROTEIN:DRD5,DRD5,other,Antagonist,-1.0,1.0,8.1,Ki,DrugCentral:IUPHAR,,True,"GtoPdb, outside every ChEMBL mechanism row",
+RXCUI:4495,flupentixol,DRUG:RXCUI:4495,PROTEIN:DRD1,DRD1,mechanism,ANTAGONIST,-1.0,1.0,8.4,Ki,DrugCentral:IUPHAR,,True,"DrugCentral:IUPHAR, mechanism of action",
+RXCUI:4495,flupentixol,DRUG:RXCUI:4495,PROTEIN:DRD2,DRD2,mechanism,ANTAGONIST,-1.0,1.0,8.82,Ki,DrugCentral:IUPHAR,,True,"DrugCentral:IUPHAR, mechanism of action",
+RXCUI:4495,flupentixol,DRUG:RXCUI:4495,PROTEIN:DRD3,DRD3,other,Antagonist,-1.0,1.0,8.96,Ki,DrugCentral:IUPHAR,,True,"GtoPdb, outside every ChEMBL mechanism row",
+RXCUI:4495,flupentixol,DRUG:RXCUI:4495,PROTEIN:DRD5,DRD5,other,Antagonist,-1.0,1.0,8.1,Ki,DrugCentral:IUPHAR,,True,"GtoPdb, outside every ChEMBL mechanism row",
 CID100012453,zuclopenthixol,DRUG:CID100012453,PROTEIN:DRD1,DRD1,mechanism,ANTAGONIST,-1.0,1.0,,,,,True,"DrugCentral:WOMBAT-PK, mechanism of action",
 CID100012453,zuclopenthixol,DRUG:CID100012453,PROTEIN:DRD2,DRD2,mechanism,ANTAGONIST,-1.0,1.0,7.35,AC50,ChEMBL:CHEMBL5291781 binding panel,,True,"DrugCentral:WOMBAT-PK, mechanism of action",
 CID100060149,sertindole,DRUG:CID100060149,PROTEIN:ADRA1A,ADRA1A,mechanism,ANTAGONIST,-1.0,0.333333,8.745,Ki,DrugCentral:PDSP,CHEMBL2094251,True,"ChEMBL mechanism complex, no GtoPdb row names a subunit of it",

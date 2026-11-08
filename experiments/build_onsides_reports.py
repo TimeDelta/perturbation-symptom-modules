@@ -25,7 +25,7 @@ from mechanistic_pathway_learning.evidence.curated_drug_wiring import (
     read_curated_mechanism_targets,
     read_perturbation_identity_overrides,
 )
-from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, load_sider_events, read_admitted_atc_prefixes, read_preferred_term_to_target_symptom
+from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, load_sider_events, read_admitted_atc_prefixes, read_preferred_term_to_target_symptom, read_two_column_tsv
 from mechanistic_pathway_learning.evidence.load_onsides_label_events import (
     ONSIDES_RELEASE,
     ONSIDES_RELEASE_DATE,
@@ -34,6 +34,7 @@ from mechanistic_pathway_learning.evidence.load_onsides_label_events import (
     onsides_reports,
     sider_lower_level_to_preferred_terms,
 )
+from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
 from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import (
     IngredientBridge,
     load_ingredient_identifier_bridge,
@@ -80,6 +81,15 @@ def sider_identifiers_by_perturbation(bridges: dict[str, IngredientBridge]) -> d
         if linked:
             identifiers.setdefault(bridge.perturbation_id, set()).update(linked)
     return identifiers
+
+
+def sider_drug_names_by_id(sider_directory: Path) -> dict[str, str]:
+    """STITCH flat id -> SIDER's drug name as corrected (evidence/sider_drug_names.py), for an identity override that
+    merges an ingredient into a SIDER drug no other ingredient is unified with; empty without SIDER's names file."""
+    names_path = sider_directory / "drug_names.tsv"
+    if not names_path.exists():
+        return {}
+    return corrected_drug_names({key: values[0] for key, values in read_two_column_tsv(names_path).items()})
 
 
 def raw_sider_label_pairs(sider_directory: Path, crosswalk_path: Path) -> set[tuple[str, str]]:
@@ -153,7 +163,8 @@ def main() -> None:
     wiring: dict = {}
     if arguments.perturbation_identity_overrides is not None:
         wiring["identity_overrides"] = {"file": str(arguments.perturbation_identity_overrides),
-                                        "ingredients": apply_perturbation_identity_overrides(bridges, read_perturbation_identity_overrides(arguments.perturbation_identity_overrides))}
+                                        "ingredients": apply_perturbation_identity_overrides(bridges, read_perturbation_identity_overrides(arguments.perturbation_identity_overrides),
+                                                                                             sider_drug_names_by_id(arguments.sider_dir))}
     if arguments.atc_code_supplements is not None:
         wiring["atc_code_supplements"] = {"file": str(arguments.atc_code_supplements),
                                           "ingredients": apply_atc_code_supplements(bridges, read_atc_code_supplements(arguments.atc_code_supplements))}

@@ -259,12 +259,13 @@ fi
 if [ "$stage" = "fine" ]; then
   # Decision 9.117 (8 November 2026): the drugs the owner admitted that the label sources alone leave out. Group N plus
   # the rule-14 substances, lithium's ATC code from its other SIDER identifier, the curated mechanism targets of a drug
-  # ChEMBL holds none for, and (OnSIDES only) the enantiomers and the isotopologue filed as drugs of their own.
-  drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv"
+  # ChEMBL holds none for, and the identity overrides: the enantiomers and the isotopologue filed as drugs of their own,
+  # and (decision 9.121) the ChEMBL parents that replace a stereo record without a mechanism row, which the assembler's
+  # SIDER fallback reads as well.
+  drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv --perturbation-identity-overrides configs/perturbation_identity_overrides.csv"
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
-      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring \
-      --perturbation-identity-overrides configs/perturbation_identity_overrides.csv
+      --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \

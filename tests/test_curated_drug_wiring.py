@@ -136,6 +136,40 @@ def test_a_merge_files_a_salt_under_its_ion_and_takes_its_codes(tmp_path: Path) 
     assert all(entry.atc_codes == ["N05AN01"] and entry.nervous_system_atc for entry in bridges.values())
 
 
+def parent_overrides_file(tmp_path: Path, rows: list[str]) -> Path:
+    path = tmp_path / "overrides.csv"
+    path.write_text("ingredient_id,ingredient_name,kind,perturbation_id,chembl_parent,reason\n" + "".join(row + "\n" for row in rows))
+    return path
+
+
+def test_a_parent_override_keeps_the_perturbation_and_replaces_the_parent(tmp_path: Path) -> None:
+    """Decision 9.121 A2: methylphenidate's bridge parent is a stereo record without a mechanism row."""
+    bridges = {"6901": bridge("6901", "methylphenidate", "CID100004158", "CHEMBL290634", 4158, ["N06BA04"])}
+    overrides = read_perturbation_identity_overrides(parent_overrides_file(tmp_path, ["6901,methylphenidate,parent,CID100004158,CHEMBL796,its own record"]))
+    apply_perturbation_identity_overrides(bridges, overrides)
+    overridden = bridges["6901"]
+    assert (overridden.perturbation_id, overridden.chembl_parent, overridden.chembl_parent_overridden_from) == ("CID100004158", "CHEMBL796", "CHEMBL290634")
+    assert overridden.unification_method == "chembl_parent" and overridden.sider_pubchem_cid == 4158
+    moved = read_perturbation_identity_overrides(parent_overrides_file(tmp_path, ["6901,methylphenidate,parent,CID1,CHEMBL796,r"]))
+    with pytest.raises(ValueError, match="files it under"):
+        apply_perturbation_identity_overrides({"6901": bridge("6901", "methylphenidate", "CID100004158", "CHEMBL290634", 4158, [])}, moved)
+    with pytest.raises(ValueError, match="names no chembl_parent"):
+        read_perturbation_identity_overrides(parent_overrides_file(tmp_path, ["6901,methylphenidate,parent,CID100004158,,r"]))
+    with pytest.raises(ValueError, match="keeps the ingredient's own parent"):
+        read_perturbation_identity_overrides(parent_overrides_file(tmp_path, ["6901,methylphenidate,split,RXCUI:6901,CHEMBL796,r"]))
+
+
+def test_a_merge_into_a_sider_drug_no_ingredient_holds_takes_its_name_from_sider(tmp_path: Path) -> None:
+    """Decision 9.121 A4: methotrimeprazine is levomepromazine, which no OnSIDES ingredient is unified with."""
+    bridges = {"6852": bridge("6852", "methotrimeprazine", "RXCUI:6852", None, None, [])}
+    overrides = read_perturbation_identity_overrides(parent_overrides_file(tmp_path, ["6852,methotrimeprazine,merge,CID100003916,CHEMBL1764,one drug"]))
+    with pytest.raises(ValueError, match="no SIDER name is given"):
+        apply_perturbation_identity_overrides(dict(bridges), overrides)
+    apply_perturbation_identity_overrides(bridges, overrides, {"CID100003916": "levomepromazine"})
+    merged = bridges["6852"]
+    assert (merged.perturbation_id, merged.sider_drug_name, merged.sider_pubchem_cid, merged.chembl_parent) == ("CID100003916", "levomepromazine", 3916, "CHEMBL1764")
+
+
 def test_an_override_naming_an_absent_ingredient_or_without_a_reason_is_refused(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="states no reason"):
         read_perturbation_identity_overrides(overrides_file(tmp_path, ["1,a,split,RXCUI:1,"]))
@@ -158,16 +192,24 @@ def test_the_committed_admitted_list_holds_group_n_and_the_rule_14_admissions_on
 
 
 def test_the_committed_tables_parse_and_the_overrides_name_ingredients_the_bridge_holds() -> None:
-    assert read_atc_code_supplements(ATC_CODE_SUPPLEMENTS_PATH) == {"CID100011125": ["N05AN01"]}
+    supplements = read_atc_code_supplements(ATC_CODE_SUPPLEMENTS_PATH)
+    assert supplements["CID100011125"] == ["N05AN01"] and supplements["CID100213046"] == ["N05AE05"] and supplements["OMOP:2721429"] == ["N04BD03"]
+    assert len(supplements) == 15 and all(code.startswith("N") for codes in supplements.values() for code in codes)  # lithium, the 13 of 9.121 A1, safinamide
     curated = read_curated_mechanism_targets(CURATED_DRUG_TARGETS_PATH)
     assert {target.gene_symbols[0] for target in curated["CID100012453"]} == {"DRD1", "DRD2"}  # zuclopenthixol
     assert {target.gene_symbols[0] for target in curated["CID100004184"]} == {"HTR2A", "HTR2B", "HTR2C"}  # mianserin, role "mechanism" rows only
     assert "RXCUI:2121751" not in curated  # solriamfetol: no source marks a mechanism row
+    assert {target.gene_symbols[0] for target in curated["RXCUI:4495"]} == {"DRD1", "DRD2"}  # flupentixol, OnSIDES's "flupenthixol" (9.121 A5)
     overrides = read_perturbation_identity_overrides(PERTURBATION_IDENTITY_OVERRIDES_PATH)
     if not BRIDGE_PATH.exists():
         pytest.skip(f"{BRIDGE_PATH} is not on this disk")
     bridges = load_ingredient_identifier_bridge(BRIDGE_PATH)
     for ingredient_id, override in overrides.items():
         assert bridges[ingredient_id].ingredient_name == override.ingredient_name
-    apply_perturbation_identity_overrides(bridges, overrides)
+    from mechanistic_pathway_learning.evidence.load_drug_label_events import read_two_column_tsv
+    from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
+    names_path = Path("data/raw/sider_4.1/drug_names.tsv")
+    sider_names = corrected_drug_names({key: values[0] for key, values in read_two_column_tsv(names_path).items()}) if names_path.exists() else {"CID100003916": "levomepromazine"}
+    apply_perturbation_identity_overrides(bridges, overrides, sider_names)
+    assert bridges["6852"].sider_drug_name == "levomepromazine" and bridges["6901"].chembl_parent == "CHEMBL796"
     assert json.dumps(sorted(bridge.perturbation_id for bridge in bridges.values() if bridge.ingredient_name == "escitalopram")) == '["RXCUI:321988"]'
