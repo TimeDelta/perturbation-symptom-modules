@@ -95,6 +95,10 @@ def test_the_curated_targets_are_a_fallback_and_never_replace_chembl(tmp_path: P
     curated = read_curated_mechanism_targets(write_targets(tmp_path / "targets.csv", [curated_row("CID7", "DRD1")]))
     without_chembl = qualify_ingredient(bridge("1", "zuclopenthixol", "CID7", "CHEMBL9", 7, ["N05AF05"]), mechanisms, targets, max_drug_targets=None, curated_targets_by_perturbation=curated)
     assert without_chembl.qualifies and without_chembl.target_source == "curated" and without_chembl.drug_targets[0].gene_symbols == ["DRD1"]
+    parentless = qualify_ingredient(bridge("3", "flupenthixol", "CID7", None, None, ["N05AF01"]), mechanisms, targets, max_drug_targets=None, curated_targets_by_perturbation=curated)
+    assert parentless.qualifies and parentless.target_source == "curated"  # a parent the bridge missed does not block curated targets
+    assert qualify_ingredient(bridge("4", "x", "CID8", None, None, ["N05AF01"]), mechanisms, targets, max_drug_targets=None,
+                              curated_targets_by_perturbation=curated).reason == "no_chembl_parent"
     with_chembl = qualify_ingredient(bridge("2", "drug", "CID7", "CHEMBL1", 7, ["N05AF05"]), mechanisms, targets, max_drug_targets=None, curated_targets_by_perturbation=curated)
     assert with_chembl.target_source == "ChEMBL" and [target.target_chembl_id for target in with_chembl.drug_targets] == ["CHEMBL217"]
 

@@ -162,7 +162,8 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
     admitted_atc_prefixes replaces group N by a written list (has_admitted_atc_code); the reason of a failure is then
     atc_not_admitted.
     curated_targets_by_perturbation (evidence/curated_drug_wiring.read_curated_mechanism_targets, decision 9.117) gives
-    the targets of an ingredient whose ChEMBL route finds none, by the bridge's perturbation_id; target_source records it.
+    the targets of an ingredient whose ChEMBL route finds none, by the bridge's perturbation_id, including one the bridge
+    found no ChEMBL parent for; target_source records it.
     """
     missing_target_ids: set[str] = set()
     drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets, missing_target_ids=missing_target_ids)
@@ -172,7 +173,7 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
         drug_targets, target_source = list(curated_targets_by_perturbation[bridge.perturbation_id]), "curated"
     atc_known = bool(bridge.atc_codes)
     missing = sorted(missing_target_ids)
-    if bridge.chembl_parent is None:
+    if bridge.chembl_parent is None and target_source != "curated":  # curated targets stand in for a parent the bridge did not find
         return OnsidesQualification(False, "no_chembl_parent", drug_targets, atc_known, missing, target_source)
     if not passes_single_target_rule(drug_targets, max_drug_targets):
         return OnsidesQualification(False, "no_single_mechanism_target", drug_targets, atc_known, missing, target_source)
