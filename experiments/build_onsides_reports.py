@@ -22,7 +22,8 @@ from mechanistic_pathway_learning.evidence.curated_drug_wiring import (
     apply_atc_code_supplements,
     apply_perturbation_identity_overrides,
     read_atc_code_supplements,
-    read_curated_mechanism_targets,
+    read_curated_mechanism_targets_from,
+    read_excluded_drug_perturbations,
     read_perturbation_identity_overrides,
 )
 from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, load_sider_events, read_admitted_atc_prefixes, read_preferred_term_to_target_symptom, read_two_column_tsv
@@ -138,9 +139,11 @@ def main() -> None:
                         help="written list of the ATC groups and substances admitted in place of group N alone (atc_prefix column); pass the same file to the assembler")
     parser.add_argument("--atc-code-supplements", type=Path, default=None,
                         help="decision 9.117: ATC codes a label source holds for a substance under another identifier (configs/atc_code_supplements.csv); pass the same file to the assembler")
-    parser.add_argument("--curated-drug-targets", type=Path, default=None,
-                        help="decision 9.117: the role-mechanism rows of a drug-to-target table (configs/psychiatric_drug_additions_v4_draft.csv), "
-                             "read for an ingredient whose ChEMBL route finds no target; pass the same file to the assembler")
+    parser.add_argument("--curated-drug-targets", type=Path, nargs="+", default=None,
+                        help="decisions 9.117 and 9.121: the role-mechanism rows of drug-to-target tables (configs/psychiatric_drug_additions_v4_draft.csv, "
+                             "configs/curated_drug_targets.csv), read for an ingredient whose ChEMBL route finds no target; pass the same files to the assembler")
+    parser.add_argument("--excluded-drug-perturbations", type=Path, default=None,
+                        help="decision 9.121 C4: configs/excluded_drug_perturbations.csv, drugs that act outside the brain; pass the same file to the assembler")
     parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
                         help="decision 9.117: the perturbation an ingredient is filed under where the bridge's unification is overridden (configs/perturbation_identity_overrides.csv)")
     parser.add_argument("--narrow-complex-targets", action=argparse.BooleanOptionalAction, default=True,
@@ -168,9 +171,12 @@ def main() -> None:
     if arguments.atc_code_supplements is not None:
         wiring["atc_code_supplements"] = {"file": str(arguments.atc_code_supplements),
                                           "ingredients": apply_atc_code_supplements(bridges, read_atc_code_supplements(arguments.atc_code_supplements))}
-    curated_targets = read_curated_mechanism_targets(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None
+    curated_targets = read_curated_mechanism_targets_from(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None
     if curated_targets is not None:
-        wiring["curated_drug_targets"] = {"file": str(arguments.curated_drug_targets), "perturbations": sorted(curated_targets)}
+        wiring["curated_drug_targets"] = {"files": [str(path) for path in arguments.curated_drug_targets], "perturbations": sorted(curated_targets)}
+    excluded = read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None
+    if excluded is not None:
+        wiring["excluded_drug_perturbations"] = {"file": str(arguments.excluded_drug_perturbations), "perturbations": sorted(excluded)}
     mechanisms_by_molecule = mechanisms_by_parent_and_molecule(json.loads((arguments.chembl_dir / "mechanisms.json").read_text()))
     targets = json.loads((arguments.chembl_dir / "targets.json").read_text())
     node_lookup = GraphNodeLookup.from_nodes(pd.read_parquet(arguments.graph_dir / "nodes.parquet"), arguments.non_protein_targets)
@@ -179,7 +185,8 @@ def main() -> None:
     admitted_atc_prefixes = read_admitted_atc_prefixes(arguments.admitted_atc_prefixes) if arguments.admitted_atc_prefixes is not None else NERVOUS_SYSTEM_ATC_PREFIXES
     narrowing = ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None
     reports, counts = onsides_reports(statements, bridges, mechanisms_by_molecule, targets, node_lookup, compounds_by_chembl_id, arguments.max_drug_targets or None, admitted_atc_prefixes,
-                                      complex_target_narrowing=narrowing, curated_targets_by_perturbation=curated_targets)
+                                      complex_target_narrowing=narrowing, curated_targets_by_perturbation=curated_targets,
+                                      excluded_perturbations=excluded)
 
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     reports.to_parquet(arguments.output_dir / "onsides_reports.parquet", index=False)

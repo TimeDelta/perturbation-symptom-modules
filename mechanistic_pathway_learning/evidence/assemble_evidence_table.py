@@ -99,7 +99,7 @@ from mechanistic_pathway_learning.evidence.allele_mechanisms import (
     read_neomorphic_alleles,
 )
 from mechanistic_pathway_learning.evidence.gene_disease_association_types import genes_with_gain_of_function_associations_only
-from mechanistic_pathway_learning.evidence.curated_drug_wiring import read_atc_code_supplements, read_curated_mechanism_targets, supplemented_atc_codes
+from mechanistic_pathway_learning.evidence.curated_drug_wiring import read_atc_code_supplements, read_curated_mechanism_targets_from, read_excluded_drug_perturbations, supplemented_atc_codes
 from mechanistic_pathway_learning.evidence.load_drug_label_events import NERVOUS_SYSTEM_ATC_PREFIXES, drug_label_reports, has_admitted_atc_code, load_sider_events, read_admitted_atc_prefixes, read_two_column_tsv
 from mechanistic_pathway_learning.evidence.sider_drug_names import corrected_drug_names
 from mechanistic_pathway_learning.evidence.load_monogenic_phenotype_annotations import (
@@ -695,6 +695,7 @@ def assemble(
     atc_code_supplements: dict[str, list[str]] | None = None,
     curated_targets_by_perturbation: dict[str, list] | None = None,
     identity_overrides_path: Path | None = None,
+    excluded_perturbations: dict[str, str] | None = None,
 ) -> AssembledEvidence:
     """Build the report table, aggregate it to observations, fit the report-level reliability model and weight the observations.
 
@@ -718,7 +719,8 @@ def assemble(
     atc_code_supplements (perturbation_id -> ATC codes) adds the codes of configs/atc_code_supplements.csv to a SIDER drug
     before the ATC test, and curated_targets_by_perturbation gives the targets of a SIDER drug whose ChEMBL route finds
     none (evidence/curated_drug_wiring.py, decision 9.117); identity_overrides_path applies configs/perturbation_identity_overrides.csv
-    to the bridge parents the SIDER route falls back to (decision 9.121); all three None build as every table before 8 November
+    to the bridge parents the SIDER route falls back to (decision 9.121); excluded_perturbations (configs/excluded_drug_perturbations.csv,
+    decision 9.121 C4) drops the SIDER drugs that act outside the brain; all four None build as every table before 8 November
     2026 was built."""
     if allele_perturbations and seed_gain_of_function_genes_positive:
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
@@ -787,6 +789,8 @@ def assemble(
         compounds_by_pubchem_cid, compounds_by_chembl_id = load_drugs_acting_as_graph_compounds(drugs_acting_as_graph_compounds_path) if drugs_acting_as_graph_compounds_path else ({}, {})
         check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule)
         for event in load_sider_events(sider_directory, crosswalk_path):
+            if excluded_perturbations and event.stitch_flat_id in excluded_perturbations:
+                continue
             drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id)
             target_source = "ChEMBL"
             if not drug_targets and curated_targets_by_perturbation and event.stitch_flat_id in curated_targets_by_perturbation:
@@ -970,9 +974,11 @@ def main() -> None:
                         help="written list of the ATC groups and substances admitted in place of group N alone (atc_prefix column); pass the same file to build_onsides_reports.py")
     parser.add_argument("--atc-code-supplements", type=Path, default=None,
                         help="decision 9.117: ATC codes a label source holds for a substance under another identifier (configs/atc_code_supplements.csv); pass the same file to build_onsides_reports.py")
-    parser.add_argument("--curated-drug-targets", type=Path, default=None,
-                        help="decision 9.117: the role-mechanism rows of a drug-to-target table (configs/psychiatric_drug_additions_v4_draft.csv), read for a SIDER drug "
-                             "whose ChEMBL route finds no target; pass the same file to build_onsides_reports.py")
+    parser.add_argument("--curated-drug-targets", type=Path, nargs="+", default=None,
+                        help="decisions 9.117 and 9.121: the role-mechanism rows of drug-to-target tables (configs/psychiatric_drug_additions_v4_draft.csv, "
+                             "configs/curated_drug_targets.csv), read for a SIDER drug whose ChEMBL route finds no target; pass the same files to build_onsides_reports.py")
+    parser.add_argument("--excluded-drug-perturbations", type=Path, default=None,
+                        help="decision 9.121 C4: configs/excluded_drug_perturbations.csv, drugs that act outside the brain; pass the same file to build_onsides_reports.py")
     parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
                         help="decisions 9.117 and 9.121: configs/perturbation_identity_overrides.csv, applied to the bridge parents the SIDER route falls back to; "
                              "pass the same file to build_onsides_reports.py")
@@ -1004,8 +1010,9 @@ def main() -> None:
                          mechanism_adjudications_path=None if str(arguments.mechanism_adjudications).lower() == "none" else Path(arguments.mechanism_adjudications),
                          complex_target_narrowing=ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None,
                          atc_code_supplements=read_atc_code_supplements(arguments.atc_code_supplements) if arguments.atc_code_supplements is not None else None,
-                         curated_targets_by_perturbation=read_curated_mechanism_targets(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None,
-                         identity_overrides_path=arguments.perturbation_identity_overrides)
+                         curated_targets_by_perturbation=read_curated_mechanism_targets_from(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None,
+                         identity_overrides_path=arguments.perturbation_identity_overrides,
+                         excluded_perturbations=read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None)
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     for name, table in (("evidence_records.parquet", assembled.observations), ("unmapped_records.parquet", assembled.unmapped), ("evidence_reports.parquet", assembled.reports)):  # atomic replace for concurrent readers
         table.to_parquet(arguments.output_dir / (name + ".tmp"), index=False)
@@ -1024,7 +1031,9 @@ def main() -> None:
     if arguments.atc_code_supplements is not None:
         summary["atc_code_supplements"] = {"file": str(arguments.atc_code_supplements), "codes": read_atc_code_supplements(arguments.atc_code_supplements)}
     if arguments.curated_drug_targets is not None:
-        summary["curated_drug_targets"] = {"file": str(arguments.curated_drug_targets), "perturbations": sorted(read_curated_mechanism_targets(arguments.curated_drug_targets))}
+        summary["curated_drug_targets"] = {"files": [str(path) for path in arguments.curated_drug_targets], "perturbations": sorted(read_curated_mechanism_targets_from(arguments.curated_drug_targets))}
+    if arguments.excluded_drug_perturbations is not None:
+        summary["excluded_drug_perturbations"] = {"file": str(arguments.excluded_drug_perturbations), "perturbations": read_excluded_drug_perturbations(arguments.excluded_drug_perturbations)}
     summary.update(summarize_reports(assembled.reports, assembled.reliability_fit, rubric_weight_defaults, assembled.observations, assembled.reports_dropped_unknown_provenance))
     (arguments.output_dir / "evidence_summary.json").write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))

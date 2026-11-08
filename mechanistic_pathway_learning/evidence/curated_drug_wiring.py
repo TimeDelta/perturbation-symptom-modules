@@ -13,7 +13,11 @@ config with its source per row:
                                              DrugCentral and Guide to PHARMACOLOGY targets of the 9.7 drugs
                                              (docs/psychiatric_drug_additions.md); only its role "mechanism" rows are read,
                                              as that document requires ("Only the mechanism rows are candidates for a seed"),
-                                             and only for a drug whose ChEMBL route yields no target
+                                             and only for a drug whose ChEMBL route yields no target; with it
+                                             configs/curated_drug_targets.csv, the targets decision 9.121 C3 curated
+                                             (a label-stated or single-source target accepted, the owner, 8 November 2026)
+  configs/excluded_drug_perturbations.csv    drugs admitted on their ATC code that act outside the brain, which nothing
+                                             models (decision 9.121 C4), each with the label sentences that say so
   configs/perturbation_identity_overrides.csv
                                              the perturbation an OnSIDES ingredient reports on, where the bridge's
                                              ChEMBL-parent unification put an enantiomer or an isotopologue under another
@@ -21,8 +25,8 @@ config with its source per row:
                                              or gave it a ChEMBL parent with no mechanism row where the drug's own
                                              record holds one (parent; decision 9.121)
 
-None of them changes what a label says; each changes which perturbation a label is filed under, or whether the
-qualification can read the drug at all.
+None of them changes what a label says; each changes which perturbation a label is filed under, whether the
+qualification can read the drug at all, or (the exclusion list) whether a drug enters.
 """
 from __future__ import annotations
 
@@ -38,6 +42,8 @@ if TYPE_CHECKING:
 
 ATC_CODE_SUPPLEMENTS_PATH = Path("configs/atc_code_supplements.csv")
 CURATED_DRUG_TARGETS_PATH = Path("configs/psychiatric_drug_additions_v4_draft.csv")
+CURATED_DRUG_TARGETS_PATHS = (CURATED_DRUG_TARGETS_PATH, Path("configs/curated_drug_targets.csv"))
+EXCLUDED_DRUG_PERTURBATIONS_PATH = Path("configs/excluded_drug_perturbations.csv")
 PERTURBATION_IDENTITY_OVERRIDES_PATH = Path("configs/perturbation_identity_overrides.csv")
 CURATED_TARGET_PREFIX = "CURATED:"  # target id of a curated row that names no ChEMBL target
 IDENTITY_OVERRIDE_KINDS = ("split", "merge", "parent")
@@ -187,3 +193,29 @@ def apply_atc_code_supplements(bridges: Mapping[str, "IngredientBridge"], supple
             bridge.nervous_system_atc = any(code.startswith("N") for code in bridge.atc_codes)
             changed.append(ingredient_id)
     return changed
+
+
+def read_curated_mechanism_targets_from(paths) -> dict[str, list[DrugTarget]]:
+    """read_curated_mechanism_targets over several tables; a perturbation two tables both curate is an error, so one
+    drug's targets are never assembled from two curations."""
+    merged: dict[str, list[DrugTarget]] = {}
+    for path in paths:
+        for perturbation_id, targets in read_curated_mechanism_targets(Path(path)).items():
+            if perturbation_id in merged:
+                raise ValueError(f"{perturbation_id} is curated in more than one of {[str(path) for path in paths]}")
+            merged[perturbation_id] = targets
+    return merged
+
+
+def read_excluded_drug_perturbations(path: Path) -> dict[str, str]:
+    """perturbation_id -> the reason it is excluded; every row names its reason and its source."""
+    excluded: dict[str, str] = {}
+    with open(path, encoding="utf-8", newline="") as excluded_file:
+        for row in csv.DictReader(excluded_file):
+            perturbation_id = row["perturbation_id"].strip()
+            if not row["reason"].strip() or not row["source"].strip():
+                raise ValueError(f"{path}: the exclusion of {perturbation_id} names no reason or no source")
+            if perturbation_id in excluded:
+                raise ValueError(f"{path} lists {perturbation_id} twice")
+            excluded[perturbation_id] = row["reason"].strip()
+    return excluded

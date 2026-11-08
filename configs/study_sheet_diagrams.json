@@ -9,7 +9,8 @@
         "decisions": [
           "1.1",
           "9.106",
-          "9.117"
+          "9.117",
+          "9.121"
         ],
         "files": [
           "experiments/run_main_model_batch.py",
@@ -22,13 +23,14 @@
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
         "decision:9.117": "b00b42d60ab197c12c1a17444de44c806466519509ddd3217ae7dd257965c8dc",
+        "decision:9.121": "301a06999cc948262ca6f12547f3e3fca8e19250ad01ef6233d91b8deabecb51",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
-        "file:scripts/rebuild_data_layer.sh": "b94197a1fe494252a3c346b2fc64fd3955f3b1a92d4ef844f8c853ba7027ff69",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "eb18dccaeb4cdce6637a452ce602657ee3e3a9517c4a1de7f53448e8c941461c",
-        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "42db9c608dd617920179192ee6d190cb445d068505280c1f1502d9edc700f9fa"
+        "file:scripts/rebuild_data_layer.sh": "8f4c3ea7a64bfa4d5e70320e7344f2851a49627628942bf9a7a8a7b23dbab1a5",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "5b3b92d94ac08d5af27557f24a0b71a08f3f5fdb4b9d6089a40ec65852ec8ff4",
+        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b1e66ff8cc410c054f2993c3045ce42a965fe9bdb55780feb6c0f50340e5365f"
       },
       "checked": "2026-11-08",
-      "checked_at_commit": "e89065a3",
+      "checked_at_commit": "ad610e59",
       "partner": "64d7b2e6-81e2"
     },
     "2d0e94ac-2bbc": {
@@ -325,14 +327,15 @@
       "checked_at_commit": "a22d70c5"
     },
     "64d7b2e6-81e2": {
-      "title": "Seven stages, as decided (9.117)",
+      "title": "Seven stages, as decided (9.117, 9.121)",
       "state": "decided",
       "partner": "d282955a-f81a",
       "depicts": {
         "decisions": [
           "1.1",
           "9.106",
-          "9.117"
+          "9.117",
+          "9.121"
         ],
         "files": [
           "experiments/run_main_model_batch.py",
@@ -345,13 +348,14 @@
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
         "decision:9.117": "b00b42d60ab197c12c1a17444de44c806466519509ddd3217ae7dd257965c8dc",
+        "decision:9.121": "301a06999cc948262ca6f12547f3e3fca8e19250ad01ef6233d91b8deabecb51",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
-        "file:scripts/rebuild_data_layer.sh": "b94197a1fe494252a3c346b2fc64fd3955f3b1a92d4ef844f8c853ba7027ff69",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "eb18dccaeb4cdce6637a452ce602657ee3e3a9517c4a1de7f53448e8c941461c",
-        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "42db9c608dd617920179192ee6d190cb445d068505280c1f1502d9edc700f9fa"
+        "file:scripts/rebuild_data_layer.sh": "8f4c3ea7a64bfa4d5e70320e7344f2851a49627628942bf9a7a8a7b23dbab1a5",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "5b3b92d94ac08d5af27557f24a0b71a08f3f5fdb4b9d6089a40ec65852ec8ff4",
+        "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b1e66ff8cc410c054f2993c3045ce42a965fe9bdb55780feb6c0f50340e5365f"
       },
       "checked": "2026-11-08",
-      "checked_at_commit": "e89065a3"
+      "checked_at_commit": "ad610e59"
     },
     "a2c305c9-428b": {
       "title": "Robustness and exploratory arms, as decided (9.122)",

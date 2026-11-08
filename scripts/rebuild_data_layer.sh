@@ -261,8 +261,9 @@ if [ "$stage" = "fine" ]; then
   # the rule-14 substances, lithium's ATC code from its other SIDER identifier, the curated mechanism targets of a drug
   # ChEMBL holds none for, and the identity overrides: the enantiomers and the isotopologue filed as drugs of their own,
   # and (decision 9.121) the ChEMBL parents that replace a stereo record without a mechanism row, which the assembler's
-  # SIDER fallback reads as well.
-  drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv --perturbation-identity-overrides configs/perturbation_identity_overrides.csv"
+  # SIDER fallback reads as well; and (9.121 C3, C4) the curated targets of drugs no database holds a mechanism for and
+  # the drugs excluded as acting outside the brain. --curated-drug-targets takes several files, so it stays last.
+  drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --perturbation-identity-overrides configs/perturbation_identity_overrides.csv --excluded-drug-perturbations configs/excluded_drug_perturbations.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv configs/curated_drug_targets.csv"
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
       --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring

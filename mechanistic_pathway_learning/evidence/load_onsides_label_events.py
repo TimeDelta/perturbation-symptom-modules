@@ -152,7 +152,8 @@ class OnsidesQualification:
 def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping[str, list[dict]], targets: Mapping[str, dict],
                        compounds_by_chembl_id: Mapping[str, list[str]] | None = None, max_drug_targets: int | None = 1,
                        admitted_atc_prefixes: tuple[str, ...] = NERVOUS_SYSTEM_ATC_PREFIXES,
-                       curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None) -> OnsidesQualification:
+                       curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
+                       excluded_perturbations: Mapping[str, str] | None = None) -> OnsidesQualification:
     """The E2 qualification of section 4.2 for one ingredient, the rule SIDER rows pass: a single mechanism target and an ATC N code.
 
     An ingredient with no mechanism target at all whose parent is listed in configs/drugs_acting_as_graph_compounds.csv
@@ -163,7 +164,8 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
     atc_not_admitted.
     curated_targets_by_perturbation (evidence/curated_drug_wiring.read_curated_mechanism_targets, decision 9.117) gives
     the targets of an ingredient whose ChEMBL route finds none, by the bridge's perturbation_id, including one the bridge
-    found no ChEMBL parent for; target_source records it.
+    found no ChEMBL parent for; target_source records it. An ingredient whose perturbation excluded_perturbations names
+    (configs/excluded_drug_perturbations.csv, decision 9.121 C4) fails with excluded_by_curation before any other test.
     """
     missing_target_ids: set[str] = set()
     drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets, missing_target_ids=missing_target_ids)
@@ -173,6 +175,8 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
         drug_targets, target_source = list(curated_targets_by_perturbation[bridge.perturbation_id]), "curated"
     atc_known = bool(bridge.atc_codes)
     missing = sorted(missing_target_ids)
+    if excluded_perturbations and bridge.perturbation_id in excluded_perturbations:
+        return OnsidesQualification(False, "excluded_by_curation", drug_targets, atc_known, missing, target_source)
     if bridge.chembl_parent is None and target_source != "curated":  # curated targets stand in for a parent the bridge did not find
         return OnsidesQualification(False, "no_chembl_parent", drug_targets, atc_known, missing, target_source)
     if not passes_single_target_rule(drug_targets, max_drug_targets):
@@ -220,6 +224,7 @@ def onsides_reports(
     admitted_atc_prefixes: tuple[str, ...] = NERVOUS_SYSTEM_ATC_PREFIXES,
     complex_target_narrowing=None,
     curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
+    excluded_perturbations: Mapping[str, str] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Report rows (REPORT_COLUMNS first, then ONSIDES_EXTRA_COLUMNS) for every statement; qualifies marks the rows that enter the evidence table.
 
@@ -228,7 +233,7 @@ def onsides_reports(
     (perturbation/gtopdb_drug_targets.ComplexTargetNarrowing, decision 8.11) narrows an ingredient's ChEMBL complex
     targets to the subunits GtoPdb names before it is seeded, matched by the unified SIDER drug's PubChem CID or the
     ingredient's name, as the SIDER route matches the same drug. curated_targets_by_perturbation is qualify_ingredient's
-    fallback for an ingredient with no ChEMBL target (decision 9.117)."""
+    fallback for an ingredient with no ChEMBL target (decision 9.117); excluded_perturbations its exclusion list (9.121 C4)."""
     if not isinstance(node_lookup, GraphNodeLookup):
         node_lookup = GraphNodeLookup(dict(node_lookup), {}, {})
     scored = statements.max_pred1.where(statements.match_methods.astype(str).str.contains("PMB"))
@@ -244,7 +249,7 @@ def onsides_reports(
             counts["ingredients_without_bridge"] += 1
             continue
         qualification = qualifications.get(bridge.ingredient_id) or qualify_ingredient(bridge, mechanisms_by_molecule, targets, compounds_by_chembl_id, max_drug_targets, admitted_atc_prefixes,
-                                                                                   curated_targets_by_perturbation)
+                                                                                   curated_targets_by_perturbation, excluded_perturbations)
         qualifications[bridge.ingredient_id] = qualification
         drug_targets = qualification.drug_targets
         if complex_target_narrowing is not None and qualification.qualifies:  # only an ingredient that can enter is narrowed and recorded

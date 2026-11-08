@@ -198,7 +198,7 @@ def test_the_committed_tables_parse_and_the_overrides_name_ingredients_the_bridg
     curated = read_curated_mechanism_targets(CURATED_DRUG_TARGETS_PATH)
     assert {target.gene_symbols[0] for target in curated["CID100012453"]} == {"DRD1", "DRD2"}  # zuclopenthixol
     assert {target.gene_symbols[0] for target in curated["CID100004184"]} == {"HTR2A", "HTR2B", "HTR2C"}  # mianserin, role "mechanism" rows only
-    assert "RXCUI:2121751" not in curated  # solriamfetol: no source marks a mechanism row
+    assert "RXCUI:2121751" not in curated  # solriamfetol: the additions table marks no mechanism row; 9.121 C3 curated its targets in configs/curated_drug_targets.csv
     assert {target.gene_symbols[0] for target in curated["RXCUI:4495"]} == {"DRD1", "DRD2"}  # flupentixol, OnSIDES's "flupenthixol" (9.121 A5)
     overrides = read_perturbation_identity_overrides(PERTURBATION_IDENTITY_OVERRIDES_PATH)
     if not BRIDGE_PATH.exists():
@@ -213,3 +213,39 @@ def test_the_committed_tables_parse_and_the_overrides_name_ingredients_the_bridg
     apply_perturbation_identity_overrides(bridges, overrides, sider_names)
     assert bridges["6852"].sider_drug_name == "levomepromazine" and bridges["6901"].chembl_parent == "CHEMBL796"
     assert json.dumps(sorted(bridge.perturbation_id for bridge in bridges.values() if bridge.ingredient_name == "escitalopram")) == '["RXCUI:321988"]'
+
+
+def test_several_curated_tables_merge_and_a_drug_curated_twice_is_refused(tmp_path: Path) -> None:
+    from mechanistic_pathway_learning.evidence.curated_drug_wiring import read_curated_mechanism_targets_from
+    first = write_targets(tmp_path / "first.csv", [curated_row("CID1", "DRD2")])
+    second = write_targets(tmp_path / "second.csv", [curated_row("CID2", "HTR2A")])
+    assert sorted(read_curated_mechanism_targets_from([first, second])) == ["CID1", "CID2"]
+    twice = write_targets(tmp_path / "twice.csv", [curated_row("CID1", "DRD1")])
+    with pytest.raises(ValueError, match="more than one"):
+        read_curated_mechanism_targets_from([first, twice])
+
+
+def test_an_excluded_drug_fails_qualification_first_and_needs_a_source(tmp_path: Path) -> None:
+    """Decision 9.121 C4: neostigmine and pyridostigmine act outside the brain, which nothing models."""
+    from mechanistic_pathway_learning.evidence.curated_drug_wiring import EXCLUDED_DRUG_PERTURBATIONS_PATH, read_excluded_drug_perturbations
+    excluded = read_excluded_drug_perturbations(EXCLUDED_DRUG_PERTURBATIONS_PATH)
+    assert sorted(excluded) == ["CID100004456", "CID100004991"]
+    mechanisms = {"CHEMBL1": [{"target_chembl_id": "CHEMBL220", "action_type": "INHIBITOR"}]}
+    targets = {"CHEMBL220": {"target_type": "SINGLE PROTEIN", "pref_name": "AChE", "target_components": [{"accession": "P22303", "component_synonyms": [{"component_synonym": "ACHE", "syn_type": "GENE_SYMBOL"}]}]}}
+    neostigmine = bridge("1", "neostigmine", "CID100004456", "CHEMBL1", 4456, ["N07AA01"])
+    assert qualify_ingredient(neostigmine, mechanisms, targets, max_drug_targets=None, excluded_perturbations=excluded).reason == "excluded_by_curation"
+    assert qualify_ingredient(neostigmine, mechanisms, targets, max_drug_targets=None).qualifies
+    path = tmp_path / "excluded.csv"
+    path.write_text("perturbation_id,drug,reason,source\nCID1,x,acts outside the brain,\n")
+    with pytest.raises(ValueError, match="no reason or no source"):
+        read_excluded_drug_perturbations(path)
+
+
+def test_the_committed_curation_of_9_121_c3_holds_the_drugs_ruled_and_not_lisuride() -> None:
+    from mechanistic_pathway_learning.evidence.curated_drug_wiring import CURATED_DRUG_TARGETS_PATHS, read_curated_mechanism_targets_from
+    curated = read_curated_mechanism_targets_from(CURATED_DRUG_TARGETS_PATHS)
+    assert "CID100003938" not in curated  # lisuride: its sources disagree in sign, held for the owner
+    gaba_a, = [target for target in curated["CID100004763"] if target.target_chembl_id == "CHEMBL2093872"]  # phenobarbital
+    assert len(gaba_a.gene_symbols) == 14 and gaba_a.sign == 0.5
+    assert {target.gene_symbols[0] for target in curated["RXCUI:2121751"]} == {"SLC6A2", "SLC6A3"}  # solriamfetol, no longer left out
+    assert "MAOB" not in {symbol for target in curated["RXCUI:19832"] for symbol in target.gene_symbols}  # budipine's disputed row held
