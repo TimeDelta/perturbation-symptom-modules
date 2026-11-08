@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 50, 8 November 2026). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 51, 8 November 2026). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -207,9 +207,9 @@ Under the limiting-step rule expression leaves the loop, so inside it the 17 lan
 
 *membrane potential, as built · membrane_potential.py and reactome_import.py on main at e6ea5f5; counts from the 4 Nov graph*
 
-![membrane potential, as decided · decision 9.112 ruled 4 Nov 2026, not built; constants from the Fable review of the same day](study_sheet_figures/15_membrane_potential_as_decided.png)
+![membrane potential, as decided · decisions 9.112 and 9.113, ruled 4, 7 and 8 Nov 2026, not built; constants from the Fable reviews of those days](study_sheet_figures/15_membrane_potential_as_decided.png)
 
-*membrane potential, as decided · decision 9.112 ruled 4 Nov 2026, not built; constants from the Fable review of the same day*
+*membrane potential, as decided · decisions 9.112 and 9.113, ruled 4, 7 and 8 Nov 2026, not built; constants from the Fable reviews of those days*
 
 "Gradient" in these two diagrams is the transmembrane ion concentration gradient, not the gradient of the training loss. The pool shares in the decided version are the pump-clamped pool sensitivities, normalised over the three inside pools; the outside pools stay open until 9.112's last question is ruled.
 

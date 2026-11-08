@@ -164,15 +164,15 @@
       "fingerprints": {
         "decision:9.87": "ffed67c6ab7d20163fe2aa193f4a00fb93b549011e6c8b4ee10761f0926e2d88",
         "decision:9.112": "8c58823baadb3f32c9a2c6ff8333e7a64177a24c0f93cb1c176b3e09e5086333",
-        "decision:9.113": "77306b4f6340964c2c464f0df4f6f63a689f3309900018981dd9036659396442",
+        "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c",
         "file:mechanistic_pathway_learning/graph/reactome_import.py": "c23a9ddc0c4addbe12a539add7a8c8a3229d0fef0f9139ac183674167f1183bd"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "2bb427cd"
+      "checked": "2026-11-08",
+      "checked_at_commit": "4c6df60c"
     },
     "88631e83-33d4": {
-      "title": "Membrane potential, as decided (9.112)",
+      "title": "Membrane potential, as decided (9.112, 9.113)",
       "state": "decided",
       "partner": "7d950678-d77c",
       "depicts": {
@@ -186,11 +186,11 @@
       },
       "fingerprints": {
         "decision:9.112": "8c58823baadb3f32c9a2c6ff8333e7a64177a24c0f93cb1c176b3e09e5086333",
-        "decision:9.113": "77306b4f6340964c2c464f0df4f6f63a689f3309900018981dd9036659396442",
+        "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "6a49e1dcb6f019ccd228eb87de3da2f20af458b46b771bb255b4618c41ce375c"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "2bb427cd"
+      "checked": "2026-11-08",
+      "checked_at_commit": "4c6df60c"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
