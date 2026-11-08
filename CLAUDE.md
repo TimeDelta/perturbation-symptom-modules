@@ -83,6 +83,12 @@ against them before it is acted on.
   repository, the data availability statement of the provider's paper. Quote the sentence and say where it was
   read. When every such route is closed, name the licence as unverified, list the routes tried and give the address
   for the owner to open.
+- **Manual curation takes more than one source where possible** (the owner, 8 November 2026: "Can you please make
+  sure to get multiple sources for the manual curation where possible?"). A value curated by hand (a label row, a drug
+  target, an ATC code, a mechanism, an identifier) is checked against a second independent source even when the first
+  answers. Two renderings of one document are one source (DailyMed and openFDA serving the same SPL; a mirror of a
+  paper). Each curated row names its sources; a row resting on one source says so and says which second sources were
+  tried, and a disagreement between sources is recorded beside the row, not settled silently.
 - **A failed source is not a finished search.** "Always try to find a second reputable source when one fails.
   That's the best rule" (15 October 2026). When a source is missing a record, refuses, or cannot be read, name a
   second reputable source and try it before reporting absence. Absence is reported only after the second source,
