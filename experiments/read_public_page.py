@@ -63,6 +63,9 @@ CHALLENGE_MARKERS = (
     # A research pass of 22 October 2026 found nature.com's gate saved as if it were the article: 200, 3,038 bytes,
     # titled "Client Challenge", with its assets under a /_fs-ch- path and none of the words above.
     "client challenge", "/_fs-ch-",
+    # A research pass of 8 November 2026 found www.tga.gov.au's Akamai gate saved as if it were the page: 200, about
+    # 2,300 bytes, an empty title, and the check only in a form posting to /_sec/verify with a bm-verify field.
+    "bm-verify", "/_sec/verify",
 )
 # Cloudflare injects its passive bot-telemetry script (/cdn-cgi/challenge-platform/scripts/jsd/main.js) into ordinary
 # pages it serves in full, so a "challenge-platform" match inside that script alone is not a check that the visitor is

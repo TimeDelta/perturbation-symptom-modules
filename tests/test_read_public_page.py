@@ -160,6 +160,18 @@ def test_a_gate_titled_client_challenge_is_a_refusal():
                                                      + "text " * 5000 + "</p></body></html>")
 
 
+def test_an_akamai_bm_verify_gate_is_a_refusal():
+    """www.tga.gov.au answered 200 with an Akamai interstitial of about 2,300 bytes, an empty title and a form posting a
+    bm-verify token to /_sec/verify, and a research pass of 8 November 2026 saved it as read."""
+    gate = ('<!DOCTYPE html><html><head><title>&nbsp;</title></head><body>'
+            '<form id="sec-if-cpt" method="POST" action="/_sec/verify?provider=interstitial">'
+            '<input type="hidden" name="bm-verify" value=""/></form>'
+            '<script>document.forms[0].submit();</script></body></html>')
+    assert read_public_page.looks_like_challenge(200, gate)
+    assert not read_public_page.looks_like_challenge(200, "<html><body><h1>Product information</h1><p>"
+                                                     + "Verify the dose before use. " * 400 + "</p></body></html>")
+
+
 def test_a_page_carrying_only_cloudflares_passive_telemetry_script_is_read():
     """WormBase's release directory listing (200, 5,173 bytes) was refused on 24 October 2026 because Cloudflare had
     injected its bot-telemetry script, whose path holds "challenge-platform", into the full page (decision 9.95)."""
