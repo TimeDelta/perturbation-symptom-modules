@@ -46,6 +46,8 @@ from mechanistic_pathway_learning.graph.curated_mechanisms import (
     read_curated_mechanisms,
 )
 from mechanistic_pathway_learning.graph.oxidative_regulation import add_oxidative_regulation
+from mechanistic_pathway_learning.graph.protein_descriptors import (
+    ION_CHANNEL_ACTIVITY, genes_annotated_with_go_term, read_go_ancestors)
 from mechanistic_pathway_learning.graph.reactome_import import (
     read_chebi_charges,
     DEFAULT_MEMBRANE_POTENTIAL_BUILD,
@@ -320,14 +322,23 @@ def main() -> None:
                              "primary belongs to and the primary's membership weight is split between them by brain expression")
     parser.add_argument("--without-curated-layers", action="store_true",
                         help="leave out the curated receptor and oxidant edges, for the ablation that separates them from the Reactome layer")
+    parser.add_argument("--go-annotations", type=Path, default=Path("data/raw/gene_ontology/goa_human.gaf.gz"),
+                        help="GO annotations, read only by the pores_and_clamped_pools membrane potential build, for the genes "
+                             "annotated with monoatomic ion channel activity (GO:0005216) whose reactions take a conductance edge")
+    parser.add_argument("--go-ontology", type=Path, default=Path("data/raw/gene_ontology/go-basic.obo"),
+                        help="GO ontology, to propagate GO:0005216 through is_a and part_of; read with --go-annotations")
     parser.add_argument("--membrane-potential", choices=MEMBRANE_POTENTIAL_BUILDS, default=DEFAULT_MEMBRANE_POTENTIAL_BUILD,
-                        help="how VM_c gets its value, one of the three builds of graph/reactome_import.py, which that module's comment "
+                        help="how VM_c gets its value, one of the four builds of graph/reactome_import.py, which that module's comment "
                              "sets out with what reaches VM_c under each. learned_from_reactions (the default, and the build registered up to "
                              "12 October 2026): one edge from each reaction that moves net charge, which the encoder averages. "
                              "computed_from_the_pools: the six ion pools feed it with the weights of the linearised parallel-conductance "
                              "equation and the reaction edges are not made. computed_beside_the_reactions: the same six weighted pool edges "
                              "with the reaction edges kept, which amendment item 13 registered until 26 October 2026. The rebuild passes "
-                             "computed_from_the_pools, which amendment item 35 registers (decision 9.87) "
+                             "computed_from_the_pools, which amendment item 35 registers (decision 9.87). "
+                             "pores_and_clamped_pools, which amendment item 37 registers (decisions 9.112 and 9.113): a conductance "
+                             "edge from each conductive pore joins the pool edges, the pool edges are reweighted by the pump-clamped "
+                             "pool sensitivities and the three extracellular pools take weight 0. That build reads --go-annotations "
+                             "and --go-ontology to find the pores "
                              "(mechanistic_pathway_learning/graph/membrane_potential.py, docs/membrane_potential_constants.md)")
     arguments = parser.parse_args()
 
@@ -364,11 +375,18 @@ def main() -> None:
     expression = load_brain_expression(arguments.brain_expression)
     brain_expressed_genes = set(expression.loc[expression.brain_median_tpm_max >= arguments.minimum_brain_tpm, "gene_symbol"])
     sbml_texts = [path.read_text() for path in reactome_export_paths(arguments.reactome_dir)]
+    # The conductive pores, read only for the build that needs them: propagating the ontology and scanning the
+    # annotations costs seconds that the other three builds would pay for nothing. GO:0005216 is half of the test,
+    # the single-ion rule in graph/reactome_import.py being the other half (amendment item 37).
+    pore_genes = (genes_annotated_with_go_term(uniprot, arguments.go_annotations,
+                                               read_go_ancestors(arguments.go_ontology), ION_CHANNEL_ACTIVITY)
+                  if arguments.membrane_potential == "pores_and_clamped_pools" else frozenset())
     new_nodes, new_edges, new_relations, summary = import_reactome_layer(
         sbml_texts, nodes, edges, relation_types, gene_of_uniprot, map_chebi_to_human_gem, ion_bases, ion_charges,
         read_human_gem_participants(human_gem_sbml, set(INORGANIC_IONS.values())), brain_expressed_genes, set(TRANSMITTER_BASES),
         VESICULAR_TRANSPORTER_GENES, CURATED_REACTIONS, REPLACED_HUMAN_GEM_REACTIONS, arguments.membrane_potential,
-        ion_pool_aliases=ION_POOL_ALIASES, catalysis_removed=HUMAN_GEM_CATALYSIS_REMOVED, entity_members_removed=REACTOME_ENTITY_MEMBERS_REMOVED)
+        ion_pool_aliases=ION_POOL_ALIASES, catalysis_removed=HUMAN_GEM_CATALYSIS_REMOVED, entity_members_removed=REACTOME_ENTITY_MEMBERS_REMOVED,
+        pore_genes=pore_genes)
 
     release_reactions_of_transmitter: dict[str, list[str]] = {}
     for reaction, released in summary["release_reactions"].items():

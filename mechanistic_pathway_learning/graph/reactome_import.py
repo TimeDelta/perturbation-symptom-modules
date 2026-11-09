@@ -399,6 +399,12 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     (the lysosomal mucolipins in the plasma-membrane TRP set), which keeps the gene node and its other edges."""
     if membrane_potential_build not in MEMBRANE_POTENTIAL_BUILDS:
         raise ValueError(f"membrane_potential_build must be one of {MEMBRANE_POTENTIAL_BUILDS}, not {membrane_potential_build!r}")
+    if membrane_potential_build == "pores_and_clamped_pools" and not pore_genes:
+        # Without the pore set the build silently makes no conductance edge, which would look like item 35 with
+        # reweighted pools rather than like item 37, and a graph built that way would carry the sign defect 9.112
+        # found while appearing to be the build that repairs it. So it refuses instead.
+        raise ValueError("pores_and_clamped_pools needs pore_genes, the genes annotated with GO:0005216; without "
+                         "them no reaction is a pore and no conductance edge is made (amendment item 37)")
     ion_pool_aliases, catalysis_removed, entity_members_removed = dict(ion_pool_aliases), dict(catalysis_removed), dict(entity_members_removed)
     potential_is_computed = membrane_potential_build in ("computed_from_the_pools", "computed_beside_the_reactions",
                                                          "pores_and_clamped_pools")

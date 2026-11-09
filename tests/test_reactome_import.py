@@ -810,10 +810,19 @@ def test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential
     assert summary["conductance_edges"] == {"Nav": 1}
 
 
-def test_no_conductance_edge_without_the_go_term():
-    """The GO annotation is required, not inferred from the reaction: a reaction whose catalysts are not channels by
-    GO:0005216 gets no conductance edge however many ions it moves."""
-    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes=set())
+def test_the_pores_build_refuses_to_run_without_the_pore_genes():
+    """Without the pore set the build would silently make no conductance edge, which looks like item 35 with
+    reweighted pools rather than like item 37: the graph would carry the sign defect decision 9.112 found while
+    appearing to be the build that repairs it. So it refuses rather than building something misleading."""
+    with pytest.raises(ValueError, match="pores_and_clamped_pools needs pore_genes"):
+        run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes=set())
+
+
+def test_a_reaction_whose_catalysts_are_not_channels_gets_no_conductance_edge():
+    """The GO annotation is required per reaction and not inferred from the ions it moves: with a pore set that names
+    no catalyst of any reaction here, nothing takes a conductance edge however much charge it moves."""
+    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
+                                      pore_genes={"KCNQ2"})  # a real channel gene, catalysing nothing in the fixture
     assert edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].empty
     assert summary["conductance_edges"] == {}
 
