@@ -263,7 +263,8 @@ if [ "$stage" = "fine" ]; then
   # known to act alike, filed as drugs of their own (9.121 C5),
   # and (decision 9.121) the ChEMBL parents that replace a stereo record without a mechanism row, which the assembler's
   # SIDER fallback reads as well; and (9.121 C3, C4) the curated targets of drugs no database holds a mechanism for and
-  # the drugs excluded as acting outside the brain. --curated-drug-targets takes several files, so it stays last.
+  # the drugs excluded as acting outside the brain; and (9.117 group (ii), ruled 9 November 2026) the label rows curated
+  # by hand for the drugs neither pinned source holds. --curated-drug-targets takes several files, so it stays last.
   drug_wiring="--admitted-atc-prefixes configs/admitted_atc_prefixes.csv --atc-code-supplements configs/atc_code_supplements.csv --perturbation-identity-overrides configs/perturbation_identity_overrides.csv --excluded-drug-perturbations configs/excluded_drug_perturbations.csv --curated-drug-targets configs/psychiatric_drug_additions_v4_draft.csv configs/curated_drug_targets.csv"
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
@@ -272,7 +273,7 @@ if [ "$stage" = "fine" ]; then
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
       --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
-      --rejected-indications configs/rejected_sider_indications.csv $drug_wiring
+      --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv $drug_wiring
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"

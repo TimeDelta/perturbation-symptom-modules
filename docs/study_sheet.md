@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 51, 8 November 2026). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 51, 9 November 2026). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -25,9 +25,9 @@ A perturbation enters as a signed seed, settles through one damped linear operat
 
 *registered pipeline, as built · 7 stages · from registered_rules.json and the rebuild chain; v5 graph of 5 Nov 2026, before decisions 9.112 and 9.117*
 
-![registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 Nov 2026, not built: targets curated from DrugCentral, GtoPdb, labels and reviews where ChEMBL has none](study_sheet_figures/01b_pipeline_as_decided.png)
+![registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 and 9 Nov 2026, not built: curated targets where ChEMBL has none, and the curated label route of 9.117 group (ii)](study_sheet_figures/01b_pipeline_as_decided.png)
 
-*registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 Nov 2026, not built: targets curated from DrugCentral, GtoPdb, labels and reviews where ChEMBL has none*
+*registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 and 9 Nov 2026, not built: curated targets where ChEMBL has none, and the curated label route of 9.117 group (ii)*
 
 The nonlinearities switched on by default (bottleneck, pH weight) sit after the loop; the in-loop aggregators and edge gates are off, so none of them can change the route a signal takes, only its size at the end.
 

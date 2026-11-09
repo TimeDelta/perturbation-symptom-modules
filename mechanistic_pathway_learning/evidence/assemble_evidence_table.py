@@ -698,6 +698,7 @@ def assemble(
     identity_overrides_path: Path | None = None,
     excluded_perturbations: dict[str, str] | None = None,
     rejected_indications: set[tuple[str, str]] | None = None,
+    curated_label_events_path: Path | None = None,
 ) -> AssembledEvidence:
     """Build the report table, aggregate it to observations, fit the report-level reliability model and weight the observations.
 
@@ -723,8 +724,10 @@ def assemble(
     none (evidence/curated_drug_wiring.py, decision 9.117); identity_overrides_path applies configs/perturbation_identity_overrides.csv
     to the bridge parents the SIDER route falls back to (decision 9.121); excluded_perturbations (configs/excluded_drug_perturbations.csv,
     decision 9.121 C4) drops the SIDER drugs that act outside the brain; rejected_indications ((STITCH flat id, preferred term
-    lowercase), configs/rejected_sider_indications.csv, decision 9.124) drops SIDER indication rows that misread a label; all
-    five None build as every table before 8 November 2026 was built."""
+    lowercase), configs/rejected_sider_indications.csv, decision 9.124) drops SIDER indication rows that misread a label;
+    curated_label_events_path (configs/curated_label_events.csv, decision 9.117 group (ii), ruled 9 November 2026) adds
+    the hand-curated label rows of the drugs neither pinned source holds, seeded on the curated targets; all six None
+    build as every table before 8 November 2026 was built."""
     if allele_perturbations and seed_gain_of_function_genes_positive:
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
     if weighting not in WEIGHTINGS:
@@ -826,6 +829,17 @@ def assemble(
             drug_targets_by_perturbation[event.stitch_flat_id] = targets
             model_description = ("human; drug indication; " if event.relation == "relieves" else "human; drug label; ") + f"{target_source} targets " + targets
             report_list.extend(drug_label_reports(event, model_description, json.dumps(perturbation_nodes)))
+
+    if curated_label_events_path is not None:
+        from mechanistic_pathway_learning.evidence.curated_label_events import curated_label_reports, read_curated_label_events
+
+        curated_nodes: dict[str, str] = {}
+        for perturbation_id, targets in (curated_targets_by_perturbation or {}).items():
+            nodes = node_lookup.perturbation_nodes(list(targets))
+            if nodes:
+                curated_nodes[perturbation_id] = json.dumps(nodes)
+                drug_targets_by_perturbation.setdefault(perturbation_id, drug_target_description(list(targets)))
+        report_list.extend(curated_label_reports(read_curated_label_events(Path(curated_label_events_path)), curated_nodes))
 
     reports = reports_to_dataframe(report_list)
     if allele_perturbations:
@@ -986,6 +1000,8 @@ def main() -> None:
                         help="decision 9.121 C4: configs/excluded_drug_perturbations.csv, drugs that act outside the brain; pass the same file to build_onsides_reports.py")
     parser.add_argument("--rejected-indications", type=Path, default=None,
                         help="decision 9.124: configs/rejected_sider_indications.csv, SIDER indication rows that misread a label")
+    parser.add_argument("--curated-label-events", type=Path, default=None,
+                        help="decision 9.117 group (ii): configs/curated_label_events.csv, label rows curated by hand for the drugs neither SIDER nor OnSIDES holds")
     parser.add_argument("--perturbation-identity-overrides", type=Path, default=None,
                         help="decisions 9.117 and 9.121: configs/perturbation_identity_overrides.csv, applied to the bridge parents the SIDER route falls back to; "
                              "pass the same file to build_onsides_reports.py")
@@ -1020,7 +1036,8 @@ def main() -> None:
                          curated_targets_by_perturbation=read_curated_mechanism_targets_from(arguments.curated_drug_targets) if arguments.curated_drug_targets is not None else None,
                          identity_overrides_path=arguments.perturbation_identity_overrides,
                          excluded_perturbations=read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None,
-                         rejected_indications=read_rejected_sider_indications(arguments.rejected_indications) if arguments.rejected_indications is not None else None)
+                         rejected_indications=read_rejected_sider_indications(arguments.rejected_indications) if arguments.rejected_indications is not None else None,
+                         curated_label_events_path=arguments.curated_label_events)
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     for name, table in (("evidence_records.parquet", assembled.observations), ("unmapped_records.parquet", assembled.unmapped), ("evidence_reports.parquet", assembled.reports)):  # atomic replace for concurrent readers
         table.to_parquet(arguments.output_dir / (name + ".tmp"), index=False)
@@ -1042,6 +1059,11 @@ def main() -> None:
         summary["curated_drug_targets"] = {"files": [str(path) for path in arguments.curated_drug_targets], "perturbations": sorted(read_curated_mechanism_targets_from(arguments.curated_drug_targets))}
     if arguments.excluded_drug_perturbations is not None:
         summary["excluded_drug_perturbations"] = {"file": str(arguments.excluded_drug_perturbations), "perturbations": read_excluded_drug_perturbations(arguments.excluded_drug_perturbations)}
+    if arguments.curated_label_events is not None:
+        from mechanistic_pathway_learning.evidence.curated_label_events import read_curated_label_events
+        curated_events = read_curated_label_events(arguments.curated_label_events)
+        summary["curated_label_events"] = {"file": str(arguments.curated_label_events), "rows": len(curated_events),
+                                           "drugs": sorted({row["drug"] for row in curated_events})}
     summary.update(summarize_reports(assembled.reports, assembled.reliability_fit, rubric_weight_defaults, assembled.observations, assembled.reports_dropped_unknown_provenance))
     (arguments.output_dir / "evidence_summary.json").write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))
