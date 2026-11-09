@@ -233,21 +233,33 @@ def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
     """(ion, compartment letter) -> (sign, weight) for the pool's edge into VM_c under amendment item 37.
 
     This is to replace driving_force_edge_weights() for the pores_and_clamped_pools build of amendment item 37, which
-    is not yet wired into graph/reactome_import.py: nothing calls this function as of the commit that adds it. Two changes from it: the
-    cytosolic weights are the pump-clamped sensitivities rather than conductance share times RT/zF, and the three
-    extracellular pools take weight 0 at the registered steady-state readout, which decision 9.112's first
-    sub-question ruled on 7 November 2026 (their closed-space values and clearance times are kept for decision
-    9.118, and the pools stay as inputs). The signs are unchanged: more cytosolic sodium or potassium lowers the
-    pool's contribution to the potential, and chloride is the reverse because its charge is negative.
+    is not yet wired into graph/reactome_import.py: nothing calls this function as of the commit that adds it.
+
+    Two changes from it. First, the cytosolic weight is the pump-clamped sensitivity TIMES item 35's coefficient, not
+    the sensitivity alone. The composition is what makes the units right: item 35's coefficient is millivolts per unit
+    fractional change in the pool, the sensitivity is d ln[ion]_i per uA/cm2 of sustained current, and their product
+    is millivolts per uA/cm2, which is what an edge from a current-carrying reaction has to carry. The sensitivity
+    alone would be a concentration change and not a potential change. The study sheet's "as decided" diagram (widget
+    88631e83-33d4, checked 8 November 2026) states the same composition and the same three shares, 0.105, 0.013 and
+    0.882; that is how a first version of this function, which used the sensitivities alone and gave 0.106, 0.004 and
+    0.890, was found to be wrong.
+
+    Second, the three extracellular pools take weight 0 at the registered steady-state readout, which decision
+    9.112's first sub-question ruled on 7 November 2026 (their closed-space values and clearance times are kept for
+    decision 9.118, and the pools stay as inputs).
+
+    The signs come from item 35's coefficient and are unchanged by the sensitivities, which are magnitudes: more
+    cytosolic sodium or potassium lowers the pool's contribution to the potential, and chloride is the reverse
+    because its charge is negative.
 
     The weights are rescaled to sum to 1 in absolute value, as the item-35 weights were, because the graph carries no
     units and only the ratios between the edges are physical. This normalisation does not preserve the physiological
     ratio between the pool route and the conductance edges, which is a limit registered with item 37.
     """
+    item_35_coefficients = driving_force_coefficients_millivolts()
     coefficients: dict[tuple[str, str], float] = {}
     for ion in IONS_IN_THE_VOLTAGE_EQUATION:
-        sensitivity = PUMP_CLAMPED_POOL_SENSITIVITY[ion]
-        coefficients[(ion, "c")] = -sensitivity if ION_CHARGE[ion] > 0 else sensitivity
+        coefficients[(ion, "c")] = PUMP_CLAMPED_POOL_SENSITIVITY[ion] * item_35_coefficients[(ion, "c")]
         coefficients[(ion, "e")] = 0.0
     total = sum(abs(value) for value in coefficients.values())
     return {key: ((math.copysign(1.0, value) if value else 0.0), abs(value) / total if total else 0.0)
