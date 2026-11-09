@@ -53,7 +53,9 @@ longer holds: it is true only of items 1 and 3.
 10. **Item 3, protein electrostatics.** The largest change and the hardest to follow; stays parked.
 
 Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-number plasticity), and then item 13
-(co-prescription confounding in FAERS), were queued at the owner's request after this order was set, and are not placed in it. Items 11 and 12 are literature passes, so their first step can
+(co-prescription confounding in FAERS), were queued at the owner's request after this order was set, and are not placed in it.
+Item 14 (the curation sweep over the drug target table) was queued on 9 November 2026, likewise after the order was set
+and likewise unplaced; its first step is a query over the ChEMBL action types and costs little. Items 11 and 12 are literature passes, so their first step can
 run now; item 13's first form is an hour of engineering on rows already read; their place in the order is the owner's.
 
 ---
@@ -740,3 +742,49 @@ antipsychotic the patients are also taking.
 - No paper read measures anticholinergic co-prescription confounding in tardive dyskinesia pharmacovigilance itself.
 
 **Status.** Parked by the owner's ruling; not started.
+
+## 14. A curation sweep over the drug target table, for the mechanisms a single sign cannot carry
+
+Tagged 2026-11-09, at the owner's request after bupropion's nicotinic antagonism came up: "I'm more thinking there
+will be a pass for similar missed cases later marked for manual curation". Nothing here is started.
+
+**The idea.** A drug's row in `drug_entry_nodes.parquet` is a target, a sign and a magnitude, taken from ChEMBL's
+mechanism rows through `ACTION_TYPE_SIGN` (`mechanistic_pathway_learning/perturbation/map_drug_targets_to_graph_nodes.py`).
+That carries an inhibitor and an agonist well. It carries badly, or not at all, a drug that is a transported substrate,
+one whose action is at a target ChEMBL files no mechanism row for, and one whose two targets need opposite signs. The
+cases below were each found while answering a different question, were each verified where the text says so, and none
+is fixed. A sweep would look for the rest of them rather than wait for each to surface.
+
+**The cases found so far, with where they are recorded.**
+
+| drug | what the table holds | what the sources say | recorded |
+|---|---|---|---|
+| amphetamine | SLC18A2 **-1**, the same as tetrabenazine | a transported substrate that **requires** VMAT2 working; the two are antagonists at that target | 9.127 |
+| methamphetamine | SLC6A2, SLC6A3, SLC6A4 all **-1** | a releasing agent, as amphetamine is at **+1**; the two closest congeners are written oppositely, and the -1 rows cannot drive the `catalyzes_reverse_transport` reactions built for this mechanism | 9.127 |
+| fenfluramine | HTR1D +1, HTR2C +1, SIGMAR1 -1, **no transporter edge at all** | the EMA summary of product characteristics calls it "a serotonin releasing agent"; the US label names only 5-HT2 and calls the mechanism unknown, so the agencies differ | 9.127 |
+| bupropion | SLC6A2 -1, SLC6A3 -1 | the transporter rows are right (it is a noradrenaline-dopamine reuptake inhibitor, not an SNRI); its **nicotinic receptor antagonism**, thought to underlie the smoking-cessation use, is not carried. **Unverified**: no source was read for it, and whether ChEMBL files a mechanism row was not checked | this item only |
+| tramadol | the mu opioid receptor only | SERT and NET are missing, and so is the higher mu affinity of its metabolite O-desmethyltramadol | 9.121 C5 |
+| zopiclone | a ChEMBL complex of 9 GABA-A subunits, **no gamma subunit** | the site both its labels describe needs gamma; eszopiclone's complex holds 16 subunits, so the magnitude also spreads 1/9 against 1/16 | 9.121 C5 |
+| dextroamphetamine | a VMAT2 row the racemate's record lacks | the difference between the enantiomers is overstated by it | 9.121 C5 |
+| bupivacaine, levobupivacaine | SCN4A alone, the muscle sodium channel | the eight other local anaesthetics of N01B carry the ten-gene set with the brain-expressed subtypes; this is why its verdict reads "no brain-expressed target" | 9.123 |
+| lisuride | no curated row (its sources disagree in sign) | DrugCentral gives one 5-HT2B antagonist row, the Guide to PHARMACOLOGY sixteen rows topped by 5-HT1A full agonism and D2/D3 partial agonism: opposite in sign at dopamine | 9.121 C3 |
+| budipine | MAO-B held out | Eltze et al. 1999 against Klockgether et al. 1996, who found no dopaminergic action in vivo | 9.121 C3 |
+| pizotifen | SERT held out | its one label places the uptake inhibition in platelets, so it is probably not a central row | 9.121 C3 |
+
+**What the sweep would be.** Over the 230 drug perturbations, find the drugs whose label states a mechanism the target
+table does not carry, and the drugs whose action type the sign mapping flattens. Two routes, and the first is cheap:
+compare each drug's label mechanism section against its target rows, which the project already reads for registered
+rule 14 (`experiments/read_label_central_action.py` fetches those sections and caches them); and check each drug whose
+ChEMBL action type is a substrate, a releasing agent or a modulator rather than an inhibitor or an agonist, which is a
+query over `data/raw/chembl/mechanisms.json`. Research, so on Fable; the rows would go to
+`configs/curated_drug_targets.csv`, which decision 9.121 C3 created for exactly this.
+
+**Known limits (do not overstate these in writing).**
+- **The sign is the model's instrument, and some of these cases need more than a sign.** A transported substrate is not
+  an agonist with a different number; decision 9.127 records that an always-available reverse reaction would make
+  tetrabenazine wrong. So a sweep finds the cases but does not by itself fix the ones that need a mechanism.
+- **A drug the sweep corrects moves the perturbation set**, which falls before the held-out draw (9.69's note), so it is
+  outcome-blind only while the lockbox is undrawn.
+- **The table above is a list of the cases that happened to surface**, not a measured count, and one row of it is
+  unverified. The sweep's first job is to say how many there are.
+
