@@ -767,3 +767,71 @@ def test_a_release_directory_without_exports_is_refused(tmp_path):
     with pytest.raises(FileNotFoundError, match="v98"):
         reactome_export_paths(tmp_path / "reactome" / "v97")
     assert [path.name for path in reactome_export_paths(tmp_path / "reactome" / "v98")] == ["R-HSA-1.sbml"]
+
+
+# The pores-and-clamped-pools build of amendment item 37 (decisions 9.112 and 9.113; the owner, 4, 7 and 8 November
+# 2026). It exists because the pool route alone carries the opposite of the electrical sign for 376 of 382
+# charge-moving reactions, so a conductive pore reaches VM_c directly instead.
+
+
+def test_the_pores_build_makes_no_reaction_charge_edges_so_the_divisor_stays_one():
+    _, edges, relation_types, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
+                                                   pore_genes={"SCN1A"})
+    assert summary["membrane_potential_build"] == "pores_and_clamped_pools"
+    assert not (edges.relation_type == "changes_membrane_potential").any()
+    assert "changes_membrane_potential" not in relation_types
+    assert "driving_force" in relation_types and "voltage_gates" in relation_types
+
+
+def test_the_pores_build_reweights_the_pools_and_drops_the_extracellular_three():
+    """The cytosolic weights are the pump-clamped sensitivities times item 35's coefficients, 0.105, 0.013 and 0.882,
+    and the three extracellular pools take weight 0, so they get no edge at all (ruled 7 November 2026)."""
+    _, edges, _, _ = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"})
+    pools = edges[(edges.relation_type == "driving_force")
+                  & edges.source_id.str.startswith("NEURON_")].set_index("source_id")
+    assert pools.sign.to_dict() == {neuronal_pool_id(SODIUM, "c"): -1.0, neuronal_pool_id(POTASSIUM, "c"): -1.0,
+                                    neuronal_pool_id(CHLORIDE, "c"): 1.0}
+    assert pools.weight[neuronal_pool_id(SODIUM, "c")] == pytest.approx(0.105, abs=0.001)
+    assert pools.weight[neuronal_pool_id(POTASSIUM, "c")] == pytest.approx(0.013, abs=0.001)
+    assert pools.weight[neuronal_pool_id(CHLORIDE, "c")] == pytest.approx(0.882, abs=0.001)
+    for letter_pool in (neuronal_pool_id(SODIUM, "e"), neuronal_pool_id(POTASSIUM, "e"), neuronal_pool_id(CHLORIDE, "e")):
+        assert letter_pool not in pools.index, "an extracellular pool of weight 0 must get no edge"
+
+
+def test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential():
+    """SCN1A is Nav, whose reversal potential is +47.9 mV rather than E_Na +62.5, and whose weight is 22.77 mV."""
+    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"})
+    pore = edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")]
+    assert len(pore) == 1, pore
+    assert pore.iloc[0].sign == 1.0, "a sodium pore depolarises"
+    assert pore.iloc[0].weight == pytest.approx(22.77, abs=0.01)
+    assert pore.iloc[0].target_id == MEMBRANE_POTENTIAL_NODE
+    assert "Nav" in pore.iloc[0].evidence_source
+    assert summary["conductance_edges"] == {"Nav": 1}
+
+
+def test_no_conductance_edge_without_the_go_term():
+    """The GO annotation is required, not inferred from the reaction: a reaction whose catalysts are not channels by
+    GO:0005216 gets no conductance edge however many ions it moves."""
+    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes=set())
+    assert edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].empty
+    assert summary["conductance_edges"] == {}
+
+
+def test_a_channel_by_go_that_moves_several_ions_is_recorded_rather_than_given_an_edge():
+    """GO admits carriers, so a reaction that passes the term but is neither a single-ion flux nor a named
+    mixed-cation class gets no edge and is counted in the summary. The Na+/K+-ATPase and NKCC1 are the two here; in
+    the built graph neither reaches this test, since neither gene carries GO:0005216 at all."""
+    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
+                                      pore_genes={"ATP1A3", "SLC12A2"})
+    assert edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].empty
+    assert summary["conductance_edges"] == {}
+    assert len(summary["pores_without_a_conductance_edge"]) == 2
+    assert all("moves" in entry for entry in summary["pores_without_a_conductance_edge"])
+
+
+def test_the_other_builds_are_untouched_by_the_pore_genes_argument():
+    """pore_genes is read by this build alone, so passing it must change nothing elsewhere."""
+    _, without, _, _ = run_import(membrane_potential_build="computed_from_the_pools")
+    _, with_genes, _, _ = run_import(membrane_potential_build="computed_from_the_pools", pore_genes={"SCN1A"})
+    assert without.equals(with_genes)

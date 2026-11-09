@@ -400,3 +400,40 @@ def mixed_pore_class_of_gene(gene_symbol: str) -> str | None:
         if symbol.startswith(prefix):
             return pore_class
     return None
+
+
+def single_ion_pore_conductance_microsiemens_per_square_centimetre(ion: str) -> float:
+    """The resting conductance a pore permeable to this ion alone is given: its leak conductance, and for calcium its
+    measured resting conductance.
+
+    Why the leak values and not a per-pore measurement: the project holds no conductance for an individual channel,
+    and the record's ruled single-ion terms (Na+ 24.6, K+ 14.3, Cl- 2.0 mV) are these values, which is also what makes
+    them the endpoints of the mixed-pore rule. So every single-ion pore of one ion carries the same weight, and what
+    distinguishes two sodium channels in the graph is which reactions they catalyse and what gates them, not their
+    conductance. That is a limitation of the build and not of the law.
+    """
+    if ion == "Ca2+":
+        return CALCIUM_RESTING_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE
+    return LEAK_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE[ion]
+
+
+def conductance_edge_for_a_pore(ion: str | None, pore_class: str | None) -> tuple[float, float, str]:
+    """(sign, weight in mV, evidence) of a pore's conductance edge into VM_c, for amendment item 37.
+
+    A pore_class names a mixed-cation pore and takes precedence: its weight comes from its own reversal potential.
+    Otherwise the pore carries one ion and takes that ion's term. Raises when neither is given, so a caller cannot
+    make an edge for a reaction it has not classified.
+    """
+    if pore_class is not None:
+        permeability = MIXED_PORE_PERMEABILITIES[pore_class]
+        reversal = mixed_pore_reversal_potential_millivolts(permeability)
+        return (math.copysign(1.0, reversal - resting_potential_millivolts()),
+                mixed_pore_weight_millivolts(permeability),
+                f"conductance of a mixed-cation pore at its own reversal potential, {pore_class} "
+                f"(E_rev {reversal:+.1f} mV; docs/membrane_potential_constants.md)")
+    if ion is None:
+        raise ValueError("a conductance edge needs either an ion or a mixed-cation pore class")
+    conductance = single_ion_pore_conductance_microsiemens_per_square_centimetre(ion)
+    return (pore_conductance_edge_sign(ion), pore_conductance_weight_millivolts(ion, conductance),
+            f"conductance of a pore permeable to {ion} alone, g |E - V_rest| / g_total "
+            f"(E {nernst_potential_millivolts(ion):+.1f} mV; docs/membrane_potential_constants.md)")

@@ -72,7 +72,9 @@ from pathlib import Path
 import pandas as pd
 
 from mechanistic_pathway_learning.graph.tag_currency_metabolites import retag_currency_by_name
-from mechanistic_pathway_learning.graph.membrane_potential import driving_force_edge_weights
+from mechanistic_pathway_learning.graph.membrane_potential import (
+    clamped_pool_edge_weights, conductance_edge_for_a_pore, driving_force_edge_weights,
+    IONS_WITH_A_CONDUCTANCE_TERM, mixed_pore_class_of_gene)
 
 SBML_NAMESPACE = {"sbml": "http://www.sbml.org/sbml/level3/version1/core"}
 SMALL_MOLECULE_KINDS = {"SimpleEntity", "ChemicalDrug"}
@@ -132,7 +134,14 @@ HYPERPOLARISATION_ACTIVATED_PATTERN = re.compile(r"^HCN[1-4]$")
 # edges divides the law by 1 + R; it is to be measured again (decision 4.1).
 # A pool with a driving force of 0 is still built as a node; it simply gets no edge into the potential.
 NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"): 1.0, ("Cl-", "c"): 1.0, ("Ca2+", "c"): 0.0}
-MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools", "computed_beside_the_reactions")
+#   "pores_and_clamped_pools", the build amendment item 37 registers (decisions 9.112 and 9.113): a conductance
+#     edge into VM_c from each conductive pore, under driving_force and so joining the pool edges rather than
+#     taking a relation of its own, weighted g_i |E_i - V_rest| / g_total with the sign of E_i - V_rest; the six
+#     pool edges reweighted by the pump-clamped pool sensitivities, the three extracellular pools at 0; and no
+#     reaction edges, so the divisor at VM_c stays 1 as under computed_from_the_pools. It exists because the pool
+#     route alone carries the opposite of the electrical sign for 376 of 382 charge-moving reactions (9.112).
+MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools",
+                                              "computed_beside_the_reactions", "pores_and_clamped_pools")
 # Not the build the rebuild asks for. Since 26 October 2026 scripts/rebuild_data_layer.sh passes
 # --membrane-potential computed_from_the_pools to both neuronal variant builds, on the owner's ruling in decision 9.87
 # ("so then definitely compute it by the pools"), which amendment item 35 registers and the rule
@@ -143,8 +152,9 @@ MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "compute
 # is, so a run that passes no flag still reproduces those graphs
 DEFAULT_MEMBRANE_POTENTIAL_BUILD = "learned_from_reactions"
 # The pools the computed build needs that the registered build does not: the extracellular side of sodium and of
-# chloride. Potassium already has both sides. No extracellular calcium pool is added, because calcium does not enter
-# the voltage equation (graph/membrane_potential.py).
+# chloride. Potassium already has both sides. No extracellular calcium pool is added: calcium has no pool route to
+# VM_c under any build, and under pores_and_clamped_pools it reaches the potential as a conductive pore instead,
+# which needs no pool of its own (decision 9.113, graph/membrane_potential.py).
 POOLS_ADDED_BY_THE_COMPUTED_BUILD = {("Na+", "e"): 1.0, ("Cl-", "e"): -1.0}
 # The organelle calcium stores (decision 9.75): pools with no driving force on VM_c, built under every membrane
 # potential build. Reactome's luminal calcium species map to them as the cytosolic species map to the cytosolic pool,
@@ -361,7 +371,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                           membrane_potential_build: str = DEFAULT_MEMBRANE_POTENTIAL_BUILD,
                           ion_pool_aliases: dict[str, str] = (),
                           catalysis_removed: dict[tuple[str, str], str] = (),
-                          entity_members_removed: dict[tuple[str, str], str] = ()) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
+                          entity_members_removed: dict[tuple[str, str], str] = (),
+                          pore_genes: set[str] = frozenset()) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
     """The graph with the Reactome entities and reactions, the curated reactions, the neuronal ion pools, the calcium
     stores, the membrane potential node and their edges.
 
@@ -372,7 +383,11 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     cytosol-to-extracellular shortcuts lose their catalysis. replaced_human_gem_reactions: {reaction id: why}, the
     Human-GEM reactions the curated set replaces, deleted with every edge they carry (a reaction that lumps channel
     families whose voltage dependence differs). membrane_potential_build is one of MEMBRANE_POTENTIAL_BUILDS and
-    defaults to the registered one.
+    defaults to the registered one. pore_genes: the gene symbols annotated with monoatomic ion channel activity,
+    GO:0005216 propagated (graph/protein_descriptors.genes_annotated_with_go_term). Only the
+    pores_and_clamped_pools build reads it, to decide which reactions get a conductance edge into VM_c; it is
+    required for that build and ignored by the others, and GO alone is not the test, since it admits carriers
+    such as the serotonin transporter, so a single-ion rule is applied with it (amendment item 37).
 
     The three tables of decision 9.75, each {key: why}, and each raising on a key the graph does not hold so that a
     table cannot drift from its source silently. ion_pool_aliases: {base id: base id of the pool it shares}, for an ion
@@ -385,8 +400,12 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     if membrane_potential_build not in MEMBRANE_POTENTIAL_BUILDS:
         raise ValueError(f"membrane_potential_build must be one of {MEMBRANE_POTENTIAL_BUILDS}, not {membrane_potential_build!r}")
     ion_pool_aliases, catalysis_removed, entity_members_removed = dict(ion_pool_aliases), dict(catalysis_removed), dict(entity_members_removed)
-    potential_is_computed = membrane_potential_build in ("computed_from_the_pools", "computed_beside_the_reactions")
-    reactions_tell_the_potential = membrane_potential_build != "computed_from_the_pools"
+    potential_is_computed = membrane_potential_build in ("computed_from_the_pools", "computed_beside_the_reactions",
+                                                         "pores_and_clamped_pools")
+    pores_tell_the_potential = membrane_potential_build == "pores_and_clamped_pools"
+    # Under pores_and_clamped_pools a reaction still makes no changes_membrane_potential edge: what it makes is a
+    # driving_force edge when it is a conductive pore, which keeps the divisor at VM_c at 1 (amendment item 37).
+    reactions_tell_the_potential = membrane_potential_build not in ("computed_from_the_pools", "pores_and_clamped_pools")
     species: dict[str, ReactomeSpecies] = {}
     reactions: dict[str, ReactomeReaction] = {}
     for text in sbml_texts:
@@ -418,7 +437,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         if base not in ion_set or alias not in ion_set:
             raise ValueError(f"ion_pool_aliases names {base} -> {alias}, and both must be ion bases")
     # (ion, compartment) -> (sign, weight) of the pool's edge into the potential under the computed build
-    computed_edge = driving_force_edge_weights() if potential_is_computed else {}
+    computed_edge = (clamped_pool_edge_weights() if pores_tell_the_potential
+                     else driving_force_edge_weights() if potential_is_computed else {})
 
     def add_node(node_id: str, **values) -> None:
         if node_id not in existing and node_id not in new_nodes:
@@ -447,11 +467,19 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             continue
         if potential_is_computed:
             sign, weight = computed_edge[(ion_names[base], letter)]
+            # A pool of weight 0 gets no edge, which is how the three extracellular pools leave the potential
+            # under pores_and_clamped_pools (decision 9.112, ruled 7 November 2026). The check must come before
+            # the sign check below, because a zero weight carries no sign and the table still says 1 or -1.
+            if not weight:
+                continue
             if sign != driving_force_sign:
                 raise ValueError(f"the computed weight of the {ion_names[base]} {letter} pool has sign {sign}, and the table says {driving_force_sign}")
             add_edge(pool, MEMBRANE_POTENTIAL_NODE, "driving_force", sign,
-                     "share of the resting leak conductance times RT/zF, linearised parallel-conductance equation "
-                     "(docs/membrane_potential_constants.md)", weight)
+                     ("pump-clamped pool sensitivity times the linearised parallel-conductance coefficient "
+                      "(amendment item 37, docs/extracellular_pool_sensitivities_2026-11-07.md)"
+                      if pores_tell_the_potential else
+                      "share of the resting leak conductance times RT/zF, linearised parallel-conductance equation "
+                      "(docs/membrane_potential_constants.md)"), weight)
         else:
             add_edge(pool, MEMBRANE_POTENTIAL_NODE, "driving_force", driving_force_sign, "Nernst potential of the ion")
     sensor_edges = 0
@@ -597,6 +625,7 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             reaction_records[reaction_id] = (participants, genes, [], [], "Human-GEM")
 
     membrane_edges, pool_edges, gating_edges = defaultdict(int), 0, defaultdict(int)
+    conductance_edges, pores_unclassified = defaultdict(int), []
     for reaction_node, (participants, catalyst_genes, _, _, source) in reaction_records.items():
         moved = ions_moved_inward(participants, ion_set)
         inward_charge = sum(ion_charges.get(base, 0) * amount for base, amount in moved.items())
@@ -610,6 +639,27 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         if reactions_tell_the_potential and (curated_sign is not None or inward_charge) and add_edge(
                 reaction_node, MEMBRANE_POTENTIAL_NODE, "changes_membrane_potential", sign, evidence):
             membrane_edges[source] += 1
+        # The conductance edge of amendment item 37: a conductive pore reaches VM_c directly, under driving_force,
+        # with the sign of E - V_rest rather than the sign of the charge it moves. The pore test is GO:0005216 on a
+        # catalysing gene AND a single-ion plasma-membrane flux, or a named mixed-cation class; GO alone admits
+        # carriers (the serotonin transporter carries an annotated channel activity and moves 5-HT with Na+ and
+        # Cl-, so the single-ion rule is what excludes it). A reaction that is a pore by GO but neither
+        # single-ion nor a named class is recorded in the summary rather than given an edge, so the gap is
+        # counted instead of guessed.
+        if pores_tell_the_potential and moved and (catalyst_genes & set(pore_genes)):
+            pore_class = next((found for gene in sorted(catalyst_genes)
+                               if (found := mixed_pore_class_of_gene(gene)) is not None), None)
+            single_ion = (ion_names[next(iter(moved))] if len(moved) == 1 else None)
+            if single_ion is not None and single_ion not in IONS_WITH_A_CONDUCTANCE_TERM:
+                single_ion = None
+            if pore_class is not None or single_ion is not None:
+                pore_sign, pore_weight, pore_evidence = conductance_edge_for_a_pore(single_ion, pore_class)
+                if add_edge(reaction_node, MEMBRANE_POTENTIAL_NODE, "driving_force", pore_sign,
+                            f"{pore_evidence} ({source})", pore_weight):
+                    conductance_edges[pore_class or single_ion] += 1
+            else:
+                pores_unclassified.append(f"{reaction_node} ({name_of_node.get(reaction_node)}): "
+                                          f"moves {sorted(ion_names[base] for base in moved)}")
         # Reactome and curated reactions reach the pools through their own substrate and product edges, since their
         # ion species are the pool nodes; only Human-GEM, whose ions are currency nodes, needs these edges, and the
         # Reactome ion entity that has no pool of its own and shares another's (its chloride, decision 9.75)
@@ -669,6 +719,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     new_relations = list(relation_types) + [relation for relation in dict.fromkeys(added_relations)
                                             if relation not in relation_types]
     summary = {"membrane_potential_build": membrane_potential_build,
+               "conductance_edges": dict(sorted(conductance_edges.items())),
+               "pores_without_a_conductance_edge": sorted(pores_unclassified),
                "reactome_reactions": len(reactions), "reactome_species": len(species), "curated_reactions": len(curated_reactions),
                "nodes_added": len(node_table) - len(nodes) + len(deleted_nodes), "nodes_deleted": len(deleted_nodes),
                "edges_added": len(edge_table) - len(edges) + int((~kept).sum()), "edges_removed": int((~kept).sum()),
