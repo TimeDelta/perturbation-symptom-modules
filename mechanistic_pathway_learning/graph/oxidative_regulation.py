@@ -31,9 +31,22 @@ COMPARTMENT_WORDS = (("mitochondri", "m"), ("peroxisom", "x"), ("endoplasmic ret
 def oxidant_bases(species: str) -> list[str]:
     """Human-GEM base ids for a curated species name, empty when the row names no oxidant Human-GEM has: a species
     without a metabolite (lipid hydroperoxides) or an unresolved one ('reactive oxygen species (unspecified)'). A row
-    that names two ('superoxide and hydrogen peroxide') gives both."""
+    that names two ('superoxide and hydrogen peroxide') gives both.
+
+    The match is by substring, because a row names its species in prose and may name two of them. A key that is a
+    proper substring of another matched key is then dropped, which corrects a defect found on 9 November 2026: the
+    nine keys have exactly one substring relation, 'nitrite' inside 'peroxynitrite', so every peroxynitrite row also
+    produced a nitrite edge. Two rows of docs/curated_oxidant_targets.csv carried it ('peroxynitrite' and 'superoxide
+    and peroxynitrite (when L-arginine depleted)'), and no row of either table names plain nitrite, so nitrite's own
+    entry is now unreachable from the tables as they stand and is kept for a row that names it.
+
+    The drop is by key and not by species name, so a row that deliberately named both would lose the shorter one. No
+    row does, and a row that needs both wants two rows rather than a looser rule here.
+    """
     name = str(species).lower()
-    return [base for key, base in OXIDANT_BASES.items() if key in name]
+    matched = {key: base for key, base in OXIDANT_BASES.items() if key in name}
+    return [base for key, base in matched.items()
+            if not any(other != key and key in other for other in matched)]
 
 
 def oxidant_node(base: str, compartment_text: str, node_ids: set[str]) -> str | None:

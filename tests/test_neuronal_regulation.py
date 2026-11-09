@@ -7,7 +7,8 @@ from pathlib import Path
 import pandas as pd
 
 from mechanistic_pathway_learning.graph.neurotransmission_regulation import add_release_regulation
-from mechanistic_pathway_learning.graph.oxidative_regulation import add_oxidative_regulation, oxidant_bases, oxidant_node
+from mechanistic_pathway_learning.graph.oxidative_regulation import (
+    OXIDANT_BASES, add_oxidative_regulation, oxidant_bases, oxidant_node)
 
 NODE_COLUMNS = ["node_id", "node_type", "display_name", "compartment", "base_metabolite_id", "degree", "gene_symbol", "in_metabolic_layer", "is_currency"]
 EDGE_COLUMNS = ["source_id", "target_id", "relation_type", "sign", "evidence_source"]
@@ -162,3 +163,32 @@ def test_redox_pools_from_human_gem_stoichiometry():
     assert (capacity.sign == 1.0).all()
     assert not new_nodes.set_index("node_id").loc[glutathione_pool, "is_currency"]
     assert summary["largest_pool_out_degree"] == 1 and "redox_capacity" in new_relations
+
+
+def test_peroxynitrite_does_not_also_produce_a_nitrite_edge():
+    """The curated species names are matched by substring, because a row names its species in prose and may name two.
+    The nine keys have exactly one substring relation, "nitrite" inside "peroxynitrite", so before 9 November 2026
+    every peroxynitrite row also produced a nitrite edge: 8 rows of the two curated tables (1 source, 7 target)."""
+    assert oxidant_bases("peroxynitrite") == [OXIDANT_BASES["peroxynitrite"]]
+    assert OXIDANT_BASES["nitrite"] not in oxidant_bases("peroxynitrite")
+    assert oxidant_bases("superoxide and peroxynitrite (when L-arginine depleted)") == [
+        OXIDANT_BASES["superoxide"], OXIDANT_BASES["peroxynitrite"]]
+
+
+def test_a_row_naming_two_species_still_gives_both():
+    """The fix drops a key that is a proper substring of another matched key, and must not touch a row that names two
+    unrelated species. Three rows of the curated tables do."""
+    both = [OXIDANT_BASES["hydrogen peroxide"], OXIDANT_BASES["superoxide"]]
+    assert oxidant_bases("superoxide and hydrogen peroxide") == both
+    assert oxidant_bases("hydrogen peroxide (from superoxide dismutation)") == both
+    assert oxidant_bases("reactive oxygen species (superoxide/hydrogen peroxide)") == both
+
+
+def test_nitrite_still_resolves_when_a_row_names_it_alone():
+    """Nitrite's entry is unreachable from the tables as they stand, and is kept for a row that names it."""
+    assert oxidant_bases("nitrite") == [OXIDANT_BASES["nitrite"]]
+
+
+def test_an_unresolved_species_gives_nothing():
+    assert oxidant_bases("lipid hydroperoxides") == []
+    assert oxidant_bases("reactive oxygen species (unspecified oxidant)") == []
