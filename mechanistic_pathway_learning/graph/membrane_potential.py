@@ -372,11 +372,35 @@ def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
 # permeability table distinguishes what that script lumps: it has one "ionotropic glutamate (AMPA, kainate, NMDA,
 # delta)" family, and GRIA, GRIK and GRIN are three classes here with two different weights.
 #
-# **This mapping is curation and is not yet checked by a Fable pass.** The weights it selects are derived and tested;
-# which gene belongs to which class is a reading, and the assignments below are mechanical rather than sourced. It is
-# stated here so the gap is visible, and it is to be checked before amendment item 37 is registered. The delta
-# glutamate receptors (GRID1, GRID2) are deliberately absent: they are not reliably ion-conducting, so they fall to
-# the single-ion rule, which admits nothing without a single-ion plasma-membrane flux.
+# Checked by a Fable pass on 9 November 2026 against UniProtKB reviewed human entries and Alexander et al., Concise
+# Guide to PHARMACOLOGY 2023/24: Ion channels (PMC11339754). Every prefix was confirmed except the two below.
+#
+# **CHRNA1 and CHRNB1 sit in the wrong class here, and correcting the table alone would make the build worse.** The
+# alpha1 and beta1 subunits assemble the MUSCLE receptor (UniProt P02708 and P11230, "Pentamer of two alpha chains,
+# and one each of the beta, delta, and gamma (in immature muscle) or epsilon (in mature muscle) chains"; the Concise
+# Guide's junctional stoichiometry "(alpha1)2beta1deltaepsilon"). But graph/reactome_import.py gives a reaction the
+# class of its first catalyst gene in sorted order, and Reactome's nicotinic entities mix muscle and neuronal
+# subunits. Measured on the v5 graph, 9 November 2026: RCT_622326 and RCT_629595 are each decided by CHRNA1 while
+# every other member of each is neuronal, so moving CHRNA1 would flip two overwhelmingly neuronal reactions from
+# 18.83 to 18.95 mV on an alphabetical accident; and "nicotinic, muscle" is selected by NO v5 reaction either way,
+# since CHRND, CHRNE and CHRNG occur only in RCT_622325, where CHRNA3 sorts first. The repair belongs to the
+# selection rule rather than to this table, and it is the owner's to make. CHRNB1 catalyses nothing in v5, so moving
+# it alone would change nothing. Recorded here rather than silently corrected.
+#
+# The delta glutamate receptors (GRID1, GRID2) are absent, and that absence stands, but the reason once given for it
+# does not: whether GluD conducts is **contested**. Against: the Concise Guide, "They do not form a functional
+# receptor when expressed solely, or in combination with other ionotropic glutamate receptor subunits, in transfected
+# cells", and Itoh et al. 2024 (PMC11295041). For: Carrillo et al. 2021 (PMC8694607), "the GluD2 subtype of delta
+# receptor forms cation-selective channels when bound to cerebellin-1 and neurexin-1beta", and Wang et al. 2025
+# (PMC12520249), "Here we define GluDs as ligand-gated ion channels", measuring 30.7 pS for purified human GluD2. No
+# monovalent permeability ratio was read for wild-type GluD, so no class could carry a sourced value even if one were
+# wanted; GRID2 catalyses no reaction in v5 and GRID1 is not a node, so nothing built turns on it.
+#
+# Also recorded by that pass and deliberately not guarded, being a stated choice rather than an accident: SCN7A (Nax)
+# takes the NALCN class through the curated reaction MAR_SODIUM_LEAK it shares with NALCN, which is consistent with
+# Noland et al. 2022 (PMC8931054) finding the Nax construct "non-selective among monovalent cations".
+NOT_MIXED_PORE_GENES: frozenset[str] = frozenset({"GRINA"})
+
 MIXED_PORE_GENE_PREFIXES: tuple[tuple[str, str], ...] = (
     ("CHRNA", "nicotinic, neuronal"), ("CHRNB", "nicotinic, neuronal"),
     ("CHRND", "nicotinic, muscle"), ("CHRNE", "nicotinic, muscle"), ("CHRNG", "nicotinic, muscle"),
@@ -396,6 +420,8 @@ def mixed_pore_class_of_gene(gene_symbol: str) -> str | None:
     takes the single-ion route, which is right: its pore carries one ion and its weight is that ion's.
     """
     symbol = str(gene_symbol).upper()
+    if symbol in NOT_MIXED_PORE_GENES:
+        return None
     for prefix, pore_class in MIXED_PORE_GENE_PREFIXES:
         if symbol.startswith(prefix):
             return pore_class

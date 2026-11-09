@@ -129,3 +129,25 @@ def test_the_glutamate_classes_are_split_where_the_weights_differ():
     nmda = mixed_pore_weight_millivolts(MIXED_PORE_PERMEABILITIES[mixed_pore_class_of_gene("GRIN2B")])
     assert ampa == pytest.approx(kainate)
     assert nmda != pytest.approx(ampa)
+
+
+def test_grina_is_not_an_nmda_receptor_though_the_grin_prefix_would_take_it():
+    """UniProt Q7Z429 is "Protein lifeguard 1 ... Potential apoptotic regulator", not a receptor subunit (Fable pass,
+    9 November 2026). It is absent from the v5 graph, so this guards a future one."""
+    from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
+
+    assert mixed_pore_class_of_gene("GRINA") is None
+    assert mixed_pore_class_of_gene("GRIN2B") == "NMDA"
+
+
+def test_chrna1_is_left_in_the_neuronal_class_on_purpose():
+    """CHRNA1 assembles the muscle receptor, so taxonomically it belongs in "nicotinic, muscle". It is left where it
+    is because graph/reactome_import.py picks a reaction's class from its first sorted catalyst gene, and on the v5
+    graph RCT_622326 and RCT_629595 are each decided by CHRNA1 while every other member of each is neuronal: moving
+    it would flip two overwhelmingly neuronal reactions to the muscle weight on an alphabetical accident. This test
+    exists so the state is deliberate and a later change to it is a decision rather than a drive-by fix."""
+    from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
+
+    assert mixed_pore_class_of_gene("CHRNA1") == "nicotinic, neuronal"
+    assert mixed_pore_class_of_gene("CHRNB1") == "nicotinic, neuronal"
+    assert mixed_pore_class_of_gene("CHRND") == "nicotinic, muscle"
