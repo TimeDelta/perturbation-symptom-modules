@@ -62,8 +62,8 @@ def test_a_row_citing_the_uk_emc_or_leaving_a_field_empty_is_refused(tmp_path: P
 
 def test_the_committed_rows_are_well_formed_and_cite_no_forbidden_source() -> None:
     rows = read_curated_label_events(CURATED_LABEL_EVENTS_PATH)
-    assert len(rows) == 76
-    assert sorted({r["drug"] for r in rows}) == ["brexanolone", "levomilnacipran", "sertindole", "tianeptine", "viloxazine", "zuranolone"]
+    assert len(rows) == 105
+    assert sorted({r["drug"] for r in rows}) == ["brexanolone", "levomilnacipran", "sertindole", "tianeptine", "valbenazine", "viloxazine", "zuranolone"]
     assert "flupentixol" not in {r["drug"] for r in rows}  # it enters by OnSIDES as "flupenthixol" (decision 9.121 A5)
     assert all(r["label_address"].startswith("http") for r in rows)
-    assert sum(1 for r in rows if r["placebo_frequency"].strip()) == 42
+    assert sum(1 for r in rows if r["placebo_frequency"].strip()) == 60

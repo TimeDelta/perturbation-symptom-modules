@@ -23,7 +23,7 @@
       "fingerprints": {
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
-        "decision:9.117": "58f606e580af76deaae28f5faabd77c485a8f7ca159f35b7c72ecbd0e8578133",
+        "decision:9.117": "910cadc53c0bc19fc3055e1ec9172586f78e05f8bb2cf751af74f3c735113d0b",
         "decision:9.121": "faa5cd4cd87078a734100cf93ed4c9212b9d28cfdc0d0d204a1686f11f1eb380",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
         "file:scripts/rebuild_data_layer.sh": "939121d3dada5369f64ac90eb62dbbeb49aa660729a7a6367e9820c88df200fa",
@@ -32,7 +32,7 @@
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94"
       },
       "checked": "2026-11-09",
-      "checked_at_commit": "75ee8586",
+      "checked_at_commit": "c93f4c06",
       "partner": "64d7b2e6-81e2"
     },
     "2d0e94ac-2bbc": {
@@ -350,7 +350,7 @@
       "fingerprints": {
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "decision:9.106": "99d59c6723a43fa500d078c0cc8ed81c24221b8d2a336f68d70fc1727800b950",
-        "decision:9.117": "58f606e580af76deaae28f5faabd77c485a8f7ca159f35b7c72ecbd0e8578133",
+        "decision:9.117": "910cadc53c0bc19fc3055e1ec9172586f78e05f8bb2cf751af74f3c735113d0b",
         "decision:9.121": "faa5cd4cd87078a734100cf93ed4c9212b9d28cfdc0d0d204a1686f11f1eb380",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af",
         "file:scripts/rebuild_data_layer.sh": "939121d3dada5369f64ac90eb62dbbeb49aa660729a7a6367e9820c88df200fa",
@@ -359,7 +359,7 @@
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94"
       },
       "checked": "2026-11-09",
-      "checked_at_commit": "75ee8586"
+      "checked_at_commit": "c93f4c06"
     },
     "a2c305c9-428b": {
       "title": "Robustness and exploratory arms, as decided (9.122)",
