@@ -164,14 +164,14 @@
         ]
       },
       "fingerprints": {
-        "decision:9.87": "ffed67c6ab7d20163fe2aa193f4a00fb93b549011e6c8b4ee10761f0926e2d88",
+        "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
         "decision:9.112": "8c58823baadb3f32c9a2c6ff8333e7a64177a24c0f93cb1c176b3e09e5086333",
         "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "f7cf3420a59f9e6196c16f9ad7a3066d48d714870c737b87b8ff9c6d90d67c56",
         "file:mechanistic_pathway_learning/graph/reactome_import.py": "c23a9ddc0c4addbe12a539add7a8c8a3229d0fef0f9139ac183674167f1183bd"
       },
       "checked": "2026-11-09",
-      "checked_at_commit": "095c984d"
+      "checked_at_commit": "ec89b2a9"
     },
     "88631e83-33d4": {
       "title": "Membrane potential, as decided (9.112, 9.113)",
@@ -208,13 +208,13 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
+        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
         "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "a22d70c5"
+      "checked": "2026-11-09",
+      "checked_at_commit": "ec89b2a9"
     },
     "012dc8f5-8ee9": {
       "title": "A module is a learned set of nodes",
@@ -228,11 +228,11 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
+        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "a22d70c5",
+      "checked": "2026-11-09",
+      "checked_at_commit": "ec89b2a9",
       "partner": "713638b8-497a"
     },
     "15448121-6479": {
@@ -250,14 +250,14 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
+        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "2b22f41858098833c203cfb4bb67dd510927d08aef01e6ed520d49b9795bf3e9",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35",
         "file:experiments/run_main_model.py": "d40fdeea26f8c27aad669ae25068a5ef6f23bb8b33c01bbee6801ef07814d2ea",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "a22d70c5"
+      "checked": "2026-11-09",
+      "checked_at_commit": "ec89b2a9"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
@@ -322,11 +322,11 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "9de3e59158d5e5d34e9b9f9217954c726cbad928635ca9106ce624257bc826de",
+        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "698f480c7175c73d78488bbc7c7fffccf3e340a0a2e781ed277cfe286d729f35"
       },
-      "checked": "2026-11-07",
-      "checked_at_commit": "a22d70c5"
+      "checked": "2026-11-09",
+      "checked_at_commit": "ec89b2a9"
     },
     "64d7b2e6-81e2": {
       "title": "Seven stages, as decided (9.117, 9.121)",
