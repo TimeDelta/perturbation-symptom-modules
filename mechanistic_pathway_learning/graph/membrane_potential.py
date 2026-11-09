@@ -264,3 +264,103 @@ def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
     total = sum(abs(value) for value in coefficients.values())
     return {key: ((math.copysign(1.0, value) if value else 0.0), abs(value) / total if total else 0.0)
             for key, value in coefficients.items()}
+
+
+# The mixed-cation pores of amendment item 37's sub-ruling of 7 November 2026: one conductance edge per pore at its
+# own reversal potential, with the permeability ratio read from a source where one exists. The ratios are the values
+# reconciled by the Fable pass of 6 November 2026 (docs/membrane_potential_constants.md, "Added 6 November 2026"),
+# which corrected two of the 5 November readings: neuronal nicotinic to -2.1 mV and NALCN to +2.2 mV. Each entry is
+# {ion: permeability}, in arbitrary units since only the ratios enter; "assumed" in the comment marks a ratio no
+# source states, which the item carries as a stated assumption rather than a reading.
+MIXED_PORE_PERMEABILITIES: dict[str, dict[str, float]] = {
+    "nicotinic, neuronal": {"Na+": 1.0, "K+": 1.2},       # Haghighi and Cooper 2000, P_K/P_Na 1.2
+    "nicotinic, muscle": {"Na+": 1.0, "K+": 1.1},         # Adams, Dwyer and Hille 1980
+    "AMPA": {"Na+": 1.0, "K+": 1.0 / 0.88},               # Jonas and Sakmann 1992, P_Na/P_Cs 0.88
+    "kainate": {"Na+": 1.0, "K+": 1.0 / 0.88},            # treated as the edited AMPA case
+    "NMDA": {"Na+": 1.0, "K+": 1.0},                      # P_K = P_Na assumed; Mayer and Westbrook 1987 give P_Ca/P_Na
+    "5-HT3": {"Na+": 1.0, "K+": 1.10},                    # Yang 1990, P_K/P_Na 1.10
+    "P2X": {"Na+": 1.0, "K+": 1.0},                       # Evans et al. 1996, P_K/P_Na 1.0
+    "TRPM4/5": {"Na+": 1.0, "K+": 1.0},                   # P_K = P_Na assumed; Launay et al. 2002 state no ratio
+    "NALCN": {"Na+": 1.0, "K+": 1.0},                      # Ren 2011, equally permeable to Na+ and K+
+    "HCN": {"Na+": 0.35, "K+": 1.0},                      # Macri et al. 2012, P_Na/P_K 0.35
+    "Nav": {"Na+": 1.0, "K+": 1.0 / 12.0},                # Hille 1972, P_K/P_Na 1/12; the single-ion check
+}
+
+
+def ghk_current_per_unit_permeability(ion: str, voltage_millivolts: float) -> float:
+    """The GHK current of one ion at unit permeability, in arbitrary units (the common F^2/RT factor is dropped).
+
+    Monovalent form, as the registered constants are: the reversal potentials of item 37 carry no divalent term, which
+    is why calcium takes a conductance edge of its own at its measured resting conductance instead of entering a
+    mixed pore's reversal potential. Only ratios between ions enter the weight below, so the dropped factor and the
+    millimolar units cancel.
+    """
+    charge = ION_CHARGE[ion]
+    reduced_voltage = charge * voltage_millivolts / thermal_voltage_millivolts()
+    inside, outside = RESTING_CONCENTRATION_MILLIMOLAR[(ion, "c")], RESTING_CONCENTRATION_MILLIMOLAR[(ion, "e")]
+    return charge * reduced_voltage * (inside - outside * math.exp(-reduced_voltage)) / (1.0 - math.exp(-reduced_voltage))
+
+
+def chord_conductance_per_unit_permeability(ion: str) -> float:
+    """The ion's GHK chord conductance at rest per unit permeability: 3.10241 for Na+, 0.59768 for K+, 0.70108 for Cl-.
+
+    A chord conductance is the current divided by the driving force, I_i / (V_rest - E_i), so these say how much
+    conductance one unit of permeability buys at rest. Sodium buys five times what potassium does, because at rest the
+    sodium driving force is large and the potassium one is small.
+    """
+    return (ghk_current_per_unit_permeability(ion, resting_potential_millivolts())
+            / (resting_potential_millivolts() - nernst_potential_millivolts(ion)))
+
+
+def mixed_pore_reversal_potential_millivolts(permeability: dict[str, float]) -> float:
+    """The pore's reversal potential by the GHK voltage equation over monovalent ions, chloride reversed.
+
+    Chloride enters with its concentrations exchanged, which is the standard form for an anion: its inside
+    concentration sits in the numerator. No divalent term, as above.
+    """
+    numerator = sum(share * RESTING_CONCENTRATION_MILLIMOLAR[(ion, "e" if ION_CHARGE[ion] > 0 else "c")]
+                    for ion, share in permeability.items())
+    denominator = sum(share * RESTING_CONCENTRATION_MILLIMOLAR[(ion, "c" if ION_CHARGE[ion] > 0 else "e")]
+                      for ion, share in permeability.items())
+    return thermal_voltage_millivolts() * math.log(numerator / denominator)
+
+
+def mixed_pore_conductance_microsiemens_per_square_centimetre(permeability: dict[str, float]) -> float:
+    """The pore's resting conductance: its chord-conductance shares used to apportion the registered leak conductances.
+
+    This is the normalisation that fixes the absolute scale, and the one phrase
+    docs/membrane_potential_constants.md leaves out when it calls the rule "the chord-conductance sum". A chord
+    conductance is proportional to permeability, and a permeability ratio fixes no absolute scale, so something must.
+    What the 6 November 2026 arithmetic did, recovered by derivation on 9 November 2026 and checked against all eleven
+    of its recorded weights to within 0.005 mV, is this: scale the permeabilities so the pore's total chord
+    conductance is one unit, then let each ion's share of that unit be worth that ion's registered LEAK conductance.
+
+    So the mixed pore is modelled as a chord-share blend of item 37's single-ion pores, and the single-ion terms are
+    its endpoints by construction: a pure sodium pore returns 20 uS/cm2 and weighs 24.56 mV, a pure potassium pore 70
+    and 14.32 mV. That blend is a modelling choice and not a reading, and it is stated here because it cannot be
+    recovered from the record's wording.
+    """
+    weighted = {ion: share * chord_conductance_per_unit_permeability(ion) for ion, share in permeability.items()}
+    total = sum(weighted.values())
+    return sum((value / total) * LEAK_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE[ion]
+               for ion, value in weighted.items())
+
+
+def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
+    """The pore's conductance-edge weight: g_pore |E_rev - V_rest| / g_total, in millivolts.
+
+    Reproduces every weight docs/membrane_potential_constants.md records: neuronal nicotinic 18.83, NALCN, NMDA, P2X
+    and TRPM4/5 19.09, AMPA and kainate 18.91, muscle nicotinic and 5-HT3 18.95, HCN 17.06 and 15.45, Nav 22.77.
+
+    **A limitation this rule carries, measured 9 November 2026.** The single edge at E_rev and the per-ion split it
+    implies (sum over ions of g_i (E_i - V_rest) / g_total) do not agree, because reweighting the GHK chord shares by
+    the leak conductances breaks the identity that would make the two equal and the product then mixes two models.
+    They are within 4 to 8 per cent for the pores whose E_rev is near 0 mV and 5 per cent for Nav, but 37 per cent
+    apart for HCN at P_Na/P_K 0.35 (17.06 against 10.76) and 56 per cent at 0.23 (15.45 against 6.84). The sub-ruling
+    of 7 November 2026 chose the single edge, so that is the built quantity, and no sign changes either way. The
+    record states the HCN pair of numbers without treating the divergence as a question; it is one, and it belongs
+    with the per-cell-class work that decision 9.112's chloride question also needs.
+    """
+    return (mixed_pore_conductance_microsiemens_per_square_centimetre(permeability)
+            * abs(mixed_pore_reversal_potential_millivolts(permeability) - resting_potential_millivolts())
+            / total_resting_conductance_microsiemens_per_square_centimetre())
