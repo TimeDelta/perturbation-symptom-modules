@@ -137,9 +137,22 @@ NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"
 #   "pores_and_clamped_pools", the build amendment item 37 registers (decisions 9.112 and 9.113): a conductance
 #     edge into VM_c from each conductive pore, under driving_force and so joining the pool edges rather than
 #     taking a relation of its own, weighted g_i |E_i - V_rest| / g_total with the sign of E_i - V_rest; the six
-#     pool edges reweighted by the pump-clamped pool sensitivities, the three extracellular pools at 0; and no
-#     reaction edges, so the divisor at VM_c stays 1 as under computed_from_the_pools. It exists because the pool
-#     route alone carries the opposite of the electrical sign for 376 of 382 charge-moving reactions (9.112).
+#     pool edges reweighted by the pump-clamped pool sensitivities, and the three extracellular pools at 0. It
+#     exists because the pool route alone carries the opposite of the electrical sign for 376 of 382 charge-moving
+#     reactions (9.112).
+#     **The divisor at VM_c does NOT stay 1 under this build, and an earlier version of this comment said it did.**
+#     No changes_membrane_potential edge is made, which is what kept the divisor at 1 under computed_from_the_pools,
+#     but the conductance edges enter under driving_force and so enter the divisor: amendment item 28's
+#     total_in_degree, and the registered cone normalisation, divide every edge arriving at a node by the sum of the
+#     weights entering it (models/linear_response_encoder.py, normalised_adjacency_values). The conductance weights
+#     are in millivolts, about 19 each, while the pool weights are rescaled to sum to 1, so on a reconstruction over
+#     the v5 graph on 9 November 2026 the divisor is about 531 and **the whole pool route arrives at 0.19 per cent of
+#     what enters VM_c**, its largest edge, cytosolic chloride, at 0.166 per cent. Item 37 registers that "the share
+#     normalisation does not preserve the physiological ratio between the two routes"; this is the size of that, and
+#     whether it is acceptable is the owner's to rule before this build is registered. The two routes also carry
+#     different units before any rescaling - millivolts per microsiemens per square centimetre for a conductance
+#     edge, millivolts per microampere per square centimetre for a pool edge - so making them commensurable is a
+#     physical question and not only a scaling one.
 MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools",
                                               "computed_beside_the_reactions", "pores_and_clamped_pools")
 # Not the build the rebuild asks for. Since 26 October 2026 scripts/rebuild_data_layer.sh passes
