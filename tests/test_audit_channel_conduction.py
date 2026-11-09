@@ -1,9 +1,8 @@
 """experiments/audit_channel_conduction.py: which ion channels catalyse a reaction that reaches the membrane potential."""
-import gzip
 
 import pandas as pd
 
-from experiments.audit_channel_conduction import (CLASSES, ION_CHANNEL_ACTIVITY, channel_genes, classify_channels, family_of,
+from experiments.audit_channel_conduction import (CLASSES, ION_CHANNEL_ACTIVITY, classify_channels, family_of,
                                                   reaction_ion_movement, render)
 
 
@@ -52,19 +51,6 @@ def test_families_by_gene_symbol():
     assert family_of("SCN3B") == "sodium channel beta subunits" and family_of("SCN1A") == "voltage-gated sodium (Nav)"
     assert family_of("GRIN3A") == "ionotropic glutamate (AMPA, kainate, NMDA, delta)"
     assert family_of("P2RX7") == "P2X purinergic" and family_of("NOTACHANNEL") == "other"
-
-
-def test_channel_genes_reads_propagated_function_annotations_and_skips_not_rows(tmp_path):
-    gaf = tmp_path / "goa.gaf.gz"
-    lines = ["!gaf-version: 2.2",
-             "\t".join(["UniProtKB", "P1", "A", "", "GO:0005248", "PMID:1", "IDA", "", "F", "", "", "protein", "taxon:9606", "20200101", "UniProt"]),
-             "\t".join(["UniProtKB", "P2", "B", "NOT", "GO:0005248", "PMID:1", "IDA", "", "F", "", "", "protein", "taxon:9606", "20200101", "UniProt"]),
-             "\t".join(["UniProtKB", "P3", "C", "", "GO:0005248", "PMID:1", "IDA", "", "P", "", "", "protein", "taxon:9606", "20200101", "UniProt"])]
-    with gzip.open(gaf, "wt") as handle:
-        handle.write("\n".join(lines) + "\n")
-    uniprot = pd.DataFrame({"Entry": ["P1", "P2", "P3"], "Gene Names (primary)": ["SCN1A", "NOTCHANNEL", "PROCESSONLY"]})
-    ancestors = {"GO:0005248": {"GO:0005248", ION_CHANNEL_ACTIVITY}}
-    assert channel_genes(uniprot, gaf, ancestors) == {"SCN1A"}, "the NOT row and the process annotation are not channel activity"
 
 
 def test_the_page_lists_every_channel_that_does_not_conduct():

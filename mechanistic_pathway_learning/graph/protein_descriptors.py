@@ -81,6 +81,36 @@ def read_go_ancestors(go_obo_path) -> dict[str, set[str]]:
     return defaultdict(set, ancestors)
 
 
+ION_CHANNEL_ACTIVITY = "GO:0005216"  # monoatomic ion channel activity
+
+
+def genes_annotated_with_go_term(uniprot_table: pd.DataFrame, gaf_path, go_ancestors: dict[str, set[str]],
+                                 term: str) -> set[str]:
+    """Gene symbols of the reviewed human proteins annotated with a molecular-function term or a descendant of it.
+
+    Any evidence code counts, NOT-qualified rows are excluded, and the term is matched against the row's propagated
+    ancestors, so a descendant such as voltage-gated potassium channel activity answers for GO:0005216. One symbol per
+    accession, the first the GAF names.
+
+    Written for two callers that must agree on what a channel is: experiments/audit_channel_conduction.py, which asks
+    whether every channel in the graph conducts, and the pores_and_clamped_pools membrane-potential build of amendment
+    item 37, whose conductance edges go to the pores this term names together with a single-ion rule (GO:0005216 alone
+    admits about fifteen carriers, the EAATs among them, which is why the build applies both).
+    """
+    gene_of_accession = dict(zip(uniprot_table["Entry"], uniprot_table["Gene Names (primary)"]))
+    genes: set[str] = set()
+    with gzip.open(gaf_path, "rt", encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith("!"):
+                continue
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) < 9 or fields[8] != "F" or fields[3].startswith("NOT"):
+                continue
+            if term in (go_ancestors.get(fields[4]) or {fields[4]}) and isinstance(gene_of_accession.get(fields[1]), str):
+                genes.add(gene_of_accession[fields[1]].split(";")[0].strip())
+    return genes
+
+
 def go_annotations(gaf_path, go_ancestors: dict[str, set[str]]) -> dict[str, dict[str, set[str]]]:
     """aspect block name -> accession -> propagated GO terms, without phenotype-derived evidence or NOT qualifiers."""
     annotations: dict[str, dict[str, set[str]]] = {block: defaultdict(set) for block in GO_ASPECTS.values()}

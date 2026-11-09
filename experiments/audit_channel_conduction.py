@@ -28,7 +28,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import re
 import sys
@@ -39,7 +38,11 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-ION_CHANNEL_ACTIVITY = "GO:0005216"  # monoatomic ion channel activity
+# GO:0005216 and the gene lookup this script used to hold its own copy of now live in
+# graph/protein_descriptors.py: the pores_and_clamped_pools membrane-potential build of amendment item 37 needs the
+# same set of channels this audit asks about, and two copies of the rule would drift. Imported at module scope
+# because render() names the term in its stamp.
+from mechanistic_pathway_learning.graph.protein_descriptors import ION_CHANNEL_ACTIVITY  # noqa: E402
 MEMBERSHIP_DEPTH = 3
 INORGANIC_ION_BASES = {"MAM02519": "Na+", "MAM02200": "K+", "MAM01413": "Ca2+", "MAM01442": "Cl-", "MAM02482": "Mg2+", "MAM02039": "H+"}
 CLASSES = ("conducts into VM_c", "moves ions, no VM_c edge", "catalyses another reaction", "signalling or binding only", "no edge out")
@@ -60,22 +63,6 @@ FAMILIES = (
 
 def family_of(symbol: str) -> str:
     return next((name for name, pattern in FAMILIES if re.match(pattern, symbol)), "other")
-
-
-def channel_genes(uniprot_table: pd.DataFrame, gaf_path: Path, go_ancestors: dict[str, set[str]], term: str = ION_CHANNEL_ACTIVITY) -> set[str]:
-    """Gene symbols of the reviewed human proteins annotated with the term or a descendant (NOT rows excluded)."""
-    gene_of_accession = dict(zip(uniprot_table["Entry"], uniprot_table["Gene Names (primary)"]))
-    genes = set()
-    with gzip.open(gaf_path, "rt", encoding="utf-8") as handle:
-        for line in handle:
-            if line.startswith("!"):
-                continue
-            fields = line.rstrip("\n").split("\t")
-            if len(fields) < 9 or fields[8] != "F" or fields[3].startswith("NOT"):
-                continue
-            if term in (go_ancestors.get(fields[4]) or {fields[4]}) and isinstance(gene_of_accession.get(fields[1]), str):
-                genes.add(gene_of_accession[fields[1]].split(";")[0].strip())
-    return genes
 
 
 def reaction_ion_movement(edges: pd.DataFrame, node_ids: set[str]) -> dict[str, dict]:
@@ -175,7 +162,8 @@ def render(table: pd.DataFrame, graph_dir: Path, stamp: str, channel_count: int)
 
 def main() -> None:
     from mechanistic_pathway_learning.documentation import provenance_stamp
-    from mechanistic_pathway_learning.graph.protein_descriptors import read_go_ancestors
+    from mechanistic_pathway_learning.graph.protein_descriptors import (
+        ION_CHANNEL_ACTIVITY, genes_annotated_with_go_term, read_go_ancestors)
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph_full_neuronal_split_binders_drugs_v5"))
@@ -187,8 +175,8 @@ def main() -> None:
     arguments = parser.parse_args()
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
     edges = pd.read_parquet(arguments.graph_dir / "edges.parquet")
-    genes = channel_genes(pd.read_csv(arguments.uniprot_table, sep="\t", usecols=["Entry", "Gene Names (primary)"]), arguments.go_annotations,
-                          read_go_ancestors(arguments.go_ontology))
+    genes = genes_annotated_with_go_term(pd.read_csv(arguments.uniprot_table, sep="\t", usecols=["Entry", "Gene Names (primary)"]),
+                                         arguments.go_annotations, read_go_ancestors(arguments.go_ontology), ION_CHANNEL_ACTIVITY)
     table = classify_channels(nodes, edges, genes)
     stamp = provenance_stamp("experiments/audit_channel_conduction.py", [str(arguments.graph_dir), str(arguments.uniprot_table), str(arguments.go_annotations),
                                                                         str(arguments.go_ontology)])
