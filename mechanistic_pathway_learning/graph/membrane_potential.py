@@ -364,3 +364,39 @@ def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
     return (mixed_pore_conductance_microsiemens_per_square_centimetre(permeability)
             * abs(mixed_pore_reversal_potential_millivolts(permeability) - resting_potential_millivolts())
             / total_resting_conductance_microsiemens_per_square_centimetre())
+
+
+# Which mixed-cation pore class a channel gene belongs to, by gene-symbol prefix, first match winning. The classes
+# are MIXED_PORE_PERMEABILITIES' keys; a gene that matches none is not a mixed pore and is read by the single-ion
+# rule instead. The prefixes follow the families of experiments/audit_channel_conduction.py, split where the
+# permeability table distinguishes what that script lumps: it has one "ionotropic glutamate (AMPA, kainate, NMDA,
+# delta)" family, and GRIA, GRIK and GRIN are three classes here with two different weights.
+#
+# **This mapping is curation and is not yet checked by a Fable pass.** The weights it selects are derived and tested;
+# which gene belongs to which class is a reading, and the assignments below are mechanical rather than sourced. It is
+# stated here so the gap is visible, and it is to be checked before amendment item 37 is registered. The delta
+# glutamate receptors (GRID1, GRID2) are deliberately absent: they are not reliably ion-conducting, so they fall to
+# the single-ion rule, which admits nothing without a single-ion plasma-membrane flux.
+MIXED_PORE_GENE_PREFIXES: tuple[tuple[str, str], ...] = (
+    ("CHRNA", "nicotinic, neuronal"), ("CHRNB", "nicotinic, neuronal"),
+    ("CHRND", "nicotinic, muscle"), ("CHRNE", "nicotinic, muscle"), ("CHRNG", "nicotinic, muscle"),
+    ("GRIA", "AMPA"), ("GRIK", "kainate"), ("GRIN", "NMDA"),
+    ("HTR3", "5-HT3"), ("P2RX", "P2X"),
+    ("TRPM4", "TRPM4/5"), ("TRPM5", "TRPM4/5"),
+    ("NALCN", "NALCN"), ("HCN", "HCN"),
+    ("SCN1A", "Nav"), ("SCN2A", "Nav"), ("SCN3A", "Nav"), ("SCN4A", "Nav"), ("SCN5A", "Nav"),
+    ("SCN8A", "Nav"), ("SCN9A", "Nav"), ("SCN10A", "Nav"), ("SCN11A", "Nav"),
+)
+
+
+def mixed_pore_class_of_gene(gene_symbol: str) -> str | None:
+    """The mixed-cation pore class a gene belongs to, or None when it is not one of them.
+
+    CHRNA7 is neuronal nicotinic, GRIN2B is NMDA, SCN1A is Nav. A potassium or chloride channel gene returns None and
+    takes the single-ion route, which is right: its pore carries one ion and its weight is that ion's.
+    """
+    symbol = str(gene_symbol).upper()
+    for prefix, pore_class in MIXED_PORE_GENE_PREFIXES:
+        if symbol.startswith(prefix):
+            return pore_class
+    return None

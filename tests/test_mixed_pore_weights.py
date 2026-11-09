@@ -84,3 +84,48 @@ def test_every_mixed_pore_depolarises_at_rest():
     """Decision 9.112's content rests on this: "Every mixed pore still depolarises at V_rest"."""
     for pore, permeability in MIXED_PORE_PERMEABILITIES.items():
         assert mixed_pore_reversal_potential_millivolts(permeability) > -72.6, pore
+
+
+def test_every_mixed_pore_class_has_a_gene_prefix_and_every_prefix_names_a_real_class():
+    """A prefix naming a class the permeability table does not hold would select no weight, and a class no prefix
+    reaches would never be built."""
+    from mechanistic_pathway_learning.graph.membrane_potential import MIXED_PORE_GENE_PREFIXES
+
+    classes_from_prefixes = {pore_class for _, pore_class in MIXED_PORE_GENE_PREFIXES}
+    assert classes_from_prefixes <= set(MIXED_PORE_PERMEABILITIES), (
+        classes_from_prefixes - set(MIXED_PORE_PERMEABILITIES))
+    assert set(MIXED_PORE_PERMEABILITIES) == classes_from_prefixes, (
+        set(MIXED_PORE_PERMEABILITIES) - classes_from_prefixes)
+
+
+@pytest.mark.parametrize("gene,pore_class", [
+    ("CHRNA7", "nicotinic, neuronal"), ("CHRNB2", "nicotinic, neuronal"), ("CHRND", "nicotinic, muscle"),
+    ("GRIA1", "AMPA"), ("GRIK2", "kainate"), ("GRIN2B", "NMDA"), ("HTR3A", "5-HT3"), ("P2RX4", "P2X"),
+    ("TRPM4", "TRPM4/5"), ("TRPM5", "TRPM4/5"), ("NALCN", "NALCN"), ("HCN1", "HCN"), ("SCN1A", "Nav"),
+])
+def test_a_mixed_pore_gene_resolves_to_its_class(gene, pore_class):
+    from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
+
+    assert mixed_pore_class_of_gene(gene) == pore_class
+
+
+@pytest.mark.parametrize("gene", ["KCNQ2", "KCNJ2", "CLCN2", "CACNA1C", "GRID2", "SLC6A4", "ATP1A1", "SLC1A2"])
+def test_a_gene_that_is_not_a_mixed_pore_takes_the_single_ion_route(gene):
+    """A potassium, chloride or calcium channel carries one ion and its weight is that ion's. SLC6A4 is here because
+    the serotonin transporter carries an annotated channel activity and so passes the GO term; it moves 5-HT with
+    Na+ and Cl-, so the single-ion rule is what excludes it, and it must not pick up a mixed-pore weight on the way."""
+    from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
+
+    assert mixed_pore_class_of_gene(gene) is None
+
+
+def test_the_glutamate_classes_are_split_where_the_weights_differ():
+    """experiments/audit_channel_conduction.py lumps AMPA, kainate and NMDA into one family; the permeability table
+    gives NMDA a different weight from the other two, so the prefixes split them."""
+    from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
+
+    ampa = mixed_pore_weight_millivolts(MIXED_PORE_PERMEABILITIES[mixed_pore_class_of_gene("GRIA1")])
+    kainate = mixed_pore_weight_millivolts(MIXED_PORE_PERMEABILITIES[mixed_pore_class_of_gene("GRIK2")])
+    nmda = mixed_pore_weight_millivolts(MIXED_PORE_PERMEABILITIES[mixed_pore_class_of_gene("GRIN2B")])
+    assert ampa == pytest.approx(kainate)
+    assert nmda != pytest.approx(ampa)
