@@ -71,9 +71,10 @@ REPORTED_RESTING_POTENTIAL_MILLIVOLTS = -72.6  # Table 1, row Vm, of the same so
 # section 4.1 rejected that. The distance from rest is what makes the CONDUCTANCE term large: dV/dg_i is
 # (E_i - V_rest) / g_total, and calcium's is the largest of any ion. So under amendment item 37 calcium is to take a
 # conductance term and no pool term, and what holds its conductance term small is its small resting conductance and
-# not the law. **As of this commit the constants and weight functions below exist and no build calls them**: the
-# pores_and_clamped_pools build of item 37 is not yet wired into graph/reactome_import.py, and the registered value
-# membrane_potential_build is still item 35's computed_from_the_pools, under which calcium has neither route.
+# not the law. The pores_and_clamped_pools build of item 37 now calls the constants and weight functions below
+# (graph/reactome_import.py); an earlier version of this comment said nothing did, which was true when it was
+# written and stopped being true when the build was wired. The REGISTERED value membrane_potential_build is still
+# item 35's computed_from_the_pools, under which calcium has neither route, and no graph carries item 37 yet.
 IONS_IN_THE_VOLTAGE_EQUATION: tuple[str, ...] = ("Na+", "K+", "Cl-")  # the pool (concentration) route
 IONS_WITH_A_CONDUCTANCE_TERM: tuple[str, ...] = ("Na+", "K+", "Cl-", "Ca2+")
 
@@ -233,7 +234,9 @@ def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
     """(ion, compartment letter) -> (sign, weight) for the pool's edge into VM_c under amendment item 37.
 
     This is to replace driving_force_edge_weights() for the pores_and_clamped_pools build of amendment item 37, which
-    is not yet wired into graph/reactome_import.py: nothing calls this function as of the commit that adds it.
+    is called by graph/reactome_import.py for that build; an earlier version of this line said nothing called it,
+    which was true when written and stopped being true when the build was wired. No graph carries it yet: the
+    registered membrane_potential_build is still item 35's computed_from_the_pools.
 
     Two changes from it. First, the cytosolic weight is the pump-clamped sensitivity TIMES item 35's coefficient, not
     the sensitivity alone. The composition is what makes the units right: item 35's coefficient is millivolts per unit

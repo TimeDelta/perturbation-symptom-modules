@@ -423,7 +423,9 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                                                          "pores_and_clamped_pools")
     pores_tell_the_potential = membrane_potential_build == "pores_and_clamped_pools"
     # Under pores_and_clamped_pools a reaction still makes no changes_membrane_potential edge: what it makes is a
-    # driving_force edge when it is a conductive pore, which keeps the divisor at VM_c at 1 (amendment item 37).
+    # driving_force edge when it is a conductive pore. That does NOT keep the divisor at VM_c at 1, as an earlier
+    # version of this comment said: the conductance edges enter the divisor like any other entering edge, which the
+    # comment above MEMBRANE_POTENTIAL_BUILDS sets out with its measured size (amendment item 37).
     reactions_tell_the_potential = membrane_potential_build not in ("computed_from_the_pools", "pores_and_clamped_pools")
     species: dict[str, ReactomeSpecies] = {}
     reactions: dict[str, ReactomeReaction] = {}
@@ -660,9 +662,16 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             membrane_edges[source] += 1
         # The conductance edge of amendment item 37: a conductive pore reaches VM_c directly, under driving_force,
         # with the sign of E - V_rest rather than the sign of the charge it moves. The pore test is GO:0005216 on a
-        # catalysing gene AND a single-ion plasma-membrane flux, or a named mixed-cation class; GO alone admits
-        # carriers (the serotonin transporter carries an annotated channel activity and moves 5-HT with Na+ and
-        # Cl-, so the single-ion rule is what excludes it). A reaction that is a pore by GO but neither
+        # catalysing gene AND a single-ion plasma-membrane flux, or a named mixed-cation class. **The single-ion
+        # rule does NOT exclude the carriers, which an earlier version of this comment claimed.** It excludes the
+        # serotonin transporter, which moves 5-HT with Na+ and Cl-, but a carrier whose co-substrate is not a
+        # tracked ion shows one ion and passes: on a reconstruction over the v5 graph of 10 November 2026, 26 of
+        # the 29 single-ion sodium edges are carrier reactions (SLC1A4 on 18, SLC1A1 on 2, SLC5A8 on 5, SLC17A3
+        # and SLC9C1 on 1 each). A Fable pass proposes testing the channel annotation for the ION THE REACTION
+        # MOVES (GO:0005272 sodium, GO:0005267 potassium, GO:0005254 chloride, GO:0005262 calcium) instead of the
+        # root term; checked on 10 November 2026, that separates all six carrier genes out while keeping every real
+        # pore, SLC26A9 included, which decision 9.112 ruled to keep. It is the owner's to rule and is not built.
+        # A reaction that is a pore by GO but neither
         # single-ion nor a named class is recorded in the summary rather than given an edge, so the gap is
         # counted instead of guessed.
         if pores_tell_the_potential and moved and (catalyst_genes & set(pore_genes)):
