@@ -189,9 +189,11 @@ def pore_driving_force_millivolts(ion: str) -> float:
 
 
 def pore_ion_flux_sign(ion: str) -> float:
-    """Which way the ION moves through an open pore at rest: sign(V_rest - E_i), as decision 9.112 (c) fixed it.
+    """Which way the ION moves through an open pore at rest: sign(z_i (V_rest - E_i)), decision 9.112 (c) as
+    corrected by decision 9.129 (iii).
 
-    Returns -1 for inward and +1 for outward. The item writes the rule as sign(V_rest - E_i), which is the
+    Returns -1 for inward and +1 for outward. The item's draft of 8 November 2026 wrote the rule as
+    sign(V_rest - E_i), corrected by decision 9.129 (iii) on 12 November 2026; that form is the
     convention for a cation; the valence has to enter it for an anion, so what is computed is
     sign(z_i (V_rest - E_i)). Without the valence, chloride at rest (V_rest -72.6 mV above E_Cl -83.7 mV) would read
     as efflux, and it is precisely the six chloride channels Reactome writes as efflux that reading the
@@ -257,7 +259,9 @@ def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
 
     The weights are rescaled to sum to 1 in absolute value, as the item-35 weights were, because the graph carries no
     units and only the ratios between the edges are physical. This normalisation does not preserve the physiological
-    ratio between the pool route and the conductance edges, which is a limit registered with item 37.
+    ratio between the pool route and the conductance edges. The owner ruled on 12 November 2026 to replace it
+    (decision 9.129 (1)): each pool edge is to carry a conductance edge's unit, c_i S_i g_i |E_i - V_rest| in
+    millivolts, which is not yet built, so this function still returns the rescaled weights.
     """
     item_35_coefficients = driving_force_coefficients_millivolts()
     coefficients: dict[tuple[str, str], float] = {}

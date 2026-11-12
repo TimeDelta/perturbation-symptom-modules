@@ -149,7 +149,9 @@ NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"
 #     the v5 graph on 9 November 2026 the divisor is about 531 and **the whole pool route arrives at 0.19 per cent of
 #     what enters VM_c**, its largest edge, cytosolic chloride, at 0.166 per cent. Item 37 registers that "the share
 #     normalisation does not preserve the physiological ratio between the two routes"; this is the size of that, and
-#     whether it is acceptable is the owner's to rule before this build is registered. The two routes also carry
+#     the owner ruled on 12 November 2026 that it is not (decision 9.129 (1)): the pool edges are to carry the
+#     conductance edges' unit, c_i S_i g_i |E_i - V_rest| in millivolts, which is ruled and not yet built. The two
+#     routes also carry
 #     different units before any rescaling - millivolts per microsiemens per square centimetre for a conductance
 #     edge, millivolts per microampere per square centimetre for a pool edge - so making them commensurable is a
 #     physical question and not only a scaling one.
@@ -399,8 +401,10 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     defaults to the registered one. pore_genes: the gene symbols annotated with monoatomic ion channel activity,
     GO:0005216 propagated (graph/protein_descriptors.genes_annotated_with_go_term). Only the
     pores_and_clamped_pools build reads it, to decide which reactions get a conductance edge into VM_c; it is
-    required for that build and ignored by the others, and GO alone is not the test, since it admits carriers
-    such as the serotonin transporter, so a single-ion rule is applied with it (amendment item 37).
+    required for that build and ignored by the others. GO alone is not the test: a single-ion rule is applied with
+    it, which excludes the serotonin transporter but not a carrier whose co-substrate is not a tracked ion (the
+    comment at the pore test below gives the count); decision 9.129 (2), ruled 12 November 2026 and not yet built,
+    adds an ion-matched test for those (amendment item 37).
 
     The three tables of decision 9.75, each {key: why}, and each raising on a key the graph does not hold so that a
     table cannot drift from its source silently. ion_pool_aliases: {base id: base id of the pool it shares}, for an ion
@@ -670,7 +674,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         # and SLC9C1 on 1 each). A Fable pass proposes testing the channel annotation for the ION THE REACTION
         # MOVES (GO:0005272 sodium, GO:0005267 potassium, GO:0005254 chloride, GO:0005262 calcium) instead of the
         # root term; checked on 10 November 2026, that separates all six carrier genes out while keeping every real
-        # pore, SLC26A9 included, which decision 9.112 ruled to keep. It is the owner's to rule and is not built.
+        # pore, SLC26A9 included, which decision 9.112 ruled to keep. The owner ruled it on 12 November 2026
+        # (decision 9.129 (2)); it is not yet built, so this code still applies the root term.
         # A reaction that is a pore by GO but neither
         # single-ion nor a named class is recorded in the summary rather than given an edge, so the gap is
         # counted instead of guessed.
