@@ -844,3 +844,4 @@ def test_the_other_builds_are_untouched_by_the_pore_genes_argument():
     _, without, _, _ = run_import(membrane_potential_build="computed_from_the_pools")
     _, with_genes, _, _ = run_import(membrane_potential_build="computed_from_the_pools", pore_genes={"SCN1A"})
     assert without.equals(with_genes)
+
