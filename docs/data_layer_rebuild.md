@@ -378,3 +378,35 @@ Two corrections made while the graphs stage ran, both to the deletion list rathe
   deletes, but its own two outputs are its step's marker, so the step would have been skipped and the tables left
   describing the 5 November descriptors. They were deleted at 21:05 UTC, before the descriptors stage reached them.
   `brain_expression/dopaminergic_siletti_cluster395.parquet` is kept: it is built from the Siletti atlas files alone.
+
+**The result (12 November 2026).** The job finished at 21:42 UTC with every stage marker and no failure marker. A
+read-only check of what the rebuild was meant to change (a script in that session's scratchpad,
+`verify_rebuild_2026-11-12.py`), on the graphs and tables it wrote:
+
+| what | 5 November build | this build |
+| --- | --- | --- |
+| nitrite (`MAM02588`) oxidant edges in `graph_full_neuronal` | 8, spurious | 0 |
+| peroxynitrite (`MAM02714`) oxidant edges | 8 | 8 |
+| `graph_full_neuronal_split_binders_drugs_v5`, nodes / edges | 49,834 / 275,006 | 49,864 / 275,194 |
+| FAERS v5 rows on `tardive_dyskinesia` | 0 | 29 |
+| `evidence_full_v5`: rows, perturbations, drugs | not recounted | 9,819, 2,802, 260 |
+| trial outcome measures on a crosswalked scale; mean comparisons | 6,997; 924 | 7,100; 927 |
+
+FAERS's background, which the fine-level reader supplements, holds TARDIVE DYSKINESIA (28,241 reports) and
+EXTRAPYRAMIDAL DISORDER (24,860) of 21,054,159; the per-reaction totals live in `data/raw/faers/_background.json`, and
+`faers_summary.json` records only the total. The trial-outcome increase is the AIMS row added to
+`configs/trial_outcome_scale_crosswalk.csv`; the relief, worsening and no-effect counts (231, 74, 12) did not move.
+Of the 9.117 and 9.121 wiring, every perturbation of `configs/atc_code_supplements.csv` (15) and
+`configs/curated_drug_targets.csv` (11) and all three identity splits reach the table, and both exclusions stay out.
+
+**One gap: tianeptine's hand-curated label rows do not reach the table.** `configs/curated_label_events.csv` holds rows
+for seven drugs and six arrive. The assembler seeds a curated label row on the drug's curated `mechanism` targets
+only, and drops a row whose drug has none, as it drops a SIDER drug with no mapped target; tianeptine's one target
+row, OPRM1 in `configs/psychiatric_drug_additions_v4_draft.csv`, has role `other` ("DrugCentral:PDSP, measured, no
+action named"), which `docs/psychiatric_drug_additions.md` records. So its 21 rows, from the ANSM and AEMPS labels,
+are curated and unused until it has a mechanism target, which is curation and so the owner's and a Fable pass's.
+
+**The commit the build carries.** The last step's generated page is stamped `d606255e`, not `452cadb0`, because two
+commits landed while the job ran. Every Python line that differs between them is in a docstring, a comment or a test,
+and the one config that differs (`configs/study_sheet_diagrams.json`) is read by no build step, so the outputs are
+those `452cadb0` builds.
