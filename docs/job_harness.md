@@ -68,6 +68,15 @@ own four, or the first firing with no active job disables another session's rout
 retired rows can be struck once the session they fire into is gone, but the ids stay in the table so a later reader
 can still read the prompts.
 
+**A session that already owns four routines repoints them instead of creating four more** (12 November 2026). The
+paragraph above is written for a session that has none. The four bound to `session_01RNHwqTkjjENH7yo98idnBU` were
+created on 4 November 2026 for `rebuild_v5_graphs` and disabled by the pause rule on 5 November 2026, when the last
+stage finished; registering `rebuild_v5_november_12` on 12 November 2026 re-enabled those same four and replaced their
+prompts, by `update_trigger`, with the new job's name, commit, stage logs and markers. Creating four more would have
+left one session holding eight routines on four schedules, each firing a check-in that runs the same resume script,
+and the pause rule would then disable only the four an arriving prompt happens to name. The ids, the schedules and the
+run history are the rows of the table above; nothing was created and nothing was deleted.
+
 **The pause rule** (the user's instruction of 9 October 2026: "Update the harness so that when there are no running
 jobs, the check-ins get paused and only restarted when there are running jobs please"). The routines exist only to
 relaunch registered jobs, so:

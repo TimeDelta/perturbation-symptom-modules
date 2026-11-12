@@ -42,21 +42,21 @@
  "compared_with": {
   "path": "data/processed/brenda_metabolite_enzyme_regulation_before_regeneration.csv",
   "activates": {
-   "before": 482,
+   "before": 479,
    "after": 479,
-   "lost": 3,
+   "lost": 0,
    "gained": 0
   },
   "cofactor_of": {
    "before": 2109,
    "after": 2109,
-   "lost": 2,
-   "gained": 2
+   "lost": 0,
+   "gained": 0
   },
   "inhibits": {
-   "before": 1552,
+   "before": 1544,
    "after": 1544,
-   "lost": 8,
+   "lost": 0,
    "gained": 0
   }
  }

@@ -316,3 +316,65 @@ with the same flags, on the same container and with no other job running, the re
 edge priors takes 28.5 s a training step (first step 28.9 s), 3.1 s a prediction batch with its bottleneck cached (first
 batch 3.4 s) and an estimated 51.7 minutes an epoch. The fix did not raise the cost. The two runs were not made under
 the same load, so the difference from the 33.9 s recorded above is not read as a speed-up.
+
+## The rebuild of 12 November 2026
+
+Started at the owner's request ("Yes") on the code and configs of commit `452cadb0`, as job `rebuild_v5_november_12`
+(`runs/rebuild/rebuild_v5_november_12.sh`, whose header carries the same reasoning). It does **not** build amendment
+item 37: both calls to `experiments/build_neuronal_graph_variant.py` keep `--membrane-potential
+computed_from_the_pools`, the registered value.
+
+Why it was needed. Every graph directory on the disk was from 4 and 5 November 2026 while the fine-stage configs were
+from 8 and 9 November, and the step rule of `scripts/rebuild_data_layer.sh` skips an output that exists, so the stale
+directories had to be deleted rather than waited out. `experiments/check_rebuild_inputs.py` did not catch this and
+could not: it compares file modification times, and a fresh clone stamps every tracked file with the checkout time, so
+a config committed on 9 November looks older than a table built on the 5th.
+
+What was rebuilt, and why (each checked against commit `1e98f5db`, the one the 5 November build ran on):
+
+- `graph_full_neuronal` and every variant below it, because the substring fix of 9 November 2026 in
+  `graph/oxidative_regulation.py` ("nitrite" matching inside "peroxynitrite") removes 8 spurious nitrite edges;
+- every v5 table, because of the fine-stage configs of decisions 9.117, 9.121 and 9.124 (`admitted_atc_prefixes.csv`,
+  `atc_code_supplements.csv`, `perturbation_identity_overrides.csv`, `excluded_drug_perturbations.csv`,
+  `curated_drug_targets.csv`, `psychiatric_drug_additions_v4_draft.csv`, `rejected_sider_indications.csv`,
+  `curated_label_events.csv`, `impc_symptom_crosswalk_fine.csv`, `trial_outcome_scale_crosswalk.csv` and
+  `docs/symptom_crosswalk_fine.csv`);
+- `faers_v5` in particular, because `experiments/fetch_faers_disproportionality.py` gained the background supplement
+  that queries a reaction term the cached background lacks, which is what the tardive dyskinesia terms needed.
+
+What was kept rather than rebuilt, and on what evidence:
+
+- `graph_full` and `graph_full_manganese`. The only changes to the code they run are `graph/reactome_import.py` and
+  `graph/membrane_potential.py`, and both are inert for the registered build: `driving_force_edge_weights()` returns
+  the same six entries as at `1e98f5db`, value for value (checked by running both versions side by side), and the new
+  `if not weight: continue` skip is unreachable because none of those six weights is zero.
+- The v3 and v4 evidence tables, their label selections and their absence sources. Every new argument of
+  `assemble_evidence_table.py` and `build_onsides_reports.py` defaults to `None`, which those docstrings record as
+  building "as every table before 8 November 2026 was built", and `docs/symptom_crosswalk.csv` did not change.
+- `node_descriptors/protein_descriptors*.parquet` and `complex_descriptors.parquet`, which are keyed on UniProt
+  entries and Reactome entities rather than on a graph, and whose code changed by addition only. Keeping them keeps
+  the ESM-2 embeddings, the three hours of the descriptors stage.
+
+Ordering. The brenda stage runs **first**, against the split graph of 5 November, and not after the graphs stage as
+the script's own comment orders it. `experiments/map_brenda_regulation_to_graph.py` reads `nodes.parquet` alone
+(`uniprot_entry` and the metabolite nodes) and the peroxynitrite fix changes edges only, so the table it derives is
+the same from either split graph; running it first means the graphs stage builds the neuronal graph on a current table
+whether or not the table moved. Then the deletion, then the graphs, descriptors and fine stages, each with its own
+marker under `runs/rebuild/november_12/` so a relaunch after the container is reclaimed resumes where it stopped.
+
+The brenda stage finished at 21:02 UTC and reported "the derived BRENDA table is unchanged; the neuronal graph
+already describes it and nothing below it needs rebuilding", so `configs/brenda_metabolite_enzyme_regulation.csv` did
+not move and no committed table needed a commit of its own. That is the answer the ordering above predicted.
+
+Two corrections made while the graphs stage ran, both to the deletion list rather than to the running script:
+
+- `graph_full_neuronal_binders` was not on the list. It did not need to be:
+  `experiments/build_plasma_binder_variant.py` takes both graph directories in one run, creates each output directory
+  with `exist_ok=True` and writes its files unconditionally, so the step the deleted `graph_full_neuronal_split_binders`
+  triggers rewrites `graph_full_neuronal_binders` as well. It was rebuilt at 21:03 UTC and holds no stale file.
+- `brain_expression/gene_expression_for_descriptors.parquet` and `class_expression_for_weights.parquet` were not on the
+  list and did need to be. `experiments/write_expression_tables.py` reads
+  `full_neuronal_descriptors_brain_expression.parquet` and `full_neuronal_cell_class_weights.parquet`, which the list
+  deletes, but its own two outputs are its step's marker, so the step would have been skipped and the tables left
+  describing the 5 November descriptors. They were deleted at 21:05 UTC, before the descriptors stage reached them.
+  `brain_expression/dopaminergic_siletti_cluster395.parquet` is kept: it is built from the Siletti atlas files alone.
