@@ -136,8 +136,10 @@ HYPERPOLARISATION_ACTIVATED_PATTERN = re.compile(r"^HCN[1-4]$")
 NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"): 1.0, ("Cl-", "c"): 1.0, ("Ca2+", "c"): 0.0}
 #   "pores_and_clamped_pools", the build amendment item 37 registers (decisions 9.112 and 9.113): a conductance
 #     edge into VM_c from each conductive pore, under driving_force and so joining the pool edges rather than
-#     taking a relation of its own, weighted g_i |E_i - V_rest| / g_total with the sign of E_i - V_rest; the six
-#     pool edges reweighted by the pump-clamped pool sensitivities, and the three extracellular pools at 0. It
+#     taking a relation of its own, weighted g_i |E_i - V_rest| / g_total with the sign of E_i - V_rest, given to a
+#     single-ion pore only when a catalyst carries the channel term of the ion it moves (decision 9.129 (2)); the
+#     three cytosolic pool edges in the same unit, c_i S_i g_i |E_i - V_rest| in millivolts with the pump-clamped
+#     pool sensitivities S_i (decision 9.129 (1)), and the three extracellular pools at 0. It
 #     exists because the pool route alone carries the opposite of the electrical sign for 376 of 382 charge-moving
 #     reactions (9.112).
 #     **The divisor at VM_c does NOT stay 1 under this build, and an earlier version of this comment said it did.**
@@ -145,16 +147,12 @@ NEURONAL_POOL_DRIVING_FORCE = {("Na+", "c"): -1.0, ("K+", "c"): -1.0, ("K+", "e"
 #     but the conductance edges enter under driving_force and so enter the divisor: amendment item 28's
 #     total_in_degree, and the registered cone normalisation, divide every edge arriving at a node by the sum of the
 #     weights entering it (models/linear_response_encoder.py, normalised_adjacency_values). The conductance weights
-#     are in millivolts, about 19 each, while the pool weights are rescaled to sum to 1, so on a reconstruction over
-#     the v5 graph on 9 November 2026 the divisor is about 531 and **the whole pool route arrives at 0.19 per cent of
-#     what enters VM_c**, its largest edge, cytosolic chloride, at 0.166 per cent. Item 37 registers that "the share
-#     normalisation does not preserve the physiological ratio between the two routes"; this is the size of that, and
-#     the owner ruled on 12 November 2026 that it is not (decision 9.129 (1)): the pool edges are to carry the
-#     conductance edges' unit, c_i S_i g_i |E_i - V_rest| in millivolts, which is ruled and not yet built. The two
-#     routes also carry
-#     different units before any rescaling - millivolts per microsiemens per square centimetre for a conductance
-#     edge, millivolts per microampere per square centimetre for a pool edge - so making them commensurable is a
-#     physical question and not only a scaling one.
+#     are in millivolts, about 19 each. Until 12 November 2026 the pool weights were rescaled to sum to 1, and on a
+#     reconstruction over the v5 graph on 9 November 2026 the divisor was then about 531 and the whole pool route
+#     arrived at 0.19 per cent of what entered VM_c. The owner ruled that rescale out (decision 9.129 (1)): the pool
+#     edges now carry the conductance edges' unit (graph/membrane_potential.clamped_pool_edge_weights), which makes
+#     the two routes commensurable but leaves the pool route small, because the encoder still averages each pool's
+#     many inputs; the draft of item 37 states that limit with the numbers a build of this version measures.
 MEMBRANE_POTENTIAL_BUILDS: tuple[str, ...] = ("learned_from_reactions", "computed_from_the_pools",
                                               "computed_beside_the_reactions", "pores_and_clamped_pools")
 # Not the build the rebuild asks for. Since 26 October 2026 scripts/rebuild_data_layer.sh passes
@@ -387,7 +385,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                           ion_pool_aliases: dict[str, str] = (),
                           catalysis_removed: dict[tuple[str, str], str] = (),
                           entity_members_removed: dict[tuple[str, str], str] = (),
-                          pore_genes: set[str] = frozenset()) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
+                          pore_genes: set[str] = frozenset(),
+                          pore_genes_by_ion: dict[str, set[str]] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict]:
     """The graph with the Reactome entities and reactions, the curated reactions, the neuronal ion pools, the calcium
     stores, the membrane potential node and their edges.
 
@@ -401,10 +400,11 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     defaults to the registered one. pore_genes: the gene symbols annotated with monoatomic ion channel activity,
     GO:0005216 propagated (graph/protein_descriptors.genes_annotated_with_go_term). Only the
     pores_and_clamped_pools build reads it, to decide which reactions get a conductance edge into VM_c; it is
-    required for that build and ignored by the others. GO alone is not the test: a single-ion rule is applied with
-    it, which excludes the serotonin transporter but not a carrier whose co-substrate is not a tracked ion (the
-    comment at the pore test below gives the count); decision 9.129 (2), ruled 12 November 2026 and not yet built,
-    adds an ion-matched test for those (amendment item 37).
+    required for that build and ignored by the others. pore_genes_by_ion: ion name -> the gene symbols annotated
+    with that ion's channel term (graph/protein_descriptors.CHANNEL_ACTIVITY_OF_ION), read by the same build alone: a
+    single-ion pore takes a conductance edge only when a catalyst is in its own ion's set (decision 9.129 (2)), which
+    excludes the carriers the root term and the single-ion rule both admit. The named mixed-cation classes are
+    tested on pore_genes alone, as before (amendment item 37).
 
     The three tables of decision 9.75, each {key: why}, and each raising on a key the graph does not hold so that a
     table cannot drift from its source silently. ion_pool_aliases: {base id: base id of the pool it shares}, for an ion
@@ -416,6 +416,12 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     (the lysosomal mucolipins in the plasma-membrane TRP set), which keeps the gene node and its other edges."""
     if membrane_potential_build not in MEMBRANE_POTENTIAL_BUILDS:
         raise ValueError(f"membrane_potential_build must be one of {MEMBRANE_POTENTIAL_BUILDS}, not {membrane_potential_build!r}")
+    if membrane_potential_build == "pores_and_clamped_pools" and not pore_genes_by_ion:
+        # Without the per-ion sets every single-ion pore would fail the ion-matched test, so the build would give
+        # edges to the mixed-cation classes alone and look complete.
+        raise ValueError("pores_and_clamped_pools needs pore_genes_by_ion, each ion's channel-term genes "
+                         "(decision 9.129 (2)); without them no single-ion pore takes a conductance edge")
+    pore_genes_by_ion = {ion: set(genes) for ion, genes in (pore_genes_by_ion or {}).items()}
     if membrane_potential_build == "pores_and_clamped_pools" and not pore_genes:
         # Without the pore set the build silently makes no conductance edge, which would look like item 35 with
         # reweighted pools rather than like item 37, and a graph built that way would carry the sign defect 9.112
@@ -650,7 +656,7 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             reaction_records[reaction_id] = (participants, genes, [], [], "Human-GEM")
 
     membrane_edges, pool_edges, gating_edges = defaultdict(int), 0, defaultdict(int)
-    conductance_edges, pores_unclassified = defaultdict(int), []
+    conductance_edges, pores_unclassified, carriers_excluded = defaultdict(int), [], []
     for reaction_node, (participants, catalyst_genes, _, _, source) in reaction_records.items():
         moved = ions_moved_inward(participants, ion_set)
         inward_charge = sum(ion_charges.get(base, 0) * amount for base, amount in moved.items())
@@ -666,7 +672,8 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             membrane_edges[source] += 1
         # The conductance edge of amendment item 37: a conductive pore reaches VM_c directly, under driving_force,
         # with the sign of E - V_rest rather than the sign of the charge it moves. The pore test is GO:0005216 on a
-        # catalysing gene AND a single-ion plasma-membrane flux, or a named mixed-cation class. **The single-ion
+        # catalysing gene AND either a named mixed-cation class, or a single-ion plasma-membrane flux whose catalyst
+        # also carries the channel term of that ion (decision 9.129 (2), below). **The single-ion
         # rule does NOT exclude the carriers, which an earlier version of this comment claimed.** It excludes the
         # serotonin transporter, which moves 5-HT with Na+ and Cl-, but a carrier whose co-substrate is not a
         # tracked ion shows one ion and passes: on a reconstruction over the v5 graph of 10 November 2026, 26 of
@@ -675,7 +682,10 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         # MOVES (GO:0005272 sodium, GO:0005267 potassium, GO:0005254 chloride, GO:0005262 calcium) instead of the
         # root term; checked on 10 November 2026, that separates all six carrier genes out while keeping every real
         # pore, SLC26A9 included, which decision 9.112 ruled to keep. The owner ruled it on 12 November 2026
-        # (decision 9.129 (2)); it is not yet built, so this code still applies the root term.
+        # (decision 9.129 (2)) and it is applied below to a single-ion pore; a named mixed-cation class is untouched.
+        # Every reaction it turns away is listed in the summary. Its limits, recorded with the ruling: SLC26A7 and
+        # SLC26A8 pass beside SLC26A9 because their uncoupled conductance is the ion they move, and a real pore
+        # annotated only with a generic term would fail.
         # A reaction that is a pore by GO but neither
         # single-ion nor a named class is recorded in the summary rather than given an edge, so the gap is
         # counted instead of guessed.
@@ -694,7 +704,12 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
             single_ion = next(iter(moved_ions)) if len(moved_ions) == 1 else None
             if single_ion is not None and single_ion not in IONS_WITH_A_CONDUCTANCE_TERM:
                 single_ion = None
-            if pore_class is not None or single_ion is not None:
+            turned_away_by_the_ion_matched_test = (pore_class is None and single_ion is not None
+                                                   and not catalyst_genes & pore_genes_by_ion.get(single_ion, set()))
+            if turned_away_by_the_ion_matched_test:
+                carriers_excluded.append(f"{reaction_node} ({name_of_node.get(reaction_node)}): moves {single_ion}, "
+                                         f"catalysed by {', '.join(sorted(catalyst_genes & set(pore_genes)))}")
+            elif pore_class is not None or single_ion is not None:
                 pore_sign, pore_weight, pore_evidence = conductance_edge_for_a_pore(single_ion, pore_class)
                 if add_edge(reaction_node, MEMBRANE_POTENTIAL_NODE, "driving_force", pore_sign,
                             f"{pore_evidence} ({source})", pore_weight):
@@ -763,6 +778,7 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     summary = {"membrane_potential_build": membrane_potential_build,
                "conductance_edges": dict(sorted(conductance_edges.items())),
                "pores_without_a_conductance_edge": sorted(pores_unclassified),
+               "excluded_by_the_ion_matched_test": sorted(carriers_excluded),
                "reactome_reactions": len(reactions), "reactome_species": len(species), "curated_reactions": len(curated_reactions),
                "nodes_added": len(node_table) - len(nodes) + len(deleted_nodes), "nodes_deleted": len(deleted_nodes),
                "edges_added": len(edge_table) - len(edges) + int((~kept).sum()), "edges_removed": int((~kept).sum()),

@@ -232,45 +232,57 @@ def pore_conductance_weight_millivolts(ion: str, conductance_microsiemens_per_sq
             / total_resting_conductance_microsiemens_per_square_centimetre())
 
 
+def leak_current_microamperes_per_square_centimetre(ion: str) -> float:
+    """g_i |E_i - V_rest| in uA/cm2: the current one leak-sized conductance of this ion carries at rest, Na+ 2.702,
+    K+ 1.576 and Cl- 0.221 at the registered constants. uS/cm2 times mV is nA/cm2, hence the 1e-3.
+
+    It is the conversion between the two routes into VM_c (decision 9.129 (1)): a conductance edge weighs
+    1/g_total times this current, and a pool edge in the same unit weighs the pool's millivolts per uA/cm2 times it.
+    """
+    return LEAK_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE[ion] * abs(pore_driving_force_millivolts(ion)) * 1e-3
+
+
 def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
-    """(ion, compartment letter) -> (sign, weight) for the pool's edge into VM_c under amendment item 37.
+    """(ion, compartment letter) -> (sign, weight in millivolts) for the pool's edge into VM_c under amendment item 37.
 
-    This is to replace driving_force_edge_weights() for the pores_and_clamped_pools build of amendment item 37, which
-    is called by graph/reactome_import.py for that build; an earlier version of this line said nothing called it,
-    which was true when written and stopped being true when the build was wired. No graph carries it yet: the
-    registered membrane_potential_build is still item 35's computed_from_the_pools.
+    This replaces driving_force_edge_weights() for the pores_and_clamped_pools build, which graph/reactome_import.py
+    calls. No committed graph carries it: the registered membrane_potential_build is still item 35's
+    computed_from_the_pools.
 
-    Two changes from it. First, the cytosolic weight is the pump-clamped sensitivity TIMES item 35's coefficient, not
-    the sensitivity alone. The composition is what makes the units right: item 35's coefficient is millivolts per unit
-    fractional change in the pool, the sensitivity is d ln[ion]_i per uA/cm2 of sustained current, and their product
-    is millivolts per uA/cm2, which is what an edge from a current-carrying reaction has to carry. The sensitivity
-    alone would be a concentration change and not a potential change. The study sheet's "as decided" diagram (widget
-    88631e83-33d4, checked 8 November 2026) states the same composition and the same three shares, 0.105, 0.013 and
-    0.882; that is how a first version of this function, which used the sensitivities alone and gave 0.106, 0.004 and
-    0.890, was found to be wrong.
+    The cytosolic weight is c_i S_i g_i |E_i - V_rest| (decision 9.129 (1), the owner, 12 November 2026), in
+    magnitude Na+ 1.306, K+ 0.094 and Cl- 0.896 mV:
 
-    Second, the three extracellular pools take weight 0 at the registered steady-state readout, which decision
-    9.112's first sub-question ruled on 7 November 2026 (their closed-space values and clearance times are kept for
-    decision 9.118, and the pools stay as inputs).
+    - c_i is item 35's coefficient, millivolts per unit fractional change in the pool;
+    - S_i is the pump-clamped pool sensitivity, d ln[ion]_i per uA/cm2 of sustained current, so c_i S_i is
+      millivolts per uA/cm2 (Na+ -0.4835, K+ -0.0595, Cl- +4.0479). The sensitivity alone would be a concentration
+      change and not a potential change, which is how a first version of this function went wrong;
+    - g_i |E_i - V_rest| is one leak-sized current of that ion (leak_current_microamperes_per_square_centimetre),
+      which puts the edge in the unit a conductance edge carries: "millivolts for a 100 per cent change of one
+      leak-sized unit". A conductance edge is 1/g_total = 9.09 mV times the same current.
 
-    The signs come from item 35's coefficient and are unchanged by the sensitivities, which are magnitudes: more
-    cytosolic sodium or potassium lowers the pool's contribution to the potential, and chloride is the reverse
-    because its charge is negative.
+    What every version before 12 November 2026 did, as history: the products c_i S_i were rescaled to sum to 1 in
+    absolute value (0.105, 0.013, 0.882), on the ground that the graph carries no units. That held while the pools
+    were VM_c's only inputs and not once millivolt-weighted conductance edges shared its row: the rescale gave every
+    pool the chloride leak's current by accident, leaving the sodium pool edge 12.4 times too small and the potassium
+    one 7.2 times against a pore of its own ion. Rescaling both routes together to sum to 1 is not done either,
+    because it makes the chloride pores net depolarising once the changes_ion_pool gain exceeds 0.21.
 
-    The weights are rescaled to sum to 1 in absolute value, as the item-35 weights were, because the graph carries no
-    units and only the ratios between the edges are physical. This normalisation does not preserve the physiological
-    ratio between the pool route and the conductance edges. The owner ruled on 12 November 2026 to replace it
-    (decision 9.129 (1)): each pool edge is to carry a conductance edge's unit, c_i S_i g_i |E_i - V_rest| in
-    millivolts, which is not yet built, so this function still returns the rescaled weights.
+    The three extracellular pools take weight 0 at the registered steady-state readout (decision 9.112's first
+    sub-question, ruled 7 November 2026; their closed-space values and clearance times are kept for decision 9.118, and
+    the pools stay as inputs).
+
+    The signs come from item 35's coefficient, the sensitivities and currents being magnitudes: more cytosolic sodium
+    or potassium lowers the pool's contribution to the potential, and chloride is the reverse because its charge is
+    negative.
     """
     item_35_coefficients = driving_force_coefficients_millivolts()
-    coefficients: dict[tuple[str, str], float] = {}
+    weights: dict[tuple[str, str], tuple[float, float]] = {}
     for ion in IONS_IN_THE_VOLTAGE_EQUATION:
-        coefficients[(ion, "c")] = PUMP_CLAMPED_POOL_SENSITIVITY[ion] * item_35_coefficients[(ion, "c")]
-        coefficients[(ion, "e")] = 0.0
-    total = sum(abs(value) for value in coefficients.values())
-    return {key: ((math.copysign(1.0, value) if value else 0.0), abs(value) / total if total else 0.0)
-            for key, value in coefficients.items()}
+        millivolts_per_unit_current = PUMP_CLAMPED_POOL_SENSITIVITY[ion] * item_35_coefficients[(ion, "c")]
+        weights[(ion, "c")] = (math.copysign(1.0, millivolts_per_unit_current),
+                               abs(millivolts_per_unit_current) * leak_current_microamperes_per_square_centimetre(ion))
+        weights[(ion, "e")] = (0.0, 0.0)
+    return weights
 
 
 # The mixed-cation pores of amendment item 37's sub-ruling of 7 November 2026: one conductance edge per pore at its

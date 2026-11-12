@@ -774,33 +774,46 @@ def test_a_release_directory_without_exports_is_refused(tmp_path):
 # charge-moving reactions, so a conductive pore reaches VM_c directly instead.
 
 
-def test_the_pores_build_makes_no_reaction_charge_edges_so_the_divisor_stays_one():
+# The per-ion channel-term sets of decision 9.129 (2). Empty sets where a test does not exercise the ion-matched test:
+# the named mixed-cation classes ignore them, which test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential
+# relies on.
+NO_ION_CHANNEL_GENES = {"Na+": set(), "K+": set(), "Cl-": set(), "Ca2+": set()}
+
+
+def test_the_pores_build_makes_no_reaction_charge_edges():
+    """No reaction makes a changes_membrane_potential edge under this build. That does NOT keep the divisor at VM_c at
+    1, which this test's name claimed until 12 November 2026 (decision 9.129 (i)): the conductance edges enter VM_c
+    under driving_force and so enter the divisor."""
     _, edges, relation_types, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
-                                                   pore_genes={"SCN1A"})
+                                                   pore_genes={"SCN1A"}, pore_genes_by_ion=NO_ION_CHANNEL_GENES)
     assert summary["membrane_potential_build"] == "pores_and_clamped_pools"
     assert not (edges.relation_type == "changes_membrane_potential").any()
     assert "changes_membrane_potential" not in relation_types
     assert "driving_force" in relation_types and "voltage_gates" in relation_types
 
 
-def test_the_pores_build_reweights_the_pools_and_drops_the_extracellular_three():
-    """The cytosolic weights are the pump-clamped sensitivities times item 35's coefficients, 0.105, 0.013 and 0.882,
-    and the three extracellular pools take weight 0, so they get no edge at all (ruled 7 November 2026)."""
-    _, edges, _, _ = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"})
+def test_the_pores_build_puts_the_pools_in_millivolts_and_drops_the_extracellular_three():
+    """Each cytosolic pool edge is c_i S_i g_i |E_i - V_rest| in millivolts, the conductance edges' unit (decision 9.129
+    (1), the owner, 12 November 2026): 1.306, 0.094 and 0.896, where every build before carried the rescaled shares
+    0.105, 0.013 and 0.882. The three extracellular pools take weight 0 and so get no edge (ruled 7 November 2026)."""
+    _, edges, _, _ = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"},
+                                pore_genes_by_ion=NO_ION_CHANNEL_GENES)
     pools = edges[(edges.relation_type == "driving_force")
                   & edges.source_id.str.startswith("NEURON_")].set_index("source_id")
     assert pools.sign.to_dict() == {neuronal_pool_id(SODIUM, "c"): -1.0, neuronal_pool_id(POTASSIUM, "c"): -1.0,
                                     neuronal_pool_id(CHLORIDE, "c"): 1.0}
-    assert pools.weight[neuronal_pool_id(SODIUM, "c")] == pytest.approx(0.105, abs=0.001)
-    assert pools.weight[neuronal_pool_id(POTASSIUM, "c")] == pytest.approx(0.013, abs=0.001)
-    assert pools.weight[neuronal_pool_id(CHLORIDE, "c")] == pytest.approx(0.882, abs=0.001)
+    assert pools.weight[neuronal_pool_id(SODIUM, "c")] == pytest.approx(1.306, abs=0.001)
+    assert pools.weight[neuronal_pool_id(POTASSIUM, "c")] == pytest.approx(0.094, abs=0.001)
+    assert pools.weight[neuronal_pool_id(CHLORIDE, "c")] == pytest.approx(0.896, abs=0.001)
     for letter_pool in (neuronal_pool_id(SODIUM, "e"), neuronal_pool_id(POTASSIUM, "e"), neuronal_pool_id(CHLORIDE, "e")):
         assert letter_pool not in pools.index, "an extracellular pool of weight 0 must get no edge"
 
 
 def test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential():
-    """SCN1A is Nav, whose reversal potential is +47.9 mV rather than E_Na +62.5, and whose weight is 22.77 mV."""
-    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"})
+    """SCN1A is Nav, whose reversal potential is +47.9 mV rather than E_Na +62.5, and whose weight is 22.77 mV. It
+    takes its edge with every per-ion set empty, because the ion-matched test is for single-ion pores only."""
+    _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"},
+                                      pore_genes_by_ion=NO_ION_CHANNEL_GENES)
     pore = edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")]
     assert len(pore) == 1, pore
     assert pore.iloc[0].sign == 1.0, "a sodium pore depolarises"
@@ -808,21 +821,27 @@ def test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential
     assert pore.iloc[0].target_id == MEMBRANE_POTENTIAL_NODE
     assert "Nav" in pore.iloc[0].evidence_source
     assert summary["conductance_edges"] == {"Nav": 1}
+    assert summary["excluded_by_the_ion_matched_test"] == []
 
 
 def test_the_pores_build_refuses_to_run_without_the_pore_genes():
     """Without the pore set the build would silently make no conductance edge, which looks like item 35 with
     reweighted pools rather than like item 37: the graph would carry the sign defect decision 9.112 found while
-    appearing to be the build that repairs it. So it refuses rather than building something misleading."""
-    with pytest.raises(ValueError, match="pores_and_clamped_pools needs pore_genes"):
-        run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes=set())
+    appearing to be the build that repairs it. Without the per-ion sets it would give edges to the mixed-cation
+    classes alone and look complete. So it refuses either way rather than building something misleading."""
+    with pytest.raises(ValueError, match="needs pore_genes_by_ion"):
+        run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes={"SCN1A"})
+    with pytest.raises(ValueError, match="needs pore_genes, the genes annotated with GO:0005216"):
+        run_import(membrane_potential_build="pores_and_clamped_pools", pore_genes=set(),
+                   pore_genes_by_ion=NO_ION_CHANNEL_GENES)
 
 
 def test_a_reaction_whose_catalysts_are_not_channels_gets_no_conductance_edge():
     """The GO annotation is required per reaction and not inferred from the ions it moves: with a pore set that names
     no catalyst of any reaction here, nothing takes a conductance edge however much charge it moves."""
     _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
-                                      pore_genes={"KCNQ2"})  # a real channel gene, catalysing nothing in the fixture
+                                      pore_genes={"KCNQ2"},  # a real channel gene, catalysing nothing in the fixture
+                                      pore_genes_by_ion={**NO_ION_CHANNEL_GENES, "K+": {"KCNQ2"}})
     assert edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].empty
     assert summary["conductance_edges"] == {}
 
@@ -832,16 +851,78 @@ def test_a_channel_by_go_that_moves_several_ions_is_recorded_rather_than_given_a
     mixed-cation class gets no edge and is counted in the summary. The Na+/K+-ATPase and NKCC1 are the two here; in
     the built graph neither reaches this test, since neither gene carries GO:0005216 at all."""
     _, edges, _, summary = run_import(membrane_potential_build="pores_and_clamped_pools",
-                                      pore_genes={"ATP1A3", "SLC12A2"})
+                                      pore_genes={"ATP1A3", "SLC12A2"}, pore_genes_by_ion=NO_ION_CHANNEL_GENES)
     assert edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].empty
     assert summary["conductance_edges"] == {}
     assert len(summary["pores_without_a_conductance_edge"]) == 2
     assert all("moves" in entry for entry in summary["pores_without_a_conductance_edge"])
 
 
-def test_the_other_builds_are_untouched_by_the_pore_genes_argument():
-    """pore_genes is read by this build alone, so passing it must change nothing elsewhere."""
-    _, without, _, _ = run_import(membrane_potential_build="computed_from_the_pools")
-    _, with_genes, _, _ = run_import(membrane_potential_build="computed_from_the_pools", pore_genes={"SCN1A"})
-    assert without.equals(with_genes)
+# Two single-ion Human-GEM reactions for the ion-matched test, beside the shared fixture rather than in it: a potassium
+# efflux catalysed by KCNJ2, a potassium channel, and a sodium uptake catalysed by SLC1A4, which GO annotates with
+# chloride channel activity (IDA) but which moves the sodium of an electroneutral amino-acid exchange (decision 9.129
+# (2)). Potassium is MAM02200 and sodium MAM02519, as in the pump above.
+SINGLE_ION_HUMAN_GEM_SBML = HUMAN_GEM_SBML.replace("</model></sbml>", """ <reaction id="R_MARK0001" name="potassium efflux" reversible="false">
+  <listOfReactants><speciesReference species="M_MAM02200c" stoichiometry="1" constant="true"/></listOfReactants>
+  <listOfProducts><speciesReference species="M_MAM02200e" stoichiometry="1" constant="true"/></listOfProducts>
+ </reaction>
+ <reaction id="R_MARN0001" name="sodium uptake by an amino acid exchanger" reversible="false">
+  <listOfReactants><speciesReference species="M_MAM02519e" stoichiometry="1" constant="true"/></listOfReactants>
+  <listOfProducts><speciesReference species="M_MAM02519c" stoichiometry="1" constant="true"/></listOfProducts>
+ </reaction>
+</model></sbml>""")
 
+
+def run_import_with_single_ion_reactions(**overrides):
+    nodes, edges, _ = base_graph()
+    reaction_rows = [{"node_id": reaction, "node_type": "reaction", "display_name": reaction, "compartment": "c;e",
+                      "is_transport": True, "reversible": False, "subsystem": "Transport reactions", "is_currency": False,
+                      "degree": 0} for reaction in ("MARK0001", "MARN0001")]
+    gene_rows = [{"node_id": f"GENE:{gene}", "node_type": "gene", "display_name": gene, "gene_symbol": gene,
+                  "in_metabolic_layer": True, "degree": 0} for gene in ("KCNJ2", "SLC1A4")]
+    nodes = pd.concat([nodes, pd.DataFrame(reaction_rows + gene_rows).reindex(columns=NODE_COLUMNS)], ignore_index=True)
+    edges = pd.concat([edges, pd.DataFrame([
+        {"source_id": "GENE:KCNJ2", "target_id": "MARK0001", "relation_type": "catalyzed_by", "sign": 1.0, "evidence_source": "Human-GEM"},
+        {"source_id": "GENE:SLC1A4", "target_id": "MARN0001", "relation_type": "catalyzed_by", "sign": 1.0, "evidence_source": "Human-GEM"}],
+        columns=EDGE_COLUMNS)], ignore_index=True)
+    arguments = dict(nodes=nodes, edges=edges, membrane_potential_build="pores_and_clamped_pools",
+                     human_gem_participants=read_human_gem_participants(SINGLE_ION_HUMAN_GEM_SBML, set(ION_BASES.values())),
+                     brain_expressed_genes={"ATP1A3", "SLC12A2", "SLC18A2", "KCNJ2", "SLC1A4"},
+                     pore_genes={"KCNJ2", "SLC1A4"})
+    arguments.update(overrides)
+    return run_import(**arguments)
+
+
+def test_a_single_ion_pore_needs_the_channel_term_of_the_ion_it_moves():
+    """Both catalysts pass the root term GO:0005216 and both reactions move one ion, so before decision 9.129 (2) both
+    took a conductance edge. Now KCNJ2's potassium efflux does, at the potassium weight 14.3 mV with the
+    hyperpolarising sign, and SLC1A4's sodium uptake does not, because SLC1A4 carries the chloride channel term and not
+    the sodium one; it is listed in the summary rather than dropped silently."""
+    _, edges, _, summary = run_import_with_single_ion_reactions(
+        pore_genes_by_ion={**NO_ION_CHANNEL_GENES, "K+": {"KCNJ2"}, "Cl-": {"SLC1A4"}})
+    pores = edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")].set_index("source_id")
+    assert list(pores.index) == ["MARK0001"]
+    assert pores.loc["MARK0001", "sign"] == -1.0
+    assert pores.loc["MARK0001", "weight"] == pytest.approx(14.3, abs=0.05)
+    assert summary["conductance_edges"] == {"K+": 1}
+    assert len(summary["excluded_by_the_ion_matched_test"]) == 1
+    excluded = summary["excluded_by_the_ion_matched_test"][0]
+    assert excluded.startswith("MARN0001") and "Na+" in excluded and "SLC1A4" in excluded
+
+
+def test_the_carrier_takes_its_edge_once_its_own_ion_is_annotated():
+    """The test is on the ion, not on the gene: the same reaction passes once its catalyst is in the sodium set, so a
+    real sodium pore is not turned away by the rule that turns the carrier away."""
+    _, edges, _, summary = run_import_with_single_ion_reactions(
+        pore_genes_by_ion={**NO_ION_CHANNEL_GENES, "K+": {"KCNJ2"}, "Na+": {"SLC1A4"}})
+    pores = edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")]
+    assert sorted(pores.source_id) == ["MARK0001", "MARN0001"]
+    assert summary["excluded_by_the_ion_matched_test"] == []
+
+
+def test_the_other_builds_are_untouched_by_the_pore_genes_arguments():
+    """pore_genes and pore_genes_by_ion are read by this build alone, so passing them must change nothing elsewhere."""
+    _, without, _, _ = run_import(membrane_potential_build="computed_from_the_pools")
+    _, with_genes, _, _ = run_import(membrane_potential_build="computed_from_the_pools", pore_genes={"SCN1A"},
+                                     pore_genes_by_ion={**NO_ION_CHANNEL_GENES, "Na+": {"SCN1A"}})
+    assert without.equals(with_genes)

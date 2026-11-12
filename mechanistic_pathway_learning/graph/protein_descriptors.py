@@ -82,11 +82,25 @@ def read_go_ancestors(go_obo_path) -> dict[str, set[str]]:
 
 
 ION_CHANNEL_ACTIVITY = "GO:0005216"  # monoatomic ion channel activity
+# The channel term of each ion a pore edge can carry (decision 9.129 (2), the owner, 12 November 2026): a reaction
+# takes a single-ion conductance edge only when a catalyst is annotated with the term of the ion the reaction moves.
+# Names as GO release 2026-07-26 gives them, none obsolete.
+CHANNEL_ACTIVITY_OF_ION = {"Na+": "GO:0005272",   # sodium channel activity
+                           "K+": "GO:0005267",    # potassium channel activity
+                           "Cl-": "GO:0005254",   # chloride channel activity
+                           "Ca2+": "GO:0005262"}  # calcium channel activity
 
 
 def genes_annotated_with_go_term(uniprot_table: pd.DataFrame, gaf_path, go_ancestors: dict[str, set[str]],
                                  term: str) -> set[str]:
-    """Gene symbols of the reviewed human proteins annotated with a molecular-function term or a descendant of it.
+    """Gene symbols of the reviewed human proteins annotated with a molecular-function term or a descendant of it;
+    genes_annotated_with_go_terms for one term."""
+    return genes_annotated_with_go_terms(uniprot_table, gaf_path, go_ancestors, [term])[term]
+
+
+def genes_annotated_with_go_terms(uniprot_table: pd.DataFrame, gaf_path, go_ancestors: dict[str, set[str]],
+                                  terms) -> dict[str, set[str]]:
+    """term -> gene symbols of the reviewed human proteins annotated with it or a descendant, in one pass of the GAF.
 
     Any evidence code counts, NOT-qualified rows are excluded, and the term is matched against the row's propagated
     ancestors, so a descendant such as voltage-gated potassium channel activity answers for GO:0005216. One symbol per
@@ -94,11 +108,13 @@ def genes_annotated_with_go_term(uniprot_table: pd.DataFrame, gaf_path, go_ances
 
     Written for two callers that must agree on what a channel is: experiments/audit_channel_conduction.py, which asks
     whether every channel in the graph conducts, and the pores_and_clamped_pools membrane-potential build of amendment
-    item 37, whose conductance edges go to the pores this term names together with a single-ion rule (GO:0005216 alone
-    admits about fifteen carriers, the EAATs among them, which is why the build applies both).
+    item 37. That build reads GO:0005216 and the four terms of CHANNEL_ACTIVITY_OF_ION: the root term alone admits
+    carriers annotated with a channel activity for an ion other than the one their reaction moves (SLC1A4, SLC1A1,
+    SLC5A8, SLC17A3, SLC9C1), which the per-ion terms exclude (decision 9.129 (2)).
     """
+    terms = list(terms)
     gene_of_accession = dict(zip(uniprot_table["Entry"], uniprot_table["Gene Names (primary)"]))
-    genes: set[str] = set()
+    genes: dict[str, set[str]] = {term: set() for term in terms}
     with gzip.open(gaf_path, "rt", encoding="utf-8") as handle:
         for line in handle:
             if line.startswith("!"):
@@ -106,8 +122,13 @@ def genes_annotated_with_go_term(uniprot_table: pd.DataFrame, gaf_path, go_ances
             fields = line.rstrip("\n").split("\t")
             if len(fields) < 9 or fields[8] != "F" or fields[3].startswith("NOT"):
                 continue
-            if term in (go_ancestors.get(fields[4]) or {fields[4]}) and isinstance(gene_of_accession.get(fields[1]), str):
-                genes.add(gene_of_accession[fields[1]].split(";")[0].strip())
+            symbol = gene_of_accession.get(fields[1])
+            if not isinstance(symbol, str):
+                continue
+            ancestors = go_ancestors.get(fields[4]) or {fields[4]}
+            for term in terms:
+                if term in ancestors:
+                    genes[term].add(symbol.split(";")[0].strip())
     return genes
 
 
