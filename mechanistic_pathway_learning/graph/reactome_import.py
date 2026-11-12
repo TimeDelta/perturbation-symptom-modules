@@ -677,7 +677,16 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
         if pores_tell_the_potential and moved and (catalyst_genes & set(pore_genes)):
             pore_class = next((found for gene in sorted(catalyst_genes)
                                if (found := mixed_pore_class_of_gene(gene)) is not None), None)
-            single_ion = (ion_names[next(iter(moved))] if len(moved) == 1 else None)
+            # The ion's alias is resolved BEFORE its name is looked up. Reactome's chloride entity has no pool of its
+            # own and shares Human-GEM's (ion_pool_aliases, decision 9.75), so ion_names renders it "Cl- (Reactome)",
+            # which is not in IONS_WITH_A_CONDUCTANCE_TERM. An earlier version of this test looked the name up first
+            # and so gave no conductance edge to any Reactome chloride pore: the dry run of 12 November 2026 found
+            # nine of them excluded, among them GABA_A (RCT_975340, RCT_975449), the glycine receptor (RCT_975389),
+            # CLCN1/2/KA/KB, the anoctamins, the tweetys and the bestrophins - the very pores decision 9.112 was
+            # opened on. Resolving over the whole set, rather than only a single entry, also keeps a reaction that
+            # moves both spellings of one ion from being read as moving two ions.
+            moved_ions = {ion_names[ion_pool_aliases.get(base, base)] for base in moved}
+            single_ion = next(iter(moved_ions)) if len(moved_ions) == 1 else None
             if single_ion is not None and single_ion not in IONS_WITH_A_CONDUCTANCE_TERM:
                 single_ion = None
             if pore_class is not None or single_ion is not None:
