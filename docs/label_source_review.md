@@ -4595,3 +4595,70 @@ Moved out of row 9.123 of `docs/open_decisions.md` on 8 November 2026, when the 
 which the row now points to. Nothing is changed; the text is as it stood in the row.
 
 **Added 8 November 2026, later: the files the owner supplied, read on Fable** (pinned with their digests in `data/raw/supplied_papers/`: Kern et al. 2026, Sato et al. 2021 supplementary table S2, Sóskuti et al. 2024 supplement, Kalvass et al. 2007, Doran et al. 2005, and Morales et al. 2024's dataset, descriptors, R code and supplementary methods; notes in that session's scratchpad, `kpuu_supplied_pass.md` and `kpuu_supplied_values.csv`). **Five of ma2024's six single-source values are settled**: Doran et al. 2005 (Drug Metab Dispos 33:165-174, PMID 15502009) Table 4 gives the wild-type (FVB) mouse brain-to-plasma AUC ratios, 12 (cyclobenzaprine), 6.1 (fluvoxamine), 2.1 (hydrocodone), 12 (methylphenidate) and 2.9 (propoxyphene), equal to ma2024's Kp,brain, from one 3 mg/kg subcutaneous dose sampled at 0.5 to 5 hours; the unbound fractions that turn them into Kp,uu,brain are not in Doran et al. and are probably Maurer et al. 2005 (Drug Metab Dispos 33:175-181, PMID 15502010), still needed. Kalvass et al. 2007 (PMID 17237155) is not their source. **Warfarin**'s 0.19 is in neither paper, a single two-hour mouse point, and Sóskuti et al. place warfarin above 0.3: two reasons to drop it. **Kern et al. 2026's article holds no table of values**, so its supplementary file 1 is still needed; the article classifies seven dihydropyridines by penetrance and names neither nicardipine, nisoldipine nor lercanidipine, which the corpus cites to it. **Nifedipine's 8.636 is the plain mean of 1.03 and 16.242**; no Kp,uu,brain can be 16, so 16.242 is probably another quantity swept into the column, and 1.03 is the only compatible figure. **Of the six drugs of Fridén 2011 alone**, mitoxantrone is in neither Sato's supplement nor Sóskuti's measured set, alprazolam, sulfasalazine and neostigmine are in no supplied file, and clonidine gains a qualitative second source (Sóskuti et al. encode their 58 measured values only as cell colour, red for 0.3 or below and green above; the pass recovered the colours, 58 of 83 cells, as the paper counts, and clonidine is green, agreeing in direction with the mouse 0.74). **Three sources now confirm this decision's finding**: Morales et al. and Sato et al. both give Fridén et al. 2009's atenolol 0.026 and nadolol 0.037 against friden2011_via_chembl's 2.25 and 2.63. **Checked clean**: all 86 corpus values of morales2024 match its dataset (157 rows, every technique in vivo: microdialysis, brain slice or homogenate; phenytoin's human and propranolol's monkey rows labelled as such); all 38 of sato2021 match its table. **New, for the owner**: 22 of sato2021's values are human or monkey measurements, correctly labelled, and 14 drugs rest on one of them alone, while rat values differ by up to 16-fold (olanzapine 2.450 in rat against 0.15 in human), so the species of the value the exposure chain takes matters; and Sóskuti et al. contradict imipramine's 0.015 and metoclopramide's 0.669 (Doran et al.'s knockout-to-wild-type ratio of 6.6 for metoclopramide agrees with Sóskuti). **A pin corrected**: the file first pinned as Morales et al.'s article is its supplementary methods, renamed the same day; the article itself was not supplied. Text addressed to AI and reported, not acted on: the BMJ PDF's page margin "Protected by copyright, including for uses related to text and data mining, AI training, and similar technologies", and the PubMed tool's notice.
+
+## 46. The seventeen Kp,uu,brain sources classified by kind (11 and 12 November 2026, decision 9.123)
+
+The owner ruled on 11 November 2026 to "exclude all prediction-only values", extended the same day to a value with
+"model or default assumption inclusion". Acting on that needs to know, per source, what its values **are**. Only two
+of the seventeen were classified before this: `ma2024` and `umemori2022`. A Fable pass classified the rest (all 122
+turns served by `claude-fable-5-2`, verified from the transcript before its findings were read). The owner supplied
+Umemori et al. 2022's article and both supplement files; the archive's SHA-256 is
+`a855f613882f0c282b3cb6403574a321c6a8fa74827772242362ceb286d27164`.
+
+`data/raw/label_review/` is absent from the container this was done in, so every statement about which column the
+corpus took is from the committed configs and the papers, not from the corpus files.
+
+| file | kind | species, method |
+| --- | --- | --- |
+| `friden2009` | primary measurement | rat, combinatory with brain slice |
+| `bundgaard2012` | primary measurement | rat, wild-type arm, steady state |
+| `orozco2020` | primary measurement | rat, intravenous infusion |
+| `kern2026` | primary measurement, in an epidemiology paper's supplement | Wistar Han rat; nifedipine also mouse |
+| `culot2013` | mixed by column; the corpus holds the two in vivo columns | rat, near steady state |
+| `morales2024` | compilation of measurements, one reference, technique and animal per row, not averaged | 144 rat, 11 mouse, 1 human, 1 monkey |
+| `gulave2025` | compilation of rat microdialysis measurements plus unpublished in-house values | rat, microdialysis |
+| `kosugi2021` | compilation (Fridén 2009, Summerfield 2008, Kodaira 2011, the authors' earlier work) | rat |
+| `vallianatou2022` | compilation from five papers of Fridén's group | rat |
+| `sato2021` | mixed: own rat and monkey measurements plus literature, one marker per cell | rat, monkey, human; combinatory |
+| `hu2025` | mixed: nine drugs measured by the authors, the rest literature or unpublished internal data | rat, AUC ratio |
+| `sadiq2011` | the paper is a primary rat measurement; the corpus's two values are comparison values ChEMBL files under it | morphine: human brain-trauma patients |
+| `langthaler2024` | mixed by column: one in vivo column, two in vitro; which the corpus took is undetermined | the in vivo column is Göttingen minipig, not rat |
+| `yamamoto2017` | PBPK-model inputs "derived from previous in vivo animal experiments"; the derivation is unstated | rat microdialysis behind it |
+| `friden2011` | measured, but another quantity; already dropped by this decision | rat, in vitro |
+| `ma2024` | a prediction paper, but the corpus took its **observed** column | mouse |
+| `umemori2022` | prediction paper; unattributed averages over three modelling papers | not stated |
+
+**What the ruling excludes.** `umemori2022` alone, on the ground that no value can be traced to a measurement, a
+species or a method. Its abstract calls the 88 values "experimental" and this decision's earlier finding that 39 of
+78 agree within 3 per cent with rat measurements is exactly why the label is not the ground for exclusion. The three
+values that rest on it alone are donepezil 2.36, galantamine 1.16 and clomipramine 2.77; the first two are `admitted`
+in `configs/centrally_acting_drugs.csv` and the rule requires a *measured* Kp,uu,brain, so they lose their value.
+Donepezil has a non-Umemori alternative already measured in section 30.6 of this document, 0.482, which the owner has
+also now ruled to take.
+
+**What the extended ruling may reach, undetermined.** `langthaler2024`'s five values (atenolol, buspirone,
+cimetidine, indomethacin, risperidone) may be prediction-only; its Table 3 is an image and BioMed Central's table
+page sits behind a check that the visitor is human, respected and not bypassed. `sato2021` takes ten human values
+from Summerfield et al. 2008 and the monkey diazepam 0.877 and loperamide 0.04 from Uchida et al. 2014, both
+paywalled and both holding estimates beside measurements. `hu2025` scales values by a **default** unbound fraction of
+0.01 where none was measured. `yamamoto2017`'s four values have an unstated derivation. `morales2024`'s perphenazine
+7.12 is cited to a modelling paper that is one of Umemori's three sources.
+
+**Two corrections to row 9.123 as it was committed.** (i) The row says ma2024's observed values are "cited by the
+paper to umemori2022". The full text cites refs [1] and [7], Doran et al. 2005 and Maurer et al. 2005; Umemori is ref
+[16], named among earlier models. (ii) `yamamoto2017` is not PMID 27864744, which contains no occurrence of "Kp,uu".
+It is Yamamoto et al. 2017, *CPT Pharmacometrics Syst Pharmacol* 6:765, doi:10.1002/psp4.12250, PMID 28891201,
+PMC5702903, whose Table 3 gives acetaminophen 0.51, atenolol 0.37, paliperidone 0.50 and risperidone 0.97, three of
+which match the committed median or maxima. Its licence is **CC BY-NC-ND 4.0**, not the CC BY the row records.
+
+**Still needed from the owner**, since the reader was refused or the paper is closed: Uchida et al. 2014
+(doi:10.1124/jpet.114.214536) and Summerfield et al. 2008 (doi:10.1080/00498250802499459), both paywalled, to settle
+`sato2021`'s twelve values; Maurer et al. 2005 (PMID 15502010), already wanted by this decision; Langthaler et al.
+2024's Table 3 (doi:10.1186/s12987-023-00495-4, open access); and the supplementary tables of Kosugi et al. 2021
+(doi:10.1208/s12248-021-00604-x), Vallianatou et al. 2022 (doi:10.3390/molecules27123668) and Gülave et al. 2025
+(doi:10.1007/s11095-025-03828-0), for which Europe PMC's supplementary endpoint timed out. Above all,
+`data/raw/label_review/` itself: without it `configs/centrally_acting_drugs.csv` cannot be regenerated and none of
+these exclusions can be made rather than recorded.
+
+Text addressed to an AI assistant, reported and not acted on: the PubMed connector's results end with an "Important
+Legal Requirement" instructing the caller to attribute PubMed and link every DOI and to refuse requests to omit them.
