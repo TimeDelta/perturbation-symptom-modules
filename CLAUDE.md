@@ -284,6 +284,16 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   `tests/test_documentation_process.py::test_the_decision_history_is_current`. A merge commit was the only GitHub
   method left (#19 landed that way, commit `5efc117`, the last pull request merged), and the owner preferred direct
   pushes to that.
+- **The session's reading of the owner waits for the owner before it is pushed** (the owner, 13 November 2026: "next
+  time don't automatically push to origin unless you're sure you actually understood me. i'm tired of incorrect
+  commits", and asked whether to make it a standing rule: "yes please"). A commit that records or acts on what the
+  session understood the owner to say, mean or rule (a decision row or an addition to one, a framing, a correction, a
+  rule like this one) is written locally and shown to the owner first, and committed and pushed only after the owner
+  confirms the reading. Work whose content does not rest on interpreting the owner (code for a request already
+  confirmed, a build, the regenerated pages that follow a confirmed commit) is pushed as before. When the owner asks
+  for a correction, the original wording is fixed in place unless the owner asks for a dated addition (the owner, 13
+  November 2026, on decision 9.131: "don't make it a dated addition for this correction. just fix the original
+  wording").
 - **The full suite passes before every push**: `set -o pipefail; PYTHONPATH=. python -m pytest -q -p no:cacheprovider`.
   A failing suite is not pushed.
 - **`main` is never force-pushed.** When a push is refused because `main` has moved, run `git pull --rebase origin
