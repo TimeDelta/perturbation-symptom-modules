@@ -51,6 +51,7 @@ TOPICS = (
     ("Design, registration and decisions", ("docs/experiment_design.md", "docs/preregistration*.md", "docs/amendment_history.md", "docs/decision_history.md",
                                              "docs/open_decisions.md", "docs/registered_core.md", "docs/status.md", "docs/file_index.md", "docs/design_review_v04.md", "docs/confirmatory_*.md",
                                              "docs/pathway_test_options.md", "docs/target_split_options.md", "docs/nosology_discovery_options.md",
+                                             "docs/item37_rulings_draft_*.md",
                                              "docs/exploration_queue.md",
                                              "docs/comparative_checks.md", "docs/open_decision_triage_*.md", "docs/development_sessions.md",
                                              "docs/reconstruction_errata.md", "docs/research_summary.md", "docs/exam_real_world_problems_*.md", "README.md", "CLAUDE.md")),
