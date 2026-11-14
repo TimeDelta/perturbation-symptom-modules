@@ -104,8 +104,18 @@ no?" The session proposed counting a gene as brain-expressed when it reaches the
 GTEx or of HPA's regional bulk; the owner: "that's fine but it needs to make sure to create those new cell types so
 their relative gene expression levels can be unique." On v5, matched by symbol, the rule turns 1,420 genes
 brain-expressed, 15 of them drug targets of 88 of the 260 drugs. The cell classes of decision 9.76 hold no
-serotonergic neuron class; a Fable pass identifying it and any other missing neuron class was started and stopped at
-the model's usage limit, unfinished.
+serotonergic neuron class. A Fable pass of 13 and 14 November 2026 proposed classes from single clusters of the
+Siletti et al. 2023 atlas, ranked by the study's drug targets each carries at three times every current class. The
+owner, 14 November 2026: "Yes to purkinje even with one source because it's important for some movement disorders,
+habenula, histaminergic", and, asked whether the serotonergic class was approved too, "Yes". So four classes are
+ruled: serotonergic (cluster 397), Purkinje (314, on one source), medial habenula (334) and histaminergic (432). The
+owner then asked whether the search for a second source for the forebrain cholinergic class (cluster 400) had been
+exhaustive; it had not, and a second search was started. On orexin, the owner asked "Orexin shouldn't be zero
+targets. What about Suvorexant?"; the session answered that suvorexant, lemborexant and daridorexant target the
+orexin receptors HCRTR1 and HCRTR2, which sit on the neurons orexin projects to (HCRTR1's top class is the
+noradrenergic one; HCRTR2, brain-expressed under the region rule, peaks in cluster 397), not on the orexin neurons,
+and that the orexin neurons cannot be a class of their own at cluster resolution, being about 9 per cent of cluster
+410 beside the vasopressin and oxytocin neurons.
 
 ## 8. Carriers among the pore catalysts
 
