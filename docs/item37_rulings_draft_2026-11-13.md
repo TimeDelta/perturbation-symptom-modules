@@ -103,7 +103,7 @@ sits in small brainstem nuclei that GTEx does not sample. The owner: "i think re
 no?" The session proposed counting a gene as brain-expressed when it reaches the threshold in any brain region of
 GTEx or of HPA's regional bulk; the owner: "that's fine but it needs to make sure to create those new cell types so
 their relative gene expression levels can be unique." On v5, matched by symbol, the rule turns 1,420 genes
-brain-expressed, 14 of them drug targets of 87 of the 260 drugs. The cell classes of decision 9.76 hold no
+brain-expressed, 15 of them drug targets of 88 of the 260 drugs. The cell classes of decision 9.76 hold no
 serotonergic neuron class; a Fable pass identifying it and any other missing neuron class was started and stopped at
 the model's usage limit, unfinished.
 
