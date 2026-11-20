@@ -293,6 +293,10 @@ a session starts works this way, and its brief says so:
   checkout or worktree, a script run without it imports that checkout's code, and the generators then write into that
   checkout instead of this one (21 October 2026). `python -m pytest` from the root is not affected. A new document is registered in
   `configs/documentation_registry.json` before it is committed.
+- **The exploration queue's order is overwritten, not kept** (the owner, 20 November 2026: "i don't care about
+  maintaining previous ordering. you can just overwrite existing order", and "that is a standing indifference to
+  maintaining exploration queue ordering"). When `docs/exploration_queue.md` is reprioritized, the new order replaces
+  the old one in place, with the date and the reason for the order; an earlier order is not kept as history.
 - **No container or session state in a living document.** That state is on the machine
   (`bash scripts/resume_jobs.sh --status`); a dated record may describe it, a living document may not.
 - **A session's public transcript and its summary go in `docs/development_sessions.md`, not in the README** (the
