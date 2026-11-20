@@ -28,7 +28,7 @@ folds reports consensus supports with their selection frequency, and only consen
 Two limits to state first. There are no patients here: a nosology from this model classifies symptom constructs and
 causal mechanisms by shared physiology, not people, so it is a mechanistic dimension structure that a patient-level
 study would have to test. And no full-graph model has been scored yet; on the slice, runs before the gates got their own
-learning rate ended where "no symptom had an active module" (section 5.5, `docs/b6_module_diagnosis.md`). Every option below assumes the confirmatory runs produce stable modules; if they do
+learning rate ended where "no symptom had an active module" (section 5.5, `docs/generated/b6_module_diagnosis.md`). Every option below assumes the confirmatory runs produce stable modules; if they do
 not, the nosology question waits.
 
 ## 2. What auto-psych-nosology is

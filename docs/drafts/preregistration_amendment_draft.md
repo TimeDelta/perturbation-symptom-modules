@@ -182,7 +182,7 @@ reads either is a separate decision.
    behind a positive at its evidence weight. The owner confirms the value.
 3. **The draft list of admitted drug groups** (`configs/admitted_atc_prefixes_draft.csv`): its rows need the owner's
    sign-off, and one drug of the list joins the two large drug groups in the same way.
-4. **The other questions of `docs/confirmatory_architecture_review.md`, section 8.** Question 6, the input of a
+4. **The other questions of `docs/records/2026-10/confirmatory_architecture_review.md`, section 8.** Question 6, the input of a
    multi-target drug, was answered on 12 October and is item 5 of section 1 above; the other eleven are open.
 5. **The Open Targets statements**: their evidence grade, and whether held-out statements enter the primary score
    (`docs/label_source_review.md`, section 9.3).
