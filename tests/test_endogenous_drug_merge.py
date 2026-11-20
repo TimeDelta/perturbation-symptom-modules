@@ -8,6 +8,7 @@ at the merge the compound's own edges to its mechanism's targets take the mechan
 a compound with no edge to a target is refused (P1.1b), and the compound's nodes keep their type (P1.2 and P7)."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -246,3 +247,90 @@ def test_a_moving_drug_is_seeded_on_its_compound_in_place_of_its_chembl_targets(
     assert [target.target_chembl_id for target in graph_compound_targets([], None, ["CHEMBL_TRP"], {}, by_chembl_id, moving_compounds=[MEL])] == [
         GRAPH_COMPOUND_TARGET_PREFIX + "TRP"]  # a listed compound without a mechanism, as tryptophan and levodopa
 
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+LISTING = REPOSITORY_ROOT / "configs" / "drugs_acting_as_graph_compounds.csv"
+CHEMBL_DIRECTORY = REPOSITORY_ROOT / "data" / "raw" / "chembl"
+SOURCE_GRAPH = REPOSITORY_ROOT / "data" / "processed" / "graph_full_neuronal_split_binders"  # the source graph of the v5 drug-entry variant
+MELATONIN, LEVODOPA = "CID100000896", "RXCUI:6375"  # their perturbation ids (configs/centrally_acting_drugs.csv)
+MELATONIN_COMPOUND = frozenset({"MAM02460"})
+pinned_chembl = pytest.mark.skipif(not (CHEMBL_DIRECTORY / "mechanisms.json").exists() or not (CHEMBL_DIRECTORY / "targets.json").exists(),
+                                   reason="the pinned ChEMBL caches are not present (experiments/fetch_chembl_drug_targets.py)")
+
+
+@pinned_chembl
+def test_on_the_pinned_cache_the_committed_listing_moves_melatonin_s_agonism_and_nothing_else() -> None:
+    """Item 37 rulings draft, section 19, P1.1a: "Melatonin's compound-node receptor edges take the agonist sign before
+    the merge"; the listing moves melatonin's one mechanism row and no other row's."""
+    from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
+        drug_targets_for_pubchem_cid, load_chembl_caches, load_drugs_acting_as_graph_compounds)
+
+    moving = read_compounds_moving_their_mechanism(LISTING)
+    assert moving == {MELATONIN_COMPOUND: ["CHEMBL45"]}
+    caches = load_chembl_caches(CHEMBL_DIRECTORY)
+    by_pubchem_cid, by_chembl_id = load_drugs_acting_as_graph_compounds(LISTING)
+    assert by_chembl_id["CHEMBL45"] == ["MAM02460"] and 896 not in by_pubchem_cid
+    check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, moving_compounds=moving)
+    with pytest.raises(ValueError, match=r"carry a mechanism: \['CHEMBL45'\]"):  # without the column melatonin would be refused, and only melatonin
+        check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule)
+    moved = compound_mechanism_targets(moving, caches)
+    assert [(target.target_chembl_id, target.action_type, sorted(target.gene_symbols), target.sign) for target in moved[MELATONIN_COMPOUND]] == [
+        ("CHEMBL2094268", "AGONIST", ["MTNR1A", "MTNR1B"], 1.0)]
+    # the SIDER route (CID 896, which the pinned map gives as CHEMBL45) and the OnSIDES route (the parent alone) both seed the compound
+    found = drug_targets_for_pubchem_cid(896, caches)
+    assert [target.target_chembl_id for target in found] == ["CHEMBL2094268"]
+    for pubchem_cid, chembl_ids in ((896, caches.pubchem_to_chembl["896"]), (None, ["CHEMBL45"])):
+        seeded = graph_compound_targets(found, pubchem_cid, chembl_ids, by_pubchem_cid, by_chembl_id, moving)
+        assert [(target.target_chembl_id, target.action_type) for target in seeded] == [(GRAPH_COMPOUND_TARGET_PREFIX + "MAM02460", EXOGENOUS_SUPPLY)]
+
+
+@pinned_chembl
+def test_on_the_pinned_cache_levodopa_stays_the_plain_graph_compound_of_daeff3b6() -> None:
+    """Levodopa's case (item 37 rulings draft, section 16, item 28) is unchanged by the moving column: its DRD3 row is
+    removed, not moved, and it is seeded on MAM02354 through the graph-compound fallback as before."""
+    from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
+        load_chembl_caches, load_drugs_acting_as_graph_compounds, mechanism_targets)
+
+    moving = read_compounds_moving_their_mechanism(LISTING)
+    assert frozenset({"MAM02354"}) not in moving and frozenset({"MAM03089"}) not in moving
+    caches = load_chembl_caches(CHEMBL_DIRECTORY)
+    by_pubchem_cid, by_chembl_id = load_drugs_acting_as_graph_compounds(LISTING)
+    kept = mechanism_targets(["CHEMBL1009"], caches.mechanisms_by_molecule, caches.targets)
+    assert kept == []
+    seeded = graph_compound_targets(kept, None, ["CHEMBL1009"], by_pubchem_cid, by_chembl_id, moving)
+    assert [(target.target_chembl_id, target.sign) for target in seeded] == [(GRAPH_COMPOUND_TARGET_PREFIX + "MAM02354", 1.0)]
+    with pytest.raises(ValueError, match="CHEMBL1009"):  # with the removal undone the guard still refuses levodopa: its row moves nothing
+        check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, exclusions=(), moving_compounds=moving)
+
+
+@pinned_chembl
+@pytest.mark.skipif(not (SOURCE_GRAPH / "edges.parquet").exists(), reason="the v5 source graph is not built (scripts/rebuild_data_layer.sh)")
+def test_on_the_v5_source_graph_the_merge_signs_melatonin_s_two_receptor_edges_and_no_other_row() -> None:
+    """On graph_full_neuronal_split_binders (the source of graph_full_neuronal_split_binders_drugs_v5, files of the v5
+    build): MAM02460e binds PROTEIN:MTNR1A and PROTEIN:MTNR1B at sign 0 (OmniPath small_molecule_protein); the merge
+    makes both activates at the agonist's +1, and levodopa, merged in the same build, changes nothing."""
+    from experiments.build_drug_entry_node_variant import graph_compound_base_ids
+    from mechanistic_pathway_learning.evaluation.experiment_data import read_protein_of_gene
+    from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import load_chembl_caches
+
+    nodes, edges = pd.read_parquet(SOURCE_GRAPH / "nodes.parquet"), pd.read_parquet(SOURCE_GRAPH / "edges.parquet")
+    relation_types = json.loads((SOURCE_GRAPH / "relation_types.json").read_text())
+    mechanisms = compound_mechanisms_of_graph(read_compounds_moving_their_mechanism(LISTING), load_chembl_caches(CHEMBL_DIRECTORY), nodes,
+                                              read_protein_of_gene(SOURCE_GRAPH))
+    assert mechanisms == {MELATONIN_COMPOUND: [("PROTEIN:MTNR1A", 1.0), ("PROTEIN:MTNR1B", 1.0)]}
+    compound_nodes = {base: sorted(nodes.node_id[nodes.base_metabolite_id == base]) for base in ("MAM02460", "MAM02354")}
+    assert compound_nodes["MAM02460"] == ["MAM02460c", "MAM02460e"]
+    seeds = {MELATONIN: ("melatonin", [(node, 1.0, 0.5) for node in compound_nodes["MAM02460"]]),
+             LEVODOPA: ("levodopa", [(node, 1.0, 1.0 / len(compound_nodes["MAM02354"])) for node in compound_nodes["MAM02354"]])}
+    new_nodes, new_edges, new_relations, entry_table, summary = add_drug_entry_nodes(
+        nodes, edges, relation_types, seeds, graph_compound_base_ids(LISTING), compound_mechanisms=mechanisms)
+    assert len(new_nodes) == len(nodes) and len(new_edges) == len(edges) and new_relations == relation_types and entry_table.empty
+    assert summary["drugs_attached_to_a_graph_compound"] == sorted([MELATONIN, LEVODOPA]) and summary["drugs_whose_mechanism_moved_onto_their_compound"] == [MELATONIN]
+    rows, columns = edge_rows_changed(edges, new_edges)
+    assert columns == ["relation_type", "sign", "evidence_source"]
+    changed = new_edges.iloc[rows]
+    assert sorted(zip(changed.source_id, changed.target_id, changed.relation_type, changed.sign)) == [
+        ("MAM02460e", "PROTEIN:MTNR1A", "activates", 1.0), ("MAM02460e", "PROTEIN:MTNR1B", "activates", 1.0)]
+    before = edges.iloc[rows]
+    assert set(zip(before.relation_type, before.sign, before.evidence_source)) == {("binds", 0.0, SMALL_MOLECULE)}
+    assert sorted(record["edge_row"] for record in summary["compound_edges_signed_at_the_merge"]) == rows

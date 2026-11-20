@@ -133,21 +133,26 @@ def test_on_the_pinned_cache_acamprosate_keeps_its_nmda_row_and_loses_the_gaba_a
 @pinned_chembl
 def test_on_the_pinned_cache_levodopa_loses_drd3_and_is_seeded_on_the_l_dopa_compound():
     """Item 37 rulings draft, section 16, item 28: levodopa "is seeded on the L-dopa compound node (MAM02354 ...) and
-    its DRD3 targets edge is dropped"; the graph-compound guard accepts the listing once the row is removed."""
+    its DRD3 targets edge is dropped"; the graph-compound guard accepts the listing once the row is removed. The
+    listing's moving column is passed as the evidence builds pass it: melatonin's row moves its mechanism (section 19,
+    P1.1a), levodopa's moves none, so levodopa's DRD3 row is still refused when the removal is undone."""
     from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
-        DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, graph_compound_targets, load_chembl_caches, load_drugs_acting_as_graph_compounds)
+        DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, graph_compound_targets, load_chembl_caches, load_drugs_acting_as_graph_compounds,
+        read_compounds_moving_their_mechanism)
 
     caches = load_chembl_caches(CHEMBL_DIRECTORY)
     assert [target.target_chembl_id for target in mechanism_targets(["CHEMBL1009"], caches.mechanisms_by_molecule, caches.targets, exclusions=())] == ["CHEMBL234"]
     kept = mechanism_targets(["CHEMBL1009"], caches.mechanisms_by_molecule, caches.targets)
     assert kept == []
     # the path is relative to the repository root, which DRUG_TARGET_EXCLUSIONS_PATH is anchored to
-    by_pubchem_cid, by_chembl_id = load_drugs_acting_as_graph_compounds(DRUG_TARGET_EXCLUSIONS_PATH.parents[1] / DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH)
-    assert by_chembl_id["CHEMBL1009"] == ["MAM02354"] and 6047 not in by_pubchem_cid
-    check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule)
+    listing = DRUG_TARGET_EXCLUSIONS_PATH.parents[1] / DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH
+    by_pubchem_cid, by_chembl_id = load_drugs_acting_as_graph_compounds(listing)
+    moving = read_compounds_moving_their_mechanism(listing)
+    assert by_chembl_id["CHEMBL1009"] == ["MAM02354"] and 6047 not in by_pubchem_cid and frozenset({"MAM02354"}) not in moving
+    check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, moving_compounds=moving)
     with pytest.raises(ValueError, match="CHEMBL1009"):
-        check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, exclusions=())
-    seeded = graph_compound_targets(kept, None, ["CHEMBL1009"], by_pubchem_cid, by_chembl_id)
+        check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, exclusions=(), moving_compounds=moving)
+    seeded = graph_compound_targets(kept, None, ["CHEMBL1009"], by_pubchem_cid, by_chembl_id, moving)
     assert len(seeded) == 1 and seeded[0].target_chembl_id.endswith("MAM02354") and seeded[0].sign == 1.0
 
 
