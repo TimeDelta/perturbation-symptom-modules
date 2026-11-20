@@ -215,7 +215,7 @@ def test_sod1_row_names_hydrogen_peroxide_and_not_its_precursor():
 # rule of 9 November 2026 (before: the substring match and the nitrite drop, commit ce4350c9) and under the precursor
 # rule added on 20 November 2026 (after). A row's oxidants depend on its species value alone, so the 61 rows the tables
 # held that day (38 targets, 23 sources) are pinned through their 18 values. A value added later goes in with before
-# None and the oxidants its row's quote names.
+# None and the oxidants its row's supporting_quote names, read from the quote and not from what oxidant_bases returns.
 RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE = {
     ("targets", "hydrogen peroxide"): (["hydrogen peroxide"], ["hydrogen peroxide"]),
     ("targets", "4-hydroxynonenal"): (["4-hydroxynonenal"], ["4-hydroxynonenal"]),
@@ -251,13 +251,38 @@ def test_the_precursor_rule_changed_sod1_row_alone():
 
 def test_every_species_value_of_the_curated_oxidant_tables_is_pinned():
     """Every row of both tables, read from the CSVs, has its species value in the table above, so that table is the
-    full one, and a value added later is checked against its row's quote before it reaches the graph."""
+    full one. A value added to either table later fails here until it is pinned, so it cannot reach a pushed commit
+    (the suite passes before every push) without the oxidants it should resolve to written down. The check is only as
+    good as that entry, which is written from the oxidants the row's supporting_quote names and not copied from what
+    oxidant_bases returns. A graph build does not run this test."""
     for table, path, column in (("targets", "docs/curated_oxidant_targets.csv", "species"),
                                 ("sources", "docs/curated_oxidant_sources.csv", "species_produced")):
         pinned = {value for pinned_table, value in RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE if pinned_table == table}
         unpinned = sorted(set(pd.read_csv(Path(path))[column]) - pinned)
         assert not unpinned, (f"{path} holds species values that RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE lacks: {unpinned}; "
-                              "add each with before None and the oxidants its row's quote names")
+                              "add each with before None and the oxidants its row's supporting_quote names")
+
+
+def test_the_limits_oxidant_bases_states_hold_as_it_states_them():
+    """The four limits of the rules that oxidant_bases's docstring states, on values no row of the two tables held on
+    20 November 2026. Each is asserted as it resolves, the wrong result included, so that a change to either rule that
+    lifts a limit fails here and is made together with the docstring; beside it, the way of writing the row that the
+    docstring gives instead."""
+    peroxynitrite = OXIDANT_BASES["peroxynitrite"]
+    # the drop is by key: a row naming peroxynitrite and nitrite loses nitrite (two rows keep both)
+    assert oxidant_bases("peroxynitrite and nitrite") == [peroxynitrite]
+    # only 'from' marks a precursor: one named any other way is matched as a species, SOD1's artefact again
+    for value in ("hydrogen peroxide (product of superoxide dismutation)", "superoxide-derived hydrogen peroxide",
+                  "hydrogen peroxide (via superoxide)", "hydrogen peroxide (dismutation of superoxide)"):
+        assert oxidant_bases(value) == [HYDROGEN_PEROXIDE, SUPEROXIDE], value
+    assert oxidant_bases("hydrogen peroxide (from superoxide dismutation)") == [HYDROGEN_PEROXIDE]
+    # the clause runs to the next parenthesis or the end of the name, so a product after the precursor is lost
+    assert oxidant_bases("superoxide from complex I and hydrogen peroxide") == [SUPEROXIDE]
+    assert oxidant_bases("superoxide (from complex I) and hydrogen peroxide") == [HYDROGEN_PEROXIDE, SUPEROXIDE]
+    # it ends at a parenthesis opened inside it too, so a precursor inside or after one is still matched
+    assert oxidant_bases("peroxynitrite (from nitric oxide (NO) and superoxide)") == [SUPEROXIDE, peroxynitrite]
+    assert oxidant_bases("hydrogen peroxide (from O2 (superoxide) dismutation)") == [HYDROGEN_PEROXIDE, SUPEROXIDE]
+    assert oxidant_bases("peroxynitrite (from nitric oxide and superoxide)") == [peroxynitrite]
 
 
 def test_nitrite_still_resolves_when_a_row_names_it_alone():

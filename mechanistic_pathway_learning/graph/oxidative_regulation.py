@@ -26,8 +26,8 @@ TARGET_RELATION, SOURCE_RELATION = "oxidatively_modifies", "produces_oxidant"
 OXIDANT_BASES = {"hydrogen peroxide": "MAM02041", "superoxide": "MAM02631", "nitric oxide": "MAM02609", "peroxynitrite": "MAM02714",
                  "hydroxyl radical": "MAM02149", "4-hydroxynonenal": "MAM00988", "hypochlorous acid": "MAM02156", "nitrite": "MAM02588",
                  "nitrogen dioxide": "MAM02591"}
-# the words after "from" in a species name, up to the next parenthesis or the end of the name: what the species is made
-# from, which oxidant_bases leaves unmatched
+# the words after "from" in a species name, up to the next parenthesis (opening or closing) or the end of the name: what
+# the species is made from, which oxidant_bases leaves unmatched
 PRECURSOR_CLAUSE = re.compile(r"\bfrom\b[^()]*")
 COMPARTMENT_WORDS = (("mitochondri", "m"), ("peroxisom", "x"), ("endoplasmic reticulum", "r"), ("nucle", "n"), ("lysosom", "l"),
                      ("extracellular", "e"), ("intermembrane", "i"))
@@ -55,12 +55,22 @@ def oxidant_bases(species: str) -> list[str]:
         L-arginine depleted)'. No row of either table names plain nitrite, so nitrite's own entry is unreachable from
         the tables as they stand and is kept for a row that names it.
 
-    Each rule has a limit. The drop is by key and not by species name, so a row that deliberately named both
-    peroxynitrite and nitrite would lose nitrite; and the clause after 'from' runs to the next parenthesis or the end
-    of the name, so a product named after the precursor inside it ('superoxide from complex I and hydrogen peroxide')
-    would be lost. No row does either, and a row that needs it wants two rows, or its precursor in parentheses, rather
-    than a looser rule here. tests/test_neuronal_regulation.py pins what every species value of the two tables
-    resolves to.
+    The rules have limits, and no row of the two tables met any of them on 20 November 2026:
+
+      - The drop is by key and not by species name, so a row that deliberately named both peroxynitrite and nitrite
+        would lose nitrite.
+      - Only the word 'from' marks a precursor. A precursor named any other way ('hydrogen peroxide (product of
+        superoxide dismutation)', 'superoxide-derived hydrogen peroxide', 'hydrogen peroxide (via superoxide)') is
+        matched as a species, which is SOD1's artefact again.
+      - The clause after 'from' runs to the next parenthesis or the end of the name, so a product named after the
+        precursor inside it ('superoxide from complex I and hydrogen peroxide') would be lost.
+      - The clause also ends at a parenthesis opened inside it, so a precursor written inside or after one is still
+        matched: 'peroxynitrite (from nitric oxide (NO) and superoxide)' gives superoxide as well.
+
+    A row that would meet one is written to fit the rules rather than given a looser rule here: as two rows, as
+    'product (from precursor)' with no parenthesis inside the precursor's, or without the precursor.
+    tests/test_neuronal_regulation.py pins what every species value of the two tables resolves to, and each limit
+    above as it stands.
     """
     name = PRECURSOR_CLAUSE.sub("", str(species).lower())
     matched = {key: base for key, base in OXIDANT_BASES.items() if key in name}
