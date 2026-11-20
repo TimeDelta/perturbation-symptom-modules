@@ -38,7 +38,10 @@ evidence/load_onsides_label_events.py, behind --narrow-complex-targets (on by de
 **What this does not fix, and is not for.** Cocaine's sodium-channel rows are themselves the wrong pharmacology for
 this study: ChEMBL curates mechanism by approved indication, cocaine is approved as a topical anaesthetic, and its
 monoamine transport sits in the off-target table at 300 times the occupancy of its mechanism targets. That is a
-question about which table a target is read from, not about subunit expansion, and it is answered elsewhere.
+question about which table a target is read from, not about subunit expansion. It is answered by a ruled addition
+(item 37 rulings draft, section 17, P4, and section 19): configs/drug_target_additions.csv adds cocaine's dopamine,
+serotonin and noradrenaline transporters in map_drug_targets_to_graph_nodes.mechanism_targets, before this narrowing
+runs, and the narrowing leaves those single-gene targets as they are.
 
 Licence, already verified and recorded in docs/data_sources.md: "The Guide to PHARMACOLOGY database is licensed under
 the Open Data Commons Open Database License (ODbL)."; "Its contents are licensed under a Creative Commons

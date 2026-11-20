@@ -48,6 +48,22 @@ members left, as over the members that are graph nodes). mechanism_targets appli
 an excluded target is neither kept, nor reported as an action conflict, nor counted against the single-target rule,
 and check_graph_compounds_have_no_mechanism reads a ChEMBL form whose every mechanism row is excluded as carrying none.
 Every run before 20 November 2026 kept every target ChEMBL gives.
+
+A ruled addition, the twin of a ruled removal. configs/drug_target_additions.csv lists targets a ruling of the owner's
+adds to a drug whose ChEMBL mechanism rows do not name them, each row with its ruling and sources and, where sourced,
+the affinity and the quantity type it was measured as (DrugTargetAddition). The first rows are cocaine's dopamine,
+serotonin and noradrenaline transporters (item 37 rulings draft, section 17, P4, and section 19): ChEMBL curates no
+transporter mechanism for cocaine, only its sodium-channel family row, so the fallback of
+configs/curated_drug_targets.csv, which is read only for a drug whose ChEMBL route gives no target, never reaches it.
+mechanism_targets appends the additions after the targets the ChEMBL rows give, so both label routes, the SIDER route
+and the OnSIDES bridge, carry them. An added target is a mechanism target like any other: it counts against the
+single-target rule, keeps a drug from the fallbacks meant for a drug ChEMBL gives no target, counts as a mechanism for
+check_graph_compounds_have_no_mechanism, and takes magnitude 1 spread over its genes. The affinity is recorded for the
+occupancy weighting of amendment item 37 (37h, 37i), which is not built and which nothing reads yet. A row that adds a
+target the drug's ChEMBL rows already name, or one its exclusions remove, is refused: a curated action for a target
+ChEMBL names belongs in configs/chembl_action_conflict_resolutions.csv. Every build until the table was added (20
+November 2026) carried only the targets ChEMBL's mechanism rows give; the latest, of 12 November 2026, holds cocaine's
+ten sodium-channel edges and no transporter.
 """
 from __future__ import annotations
 
@@ -71,6 +87,12 @@ ACTION_CONFLICTS_REPORT_FILENAME = "chembl_action_conflicts.csv"
 # mechanism targets, or members of one, that a ruling removes (module docstring, "A ruled removal")
 DRUG_TARGET_EXCLUSIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "drug_target_exclusions.csv"
 DRUG_TARGET_EXCLUSION_COLUMNS = ("drug_chembl_id", "target_chembl_id", "gene_symbol", "ruling", "sources", "note")
+# targets a ruling adds to a drug whose ChEMBL mechanism rows do not name them (module docstring, "A ruled addition")
+DRUG_TARGET_ADDITIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "drug_target_additions.csv"
+DRUG_TARGET_ADDITION_COLUMNS = ("drug_chembl_id", "target_chembl_id", "gene_symbol", "action_type", "affinity_um", "affinity_measure",
+                                "ruling", "sources", "note")
+# the quantity types amendment item 37's occupancy split admits (item 37 rulings draft, section 13: Ki, IC50, EC50, Kd)
+AFFINITY_MEASURES = ("Ki", "Kd", "IC50", "EC50")
 NON_PROTEIN_TARGETS_PATH = Path("configs/non_protein_drug_targets.csv")
 DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH = Path("configs/drugs_acting_as_graph_compounds.csv")
 EXOGENOUS_SUPPLY = "EXOGENOUS SUPPLY"  # action of a drug that is itself the graph compound it raises
@@ -150,6 +172,27 @@ class DrugTargetExclusion:
 
     def applies_to(self, target_chembl_id: str, drug_chembl_ids: set[str]) -> bool:
         return self.target_chembl_id == target_chembl_id and (not self.drug_chembl_id or self.drug_chembl_id in drug_chembl_ids)
+
+
+@dataclass(frozen=True)
+class DrugTargetAddition:
+    """A row of configs/drug_target_additions.csv (module docstring, "A ruled addition"): one gene of a ChEMBL target a
+    ruling adds to one drug, with the action that gives its sign. affinity_um is the sourced affinity in micromolar and
+    affinity_measure its quantity type (AFFINITY_MEASURES), both None where none is sourced; recorded for the occupancy
+    weighting of amendment item 37, which is not built, and read by nothing else."""
+    drug_chembl_id: str
+    target_chembl_id: str
+    gene_symbol: str
+    action_type: str
+    ruling: str
+    sources: str
+    affinity_um: float | None = None
+    affinity_measure: str | None = None
+    note: str = ""
+
+    @property
+    def sign(self) -> float:
+        return ACTION_TYPE_SIGN[self.action_type]
 
 
 @dataclass(frozen=True)
@@ -331,6 +374,106 @@ def default_drug_target_exclusions() -> tuple[DrugTargetExclusion, ...]:
     return _cached_drug_target_exclusions(str(path), stat.st_mtime_ns, stat.st_size)
 
 
+def read_drug_target_additions(path: Path | None = DRUG_TARGET_ADDITIONS_PATH) -> tuple[DrugTargetAddition, ...]:
+    """The rows of configs/drug_target_additions.csv, in file order; () without a table.
+
+    Refuses a table with other columns, a row without its drug, target or gene, an action type ACTION_TYPE_SIGN does not
+    know, a row that names no ruling or no source (a curated row names its sources), an affinity that is not a positive
+    number, an affinity without its quantity type or a quantity type without an affinity, a quantity type outside
+    AFFINITY_MEASURES, a row given twice, and two rows of one drug and target that give different actions (one drug, one
+    target, one action)."""
+    if path is None or not Path(path).exists():
+        return ()
+    additions: list[DrugTargetAddition] = []
+    with open(path, newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) != DRUG_TARGET_ADDITION_COLUMNS:
+            raise ValueError(f"{path} has columns {reader.fieldnames}, expected {list(DRUG_TARGET_ADDITION_COLUMNS)}")
+        for line_number, row in enumerate(reader, start=2):
+            values = {column: (row.get(column) or "").strip() for column in DRUG_TARGET_ADDITION_COLUMNS}
+            if not values["drug_chembl_id"] or not values["target_chembl_id"] or not values["gene_symbol"]:
+                raise ValueError(f"{path} line {line_number}: a row names the drug, the target and the gene it adds")
+            action_type = values["action_type"].upper()
+            if action_type not in ACTION_TYPE_SIGN:
+                raise ValueError(f"{path} line {line_number}: action_type {values['action_type']!r} is not an action type of ACTION_TYPE_SIGN")
+            if not values["ruling"] or not values["sources"]:
+                raise ValueError(f"{path} line {line_number}: a curated row names its ruling and its sources")
+            if bool(values["affinity_um"]) != bool(values["affinity_measure"]):
+                raise ValueError(f"{path} line {line_number}: an affinity is given with its quantity type, and a quantity type with its affinity")
+            affinity_um = None
+            if values["affinity_um"]:
+                try:
+                    affinity_um = float(values["affinity_um"])
+                except ValueError:
+                    affinity_um = float("nan")
+                if not affinity_um > 0 or affinity_um == float("inf"):
+                    raise ValueError(f"{path} line {line_number}: affinity_um {values['affinity_um']!r} is not a positive number")
+                if values["affinity_measure"] not in AFFINITY_MEASURES:
+                    raise ValueError(f"{path} line {line_number}: affinity_measure {values['affinity_measure']!r} is not one of {list(AFFINITY_MEASURES)}")
+            addition = DrugTargetAddition(values["drug_chembl_id"], values["target_chembl_id"], values["gene_symbol"], action_type,
+                                          values["ruling"], values["sources"], affinity_um, values["affinity_measure"] or None, values["note"])
+            for other in additions:
+                if (other.drug_chembl_id, other.target_chembl_id) != (addition.drug_chembl_id, addition.target_chembl_id):
+                    continue
+                if other.gene_symbol == addition.gene_symbol:
+                    raise ValueError(f"{path} line {line_number}: {(addition.drug_chembl_id, addition.target_chembl_id, addition.gene_symbol)} is given twice")
+                if other.action_type != addition.action_type:
+                    raise ValueError(f"{path} line {line_number}: {addition.drug_chembl_id} {addition.target_chembl_id} is given the actions "
+                                     f"{other.action_type} and {addition.action_type}")
+            additions.append(addition)
+    return tuple(additions)
+
+
+@lru_cache(maxsize=8)
+def _cached_drug_target_additions(path: str, modified_ns: int, size: int) -> tuple[DrugTargetAddition, ...]:
+    return read_drug_target_additions(Path(path))
+
+
+def default_drug_target_additions() -> tuple[DrugTargetAddition, ...]:
+    """configs/drug_target_additions.csv, read again only when the file changes; () without it."""
+    path = DRUG_TARGET_ADDITIONS_PATH
+    if not path.exists():
+        return ()
+    stat = path.stat()
+    return _cached_drug_target_additions(str(path), stat.st_mtime_ns, stat.st_size)
+
+
+def added_targets(drug_chembl_ids: set[str], named_target_ids: set[str], targets: dict[str, dict], additions: tuple[DrugTargetAddition, ...],
+                  exclusions: tuple[DrugTargetExclusion, ...], human_only: bool = True) -> list[DrugTarget]:
+    """The targets additions adds to the drug known by drug_chembl_ids (its ids and the molecule and parent ids of its
+    mechanism rows), one DrugTarget per added ChEMBL target with the rows' genes in file order (module docstring, "A
+    ruled addition").
+
+    Refuses, rather than drops, an addition that cannot stand: a target among named_target_ids (the targets the drug's
+    ChEMBL rows name, kept or not), a target or gene exclusions remove for this drug, a target the cache's targets hold
+    no record of (its genes and organism come from the record), a gene the record does not list, and, with human_only,
+    a target in another organism. A ruled row that silently did nothing is what this table exists to prevent."""
+    rows_by_target: dict[str, list[DrugTargetAddition]] = {}
+    for addition in additions:
+        if addition.drug_chembl_id in drug_chembl_ids:
+            rows_by_target.setdefault(addition.target_chembl_id, []).append(addition)
+    added: list[DrugTarget] = []
+    for target_id, rows in rows_by_target.items():
+        where = f"configs/drug_target_additions.csv: {rows[0].drug_chembl_id} {target_id}"
+        if target_id in named_target_ids:
+            raise ValueError(f"{where} is a target the drug's ChEMBL mechanism rows name already; a curated action for it belongs in "
+                             "configs/chembl_action_conflict_resolutions.csv, and a removal in configs/drug_target_exclusions.csv")
+        removed_whole, removed_members = excluded_members(target_id, drug_chembl_ids, exclusions)
+        if removed_whole or removed_members & {row.gene_symbol for row in rows}:
+            raise ValueError(f"{where} is added and removed by configs/drug_target_exclusions.csv for the same drug")
+        record = targets.get(target_id)
+        if record is None:
+            raise ValueError(f"{where}: the ChEMBL cache holds no record of the target, so its genes and organism are unknown")
+        if human_only and record.get("organism") != "Homo sapiens":
+            raise ValueError(f"{where}: the target is in {record.get('organism')!r}, not Homo sapiens")
+        missing = [row.gene_symbol for row in rows if row.gene_symbol not in (record.get("gene_symbols") or [])]
+        if missing:
+            raise ValueError(f"{where}: the cache's record of the target lists {record.get('gene_symbols')}, not {missing}")
+        added.append(DrugTarget(target_id, rows[0].action_type, [row.gene_symbol for row in rows], record.get("target_type"),
+                                record.get("pref_name"), record.get("accessions", [])))
+    return added
+
+
 def excluded_members(target_chembl_id: str, drug_chembl_ids: set[str], exclusions: tuple[DrugTargetExclusion, ...]) -> tuple[bool, set[str]]:
     """(whether the whole target is removed for this drug, the member genes removed from it) under exclusions."""
     applying = [exclusion for exclusion in exclusions if exclusion.applies_to(target_chembl_id, drug_chembl_ids)]
@@ -356,13 +499,19 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
                       missing_target_ids: set[str] | None = None,
                       action_resolutions: Mapping[tuple[str, str], ActionConflictResolution] | None = None,
                       conflicts: list[ActionConflict] | None = None,
-                      exclusions: tuple[DrugTargetExclusion, ...] | None = None) -> list[DrugTarget]:
+                      exclusions: tuple[DrugTargetExclusion, ...] | None = None,
+                      additions: tuple[DrugTargetAddition, ...] | None = None) -> list[DrugTarget]:
     """Mechanism targets of the given ChEMBL molecules (the ids of one drug), one entry per ChEMBL target (families count as one).
 
     The removals of exclusions are applied first (module docstring, "A ruled removal"; None reads
     configs/drug_target_exclusions.csv, () removes nothing): a row keyed by one of chembl_ids, or by the molecule or
     parent id of a row naming the target, applies. A target removed whole is dropped before anything below; a target
     whose every member gene is removed is dropped too.
+
+    The targets of additions are appended last, after the targets the ChEMBL rows give (module docstring, "A ruled
+    addition"; None reads configs/drug_target_additions.csv, () adds nothing): a row keyed by one of chembl_ids, or by
+    the molecule or parent id of any of the drug's mechanism rows, applies, and added_targets refuses one that cannot
+    stand.
 
     When the rows naming one target, over all of chembl_ids, carry more than one action type (compared upper-cased; a
     row with no action type counts as one more), no action is chosen from them (module docstring, ruling of 20 November
@@ -379,6 +528,8 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
         action_resolutions = default_action_conflict_resolutions()
     if exclusions is None:
         exclusions = default_drug_target_exclusions()
+    if additions is None:
+        additions = default_drug_target_additions()
     rows_by_target: dict[str, list[tuple[str, dict]]] = {}
     for chembl_id in chembl_ids:
         for mechanism in mechanisms_by_molecule.get(chembl_id, []):
@@ -426,6 +577,10 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
             action_type = resolution.chosen_action
         drug_targets.append(DrugTarget(target_id, action_type, record.get("gene_symbols", []), record.get("target_type"),
                                        record.get("pref_name"), record.get("accessions", [])))
+    if additions:
+        drug_ids = set(chembl_ids) | {mechanism.get(key) for rows in rows_by_target.values() for _, mechanism in rows
+                                      for key in ("molecule_chembl_id", "parent_molecule_chembl_id")}
+        drug_targets.extend(added_targets(drug_ids - {None, ""}, set(rows_by_target), targets, additions, exclusions, human_only))
     return drug_targets
 
 
@@ -467,7 +622,8 @@ def drug_targets_for_pubchem_cid(pubchem_cid: int, caches: ChemblCaches, human_o
 
 
 def has_dominant_target(drug_targets: list[DrugTarget], max_targets: int | None = 1, withheld_targets: int = 0) -> bool:
-    """Version 1 dominant-target rule: at most max_targets distinct ChEMBL targets with a mechanism.
+    """Version 1 dominant-target rule: at most max_targets distinct ChEMBL targets with a mechanism, a ruled addition of
+    configs/drug_target_additions.csv counting as one (module docstring, "A ruled addition").
 
     Affinity margins are not yet used; a ChEMBL protein-family target (for example the GABA-A
     receptor) counts as one target even though it maps to many gene nodes. max_targets None or 0 lifts the cap: any
@@ -496,20 +652,30 @@ def load_drugs_acting_as_graph_compounds(path: Path = DRUGS_ACTING_AS_GRAPH_COMP
 
 
 def check_graph_compounds_have_no_mechanism(compounds_by_chembl_id: dict[str, list[str]], mechanisms_by_molecule: dict[str, list[dict]],
-                                            exclusions: tuple[DrugTargetExclusion, ...] | None = None) -> None:
+                                            exclusions: tuple[DrugTargetExclusion, ...] | None = None,
+                                            additions: tuple[DrugTargetAddition, ...] | None = None) -> None:
     """Refuse a graph-compound entry whose ChEMBL form carries a mechanism: such a drug has protein (or other) targets and
     follows the mechanism rule, so one drug cannot enter through one identifier and be excluded through another. A
     mechanism row whose whole target exclusions removes for that form is not counted (None reads
-    configs/drug_target_exclusions.csv)."""
+    configs/drug_target_exclusions.csv); a ruled addition keyed by the form, or by the molecule or parent id of one of
+    its mechanism rows, is counted as a mechanism (None reads configs/drug_target_additions.csv)."""
     if exclusions is None:
         exclusions = default_drug_target_exclusions()
+    if additions is None:
+        additions = default_drug_target_additions()
+    added_for = {addition.drug_chembl_id for addition in additions}
 
     def kept(chembl_id: str, mechanism: dict) -> bool:
         drug_ids = {chembl_id, mechanism.get("molecule_chembl_id"), mechanism.get("parent_molecule_chembl_id")} - {None, ""}
         return not excluded_members(mechanism.get("target_chembl_id") or "", drug_ids, exclusions)[0]
 
+    def has_addition(chembl_id: str) -> bool:
+        drug_ids = {chembl_id} | {mechanism.get(key) for mechanism in mechanisms_by_molecule.get(chembl_id, [])
+                                  for key in ("molecule_chembl_id", "parent_molecule_chembl_id")}
+        return bool(added_for & (drug_ids - {None, ""}))
+
     with_mechanisms = sorted(chembl_id for chembl_id in compounds_by_chembl_id
-                             if any(kept(chembl_id, mechanism) for mechanism in mechanisms_by_molecule.get(chembl_id, [])))
+                             if has_addition(chembl_id) or any(kept(chembl_id, mechanism) for mechanism in mechanisms_by_molecule.get(chembl_id, [])))
     if with_mechanisms:
         raise ValueError(f"{DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH} lists ChEMBL forms that carry a mechanism: {with_mechanisms}")
 
