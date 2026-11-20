@@ -1231,7 +1231,17 @@ by code, then "The rest of those lettered suggestions are accepted as-is", and l
   pass its identifiability screen after the held-out draw; a gate that fails the screen keeps P5's class-level
   annotation at reduced weight. The ten priors are equal, at the reduced weight a family-level annotation gets (the
   owner: "2 yes"), and the same gates apply to similar cases only (the owner: "only similar cases"), read as a drug
-  whose mechanism is known only for a whole protein family, with no source naming a member.
+  whose mechanism is known only for a whole protein family, with no source naming a member. **Superseded the same day,
+  pending the Fable reading of the owner's sources.** The owner then gave two claims and five sources: that the classic
+  anticonvulsants bind "a conserved local-anesthetic-like site in the pore-forming α-subunit", "giving them broad,
+  state-dependent activity rather than isoform selectivity", and that the dominant neuronal sodium channels in the brain
+  are Nav1.1, Nav1.2 and Nav1.6, "along with Nav1.3 during development". Asked whether, if a Fable pass confirms them,
+  one gate per drug shared across the central isoforms should replace the per-isoform gates, the owner: "Yes. Mark
+  superseded same day". So, once confirmed: one binary gate for primidone's sodium-channel action, shared by its edges
+  to the isoforms on adult central cell classes (Nav1.1, Nav1.2 and Nav1.6; Nav1.3 only if adult central cells express
+  it), each edge weighted by its isoform's expression, and the muscle, cardiac and peripheral isoforms dropped; similar
+  cases take the same form. The state dependence of the binding is a stated limit of the steady-state response. The
+  Fable pass is item 22 of the batch of 21 November 2026.
 - **P6. Four audit rows are corrected to their sources**: amphetamine (4-hydroxyamphetamine and norephedrine are
   minor active metabolites, against the audit's "inactive"), brexpiprazole (the label says DM-3411 does not
   contribute therapeutically, which is stronger than "less active"), buprenorphine (norbuprenorphine is potent in
