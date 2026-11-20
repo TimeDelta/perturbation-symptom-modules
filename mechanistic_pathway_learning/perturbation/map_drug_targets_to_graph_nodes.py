@@ -17,7 +17,14 @@ Every ChEMBL target type is placed where the graph has a node for it
   does not have; configs/drugs_acting_as_graph_compounds.csv): that metabolite, raised (EXOGENOUS SUPPLY). Lithium is
   not listed: ChEMBL records IMPA1 and GSK3 inhibition on lithium carbonate and lithium citrate, so it falls under the
   single-target rule like any drug with protein targets (check_graph_compounds_have_no_mechanism enforces this). GABA is
-  not listed: the only label rows under its PubChem id (SIDER CID 119) are an immune globulin's.
+  not listed: the only label rows under its PubChem id (SIDER CID 119) are an immune globulin's;
+- an endogenous drug with a mechanism of its own whose listing row sets moves_mechanism_to_compound_edges (melatonin,
+  whose one ChEMBL row is agonism at the melatonin receptor family, MTNR1A and MTNR1B): that compound too, in place of
+  the ChEMBL targets, which are not dropped but move onto the compound's own edges to them when the drug-entry build
+  merges the drug onto the compound (graph/drug_entry_nodes.py, compound_mechanisms; item 37 rulings draft, sections
+  18 and 19, P1.1 and P1.1a, and section 22: "P1.1a happens inside the merge step"). That build reads the moving
+  targets from the same caches (compound_mechanism_targets) and refuses one the compound has no edge to, which is why
+  brexanolone and sodium oxybate, whose compound nodes carry no receptor edge, are not listed (P1.1b).
 Targets in another organism stay out (human_only), and DNA, RNA, antibodies and unnamed classes have no node.
 A complex target's magnitude 1 is spread over its subunits' nodes; the evidence build first narrows a complex to the
 subunits the Guide to PHARMACOLOGY names for the drug, each with its own sign (DrugTarget.gene_signs;
@@ -69,7 +76,7 @@ from __future__ import annotations
 
 import csv
 import json
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -666,19 +673,48 @@ def load_drugs_acting_as_graph_compounds(path: Path = DRUGS_ACTING_AS_GRAPH_COMP
     return by_pubchem_cid, by_chembl_id
 
 
+MOVES_MECHANISM_COLUMN = "moves_mechanism_to_compound_edges"  # of configs/drugs_acting_as_graph_compounds.csv (module docstring)
+
+
+def read_compounds_moving_their_mechanism(path: Path = DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH) -> dict[frozenset[str], list[str]]:
+    """The listed compounds whose drug's own mechanism moves onto the compound's edges at the merge (column
+    moves_mechanism_to_compound_edges "true"; module docstring): base metabolite ids -> the row's ChEMBL ids. A table
+    without the column, or no table, moves none; a cell other than "true", "false" or blank is refused."""
+    if not Path(path).exists():
+        return {}
+    table = pd.read_csv(path, dtype=str).fillna("")
+    if MOVES_MECHANISM_COLUMN not in table.columns:
+        return {}
+    moving: dict[frozenset[str], list[str]] = {}
+    for row in table.to_dict("records"):
+        cell = row[MOVES_MECHANISM_COLUMN].strip().lower()
+        if cell not in ("true", "false", ""):
+            raise ValueError(f"{path}: {MOVES_MECHANISM_COLUMN} of {row['drug_name']} is {row[MOVES_MECHANISM_COLUMN]!r}; expected true, false or blank")
+        if cell == "true":
+            moving[frozenset(base_id for base_id in row["base_metabolite_ids"].split(";") if base_id)] = [
+                identifier for identifier in row["chembl_ids"].split(";") if identifier]
+    return moving
+
+
 def check_graph_compounds_have_no_mechanism(compounds_by_chembl_id: dict[str, list[str]], mechanisms_by_molecule: dict[str, list[dict]],
                                             exclusions: tuple[DrugTargetExclusion, ...] | None = None,
-                                            additions: tuple[DrugTargetAddition, ...] | None = None) -> None:
+                                            additions: tuple[DrugTargetAddition, ...] | None = None,
+                                            moving_compounds: Collection[frozenset[str]] = ()) -> None:
     """Refuse a graph-compound entry whose ChEMBL form carries a mechanism: such a drug has protein (or other) targets and
     follows the mechanism rule, so one drug cannot enter through one identifier and be excluded through another. A
     mechanism row whose whole target exclusions removes for that form is not counted (None reads
     configs/drug_target_exclusions.csv); a ruled addition keyed by the form, or by the molecule or parent id of one of
-    its mechanism rows, is counted as a mechanism (None reads configs/drug_target_additions.csv)."""
+    its mechanism rows, is counted as a mechanism (None reads configs/drug_target_additions.csv).
+
+    The exception is a compound of moving_compounds (read_compounds_moving_their_mechanism), whose listing says that
+    its drug's mechanism moves onto the compound's edges: its forms may carry one, and one of them must, by either
+    route a mechanism can come from, since a row that moves a mechanism no form carries is a listing out of date."""
     if exclusions is None:
         exclusions = default_drug_target_exclusions()
     if additions is None:
         additions = default_drug_target_additions()
     added_for = {addition.drug_chembl_id for addition in additions}
+    moving_compounds = {frozenset(bases) for bases in moving_compounds}
 
     def kept(chembl_id: str, mechanism: dict) -> bool:
         drug_ids = {chembl_id, mechanism.get("molecule_chembl_id"), mechanism.get("parent_molecule_chembl_id")} - {None, ""}
@@ -689,10 +725,17 @@ def check_graph_compounds_have_no_mechanism(compounds_by_chembl_id: dict[str, li
                                   for key in ("molecule_chembl_id", "parent_molecule_chembl_id")}
         return bool(added_for & (drug_ids - {None, ""}))
 
-    with_mechanisms = sorted(chembl_id for chembl_id in compounds_by_chembl_id
-                             if has_addition(chembl_id) or any(kept(chembl_id, mechanism) for mechanism in mechanisms_by_molecule.get(chembl_id, [])))
+    def carries_one(chembl_id: str) -> bool:
+        return has_addition(chembl_id) or any(kept(chembl_id, mechanism) for mechanism in mechanisms_by_molecule.get(chembl_id, []))
+
+    with_mechanisms = sorted(chembl_id for chembl_id, bases in compounds_by_chembl_id.items()
+                             if frozenset(bases) not in moving_compounds and carries_one(chembl_id))
     if with_mechanisms:
         raise ValueError(f"{DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH} lists ChEMBL forms that carry a mechanism: {with_mechanisms}")
+    without = sorted(";".join(sorted(bases)) for bases in moving_compounds
+                     if not any(carries_one(chembl_id) for chembl_id, listed in compounds_by_chembl_id.items() if frozenset(listed) == bases))
+    if without:
+        raise ValueError(f"{DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH} moves the mechanism of compounds none of whose ChEMBL forms carries one: {without}")
 
 
 def graph_compound_target(base_metabolite_ids: list[str]) -> DrugTarget:
@@ -701,15 +744,34 @@ def graph_compound_target(base_metabolite_ids: list[str]) -> DrugTarget:
 
 
 def graph_compound_targets(drug_targets: list[DrugTarget], pubchem_cid: int | None, chembl_ids: list[str],
-                           compounds_by_pubchem_cid: dict[int, list[str]], compounds_by_chembl_id: dict[str, list[str]]) -> list[DrugTarget]:
-    """drug_targets unchanged when ChEMBL gives the drug any mechanism target; otherwise the graph-compound target of
-    configs/drugs_acting_as_graph_compounds.csv when the drug is listed there, else none."""
-    if drug_targets:
-        return drug_targets
+                           compounds_by_pubchem_cid: dict[int, list[str]], compounds_by_chembl_id: dict[str, list[str]],
+                           moving_compounds: Collection[frozenset[str]] = ()) -> list[DrugTarget]:
+    """drug_targets unchanged when ChEMBL gives the drug any mechanism target, unless the drug is listed in
+    configs/drugs_acting_as_graph_compounds.csv under a compound of moving_compounds (read_compounds_moving_their_mechanism),
+    whose drug's mechanism moves onto the compound's edges at the merge; otherwise the graph-compound target of that
+    table when the drug is listed there, else none."""
     base_ids = compounds_by_pubchem_cid.get(pubchem_cid) if pubchem_cid is not None else None
     for chembl_id in chembl_ids:
         base_ids = base_ids or compounds_by_chembl_id.get(chembl_id)
+    if drug_targets and not (base_ids and frozenset(base_ids) in {frozenset(bases) for bases in moving_compounds}):
+        return drug_targets
     return [graph_compound_target(base_ids)] if base_ids else []
+
+
+def compound_mechanism_targets(moving_compounds: Mapping[frozenset[str], list[str]], caches: ChemblCaches) -> dict[frozenset[str], list[DrugTarget]]:
+    """The mechanism targets that move onto each compound's edges (module docstring): those of the compound's listed
+    ChEMBL forms (read_compounds_moving_their_mechanism), by mechanism_targets with the caches' action resolutions and
+    configs/drug_target_exclusions.csv, as for any drug. A target withheld for an unresolved action conflict is
+    refused, since its sign is what moves."""
+    moved: dict[frozenset[str], list[DrugTarget]] = {}
+    for bases, chembl_ids in moving_compounds.items():
+        conflicts: list[ActionConflict] = []
+        moved[frozenset(bases)] = mechanism_targets(list(chembl_ids), caches.mechanisms_by_molecule, caches.targets,
+                                                    action_resolutions=caches.action_resolutions, conflicts=conflicts)
+        if withheld_count(conflicts):
+            raise ValueError(f"the mechanism of {sorted(bases)} has a target withheld for an action conflict "
+                             f"({sorted(conflict.target_chembl_id for conflict in conflicts if conflict.withheld)}); curate it first")
+    return moved
 
 
 @dataclass

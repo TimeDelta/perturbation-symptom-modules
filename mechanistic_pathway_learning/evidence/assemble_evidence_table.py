@@ -44,6 +44,7 @@ import hashlib
 import json
 import os
 from collections import defaultdict
+from collections.abc import Collection
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -126,6 +127,7 @@ from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes i
     has_dominant_target,
     load_chembl_caches,
     load_drugs_acting_as_graph_compounds,
+    read_compounds_moving_their_mechanism,
     withheld_count,
     write_action_conflicts_report,
 )
@@ -582,12 +584,14 @@ def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None, identit
 
 
 def sider_drug_targets(pubchem_cid: int, caches, bridge_parents_by_cid: dict[int, list[str]], compounds_by_pubchem_cid: dict[int, list[str]],
-                       compounds_by_chembl_id: dict[str, list[str]], conflicts: list[ActionConflict] | None = None) -> list:
+                       compounds_by_chembl_id: dict[str, list[str]], conflicts: list[ActionConflict] | None = None,
+                       moving_compounds: Collection[frozenset[str]] = ()) -> list:
     """Mechanism targets of a SIDER drug: the UniChem route (caches.pubchem_to_chembl, the cache map with
     configs/chembl_parent_corrections.csv applied by load_chembl_caches), then the bridge parents when it finds no
     target, then the graph-compound fallback for a drug that is itself a graph metabolite. The bridge parents are not
     added to a drug the UniChem route already gives targets, so an identity override applied to the bridge parents
-    does not reach such a drug.
+    does not reach such a drug. A listed compound of moving_compounds takes its compound target in place of the
+    targets found, which move onto the compound's edges at the merge (graph_compound_targets).
 
     A target whose ChEMBL rows disagree on the action is resolved by caches.action_resolutions or withheld
     (map_drug_targets_to_graph_nodes.mechanism_targets) and appended to conflicts when a list is passed. A route that
@@ -603,7 +607,7 @@ def sider_drug_targets(pubchem_cid: int, caches, bridge_parents_by_cid: dict[int
     if withheld_count(found):
         return drug_targets
     chembl_ids = list(caches.pubchem_to_chembl.get(str(pubchem_cid), [])) + bridge_parents
-    return graph_compound_targets(drug_targets, int(pubchem_cid), chembl_ids, compounds_by_pubchem_cid, compounds_by_chembl_id)
+    return graph_compound_targets(drug_targets, int(pubchem_cid), chembl_ids, compounds_by_pubchem_cid, compounds_by_chembl_id, moving_compounds)
 
 
 def seed_monogenic_reports(monogenic_reports: list[EvidenceReport], node_by_symbol: dict[str, str], seed_gain_of_function_genes_positive: bool = False) -> set[str]:
@@ -827,14 +831,18 @@ def assemble(
         caches = load_chembl_caches(chembl_directory, action_resolutions_path=action_resolutions_path)
         bridge_parents_by_cid = bridge_chembl_parents_by_sider_cid(onsides_bridge_path, identity_overrides_path, sider_directory)
         compounds_by_pubchem_cid, compounds_by_chembl_id = load_drugs_acting_as_graph_compounds(drugs_acting_as_graph_compounds_path) if drugs_acting_as_graph_compounds_path else ({}, {})
-        check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule)
+        # an endogenous drug whose listing moves its own mechanism onto the compound's edges (melatonin) is seeded on the
+        # compound; the drug-entry build moves the mechanism's sign (map_drug_targets_to_graph_nodes, module docstring)
+        moving_compounds = read_compounds_moving_their_mechanism(drugs_acting_as_graph_compounds_path) if drugs_acting_as_graph_compounds_path else {}
+        check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule, moving_compounds=moving_compounds)
         for event in load_sider_events(sider_directory, crosswalk_path):
             if excluded_perturbations and event.stitch_flat_id in excluded_perturbations:
                 continue
             if rejected_indications and event.relation == "relieves" and (event.stitch_flat_id, event.meddra_preferred_term.lower()) in rejected_indications:
                 continue
             event_conflicts: list[ActionConflict] = []
-            drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id, event_conflicts)
+            drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id, event_conflicts,
+                                              moving_compounds)
             if event_conflicts and event.stitch_flat_id not in conflict_rows_by_perturbation:
                 conflict_rows_by_perturbation[event.stitch_flat_id] = action_conflict_report_rows(event.stitch_flat_id, event.drug_name, f"SIDER CID {event.pubchem_cid}", event_conflicts)
             withheld = withheld_count(event_conflicts)
@@ -1016,7 +1024,7 @@ def main() -> None:
                              "and listed in chembl_action_conflicts.csv. Pass the same file to build_onsides_reports.py")
     parser.add_argument("--onsides-bridge", type=Path, default=None, help="OnSIDES ingredient identifier bridge; its ChEMBL parents are the fallback for SIDER CIDs whose ChEMBL ids (UniChem's, with configs/chembl_parent_corrections.csv applied) give no mechanism")
     parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/drug_targets_any_type.md)")
-    parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs with no mechanism target that are themselves a graph metabolite")
+    parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs that are themselves a graph metabolite: with no mechanism target, or with one that moves onto the compound's edges at the merge (moves_mechanism_to_compound_edges)")
     parser.add_argument("--seed-gain-of-function-genes-positive", action="store_true",
                         help="seed a gene with sign +1 when every causal association behind its reports is Orphanet's gain-of-function type; without it every gene has sign -1")
     parser.add_argument("--allele-perturbations", action="store_true",

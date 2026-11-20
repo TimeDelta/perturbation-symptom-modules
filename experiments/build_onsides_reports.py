@@ -56,6 +56,7 @@ from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes i
     check_graph_compounds_have_no_mechanism,
     load_drugs_acting_as_graph_compounds,
     read_action_conflict_resolutions,
+    read_compounds_moving_their_mechanism,
     write_action_conflicts_report,
 )
 
@@ -144,7 +145,7 @@ def main() -> None:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full"), help="assembled table whose SIDER-label pairs define the qualified overlap")
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/onsides"))
     parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/drug_targets_any_type.md)")
-    parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs with no mechanism target that are themselves a graph metabolite")
+    parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs that are themselves a graph metabolite: with no mechanism target, or with one that moves onto the compound's edges at the merge (moves_mechanism_to_compound_edges)")
     parser.add_argument("--max-drug-targets", type=int, default=1, help="most mechanism targets a qualifying ingredient may have; 0 lifts the single-target rule")
     parser.add_argument("--admitted-atc-prefixes", type=Path, default=None,
                         help="written list of the ATC groups and substances admitted in place of group N alone (atc_prefix column); pass the same file to the assembler")
@@ -192,13 +193,16 @@ def main() -> None:
     targets = json.loads((arguments.chembl_dir / "targets.json").read_text())
     node_lookup = GraphNodeLookup.from_nodes(pd.read_parquet(arguments.graph_dir / "nodes.parquet"), arguments.non_protein_targets)
     _, compounds_by_chembl_id = load_drugs_acting_as_graph_compounds(arguments.drugs_acting_as_graph_compounds)
-    check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, mechanisms_by_molecule)
+    # a listed endogenous drug whose mechanism moves onto its compound's edges at the merge is seeded on the compound
+    moving_compounds = read_compounds_moving_their_mechanism(arguments.drugs_acting_as_graph_compounds)
+    check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, mechanisms_by_molecule, moving_compounds=moving_compounds)
     admitted_atc_prefixes = read_admitted_atc_prefixes(arguments.admitted_atc_prefixes) if arguments.admitted_atc_prefixes is not None else NERVOUS_SYSTEM_ATC_PREFIXES
     narrowing = ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None
     reports, counts = onsides_reports(statements, bridges, mechanisms_by_molecule, targets, node_lookup, compounds_by_chembl_id, arguments.max_drug_targets or None, admitted_atc_prefixes,
                                       complex_target_narrowing=narrowing, curated_targets_by_perturbation=curated_targets,
                                       excluded_perturbations=excluded,
-                                      action_resolutions=read_action_conflict_resolutions(arguments.chembl_action_conflict_resolutions))
+                                      action_resolutions=read_action_conflict_resolutions(arguments.chembl_action_conflict_resolutions),
+                                      moving_compounds=moving_compounds)
     conflict_rows = counts.pop("chembl_action_conflicts")
 
     arguments.output_dir.mkdir(parents=True, exist_ok=True)

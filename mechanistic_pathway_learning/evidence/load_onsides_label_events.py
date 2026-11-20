@@ -38,7 +38,7 @@ import csv
 import gzip
 import json
 import math
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -158,11 +158,14 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
                        compounds_by_chembl_id: Mapping[str, list[str]] | None = None, max_drug_targets: int | None = 1,
                        admitted_atc_prefixes: tuple[str, ...] = NERVOUS_SYSTEM_ATC_PREFIXES,
                        curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
-                       excluded_perturbations: Mapping[str, str] | None = None, action_resolutions=None) -> OnsidesQualification:
+                       excluded_perturbations: Mapping[str, str] | None = None, action_resolutions=None,
+                       moving_compounds: Collection[frozenset[str]] = ()) -> OnsidesQualification:
     """The E2 qualification of section 4.2 for one ingredient, the rule SIDER rows pass: a single mechanism target and an ATC N code.
 
     An ingredient with no mechanism target at all whose parent is listed in configs/drugs_acting_as_graph_compounds.csv
-    (compounds_by_chembl_id) takes that graph compound as its one target, as a SIDER drug does.
+    (compounds_by_chembl_id) takes that graph compound as its one target, as a SIDER drug does; so does one with
+    mechanism targets whose compound is in moving_compounds (map_drug_targets_to_graph_nodes.read_compounds_moving_their_mechanism),
+    since its mechanism moves onto the compound's edges at the merge.
     An ingredient with no ATC code at all fails with no_atc_code, as a SIDER drug without one does; atc_known
     is kept on the result for the rubric_atc_known feature.
     admitted_atc_prefixes replaces group N by a written list (has_admitted_atc_code); the reason of a failure is then
@@ -183,7 +186,8 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
     withheld = withheld_count(conflicts)
     target_source = "ChEMBL"
     if not withheld:
-        drug_targets = graph_compound_targets(drug_targets, None, [bridge.chembl_parent] if bridge.chembl_parent else [], {}, compounds_by_chembl_id or {})
+        drug_targets = graph_compound_targets(drug_targets, None, [bridge.chembl_parent] if bridge.chembl_parent else [], {}, compounds_by_chembl_id or {},
+                                              moving_compounds)
         if not drug_targets and curated_targets_by_perturbation and bridge.perturbation_id in curated_targets_by_perturbation:
             drug_targets, target_source = list(curated_targets_by_perturbation[bridge.perturbation_id]), "curated"
     atc_known = bool(bridge.atc_codes)
@@ -244,6 +248,7 @@ def onsides_reports(
     curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
     excluded_perturbations: Mapping[str, str] | None = None,
     action_resolutions=None,
+    moving_compounds: Collection[frozenset[str]] = (),
 ) -> tuple[pd.DataFrame, dict]:
     """Report rows (REPORT_COLUMNS first, then ONSIDES_EXTRA_COLUMNS) for every statement; qualifies marks the rows that enter the evidence table.
 
@@ -253,7 +258,8 @@ def onsides_reports(
     targets to the subunits GtoPdb names before it is seeded, matched by the unified SIDER drug's PubChem CID or the
     ingredient's name, as the SIDER route matches the same drug. curated_targets_by_perturbation is qualify_ingredient's
     fallback for an ingredient with no ChEMBL target (decision 9.117); excluded_perturbations its exclusion list (9.121 C4);
-    action_resolutions its resolutions of ChEMBL action conflicts. counts["chembl_action_conflicts"] holds the rows of the
+    action_resolutions its resolutions of ChEMBL action conflicts; moving_compounds its listed compounds whose mechanism
+    moves onto the compound's edges. counts["chembl_action_conflicts"] holds the rows of the
     conflicts report (action_conflict_report_rows, route OnSIDES) of every bridged ingredient with statements."""
     if not isinstance(node_lookup, GraphNodeLookup):
         node_lookup = GraphNodeLookup(dict(node_lookup), {}, {})
@@ -273,7 +279,7 @@ def onsides_reports(
         qualification = qualifications.get(bridge.ingredient_id)
         if qualification is None:
             qualification = qualify_ingredient(bridge, mechanisms_by_molecule, targets, compounds_by_chembl_id, max_drug_targets, admitted_atc_prefixes,
-                                               curated_targets_by_perturbation, excluded_perturbations, action_resolutions)
+                                               curated_targets_by_perturbation, excluded_perturbations, action_resolutions, moving_compounds)
             qualifications[bridge.ingredient_id] = qualification
             conflict_rows.extend(action_conflict_report_rows(bridge.perturbation_id, bridge.ingredient_name, f"OnSIDES ingredient {bridge.ingredient_id}",
                                                              qualification.action_conflicts))

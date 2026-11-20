@@ -389,10 +389,12 @@ def drop_entry_nodes(nodes: pd.DataFrame, edges: pd.DataFrame, relation_types: l
     Three kinds of row go: the entry nodes, every edge that touches one, and a drug's carriage edge that touches none,
     which exists for a drug that is itself a graph compound (its carrier sequesters the compound's own node). The last
     is known by its evidence_source, so a sequestration edge another build gave the source graph would stay. A clearing
-    enzyme's edge is treated as a carrier's is. The builder appends rows and changes none (graph/drug_entry_nodes.py),
-    so what is left is the source graph row for row. The sequestration and clearance relations are taken off the
-    relation list when no edge of them is left, because the builder put them there; the mechanism relation stays, since
-    the source graph already listed it."""
+    enzyme's edge is treated as a carrier's is. The builder appends rows and changes none but the compound edges a
+    merge signs (graph/drug_entry_nodes.py, "The merge"; the summary's compound_edges_signed_at_the_merge), which are
+    kept as the merge left them, since this arm too seeds an endogenous drug on its compound and reads its mechanism
+    through them. So what is left is the source graph row for row but for those edges. The sequestration and clearance
+    relations are taken off the relation list when no edge of them is left, because the builder put them there; the
+    mechanism relation stays, since the source graph already listed it."""
     is_entry_node = nodes.node_type.isin(ENTRY_NODE_TYPES)
     entry_node_ids = set(nodes.node_id[is_entry_node])
     kept_nodes = nodes[~is_entry_node].reset_index(drop=True)
