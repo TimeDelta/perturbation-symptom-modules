@@ -18,15 +18,23 @@ is already computed. Two things stop it being used.
 What this module does instead. A proton deviation is read **after** the propagation has settled, at whichever pool
 node governs each compartment, and becomes a multiplier on the throughput of every node in that compartment:
 
-    w_pH(compartment) = exp(-(sensitivity * proton deviation) ** 2)
+    delta pH = -log10(1 + sensitivity * proton deviation),   w_pH(compartment) = exp(-(delta pH / width) ** 2)
+
+with the deviation read as a fractional change in [H+] and the width learned per compartment
+(models/linear_response_encoder.py, `compartment_ph_weight`, which holds the computation; this docstring describes it).
+Until 13 October 2026 the form was exp(-(sensitivity * proton deviation) ** 2), on the proton deviation directly; the
+owner then asked for pH on the log scale ("why not use true pH on the log scale so it fits nicely into equations?").
 
 A weight does not propagate, so the hub problem does not arise; the enzymes of an acidified compartment simply pass
-less. The form is registered and the magnitude is learned, which is the honest division, and three things follow from
-it being even in the deviation and applied after the fixed point: a gain-of-function stays the exact negative of a
-loss-of-function, since the deviation changes sign and the square does not; the fixed point is reached before the
-weight is applied, so the contraction the stopping rule rests on is untouched; and the weight lies in (0, 1], so it
-cannot raise a norm. What it does break is positive homogeneity of degree one - doubling the input no longer doubles
-the response, because the weight reads the deviation's size - and that is the registered cost.
+less. The form is registered and the magnitude is learned, which is the honest division, and two things follow from
+it being applied after the fixed point: the fixed point is reached before the weight is applied, so the contraction
+the stopping rule rests on is untouched; and the weight lies in (0, 1], so it cannot raise a norm. What it breaks is
+positive homogeneity of degree one - doubling the input no longer doubles the response, because the weight reads the
+deviation's size - and that is the registered cost. **A gain-of-function is not the exact negative of a
+loss-of-function under this form.** The linear form of before 13 October 2026 was even in the deviation and gave the
+two the same weight; the log form is not, because acidifying and alkalinising by the same fraction move pH by
+different amounts, and that mirror was withdrawn on 13 October 2026 (the encoder's docstring has the reasoning; the
+registration calls the asymmetry the chemistry and not a defect, item 22a).
 
 **Why no pH constants are needed, which is not obvious.** Converting a deviation to pH units would need the resting
 proton concentration per compartment and a scale from the model's arbitrary units to molar, and a pH-activity curve

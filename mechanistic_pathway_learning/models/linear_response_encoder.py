@@ -309,7 +309,12 @@ PH_WEIGHT_EPSILON = 1e-30
 # channel opening with store content, which a linear propagation cannot carry. The sensitivity is learned per store
 # and calibrated as the pH one is, for the same reason: deviations in arbitrary units.
 STORE_SENSITIVITY_TARGET_ARGUMENT = 0.5
-DEFAULT_PH_ACTIVITY_WIDTH = 1.0  # pH units; the half-width of a typical enzyme pH-activity curve, and a learned floor
+# The width w in w_pH = exp(-(delta pH / w) ** 2) is the pH distance from the optimum at which activity falls to 1/e,
+# not the half-width at half-maximum, which is 0.83 * w. The seed is not sourced and is not typical: a Fable pass of
+# 20 November 2026 read 71 BRENDA pH-range rows over 25 EC numbers and found a median w of 1.47 (interquartile range
+# 1.06 to 1.82), so 1.0 sits near the 24th percentile and makes a typical enzyme more pH-sensitive than the median
+# curve. Replacing it is ruling S3a of item 37, not yet ruled. There is no learned floor on w.
+DEFAULT_PH_ACTIVITY_WIDTH = 1.0  # pH units; see the comment above
 SMALLEST_PROTON_FRACTION = -0.999999
 BOTTLENECK_CHUNK = 32  # columns of the flattened batch-by-class gather taken at once; see class_bottleneck
 DEFAULT_FIXED_POINT_TOLERANCE = 1e-3
@@ -729,8 +734,9 @@ class LinearResponseEncoder(nn.Module):
             self.register_buffer("ph_proton_node_index", ph_proton_node_index.long(), persistent=False)
             self.register_buffer("ph_compartment_of_node", ph_compartment_of_node.long(), persistent=False)
             self.log_ph_sensitivity = nn.Parameter(torch.zeros(ph_proton_node_index.shape[0]))
-            # the half-width of each compartment's pH-activity curve, in pH units; one per compartment and learned,
-            # because no per-reaction pH optimum exists at the scale of this graph
+            # w of each compartment's pH-activity curve, the pH distance at which activity falls to 1/e (see
+            # DEFAULT_PH_ACTIVITY_WIDTH); one per compartment and learned, with the optimum taken as the compartment's
+            # resting pH because no per-reaction pH optimum exists at the scale of this graph
             self.log_ph_activity_width = nn.Parameter(
                 torch.full((ph_proton_node_index.shape[0],), math.log(DEFAULT_PH_ACTIVITY_WIDTH)))
             self.ph_sensitivity_calibrated = False
