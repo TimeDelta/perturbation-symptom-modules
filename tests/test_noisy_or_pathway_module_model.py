@@ -167,3 +167,62 @@ def test_noisy_or_head_returns_log_probabilities_consistent_with_its_probabiliti
     output = head(torch.randn(5, 6, 4))
     assert torch.allclose(torch.exp(output.symptom_log_probability), output.symptom_probability, atol=1e-6)
     assert torch.allclose(torch.exp(output.symptom_log_complement), 1.0 - output.symptom_probability, atol=1e-6)
+
+
+# Entry nodes (drug and allele nodes) are never module support: the owner, 20 November 2026, "make sure that the module
+# growing excludes drug nodes", "Alleles too", with graph.drug_entry_nodes.ENTRY_NODE_TYPES as the rule.
+
+def _gate_excluding(nodes_excluded: list[int], num_modules: int = 3, num_nodes: int = 6) -> HardConcreteNodeGate:
+    mask = torch.zeros(num_nodes, dtype=torch.bool)
+    mask[nodes_excluded] = True
+    return HardConcreteNodeGate(num_modules, num_nodes, initial_log_alpha=2.0, excluded_node_mask=mask)
+
+
+def test_an_excluded_node_has_a_zero_gate_in_training_in_evaluation_and_under_louizos():
+    gate = _gate_excluding([1, 4])
+    gate.train()
+    for _ in range(20):
+        assert torch.all(gate()[:, [1, 4]] == 0.0)
+    gate.eval()
+    assert torch.all(gate()[:, [1, 4]] == 0.0)
+    assert torch.all(gate.louizos_test_time_gate()[:, [1, 4]] == 0.0)
+    assert torch.all(gate.expected_gate()[:, [0, 2, 3, 5]] > 0.0), "the other nodes keep their gates"
+
+
+def test_an_excluded_node_counts_nothing_towards_description_length():
+    excluded = _gate_excluding([1, 4])
+    unrestricted = HardConcreteNodeGate(3, 6, initial_log_alpha=2.0)
+    with torch.no_grad():
+        unrestricted.log_alpha.copy_(excluded.log_alpha)
+    count_excluded = excluded.expected_active_node_count()
+    count_all = unrestricted.expected_active_node_count()
+    # the same parameters, so the difference is exactly what the two excluded nodes would have counted
+    kept = HardConcreteNodeGate(3, 2, initial_log_alpha=2.0)
+    with torch.no_grad():
+        kept.log_alpha.copy_(excluded.log_alpha[:, [1, 4]])
+    assert torch.allclose(count_all - count_excluded, kept.expected_active_node_count())
+    assert torch.all(count_excluded < count_all)
+
+
+def test_a_module_cannot_read_a_field_placed_only_on_an_excluded_node():
+    num_nodes = 5
+    mask = torch.zeros(num_nodes, dtype=torch.bool)
+    mask[2] = True
+    head = NoisyOrPathwayModuleHead(num_nodes, node_state_dim=4, num_pathway_modules=2, num_symptoms=3, excluded_node_mask=mask)
+    head.eval()
+    field_on_entry_node = torch.zeros(1, num_nodes, 4)
+    field_on_entry_node[0, 2] = 10.0
+    no_field = torch.zeros(1, num_nodes, 4)
+    assert torch.allclose(head.module_activation(field_on_entry_node), head.module_activation(no_field))
+
+
+def test_the_exclusion_mask_leaves_the_saved_state_dict_unchanged():
+    with_mask = _gate_excluding([0])
+    without_mask = HardConcreteNodeGate(3, 6, initial_log_alpha=2.0)
+    assert set(with_mask.state_dict()) == set(without_mask.state_dict())
+
+
+def test_an_exclusion_mask_of_the_wrong_length_is_refused():
+    import pytest
+    with pytest.raises(ValueError):
+        HardConcreteNodeGate(2, 5, excluded_node_mask=torch.zeros(4, dtype=torch.bool))

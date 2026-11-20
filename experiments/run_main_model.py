@@ -814,7 +814,10 @@ def build_models(data, arguments, device):
         head = NoisyOrPathwayModuleHead(len(data.node_ids), arguments.node_state_dim, arguments.num_modules, len(data.symptoms),
                                         gate_initial_log_alpha=arguments.gate_initial_log_alpha, pooling=arguments.pooling,
                                         gate_initial_log_alpha_noise=arguments.gate_init_noise, initial_readout_bias=arguments.module_bias_init,
-                                        degree_offset=arguments.degree_offset).to(device)
+                                        degree_offset=arguments.degree_offset,
+                                        # entry nodes (drug and allele) are never module support: the owner, 20 November 2026
+                                        excluded_node_mask=(torch.as_tensor(data.entry_node_mask)
+                                                            if getattr(data, "entry_node_mask", None) is not None else None)).to(device)
     return encoder, head
 
 

@@ -41,7 +41,7 @@ EXPECTED_GATE_QUADRATURE_POINTS = 64
 
 
 class HardConcreteNodeGate(nn.Module):
-    """One learnable [0, 1] gate per (pathway module, graph node)."""
+    """One learnable [0, 1] gate per (pathway module, graph node), held at exactly 0 on any excluded node."""
 
     def __init__(
         self,
@@ -50,30 +50,50 @@ class HardConcreteNodeGate(nn.Module):
         temperature: float = 2.0 / 3.0,
         initial_log_alpha: float = -1.0,
         initial_log_alpha_noise: float = 0.01,
+        excluded_node_mask: Tensor | None = None,
     ) -> None:
         """In eval mode the gate is the mean of the training gate distribution (expected_gate). The test-time
         estimator of Louizos et al., clamp(sigmoid(log_alpha) * (high - low) + low), matches training only once gates
         have converged to 0 or 1; with gates that stay fractional and a sum that pools thousands of them, the pooled sum
         concentrates at its expectation during training, so evaluation must use that expectation (at log_alpha -2.3 the
         expected training gate is 0.11 and the Louizos estimator 0.009). Runs recorded without a git commit, before
-        6 October 2026, evaluated with the Louizos estimator (docs/b6_module_diagnosis.md)."""
+        6 October 2026, evaluated with the Louizos estimator (docs/b6_module_diagnosis.md).
+
+        excluded_node_mask, [num_graph_nodes] boolean, True for a node no module may include: every gate on it is 0 in
+        training, in evaluation and in the L0 count, so it can neither carry module support nor cost description length.
+        The trainer passes the graph's entry nodes, those whose node_type is in graph.drug_entry_nodes.ENTRY_NODE_TYPES
+        (drug and allele nodes, as evaluation.experiment_data builds entry_node_mask), on the owner's ruling of
+        20 November 2026 that module growing excludes them ("make sure that the module growing excludes drug nodes",
+        "Alleles too", "You can actually use that constant as the exclusion rule"). An entry node exists only in the
+        perturbation seeded on it, so a module reading it would read the identity of a perturbation, not a pathway.
+        The mask is a buffer that is not saved, so a checkpoint's state dict is the one a gate without it writes."""
         super().__init__()
         self.temperature = temperature
         initial_values = torch.full((num_pathway_modules, num_graph_nodes), initial_log_alpha)
         initial_values = initial_values + initial_log_alpha_noise * torch.randn_like(initial_values)
         self.log_alpha = nn.Parameter(initial_values)
+        if excluded_node_mask is not None:
+            excluded_node_mask = torch.as_tensor(excluded_node_mask, dtype=torch.bool)
+            if excluded_node_mask.shape != (num_graph_nodes,):
+                raise ValueError(f"excluded_node_mask has shape {tuple(excluded_node_mask.shape)}, expected ({num_graph_nodes},)")
+            self.register_buffer("kept_node_weight", (~excluded_node_mask).to(initial_values.dtype), persistent=False)
+        else:
+            self.kept_node_weight = None
+
+    def _without_excluded_nodes(self, gate: Tensor) -> Tensor:
+        return gate if self.kept_node_weight is None else gate * self.kept_node_weight[None, :]
 
     def forward(self) -> Tensor:
         """Return gate values of shape [num_pathway_modules, num_graph_nodes]."""
         if self.training:
             uniform_noise = torch.rand_like(self.log_alpha).clamp(PROBABILITY_EPSILON, 1 - PROBABILITY_EPSILON)
             logistic_noise = torch.log(uniform_noise) - torch.log1p(-uniform_noise)
-            return self._stretch_and_clamp(torch.sigmoid((logistic_noise + self.log_alpha) / self.temperature))
+            return self._without_excluded_nodes(self._stretch_and_clamp(torch.sigmoid((logistic_noise + self.log_alpha) / self.temperature)))
         return self.expected_gate()
 
     def louizos_test_time_gate(self) -> Tensor:
         """The test-time estimator of Louizos et al., kept for diagnosis of runs that evaluated with it."""
-        return self._stretch_and_clamp(torch.sigmoid(self.log_alpha))
+        return self._without_excluded_nodes(self._stretch_and_clamp(torch.sigmoid(self.log_alpha)))
 
     @staticmethod
     def _stretch_and_clamp(relaxed_gate: Tensor) -> Tensor:
@@ -88,12 +108,13 @@ class HardConcreteNodeGate(nn.Module):
             quantile = (point + 0.5) / quadrature_points
             logistic_quantile = math.log(quantile) - math.log1p(-quantile)
             expected = expected + self._stretch_and_clamp(torch.sigmoid((logistic_quantile + self.log_alpha) / self.temperature))
-        return expected / quadrature_points
+        return self._without_excluded_nodes(expected / quadrature_points)
 
     def expected_active_node_count(self) -> Tensor:
-        """Expected number of nonzero gates per module (the L0 surrogate), shape [num_pathway_modules]."""
+        """Expected number of nonzero gates per module (the L0 surrogate), shape [num_pathway_modules]; an excluded
+        node's gate is always 0, so it counts nothing."""
         shift = self.temperature * math.log(-HARD_CONCRETE_STRETCH_LOW / HARD_CONCRETE_STRETCH_HIGH)
-        probability_nonzero = torch.sigmoid(self.log_alpha - shift)
+        probability_nonzero = self._without_excluded_nodes(torch.sigmoid(self.log_alpha - shift))
         return probability_nonzero.sum(dim=1)
 
 
@@ -139,10 +160,12 @@ class NoisyOrPathwayModuleHead(nn.Module):
         gate_initial_log_alpha_noise: float = 0.01,
         initial_readout_bias: float = 0.0,
         degree_offset: bool = False,
+        excluded_node_mask: Tensor | None = None,
     ) -> None:
         """gate_initial_log_alpha_noise breaks the symmetry between modules (all gates start at the same
         log-alpha otherwise, and identical modules stay identical); initial_readout_bias below zero makes a
-        module silent unless the pooled perturbation signal drives it, the off-by-default reading of a pathway."""
+        module silent unless the pooled perturbation signal drives it, the off-by-default reading of a pathway;
+        excluded_node_mask names the nodes no module may include (HardConcreteNodeGate), the graph's entry nodes."""
         super().__init__()
         if pooling not in ("sum", "mean"):
             raise ValueError("pooling must be 'sum' or 'mean'")
@@ -157,6 +180,7 @@ class NoisyOrPathwayModuleHead(nn.Module):
             temperature=gate_temperature,
             initial_log_alpha=gate_initial_log_alpha,
             initial_log_alpha_noise=gate_initial_log_alpha_noise,
+            excluded_node_mask=excluded_node_mask,
         )
         self.module_readout_weight = nn.Parameter(torch.randn(num_pathway_modules, node_state_dim) / math.sqrt(node_state_dim))
         self.module_readout_bias = nn.Parameter(torch.full((num_pathway_modules,), float(initial_readout_bias)))
