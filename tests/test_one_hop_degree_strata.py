@@ -7,6 +7,9 @@ import pytest
 from mechanistic_pathway_learning.evaluation.experiment_data import load_experiment_data
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import degree_strata
 
+# The monogenic slice (the pilot graph of data/releases/v0.4), its evidence table and its gene/protein split, on which
+# the tests below check the hop over encodes. Only the optional slice stage of scripts/rebuild_data_layer.sh writes
+# them: it copies the first two from the release and builds the split.
 MERGED_GRAPH = Path("data/processed/graph")
 SPLIT_GRAPH = Path("data/processed/graph_split")
 EVIDENCE = Path("data/processed/evidence")
@@ -14,7 +17,7 @@ EVIDENCE = Path("data/processed/evidence")
 
 def load(graph_directory: Path):
     if not (graph_directory / "nodes.parquet").exists() or not (EVIDENCE / "evidence_records.parquet").exists():
-        pytest.skip(f"{graph_directory} or {EVIDENCE} is not built here")
+        pytest.skip(f"{graph_directory} or {EVIDENCE} is not built here; bash scripts/rebuild_data_layer.sh slice builds them")
     return load_experiment_data(graph_directory, EVIDENCE, group_by="disease_cluster")
 
 
