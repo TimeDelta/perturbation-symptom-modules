@@ -28,39 +28,46 @@ retired table.
 ## Priority order (20 November 2026)
 
 The owner asked on 20 November 2026 to "prioritize the exploration queue then start an opus 5.5 subagent to start
-research on the next highest priority item". The order is the session's (on Opus), by five tests: how much closer to
+research on the next highest priority item", and later the same day to add new items. The order is the session's (on Opus), by five tests: how much closer to
 physiology the item brings the model, whether its first step can run now, what it costs, whether the owner can follow
 it, and whether it bears on what the amendment of `docs/item37_rulings_draft_2026-11-13.md` has just ruled, since its fallbacks, class centres and curation rows
 are being sourced now. It replaces the order of 7 November 2026 (the owner: "i don't care about maintaining previous
 ordering. you can just overwrite existing order").
 
-1. **Item 15, literature bias in the curated sources.** That amendment rules many values fitted on sourced rows and applied
-   to unsourced ones (class centres, sibling medians, shared offsets, the carrier-share classes), which is the case
-   item 15 describes; how to correct for it is best known before those fallbacks are built. A literature pass, and
-   nothing in the build depends on it until it reports. Started 20 November 2026 on Opus at the owner's request, so
-   it needs verification on Fable before it is relied on (the owner: "just note the literature pass as needing fable
+1. **Item 15, literature bias in the curated sources.** That amendment rules many values fitted on sourced rows and
+   applied to unsourced ones (class centres, sibling medians, shared offsets, the carrier-share classes), which is the
+   case item 15 describes. Its literature pass ran on 20 November 2026 on Opus at the owner's request and needs
+   verification on Fable before it is relied on (the owner: "just note the literature pass as needing fable
    verification later").
-2. **Item 14, the curation sweep over the drug target table.** Conflicting ChEMBL actions are flagged for curation
-   since 20 November 2026 (27 conflicts off the v5 drug set wait), and the amendment found further cases by hand
-   (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query over the ChEMBL_37 cache
-   through the corrected readers, which needs no rebuild (run 20 November 2026: 90 of the 260 v5 drugs fall in a
-   category; six get sign 0 from a plain MODULATOR row with no curated override, queued for Fable curation on 21
-   November 2026; the five with a targetless "Unknown" row need none, being curated already or carrying real
-   mechanism rows beside it); the count of affected edges waits on the rebuild.
-3. **Item 7, endosomal pH.** A monogenic gene with psychiatric phenotypes is absent from the graph, so its labels
-   are lost. The measurement was taken on 7 November 2026 (below); what remains is design (an endosome
-   compartment, the import of `R-HSA-425986`, how its proton pools connect), then the owner's ruling, then a build.
-   A re-measurement on the files of 12 November 2026 would be history once the amendment's rulings are built.
-4. **Item 9, the Krebs cycle and oxidative burden.** One owner ruling plus sourced rows.
-5. **Item 6, the fast/slow partition.** Ready for the owner's ruling on the split.
-6. **Item 11, chronic exposure**, and 7. **item 12, receptor-number plasticity** (decision 9.118): design passes,
+2. **Item 14, the curation sweep over the drug target table.** Its query ran on 20 November 2026 through the corrected
+   readers (90 of the 260 v5 drugs fall in a category; six get sign 0 from a plain MODULATOR row with no curated
+   override, queued for Fable curation on 21 November 2026); the count of affected edges waits on the rebuild.
+3. **Item 21, the Human-GEM sweep** (new, unconfirmed): the systematic form of the correction rows ruled one by one on
+   20 November 2026; its corrections belong in the graph version those rows already force.
+4. **Item 18, the cross-ion shifts and the pump's own current at `VM_c`** (new, unconfirmed): linear and cheap, from
+   the model the build already cites, and it corrects the pool weights the pore build is wiring now.
+5. **Item 7, endosomal pH.** Measured 7 November 2026; designed on Opus on 20 November 2026 (unconfirmed); what remains
+   is the owner's ruling on the design, then a build.
+6. **Item 9, the Krebs cycle and oxidative burden.** Designed on Opus on 20 November 2026 (unconfirmed): oxidant
+   sources keyed to the redox state of the carrier pools; the owner's ruling, then sourced rows.
+7. **Item 19, the energy charge and extracellular ATP** (new, unconfirmed): the same kind of cut as item 9, needing a
+   design ruling of the same kind; its extracellular half is cheap.
+8. **Item 6, the fast/slow partition.** Designed on Opus on 20 November 2026 (unconfirmed): the cofactor families first.
+9. **Item 11, chronic exposure**, and 10. **item 12, receptor-number plasticity** (decision 9.118): design passes,
    larger, and the tardive dyskinesia construct waits on them.
-8. **Item 5, occupancy as the drug seed magnitude.** Partly taken up by the amendment, which carries a target weighted by
-   occupancy (R3); what remains is to be re-read against that ruling.
-9. **Item 10, the shunt.** 10. **Item 4, phosphorylation.** 11. **Item 2, CollecTRI signs.**
-12. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
-13. **Item 1, sensitivity-matrix rank**, after the rebuild. 14. **Item 8, the VAMP1 share.**
-15. **Item 3, protein electrostatics**, the largest change.
+11. **Item 20, inheritance mode and zygosity of the gene perturbations** (new, unconfirmed): it moves the perturbation
+    set, so it comes before any lockbox run.
+12. **Item 23, a readout when no stable steady state exists** (new, unconfirmed): with items 11 and 12, after the
+    root-finder.
+13. **Item 5, occupancy as the drug seed magnitude.** Partly taken up by the amendment, which carries a target weighted
+    by occupancy (R3); what remains is to be re-read against that ruling.
+14. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
+    on a drug's input size.
+15. **Item 10, the shunt.** 16. **Item 4, phosphorylation.** 17. **Item 2, CollecTRI signs.**
+18. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
+19. **Item 1, sensitivity-matrix rank**, after the rebuild. 20. **Item 8, the VAMP1 share.**
+21. **Item 22, protein isoforms inside one UniProt entry** (new, unconfirmed): a large structural change.
+22. **Item 3, protein electrostatics**, the largest change.
 
 Item 13 (co-prescription in FAERS) stays parked by the owner's ruling and is not placed.
 
@@ -977,3 +984,365 @@ S-adenosylmethionine".
   while adding parameters, which the pass should measure before proposing a build.
 - Methylation is locus-specific; any node coarser than a locus is an approximation and needs the justification the
   closest-to-physiology rule asks for.
+
+---
+
+*Items 17 to 23 were proposed on 20 November 2026 by an agent on Opus 5.5 at the owner's request ("please start an opus agent to identify and add new exploration queue items"), drafted from repository files and the session's reports of that day; unconfirmed: each names the research step that would have to run on Fable.*
+
+## 17. The plasma free fraction as a modulated quantity, not a constant
+
+Tagged 2026-11-20, from the amendment of `docs/item37_rulings_draft_2026-11-13.md`, which already sends it here:
+"Modelling the free fraction as a modulated quantity is parked in `docs/exploration_queue.md`, since it would reach
+every drug bound at site II" (carrier row 20, temazepam). This page held no such item until now. Nothing here is
+started and no source has been read for it beyond those the draft cites.
+
+**The idea.** A drug's free fraction enters as a fixed number: the planned `sequesters` edge from a carrier to its
+drug carries a weight of (1 - fu) times the carrier's share (the carrier-share build the amendment rules, D4 of the
+session's engineering audit of 20 November 2026, a scratchpad report not in the repository). But for an albumin site
+II ligand the free fraction moves with the plasma's fatty acids and condition, not with albumin's concentration. The
+draft's own rows show it: temazepam's free fraction does not follow albumin in whole plasma (Chin et al. 2011, slope
+about 0; Divoll et al. 1981, r = -0.34, p = 0.06); it differed by 44 per cent between two sampling times 90 minutes
+apart after a meal, which van Steveninck et al. attribute to free fatty acids (ruling C1, "heparin artefact not
+excluded"); and the site's affinity falls to a tenth at an oleate ratio of 3:1 by a conformational change (Menke and
+Rietbrock 1987, measured with a marker ligand, not temazepam), while concentration dependence is refuted (Morino and
+Sugiyama 1985, rat). A single fu per drug, which the amendment keeps "as an attribute of the drug node", is therefore
+the free fraction of one sampling condition. The idea is to carry what moves it, the site's occupancy by fatty acids
+and other endogenous ligands, displacement by a second drug, and the condition of the plasma, so that a drug's free
+amount depends on them rather than on a constant.
+
+**What it would change.** The free amount of every drug bound at a modulated site. The amendment names site II; the v4
+carrier table (`configs/drug_plasma_carriers_v4.csv`, last changed 11 October 2026) gives albumin, alone or with
+orosomucoid, for 47 of its 62 drugs, and records no site. The project already writes one form of the question: a
+comparative check of kind `displacement` is "the two drugs, with the carrier's nodes lowered", because "the graph has
+no edge from a drug to the carrier it occupies" (`mechanistic_pathway_learning/evaluation/comparative_checks.py`). A
+lowered albumin node is not a fatty acid lowering one site's affinity, since it also frees albumin's every other cargo,
+so the forms to compare are:
+- at entry: a free fraction per labelled example, taken from a value measured in the condition, for an example that
+  names the condition or the second drug (the combination type of `evidence/combined_perturbations.py` already carries
+  "a drug given with its plasma carrier lower");
+- a displacement relation from a site's endogenous ligands (the fatty acids albumin carries, already joined to it by
+  the `binds` edges of `graph/plasma_binding.py`) to each drug node bound at that site;
+- a gate on the `sequesters` weight read from the fatty-acid pool, the device the 9.81 review describes, which 9.81
+  has not ruled on.
+The agent's reading, not a source's: a displaced free amount is the product of the drug's amount and the site's
+state, which an edge of the linear-response encoder cannot form, so the second form would add free drug in proportion
+to the fatty-acid change whatever the dose; the first and third carry the product.
+
+**Cost.** A Fable reading pass first: which drugs of the v5 set bind site II or site I by a measured assignment, and
+the measured size of fatty-acid, uraemic and co-medication displacement for them, whole-plasma values before isolated
+albumin. Days. The entry form is then a short engineering change on the combination type; a relation or a gate is a
+design decision of its own.
+
+**Known limits (do not overstate these in writing).**
+- **No label of the study varies a carrier**, so no label trains the `sequesters` relation (`comparative_checks.py`,
+  `KINDS_THAT_READ_A_TRAINED_RELATION`), and "every row of the evidence table is a (perturbation, symptom) pair with no
+  population axis" (`docs/special_population_carrier_signal.md`, generated 22 October 2026 on `evidence_full_v3`). A
+  modulated free fraction would be seen, if at all, in the comparative checks, which describe the model's behaviour
+  and are not a test it passes or fails.
+- The evidence is for one drug. Its largest number, the 44 per cent, is from a meeting abstract with "heparin artefact
+  not excluded" (ruling C1), and Menke and Rietbrock's tenfold fall was measured with a marker ligand.
+- Which drugs bind site II is not in the repository: the site is the amendment's reading for temazepam (Fitos et al.
+  1986, isolated albumin), not a count over the drug set.
+
+**Status.** Not started. It waits on the carrier-share build, since the weight it would modulate, "Weight = (1 - fu) x
+the carrier's share of the binding" (the amendment of `docs/item37_rulings_draft_2026-11-13.md`), is ruled and not yet
+built.
+
+---
+
+## 18. The cross-ion shifts and the pump's own current at `VM_c`
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From decision 9.112, whose ruling lists
+"What every option still misses": "the pump's own current (35% of the Na+ answer, one coefficient on the cytosolic
+Na+ pool, -24.5 mV per unit fractional change); the cross-ion chloride shift (a Na+ or K+ current moves [Cl-]i more
+than its own pool, which diagonal reaction-to-pool edges cannot carry)", and from the comment beside
+`PUMP_CLAMPED_POOL_SENSITIVITY` in `mechanistic_pathway_learning/graph/membrane_potential.py`, which calls the dropped
+cross-terms "a stated limit of the build, not an omission". Nothing here is started.
+
+**The idea.** The pool route into `VM_c` weights each cytosolic pool by its own pump-clamped sensitivity, the diagonal
+of a 3x3 steady-state response (`docs/extracellular_pool_sensitivities_2026-11-07.md`, section 1). Two terms of the
+same source model are carried by no edge: the off-diagonal shifts (a sustained inward Na+ current moves ln[Cl-]i by
++0.1366 per uA/cm2, more than its own pool's +0.0995) and the electrogenic Na+/K+-ATPase's own current, which rises
+with cytosolic Na+. Unlike the shunt of item 10, both are linear in the pools, so both could be carried by edges with
+no change to the encoder: the pump's current as one more coefficient on the cytosolic Na+ pool's edge into `VM_c`,
+and the shifts as further reaction-to-pool edges weighted by the matrix's rows, or as pool-to-pool edges.
+
+**What it would change.** The settled `VM_c` of every perturbation that moves a cytosolic pool. The size, on the source
+model's own linearisation and not on any graph (the committed `experiments/derive_pump_leak_pool_sensitivity.py`,
+rerun 20 November 2026; the arithmetic below is the agent's, unreviewed): a sodium leak conductance raised by
+1 uS/cm2 moves the steady V_m by +0.947 mV. Its conductance term is +1.228 mV and its sodium-pool term -0.065 mV, the
+two routes the build carries, +1.163 mV together, 23 per cent above the model's answer; the rest is the pump's own
+current (-0.330 mV) and the potassium and chloride shifts (+0.114 mV). For sodium the shifts reverse the sign of the
+pool route (-0.065 mV alone, +0.049 mV with them). How much of this reaches a label in the build also depends on the
+learned gain of `changes_ion_pool`, and is unmeasured.
+
+**Cost.** Engineering for the edges, a day once the form is chosen, since the coefficients come from the model the
+build already cites. Before that, the form is a design choice for the owner, and a Fable check of whether a second
+pump-leak model gives the same off-diagonal terms (the 7 November record reads Hübel and Dahlem 2014 and the scheme
+they take from Kager et al. 2000 for the extracellular side), so that no coefficient rests on one model alone.
+
+**Known limits (do not overstate these in writing).**
+- The matrix is one model's: Düsterwald et al. 2018, a single-compartment rodent pump-leak model at 37 degrees Celsius
+  with extracellular concentrations held constant. The shifts depend on its KCC2 strength and pump law, and per-class
+  chloride (9.112) would change them.
+- The pump's current enters as a response to the Na+ pool. It is not a route for a perturbation of the pump itself:
+  in the same model a fractional change of pump capacity moves the steady V_m by only +0.38 mV per unit (a 10 per cent
+  loss moves -72.59 to -72.63 mV), because the cube-law pump returns to balancing the leak at a higher [Na+]i.
+- Reaction-to-pool edges for the shifts add edges into the pool nodes, so the cone divisor the encoder applies to a
+  node's incoming edges (9.16) has to be checked there, as 9.87 and 9.112 did for `VM_c`'s own row.
+- `ATP1A1` is a lockbox perturbation (`configs/lockbox_v2.json`, with `cluster:ATP1A1`): a design here must not use any
+  result on it.
+
+**Status.** Not started. Not on the critical path: the build goes ahead with both terms stated as limits (9.112).
+
+---
+
+## 19. The energy charge and extracellular ATP, which the currency rule silences
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From the currency rule of
+`mechanistic_pathway_learning/graph/tag_currency_metabolites.py`, which puts ATP, ADP and AMP on
+`DEFAULT_CURRENCY_METABOLITE_NAMES` in every compartment; from `docs/cell_state_representation.md` (13 October 2026, on
+the v4 graph), which counts the energy charge among the quantities "computed and discarded" and names
+`(ATP + 0.5 ADP) / (ATP + ADP + AMP)` among "the quantities still to be built"; and from closed decision 9.71:
+"extracellular ATP is a currency metabolite, so the P2X gating by ATP cannot enter as an edge". No row of
+`docs/open_decisions.md` names the energy charge (searched 20 November 2026). Nothing here is started.
+
+**What the graph holds** (counted 20 November 2026 on `data/processed/graph_full_neuronal_split_binders_drugs_v5`,
+files dated 12 November 2026, the files item 16 reads and not the registered v5 of decision 9.106).
+- Every copy of ATP, ADP and AMP, eight compartments each, is currency, and a currency node's outgoing edges are
+  dropped. 1,659 edges leave them: 1,247 `substrate_of`, 275 `cofactor_of`, 16 `binds` and 121 regulation edges,
+  79 `inhibits` and 42 `activates`, nearly all from BRENDA. Among the regulation edges, AMP activates six of the
+  seven AMPK subunit proteins the graph holds (all but PRKAG2), and cytosolic ATP inhibits
+  Reactome's "Activation of ATP sensitive Potassium channels in neuroendocrine cells". So the energy sensors the graph
+  already names receive nothing from the state they sense.
+- Extracellular ATP (`MAM01371e`) is no hub: 15 outgoing edges, 11 of them OmniPath `binds` edges to P2RX1, P2RX3,
+  P2RX4, P2RX7, P2RY1, P2RY2, P2RY4, P2RY11, P2RY13, GPR17 and TRPM4, at sign 0. It is tagged by its name alone, while
+  adenosine, its product, is on `NEVER_CURRENCY_NAMES` as a transmitter and propagates.
+- A perturbation that lowers ATP synthesis therefore stops at the ATP node. In `data/processed/evidence_full_v5`, 43
+  perturbations fall on oxidative phosphorylation and mitochondrial-DNA maintenance genes (a pattern of the agent's
+  choosing, not a curated list; 143 rows).
+
+**The idea.** Let the adenylate state act without making ATP a hub, by one of the two devices the project already uses
+for that: a multiplier read once after the field settles, as compartment pH and the calcium stores are
+(`models/linear_response_encoder.py`, `graph/calcium_stores.py`, decision 9.75), here the energy charge as the ratio
+above, which `docs/cell_state_representation.md` notes would need no calibration; or a pool node per compartment with
+its feedback confined to the reactions and sensors that depend on it, as `graph/redox_pools.py` does for glutathione
+and NADPH. Extracellular ATP is a separate and smaller change: a compartment exemption from the name rule, as
+`NEVER_CURRENCY_NAMES` made for the transmitters, plus signed agonist edges to the purinergic receptors, since a
+`binds` edge at sign 0 would carry nothing even from an untagged node.
+
+**Cost.** The extracellular exemption is engineering (hours), but the signed receptor edges are curation, so on Fable,
+two sources a row: which P2X and P2Y receptors ATP and ADP activate. The energy charge is a design decision for the
+owner (multiplier or pool node, which targets it reaches) and then a build of the size of `graph/redox_pools.py`.
+
+**Known limits (do not overstate these in writing).**
+- Nothing is measured on a model. That a perturbation's effect stops at ATP is a statement about edges, not about
+  labels, and the 43 perturbations may reach their labels by other routes.
+- Like the pH and store weights, a multiplier would break positive homogeneity, the registered cost of both; and a
+  ratio, not being even in the deviation as the pH weight is, would also break the antisymmetry of a gain and a loss
+  of function, as the store weight does.
+- The BRENDA rows mix allosteric regulation with product inhibition (ADP, recorded as inhibiting PFKM, PFKL and PFKP,
+  is a product of the phosphofructokinase reaction; the agent's reading, not checked against BRENDA's own entries), so
+  the targets an energy-charge route reaches need curation before they are trusted.
+- Four of the 43 are lockbox perturbations (`BCS1L`, `COX10`, `MFN2`, `UQCRC1`), and so is `ABCC9`, a subunit of the
+  ATP-sensitive potassium channel: a design here must not use any result on them.
+
+**Status.** Not started.
+
+---
+
+## 20. Inheritance mode and zygosity of the gene perturbations
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From decision 9.73, whose option (b),
+"Genebass as a gene-level soft prior for a heterozygous loss perturbation", "needs zygosity in the perturbations" (the
+row recommends against (b), on the Genebass measurement, and the choice is still the owner's), and from
+`docs/physiological_adherence_review.md` (13 October 2026, on the v4 graph), sections 11 and 14: "every gene
+perturbation is a complete knockout at magnitude 1". Nothing here is started.
+
+**What the evidence holds** (counted 20 November 2026 on `data/processed/evidence_full_v5`, files dated 12 November
+2026, and on the raw files named).
+- Each monogenic report is seeded with "its gene's node, sign and magnitude 1"
+  (`mechanistic_pathway_learning/evidence/assemble_evidence_table.py`), so a heterozygous loss and a biallelic loss of
+  the same gene are one input. Decision 9.54 (d) already splits a gene's reports by mechanism (loss, hypermorph,
+  neomorph, `evidence/allele_mechanisms.py`); nothing splits them by inheritance.
+- Both sources the project holds state inheritance per gene and disease. HPO's `genes_to_phenotype.txt` (24 October
+  2026) carries it as mode-of-inheritance terms: of the 2,542 gene perturbations, 680 have only autosomal dominant
+  rows, 1,034 only autosomal recessive, 365 both and 463 neither. Read per labelled row's own diseases, 105
+  perturbations, AARS1 among them, carry labels from a dominant disease and a recessive one at once; 5,794 of the
+  9,070 row-to-disease links find no inheritance row, mostly Orphanet diseases, whose inheritance is in Orphadata
+  product 9, which is not on disk. Gene2Phenotype's "allelic requirement" (`G2P_all_panels.csv`, 2 November 2026)
+  covers 1,528 of the perturbations at definitive, strong or moderate confidence (762 monoallelic, 868 biallelic,
+  107 both). `allele_mechanisms.py` already reads that column into `Gene2PhenotypeRecord.allelic_requirement`, and
+  nothing uses it.
+
+**The idea.** Carry the dose of the lesion. A heterozygous null halves the gene's dosage and a biallelic null removes
+it, so the seed's magnitude would follow the allelic requirement of the disease the report comes from, and a gene whose
+reports come from both kinds would become two perturbations, as 9.54 (d) made one per mechanism, each keeping the gene
+as its leakage group.
+
+**What it would change.** The input magnitude of most gene perturbations, and the perturbation set itself for the
+genes labelled from both kinds. In the linear-response encoder a magnitude scales the whole field, so it reaches a
+label only through the head; how much that moves the scores is unmeasured. It would also give option (b) of 9.73 the
+input it lacks, whatever the owner decides about (b).
+
+**Cost.** Engineering to carry the field and split the reports, a day, plus a scripted fetch of Orphadata product 9.
+The magnitude of each class is research on Fable and then the owner's ruling, under the closest-to-physiology rule:
+a value of one half for a heterozygous null is the agent's statement of dosage, not a sourced measurement, and
+compensation by the remaining copy, hypomorphic alleles with residual activity and dominant-negative products all move
+it.
+
+**Known limits (do not overstate these in writing).**
+- Inheritance belongs to a gene and disease pair, not to a gene, and the two sources would have to be reconciled pair
+  by pair, with their disagreements recorded beside the rows ("Manual curation takes more than one source").
+- Dominant inheritance is not haploinsufficiency: gain of function is typed already (9.54), and a dominant-negative
+  loss is a deeper loss than a null copy. X-linked genes differ between hemizygous males and heterozygous females,
+  and the evidence table has no population axis, sex included, to say which a label comes from.
+- The 105 is a lower edge and the 365 an upper edge of one count, not a measured size, and neither says whether a
+  split changes any score.
+- It moves the perturbation set, which falls before the held-out draw, so it is outcome-blind only while the lockbox
+  is undrawn; a gene in the lockbox stays in it with all its parts.
+
+**Status.** Not started.
+
+---
+
+## 21. The pinned Human-GEM against upstream's open issues and merged fixes
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From the Fable passes of 20 November 2026
+on the pinned model (`human_gem_errors_2026-11-20.md` and `hgem_q5d_2026-11-20.md` in the session scratchpad, not in
+the repository), from the corrections they led to (`configs/human_gem_corrections.csv`, 82 rows under the owner's
+rulings of that day, applied where the model is read by `mechanistic_pathway_learning/graph/human_gem_corrections.py`),
+and from the owner's ruling recorded in the amendment of `docs/item37_rulings_draft_2026-11-13.md`: "it's ALWAYS fine to
+use GitHub's search API". Nothing here is started.
+
+**The idea.** Every repair in the table surfaced while another question was being answered: deuterated ChEBI ids, two
+compartment rows filed under the wrong metabolite, NAAA's compartment, two structures, a hydroperoxide reduction
+written as a hydrolysis. Upstream already lists whole classes of such defects. The pass of 20 November read, on
+upstream's main branch (2.1.1), open issue #1185, which lists 87 charge-unbalanced reactions, "A redox step without its
+carrier"; #1173, the "oxidation-as-hydrolysis pattern", which names seven reactions; #1164, which the pass cites for
+reactions the source model duplicated across compartments (the 12-lipoxygenase family); and #1119, "Ceramidase
+reactions are in the cytosol, where no ceramidase acts". And the pin
+(Human-GEM v2.0.1, commit `93e8d292a0cb`, `scripts/fetch_raw_sources.sh`) lacks what upstream merged in 2.1.0 and
+2.1.1, of which the passes met some (issue #1085 and pull request #1104, both fixed in 2.1.0, and the 17 ChEBI
+replacements of ruling Q3). A sweep would list every reaction and metabolite those issues and merged changes name, find
+which are in the graph, and pass those to Fable to be decided one by one through the corrections table, rather than
+waiting for each to surface.
+
+**What it would change.** Equations, compartments and gene rules of the metabolic layer, so edges, and a node id
+wherever a species is renamed or added, which makes each such build a new graph version. How many of the named
+reactions lie on any route to a labelled node is not counted.
+
+**Cost.** Listing the issues and merged changes through GitHub's search API, and reading what they cite, is research,
+so on Fable; finding which named reactions are in the graph is engineering, about an hour. Each correction is then a
+Fable reading and an owner ruling, as the 82 rows of 20 November were. Whether to move the pin to 2.1.1 instead is a
+decision of its own and would not replace the sweep: the issues are open upstream too, and upstream keeps MAR20093 in
+the cytosol, which ruling Q5d moved to the lysosome.
+
+**Known limits (do not overstate these in writing).**
+- An open issue is a proposal, not a correction. It is a lead to sources, and a row must rest on the sources it cites,
+  read on their own, two where possible.
+- The 87 are upstream's count on its main branch; the pinned 2.0.1 may hold a different set.
+- A correction can change nothing the encoder reads: a participant that is a currency metabolite sends nothing
+  (item 19), while a gene rule adds catalysis edges. That is the first thing to check for each class.
+- The session's repository scope covers only this project, so the route to upstream is GitHub's search API; the ruling
+  that allows it is recorded in the amendment, not yet in `CLAUDE.md`.
+
+**Status.** Not started.
+
+---
+
+## 22. Protein isoforms inside one UniProt entry
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From
+`mechanistic_pathway_learning/graph/gene_protein_split.py`, which states "Isoforms inside one entry are not
+represented: no source resolves them", and from `docs/gene_protein_split.md` (8 October 2026, measured on the
+`graph_full_neuronal` graph of that date, so history), which calls isoforms "the largest departure" of the split and
+quotes `yang2016widespread`: "The majority of isoform pairs share less than 50% of their interactions" and
+"alternative isoforms tend to behave like distinct proteins rather than minor variants of each other". Nothing here
+is started.
+
+**The idea.** The split makes one protein node per reviewed entry, and splits a gene with several entries only "where
+data tell its entries apart" (the owner, 8 October 2026: "only split apart the ones that can actually be differentiated
+from each other by data"). The same rule could reach one level down: an entry gets one protein node per group of
+isoforms that a source tells apart, and keeps one node otherwise. Whether any source does is the first question, and
+the premise "no source resolves them" is narrower than it reads. It holds for the sources that make edges (the
+OmniPath interaction file "holds no isoform accession (0 of 126,125 rows on either side)"; the Reactome exports on disk
+name 1,552 accessions, none with an isoform suffix, counted 20 November 2026), but IntAct names isoforms, and decision
+9.88 already classes each end of a negative record as canonical or isoform: of the 985 records of
+`data/raw/intact/intact_negative.txt` (2 November 2026), 333 name an isoform at one end or both, and 763 of the 983
+9.88 counted come from Yang et al. 2016's splice-isoform study, whose isoform-resolved positive records are in no file
+on disk (`data/raw/intact/` holds the negative file alone, and OmniPath's file names no isoform).
+
+**What it would change.** Edges from isoform-resolved records would go to the isoform node they name, and an IntAct
+negative between isoforms could then contest an edge between the same isoforms, rather than being set aside as 9.88
+must set it aside today. A drug or allele that acts on one isoform could be seeded on it. Node ids and degrees change,
+so each such build is a new graph version, and the registered degree strata move with the split, as the owner ruled
+for the split itself.
+
+**Cost.** A Fable pass first: which sources with verified licences resolve isoforms for positive edges, for brain
+expression by cell class (an isoform node with no expression of its own takes its entry's weight) and for drug
+targets, each named as a candidate here and none read. Then an extension of the split's grouping rule, about two days of
+engineering, and a rebuild.
+
+**Known limits (do not overstate these in writing).**
+- Most interaction and drug-target records are gene- or entry-level, so most entries would stay one node; the gain is
+  confined to the entries a source resolves, and how many those are is not counted.
+- An isoform split without isoform-level expression in the cell classes would give each isoform its entry's weight,
+  which states nothing new about where it acts.
+- Peptides cut from one precursor (POMC's melanocortins and beta-endorphin on one node, PDYN, PENK) are the
+  neighbouring departure in the same table of `docs/gene_protein_split.md` and are not part of this item; peptide
+  hormones in the extracellular pool are a separate decision under 9.76.
+- An example of why it matters, from the agent's general knowledge and not read for this item: the long and short
+  forms of the D2 receptor are isoforms of one entry and are held to differ in their pre- and postsynaptic roles.
+
+**Status.** Not started.
+
+---
+
+## 23. A readout that is not the subthreshold fixed point: when no stable steady state exists
+
+Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From the registered claim
+(`docs/preregistration.md`, item 7: "a fixed-point model cannot represent excitability, and the electrical layer's
+seven voltage-gated feedback loops are therefore read at their settled value and not as an action potential"), from
+case 8 of `docs/nonlinearity_inventory.md` ("Multistability, hysteresis and sustained oscillation"), and from the
+direction the amendment of `docs/item37_rulings_draft_2026-11-13.md` rules and has not built: the gain clamp removed,
+saturation inside the loop, a root-finder "with perturbations at a bifurcation detected and flagged", several steady
+states combined by noisy-OR, and the owner's "keep only stable roots" and "part of the purpose of moving away from the
+single fixed point with forced damping (via gain clamp) is to allow modeling of non-steady-state dynamics". Nothing
+here is started.
+
+**The idea.** Once the clamp is gone, a perturbation can leave the system with no stable steady state at all: a
+sustained oscillation, or regenerative firing through the voltage-gated loops of the electrical layer. Under "keep only
+stable roots" such a perturbation has nothing to read and is only flagged. Multistability goes to the deferred
+decision on the search for several steady states; this item is the case with none. What a pass would compare, as
+candidates and not findings: the average over the cycle, read from the unclamped iteration the amendment keeps for
+per-round readings; the cycle's amplitude as a readout of its own; a rate transfer applied to the settled `VM_c`
+after the propagation, placed where the pH weight sits; or flagging and excluding such perturbations, with their count
+reported.
+
+**What it would change.** The registered claim, which says the model "must not be read as showing excitability", so
+this goes through an amendment; and the prediction for every perturbation without a stable root. The graph already
+carries a candidate oscillator in signed form: in the v5 graph files (dated 12 November 2026) 124 edges join the nodes
+of 20 clock genes of the agent's choosing (among them 48 `regulates_transcription_of`, 30 `inhibits` and 22
+`activates`), and the evidence holds PER2, PER3, CRY1, RORA and RORB perturbations with one row each, besides
+insomnia and somnolence among its symptoms.
+
+**Cost.** The first step is engineering and cheap: a count of the graph's negative-feedback cycles, beside the count
+of positive-feedback cycles the amendment already asks for before the root-finder is built. The rest waits on the
+root-finder: a Fable reading pass on how rate and mean-field models read a limit cycle, then design and the owner's
+ruling.
+
+**Known limits (do not overstate these in writing).**
+- Nothing is measured. How many perturbations would have no stable root is unknown until the unclamped root-finder
+  exists, and it may be none.
+- A round is not physical time, which the amendment states, so a period read from rounds is no period in seconds; only
+  summaries free of time (an average, an amplitude) would mean anything.
+- An action potential needs fast gating kinetics and, for conduction, space (9.128: "spatial and suprathreshold"),
+  which the graph does not carry; a rate transfer would be a stated layer needing a source, not physiology the graph
+  derives.
+- `FBXL3`, a clock gene, is a lockbox perturbation: a design here must not use any result on it. The readout records
+  retired by decisions 9.103 and 9.104 are not evidence for or against any of this.
+
+**Status.** Not started. Waits on the root-finder of the amendment.
+
+---
