@@ -251,7 +251,7 @@ def interaction_sign(row: dict) -> tuple[str, float]:
 DEFAULT_CURATED_EDGE_SIGN_OVERRIDES_PATH = Path("configs/curated_edge_sign_overrides.csv")
 
 
-def load_curated_edge_sign_overrides(overrides_path: Path | None) -> dict[tuple[str, str], tuple[str, float]]:
+def load_curated_edge_sign_overrides(overrides_path: Path | None) -> dict[tuple[str, str], tuple[str, float, str, float]]:
     """Signs that the source annotates one way and the physiology requires the other way.
 
     Decision 9.10(a), the owner on 14 October 2026: "Go ahead with fixing the data for v4". The case the table was
@@ -263,10 +263,15 @@ def load_curated_edge_sign_overrides(overrides_path: Path | None) -> dict[tuple[
     The table is keyed on the gene symbol pair and carries the sourced value as well as the corrected one, so a
     refresh of the source that changes what it annotates does not silently keep an override that no longer applies:
     an override whose sourced value no longer matches is reported by the caller and not applied.
+
+    Each value is (relation_type_corrected, sign_corrected, relation_type_as_sourced, sign_as_sourced). The table's
+    two other columns, source_is_brain_expressed and reason, are not read, so whether a row is applied does not depend
+    on its source_is_brain_expressed; what the loader should do with that column, if anything, is defect (6) of
+    decision 9.122, open on 20 November 2026.
     """
     if overrides_path is None or not Path(overrides_path).exists():
         return {}
-    overrides: dict[tuple[str, str], tuple[str, float]] = {}
+    overrides: dict[tuple[str, str], tuple[str, float, str, float]] = {}
     with open(overrides_path, encoding="utf-8") as overrides_file:
         for row in csv.DictReader(overrides_file):
             overrides[(row["source_symbol"], row["target_symbol"])] = (row["relation_type_corrected"],

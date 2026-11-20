@@ -4,12 +4,15 @@ OmniPath records is_stimulation=True for the G-protein-coupled receptor kinases 
 receptor. Phosphorylating a receptor's intracellular face uncouples it from its G protein, so the propagation,
 which reads a sign as the effect on the destination's activity, needs -1 there.
 
-The second test is the one that matters over time: it fails if the source gains a stimulation edge from a
-desensitising enzyme into a receptor that the curated table does not cover, so a refresh of OmniPath cannot
-silently reintroduce the defect.
+test_the_source_has_no_uncovered_stimulation_from_a_desensitising_enzyme_into_a_receptor is the one that matters over
+time: it fails if the source gains a stimulation edge from a desensitising enzyme into a receptor that the curated
+table does not cover, so a refresh of OmniPath cannot silently reintroduce the defect. It checks only the receptors
+whose symbol RECEPTOR_FAMILY_PATTERN matches; a stimulation edge into any other receptor (a chemokine receptor,
+rhodopsin, a frizzled) is not checked.
 """
 import csv
 import re
+import typing
 from pathlib import Path
 
 import pandas as pd
@@ -103,3 +106,14 @@ def test_the_source_has_no_uncovered_stimulation_from_a_desensitising_enzyme_int
     assert not uncovered_pairs, (
         "the source states a stimulation from a desensitising enzyme into a receptor that the curated table does "
         f"not cover, so the sign defect of decision 9.10(a) would re-enter the graph: {sorted(uncovered_pairs)}")
+
+
+def test_each_loaded_override_has_the_shape_its_annotation_states():
+    """Each value the loader returns is the corrected relation and sign followed by the sourced ones, as its return
+    annotation says. Until 20 November 2026 the annotation said each value was a (relation, sign) pair."""
+    value_annotation = typing.get_args(typing.get_type_hints(load_curated_edge_sign_overrides)["return"])[1]
+    element_types = typing.get_args(value_annotation)
+    overrides = load_curated_edge_sign_overrides(CURATED_OVERRIDES_PATH)
+    assert overrides, "the curated override table is empty"
+    for pair, override in overrides.items():
+        assert len(override) == len(element_types) and all(map(isinstance, override, element_types)), (pair, override)
