@@ -3,6 +3,7 @@ detection and the curated reactions (mechanistic_pathway_learning/graph/reactome
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -20,6 +21,7 @@ from mechanistic_pathway_learning.graph.reactome_import import (
     voltage_gating_sign,
 )
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SODIUM, POTASSIUM, CALCIUM, CHLORIDE, MAGNESIUM = "MAM02519", "MAM02200", "MAM01413", "MAM01442", "MAM02482"
 ION_BASES = {"Na+": SODIUM, "K+": POTASSIUM, "Ca2+": CALCIUM, "Cl-": CHLORIDE, "Mg2+": MAGNESIUM}
 ION_CHARGES = {SODIUM: 1, POTASSIUM: 1, CALCIUM: 2, CHLORIDE: -1, MAGNESIUM: 2}
@@ -289,33 +291,53 @@ def test_read_human_gem_participants_keeps_stoichiometry():
     assert "MAR00334" not in participants  # no ion among its participants
 
 
-@pytest.mark.parametrize("variant_directory", ["data/processed/graph_neuronal"])
-def test_built_variant_is_consistent_when_present(variant_directory):
-    from pathlib import Path
+# The built variant the two tests below read: the neuronal variant of the confirmatory graph, which the graphs stage of
+# scripts/rebuild_data_layer.sh writes (its step "neuronal and oxidative variant") with the registered
+# --membrane-potential build. Until 20 November 2026 they read data/processed/graph_neuronal, the same builder run on
+# the monogenic slice (the pilot graph of data/releases/v0.4), which only that script's optional slice stage builds, so
+# they were skipped on every disk whose rebuild did not run it.
+NEURONAL_VARIANT = REPOSITORY_ROOT / "data" / "processed" / "graph_full_neuronal"
+REGISTERED_RULES = REPOSITORY_ROOT / "configs" / "registered_rules.json"
 
-    directory = Path(variant_directory)
-    if not (directory / "nodes.parquet").exists():
-        pytest.skip(f"{variant_directory} has not been built")
-    nodes = pd.read_parquet(directory / "nodes.parquet")
-    edges = pd.read_parquet(directory / "edges.parquet")
-    summary = json.loads((directory / "neuronal_variant_summary.json").read_text())
+
+@pytest.fixture(scope="module")
+def built_neuronal_variant() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    """The nodes, edges and build summary of NEURONAL_VARIANT; the tests that read it skip where it is not built."""
+    if not (NEURONAL_VARIANT / "nodes.parquet").exists():
+        pytest.skip(f"{NEURONAL_VARIANT.relative_to(REPOSITORY_ROOT)} is not built here; "
+                    "bash scripts/rebuild_data_layer.sh (the graphs stage) builds it")
+    return (pd.read_parquet(NEURONAL_VARIANT / "nodes.parquet"), pd.read_parquet(NEURONAL_VARIANT / "edges.parquet"),
+            json.loads((NEURONAL_VARIANT / "neuronal_variant_summary.json").read_text()))
+
+
+def test_built_variant_is_consistent_when_present(built_neuronal_variant):
+    nodes, edges, summary = built_neuronal_variant
     assert not (set(edges.source_id) | set(edges.target_id)) - set(nodes.node_id)
     assert (nodes.node_type == "membrane_potential").sum() == 1
     assert len(summary["release_reactions"]) >= 6
-    assert summary["membrane_potential_edges"]["Reactome"] > 0 and summary["voltage_gating_edges"]["Reactome"] > 0
+    assert summary["voltage_gating_edges"]["Reactome"] > 0
+    # Until 20 November 2026 this test also asserted summary["membrane_potential_edges"]["Reactome"] > 0, which held on
+    # every build before 26 October 2026: a Reactome reaction moving net charge across the plasma membrane carried a
+    # changes_membrane_potential edge into VM_c. The registered build, computed_from_the_pools (decision 9.87,
+    # amendment item 35), makes no reaction edge into VM_c: the six ion pools alone enter it, with the weights of the
+    # linearised parallel-conductance equation, which sum to 1, and a reaction reaches the potential through a pool it
+    # fills. So the test asserts that build, and that the Reactome layer still reaches the potential, through the pools.
+    registered = json.loads(REGISTERED_RULES.read_text())["rules"]["membrane_potential_build"]["value"]
+    assert registered == "computed_from_the_pools", f"the checks below are those of computed_from_the_pools; write those of {registered!r}"
+    assert summary["membrane_potential_build"] == registered, \
+        f"{NEURONAL_VARIANT.name} was built under {summary['membrane_potential_build']!r}, not the registered {registered!r}"
+    assert not summary["membrane_potential_edges"] and not (edges.relation_type == "changes_membrane_potential").any()
+    entering = edges[edges.target_id == MEMBRANE_POTENTIAL_NODE]
+    assert set(entering.relation_type) == {"driving_force"} and len(entering) == 6
+    assert entering.weight.sum() == pytest.approx(1.0)
+    assert (edges.source_id.str.startswith("RCT_") & edges.target_id.isin(set(entering.source_id))).any(), \
+        "no Reactome reaction fills a pool that enters the membrane potential"
 
 
-def test_curated_vesicle_chain_and_reverse_transport_in_the_built_variant():
+def test_curated_vesicle_chain_and_reverse_transport_in_the_built_variant(built_neuronal_variant):
     """In the built variant a transmitter reaches the cleft by exocytosis only through its vesicle lumen, and reverse
     transport through the plasma-membrane transporter is the one route that bypasses the vesicle."""
-    from pathlib import Path
-
-    directory = Path("data/processed/graph_neuronal")
-    if not (directory / "nodes.parquet").exists():
-        pytest.skip("the neuronal variant has not been built")
-    nodes = pd.read_parquet(directory / "nodes.parquet")
-    edges = pd.read_parquet(directory / "edges.parquet")
-    summary = json.loads((directory / "neuronal_variant_summary.json").read_text())
+    nodes, edges, summary = built_neuronal_variant
     catalysts = edges[edges.relation_type == "catalyzed_by"]
     vesicular = {"SLC18A1", "SLC18A2", "SLC18A3", "SLC32A1", "SLC17A6", "SLC17A7", "SLC17A8"}
     compartment_of = dict(zip(nodes.node_id, nodes.compartment.astype(str)))
