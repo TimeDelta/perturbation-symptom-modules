@@ -315,6 +315,12 @@ def apply_plan(plan: Plan, root: Path = REPOSITORY_ROOT, today: date | None = No
     for entry in plan.moves:
         (root / entry["to"]).parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(["git", "mv", entry["from"], entry["to"]], cwd=root, check=True)
+    # a folder whose every file moved is left empty on disk by git mv; remove it, up to docs/ itself
+    for entry in plan.moves:
+        folder = (root / entry["from"]).parent
+        while folder != root / "docs" and folder.is_dir() and not any(folder.iterdir()):
+            folder.rmdir()
+            folder = folder.parent
     for source, edits in plan.edits.items():
         path = root / source
         lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
