@@ -288,11 +288,11 @@ def signed_cycle_counts(num_nodes: int, source, target, sign, max_length: int, n
                 next_node, edge_sign, bits = row[position]
                 if next_node == start:
                     continue
-                cycle_sign = path_sign * edge_sign
-                # the edge closing a cycle back to start lies before position in the sorted row, so it is looked up
+                # an edge back to start is skipped here and counted once, when its node is left (below)
                 if next_node not in on_path and depth + 1 < max_length:
                     on_path.add(next_node)
-                    stack.append((next_node, bisect.bisect_left(keys[next_node], start), cycle_sign, path_bits | bits | node_bits_list[next_node], depth + 1))
+                    stack.append((next_node, bisect.bisect_left(keys[next_node], start), path_sign * edge_sign,
+                                  path_bits | bits | node_bits_list[next_node], depth + 1))
                 continue
             # every neighbour of node has been tried: close the cycles back to start, then leave node
             if depth >= 1:
