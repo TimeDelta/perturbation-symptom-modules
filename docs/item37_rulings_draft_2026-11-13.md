@@ -773,7 +773,10 @@ Köhler et al. 1993), waits on a Fable reading of Köhler et al. 1993, which the
 - **Clearance is registered in the confirmatory model.** The owner, 18 November 2026: "just REGISTER it. i don't care
   how. no clearance, etc. is unacceptable for this project". The seed split is the sourced-ratio version renormalised
   to 1 per drug, with the uniform split as fallback; the quantities beyond C and K that the 18 November answer lists
-  are sourced first (the owner: "accepted. please start the sourcing pass").
+  are sourced first (the owner: "accepted. please start the sourcing pass"). **Superseded the same day**: the uniform
+  fallback was withdrawn ("no uniform fallback. it's too non-physiological", 18 November 2026, 19:56 UTC). The
+  clearance seed split is the occupancy split of section 13, with its learned class fallback (the owner, 20 November
+  2026, confirming that reading: "Yes").
 - **Dose enters through concentration, not a therapeutic-index scale.** The owner accepted that labels are not
   dose-resolved and that a concentration sweep gives the multiple readouts.
 - **Clearance runs through one universal clearance node.** The owner, 18 November 2026, accepting that clearing
