@@ -1143,7 +1143,8 @@ imidazole -0.25, aromatic amines -0.17, pyridine-type nitrogens -0.15, barbitura
     leak; this meets ruling 3 of section 1.
 26. Primidone's ten sodium-channel edges move to phenobarbital: primidone's label says its mechanism "is not known",
     the recordings are on phenobarbital (Macdonald and McLean 1986; Schwarz 1979), and phenobarbital's own node carried
-    no sodium-channel target.
+    no sodium-channel target. **Superseded by P5** (section 17): primidone keeps one class-level sodium-channel
+    annotation at reduced weight, and phenobarbital gets none.
 
 **Prodrugs and metabolites** (`prodrug_audit_2026-11-19.md`; the build has no `clears` edge, no drug-to-enzyme and no
 drug-to-metabolite edge, so no drug's metabolism is represented, which is what the owner suspected):
