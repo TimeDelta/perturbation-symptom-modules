@@ -38,6 +38,15 @@ names for the pair; without such a row it withholds the target, so the drug gets
 conflict (ActionConflict), which the evidence build and the OnSIDES build write as chembl_action_conflicts.csv. A
 withheld target still counts against the single-target rule and still keeps a drug from the fallbacks meant for a drug
 ChEMBL gives no target. Every run before 20 November 2026 kept the action of the last row read.
+
+A ruled removal. configs/drug_target_exclusions.csv lists mechanism targets, or members of a family or complex
+target, that a ruling of the owner's removes, each row with its ruling and sources (DrugTargetExclusion). A row names
+a drug and a target (the drug's edges to that whole target go), or a target and one member gene, for one drug or, with
+drug_chembl_id blank, for every drug (that member leaves the target, and the target's magnitude is spread over the
+members left, as over the members that are graph nodes). mechanism_targets applies the table before anything else, so
+an excluded target is neither kept, nor reported as an action conflict, nor counted against the single-target rule,
+and check_graph_compounds_have_no_mechanism reads a ChEMBL form whose every mechanism row is excluded as carrying none.
+Every run before 20 November 2026 kept every target ChEMBL gives.
 """
 from __future__ import annotations
 
@@ -58,6 +67,9 @@ CHEMBL_PARENT_CORRECTIONS_PATH = Path(__file__).resolve().parents[2] / "configs"
 CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "chembl_action_conflict_resolutions.csv"
 ACTION_CONFLICT_RESOLUTION_COLUMNS = ("drug_chembl_id", "target_chembl_id", "chosen_action", "sources", "note")
 ACTION_CONFLICTS_REPORT_FILENAME = "chembl_action_conflicts.csv"
+# mechanism targets, or members of one, that a ruling removes (module docstring, "A ruled removal")
+DRUG_TARGET_EXCLUSIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "drug_target_exclusions.csv"
+DRUG_TARGET_EXCLUSION_COLUMNS = ("drug_chembl_id", "target_chembl_id", "gene_symbol", "ruling", "sources", "note")
 NON_PROTEIN_TARGETS_PATH = Path("configs/non_protein_drug_targets.csv")
 DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH = Path("configs/drugs_acting_as_graph_compounds.csv")
 EXOGENOUS_SUPPLY = "EXOGENOUS SUPPLY"  # action of a drug that is itself the graph compound it raises
@@ -122,6 +134,21 @@ class ActionConflictResolution:
     chosen_action: str
     sources: str
     note: str = ""
+
+
+@dataclass(frozen=True)
+class DrugTargetExclusion:
+    """A row of configs/drug_target_exclusions.csv (module docstring, "A ruled removal"): drug_chembl_id blank means
+    every drug, gene_symbol blank the whole target; a row may not leave both blank."""
+    drug_chembl_id: str
+    target_chembl_id: str
+    gene_symbol: str
+    ruling: str
+    sources: str
+    note: str = ""
+
+    def applies_to(self, target_chembl_id: str, drug_chembl_ids: set[str]) -> bool:
+        return self.target_chembl_id == target_chembl_id and (not self.drug_chembl_id or self.drug_chembl_id in drug_chembl_ids)
 
 
 @dataclass(frozen=True)
@@ -260,6 +287,55 @@ def default_action_conflict_resolutions() -> dict[tuple[str, str], ActionConflic
     return _cached_action_conflict_resolutions(str(path), stat.st_mtime_ns, stat.st_size)
 
 
+def read_drug_target_exclusions(path: Path | None = DRUG_TARGET_EXCLUSIONS_PATH) -> tuple[DrugTargetExclusion, ...]:
+    """The rows of configs/drug_target_exclusions.csv; () without a table.
+
+    Refuses a table with other columns, a row without a target, a row that leaves both the drug and the member blank
+    (it would remove a whole target from every drug, which no ruling has asked for), a row that names no ruling or no
+    source (a curated row names its sources), and a row given twice."""
+    if path is None or not Path(path).exists():
+        return ()
+    exclusions: list[DrugTargetExclusion] = []
+    with open(path, newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) != DRUG_TARGET_EXCLUSION_COLUMNS:
+            raise ValueError(f"{path} has columns {reader.fieldnames}, expected {list(DRUG_TARGET_EXCLUSION_COLUMNS)}")
+        for line_number, row in enumerate(reader, start=2):
+            values = {column: (row.get(column) or "").strip() for column in DRUG_TARGET_EXCLUSION_COLUMNS}
+            exclusion = DrugTargetExclusion(**values)
+            if not exclusion.target_chembl_id:
+                raise ValueError(f"{path} line {line_number}: a row names the target it removes from")
+            if not exclusion.drug_chembl_id and not exclusion.gene_symbol:
+                raise ValueError(f"{path} line {line_number}: a row names a drug, a member gene or both")
+            if not exclusion.ruling or not exclusion.sources:
+                raise ValueError(f"{path} line {line_number}: a curated row names its ruling and its sources")
+            key = (exclusion.drug_chembl_id, exclusion.target_chembl_id, exclusion.gene_symbol)
+            if any((other.drug_chembl_id, other.target_chembl_id, other.gene_symbol) == key for other in exclusions):
+                raise ValueError(f"{path} line {line_number}: {key} is given twice")
+            exclusions.append(exclusion)
+    return tuple(exclusions)
+
+
+@lru_cache(maxsize=8)
+def _cached_drug_target_exclusions(path: str, modified_ns: int, size: int) -> tuple[DrugTargetExclusion, ...]:
+    return read_drug_target_exclusions(Path(path))
+
+
+def default_drug_target_exclusions() -> tuple[DrugTargetExclusion, ...]:
+    """configs/drug_target_exclusions.csv, read again only when the file changes; () without it."""
+    path = DRUG_TARGET_EXCLUSIONS_PATH
+    if not path.exists():
+        return ()
+    stat = path.stat()
+    return _cached_drug_target_exclusions(str(path), stat.st_mtime_ns, stat.st_size)
+
+
+def excluded_members(target_chembl_id: str, drug_chembl_ids: set[str], exclusions: tuple[DrugTargetExclusion, ...]) -> tuple[bool, set[str]]:
+    """(whether the whole target is removed for this drug, the member genes removed from it) under exclusions."""
+    applying = [exclusion for exclusion in exclusions if exclusion.applies_to(target_chembl_id, drug_chembl_ids)]
+    return any(not exclusion.gene_symbol for exclusion in applying), {exclusion.gene_symbol for exclusion in applying if exclusion.gene_symbol}
+
+
 def load_chembl_caches(chembl_directory: Path, corrections_path: Path | None = CHEMBL_PARENT_CORRECTIONS_PATH,
                        action_resolutions_path: Path | None = CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH) -> ChemblCaches:
     """The ChEMBL caches of chembl_directory, the PubChem-to-ChEMBL map corrected by read_pubchem_to_chembl and the
@@ -278,8 +354,14 @@ def normalized_action_type(action_type: str | None) -> str | None:
 def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, list[dict]], targets: dict[str, dict], human_only: bool = True,
                       missing_target_ids: set[str] | None = None,
                       action_resolutions: Mapping[tuple[str, str], ActionConflictResolution] | None = None,
-                      conflicts: list[ActionConflict] | None = None) -> list[DrugTarget]:
+                      conflicts: list[ActionConflict] | None = None,
+                      exclusions: tuple[DrugTargetExclusion, ...] | None = None) -> list[DrugTarget]:
     """Mechanism targets of the given ChEMBL molecules (the ids of one drug), one entry per ChEMBL target (families count as one).
+
+    The removals of exclusions are applied first (module docstring, "A ruled removal"; None reads
+    configs/drug_target_exclusions.csv, () removes nothing): a row keyed by one of chembl_ids, or by the molecule or
+    parent id of a row naming the target, applies. A target removed whole is dropped before anything below; a target
+    whose every member gene is removed is dropped too.
 
     When the rows naming one target, over all of chembl_ids, carry more than one action type (compared upper-cased; a
     row with no action type counts as one more), no action is chosen from them (module docstring, ruling of 20 November
@@ -294,6 +376,8 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
     """
     if action_resolutions is None:
         action_resolutions = default_action_conflict_resolutions()
+    if exclusions is None:
+        exclusions = default_drug_target_exclusions()
     rows_by_target: dict[str, list[tuple[str, dict]]] = {}
     for chembl_id in chembl_ids:
         for mechanism in mechanisms_by_molecule.get(chembl_id, []):
@@ -305,6 +389,10 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
                 rows_by_target[target_id].append((chembl_id, mechanism))
     drug_targets: list[DrugTarget] = []
     for target_id, rows in rows_by_target.items():
+        drug_ids_of_rows = set(chembl_ids) | {mechanism.get(key) for _, mechanism in rows for key in ("molecule_chembl_id", "parent_molecule_chembl_id")}
+        removed_whole, removed_members = excluded_members(target_id, drug_ids_of_rows - {None, ""}, exclusions)
+        if removed_whole:
+            continue
         record = targets.get(target_id)
         if record is None:
             if missing_target_ids is not None:
@@ -312,6 +400,12 @@ def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, l
             record = {}
         if human_only and record.get("organism") not in (None, "Homo sapiens"):
             continue
+        if removed_members:
+            members = list(record.get("gene_symbols", []))
+            kept_members = [gene for gene in members if gene not in removed_members]
+            if members and not kept_members:
+                continue
+            record = record | {"gene_symbols": kept_members}
         action_types = {normalized_action_type(mechanism.get("action_type")) for _, mechanism in rows}
         action_type = rows[-1][1].get("action_type")
         if len(action_types) > 1:
@@ -400,10 +494,21 @@ def load_drugs_acting_as_graph_compounds(path: Path = DRUGS_ACTING_AS_GRAPH_COMP
     return by_pubchem_cid, by_chembl_id
 
 
-def check_graph_compounds_have_no_mechanism(compounds_by_chembl_id: dict[str, list[str]], mechanisms_by_molecule: dict[str, list[dict]]) -> None:
+def check_graph_compounds_have_no_mechanism(compounds_by_chembl_id: dict[str, list[str]], mechanisms_by_molecule: dict[str, list[dict]],
+                                            exclusions: tuple[DrugTargetExclusion, ...] | None = None) -> None:
     """Refuse a graph-compound entry whose ChEMBL form carries a mechanism: such a drug has protein (or other) targets and
-    follows the mechanism rule, so one drug cannot enter through one identifier and be excluded through another."""
-    with_mechanisms = sorted(chembl_id for chembl_id in compounds_by_chembl_id if mechanisms_by_molecule.get(chembl_id))
+    follows the mechanism rule, so one drug cannot enter through one identifier and be excluded through another. A
+    mechanism row whose whole target exclusions removes for that form is not counted (None reads
+    configs/drug_target_exclusions.csv)."""
+    if exclusions is None:
+        exclusions = default_drug_target_exclusions()
+
+    def kept(chembl_id: str, mechanism: dict) -> bool:
+        drug_ids = {chembl_id, mechanism.get("molecule_chembl_id"), mechanism.get("parent_molecule_chembl_id")} - {None, ""}
+        return not excluded_members(mechanism.get("target_chembl_id") or "", drug_ids, exclusions)[0]
+
+    with_mechanisms = sorted(chembl_id for chembl_id in compounds_by_chembl_id
+                             if any(kept(chembl_id, mechanism) for mechanism in mechanisms_by_molecule.get(chembl_id, [])))
     if with_mechanisms:
         raise ValueError(f"{DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH} lists ChEMBL forms that carry a mechanism: {with_mechanisms}")
 
