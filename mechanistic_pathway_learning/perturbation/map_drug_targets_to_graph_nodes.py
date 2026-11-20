@@ -13,7 +13,8 @@ Every ChEMBL target type is placed where the graph has a node for it
 - metals, small molecules, lipids and oligosaccharides: the Human-GEM metabolites of
   configs/non_protein_drug_targets.csv, every compartment of each;
 - a drug with no mechanism target under any of its ChEMBL forms whose active compound is itself a graph metabolite
-  (tryptophan; configs/drugs_acting_as_graph_compounds.csv): that metabolite, raised (EXOGENOUS SUPPLY). Lithium is
+  (tryptophan, and levodopa once configs/drug_target_exclusions.csv removes its one row, DRD3 agonism, which L-dopa
+  does not have; configs/drugs_acting_as_graph_compounds.csv): that metabolite, raised (EXOGENOUS SUPPLY). Lithium is
   not listed: ChEMBL records IMPA1 and GSK3 inhibition on lithium carbonate and lithium citrate, so it falls under the
   single-target rule like any drug with protein targets (check_graph_compounds_have_no_mechanism enforces this). GABA is
   not listed: the only label rows under its PubChem id (SIDER CID 119) are an immune globulin's.

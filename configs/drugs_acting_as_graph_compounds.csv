@@ -1,2 +1,3 @@
 drug_name,pubchem_cid,chembl_ids,base_metabolite_ids,note
 tryptophan,,CHEMBL54976,MAM03089,tryptophan (ChEBI 16828)
+levodopa,,CHEMBL1009,MAM02354,"L-dopa (Human-GEM 34dhphe, ChEBI 15765); its one ChEMBL mechanism row, DRD3 agonism, is removed by configs/drug_target_exclusions.csv (item 37 rulings draft, section 16, item 28). Only the ChEMBL id is listed, as for tryptophan: the pinned PubChem-to-ChEMBL map holds no entry for CID 6047, and adding the PubChem id would let the SIDER route seed a drug it finds no ChEMBL id for, a change of the perturbation set left to the build that measures it"

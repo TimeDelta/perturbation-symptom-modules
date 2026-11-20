@@ -131,6 +131,27 @@ def test_on_the_pinned_cache_acamprosate_keeps_its_nmda_row_and_loses_the_gaba_a
 
 
 @pinned_chembl
+def test_on_the_pinned_cache_levodopa_loses_drd3_and_is_seeded_on_the_l_dopa_compound():
+    """Item 37 rulings draft, section 16, item 28: levodopa "is seeded on the L-dopa compound node (MAM02354 ...) and
+    its DRD3 targets edge is dropped"; the graph-compound guard accepts the listing once the row is removed."""
+    from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
+        DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, graph_compound_targets, load_chembl_caches, load_drugs_acting_as_graph_compounds)
+
+    caches = load_chembl_caches(CHEMBL_DIRECTORY)
+    assert [target.target_chembl_id for target in mechanism_targets(["CHEMBL1009"], caches.mechanisms_by_molecule, caches.targets, exclusions=())] == ["CHEMBL234"]
+    kept = mechanism_targets(["CHEMBL1009"], caches.mechanisms_by_molecule, caches.targets)
+    assert kept == []
+    # the path is relative to the repository root, which DRUG_TARGET_EXCLUSIONS_PATH is anchored to
+    by_pubchem_cid, by_chembl_id = load_drugs_acting_as_graph_compounds(DRUG_TARGET_EXCLUSIONS_PATH.parents[1] / DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH)
+    assert by_chembl_id["CHEMBL1009"] == ["MAM02354"] and 6047 not in by_pubchem_cid
+    check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule)
+    with pytest.raises(ValueError, match="CHEMBL1009"):
+        check_graph_compounds_have_no_mechanism(by_chembl_id, caches.mechanisms_by_molecule, exclusions=())
+    seeded = graph_compound_targets(kept, None, ["CHEMBL1009"], by_pubchem_cid, by_chembl_id)
+    assert len(seeded) == 1 and seeded[0].target_chembl_id.endswith("MAM02354") and seeded[0].sign == 1.0
+
+
+@pinned_chembl
 def test_on_the_pinned_cache_scn7a_sits_in_one_target_only():
     """The SCN7A row removes the member from CHEMBL2331043 alone, which holds for every drug only while no other target
     of the pinned cache lists SCN7A (ChEMBL's single-protein target for Nax, CHEMBL3585, carries no mechanism)."""
