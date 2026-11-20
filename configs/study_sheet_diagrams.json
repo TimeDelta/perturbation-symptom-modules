@@ -104,11 +104,11 @@
       "fingerprints": {
         "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
         "decision:9.81": "04bed3faffa0dc71caa858a39f4392fb6dcbef4efa046ae7ad71c22d5ec7cd8e",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "6b12a65fe63c83586389d4d8140cd1ec2f682e00f52e78f9bb0e50b2d9942796",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "66f178422182461656967657351c57994edc9ee385f9063a86755c53eb918f83",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
       },
       "checked": "2026-11-20",
-      "checked_at_commit": "e170c31f"
+      "checked_at_commit": "daeff3b6"
     },
     "14499161-f021": {
       "title": "A knockout travels as signed shares to one fixed point",
@@ -123,10 +123,10 @@
       },
       "fingerprints": {
         "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "6b12a65fe63c83586389d4d8140cd1ec2f682e00f52e78f9bb0e50b2d9942796"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "66f178422182461656967657351c57994edc9ee385f9063a86755c53eb918f83"
       },
       "checked": "2026-11-20",
-      "checked_at_commit": "e170c31f"
+      "checked_at_commit": "daeff3b6"
     },
     "c642a74c-b09e": {
       "title": "Propagation channels: one lane per cell class",
@@ -142,11 +142,11 @@
       },
       "fingerprints": {
         "decision:9.76": "a1283a44c8f472efb472157de77ced366283fcc7882e45721feb7051892fe2c5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "6b12a65fe63c83586389d4d8140cd1ec2f682e00f52e78f9bb0e50b2d9942796",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "66f178422182461656967657351c57994edc9ee385f9063a86755c53eb918f83",
         "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
       },
       "checked": "2026-11-20",
-      "checked_at_commit": "e170c31f"
+      "checked_at_commit": "daeff3b6"
     },
     "7d950678-d77c": {
       "title": "Membrane potential, as built",
@@ -253,13 +253,13 @@
       },
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "6b12a65fe63c83586389d4d8140cd1ec2f682e00f52e78f9bb0e50b2d9942796",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "66f178422182461656967657351c57994edc9ee385f9063a86755c53eb918f83",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "59124873b3b0cbf9b9182d9e60aee69ac2872e0c26c9f9205e42d1c5acdd391e",
         "file:experiments/run_main_model.py": "b0b89e2d5f6d0745e0ba99d1629eca36136543efad1eccaa8a9d037d0dd91fba",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af"
       },
       "checked": "2026-11-20",
-      "checked_at_commit": "e170c31f"
+      "checked_at_commit": "daeff3b6"
     },
     "682dd4a6-8d52": {
       "title": "The labels see far fewer directions than there are parameters",
@@ -278,14 +278,14 @@
       },
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "6b12a65fe63c83586389d4d8140cd1ec2f682e00f52e78f9bb0e50b2d9942796",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "66f178422182461656967657351c57994edc9ee385f9063a86755c53eb918f83",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "59124873b3b0cbf9b9182d9e60aee69ac2872e0c26c9f9205e42d1c5acdd391e",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
         "file:experiments/run_main_model.py": "b0b89e2d5f6d0745e0ba99d1629eca36136543efad1eccaa8a9d037d0dd91fba",
         "file:experiments/run_main_model_batch.py": "2b92f6266803307090a78d843faee5f95cdc37c7c56a5b450eae7ce398eba9af"
       },
       "checked": "2026-11-20",
-      "checked_at_commit": "e170c31f"
+      "checked_at_commit": "daeff3b6"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
