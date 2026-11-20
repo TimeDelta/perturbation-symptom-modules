@@ -149,7 +149,8 @@
     {"from": "docs/trained_diffusion_readout.md", "to": "docs/generated/trained_diffusion_readout.md", "date": "2026-11-20", "phase": 1},
     {"from": "docs/transporter_connectivity_audit.md", "to": "docs/generated/transporter_connectivity_audit.md", "date": "2026-11-20", "phase": 1},
     {"from": "docs/twin_comparisons.md", "to": "docs/generated/twin_comparisons.md", "date": "2026-11-20", "phase": 1},
-    {"from": "docs/untrained_symptom_degeneracy.json", "to": "docs/generated/untrained_symptom_degeneracy.json", "date": "2026-11-20", "phase": 1}
+    {"from": "docs/untrained_symptom_degeneracy.json", "to": "docs/generated/untrained_symptom_degeneracy.json", "date": "2026-11-20", "phase": 1},
+    {"from": "docs/module_names.md", "to": "docs/generated/module_names.md", "date": "2026-11-20", "phase": 2}
   ],
   "planned": [
     {"from": "docs/anticholinergic_indications_faers_2026-11-07.md", "to": "docs/records/2026-11/anticholinergic_indications_faers_2026-11-07.md", "phase": 2},
@@ -184,7 +185,6 @@
     {"from": "docs/krebs_oxidant_literature_2026-11-07.md", "to": "docs/records/2026-11/krebs_oxidant_literature_2026-11-07.md", "phase": 2},
     {"from": "docs/literature_bias_2026-11-20.md", "to": "docs/records/2026-11/literature_bias_2026-11-20.md", "phase": 2},
     {"from": "docs/missing_physiology_review.md", "to": "docs/records/2026-10/missing_physiology_review.md", "phase": 2},
-    {"from": "docs/module_names.md", "to": "docs/generated/module_names.md", "phase": 2},
     {"from": "docs/module_support_reduction_2026-11-07.md", "to": "docs/records/2026-11/module_support_reduction_2026-11-07.md", "phase": 2},
     {"from": "docs/occupancy_coverage_and_shift_transfer.md", "to": "docs/generated/occupancy_coverage_and_shift_transfer.md", "phase": 2},
     {"from": "docs/off_target_scoping.md", "to": "docs/records/2026-10/off_target_scoping.md", "phase": 2},

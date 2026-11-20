@@ -35,7 +35,7 @@ from experiments.analyze_pathway_modules import (CURATED_GENES_FOR_A_NAME, NODE_
                                                  module_label, subsystem_shares_of_graph)
 from mechanistic_pathway_learning.evaluation.module_behaviour import behaviour_label
 
-OUTPUT_DOCUMENT = Path("docs/module_names.md")
+OUTPUT_DOCUMENT = Path("docs/generated/module_names.md")
 RULE_ORDER = ["curated module", "subsystem", "node type", "mixed", "empty"]
 DRIVER_ORDER = ["group, path followed", "group, path not followed", "no group, path followed",
                 "no group, path not followed", "no driver", "not recorded"]

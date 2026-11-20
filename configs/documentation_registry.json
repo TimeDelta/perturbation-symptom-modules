@@ -601,7 +601,7 @@
       "generator": "experiments/module_health.py",
       "family": "module_health_results"
     },
-    "docs/module_names.md": {
+    "docs/generated/module_names.md": {
       "class": "generated",
       "generator": "experiments/measure_module_name_availability.py"
     },
