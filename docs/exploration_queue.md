@@ -57,6 +57,8 @@ Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-n
 Item 14 (the curation sweep over the drug target table) was queued on 9 November 2026, likewise after the order was set
 and likewise unplaced; its first step is a query over the ChEMBL action types and costs little. Items 11 and 12 are literature passes, so their first step can
 run now; item 13's first form is an hour of engineering on rows already read; their place in the order is the owner's.
+Item 15 (literature bias in the curated sources) was queued on 18 November 2026 and item 16 (DNA methylation) on 19
+November 2026, likewise unplaced.
 
 ---
 
@@ -788,3 +790,102 @@ query over `data/raw/chembl/mechanisms.json`. Research, so on Fable; the rows wo
 - **The table above is a list of the cases that happened to surface**, not a measured count, and one row of it is
   unverified. The sweep's first job is to say how many there are.
 
+
+---
+
+## 15. Literature bias in the curated sources, and ways to correct it
+
+Tagged 2026-11-18, at the owner's request: "Can you please add something to the repository that notes a need to look
+at literature bias for our curated sources and ways to correct it?" Nothing here is started, and no literature on the
+correction methods has been read; the methods named below are candidates for a Fable pass, not findings.
+
+**The problem.** Every curated table in the project (drug targets and affinities, carrier proteins and shares, ambient
+concentrations, the per-gene expression factors, the edge evidence behind the graph) holds what someone chose to
+measure and publish. What is measured is not a random sample of what exists. Wherever a fallback, a class median, a
+prior or a calibration is fitted on the sourced rows and then applied to the unsourced ones, the bias carries into the
+values the model uses, and a validation scored on sourced rows does not see it.
+
+**Cases observed on 18 November 2026, each by a Fable pass (scratchpad reports of that date, not yet in the
+repository).**
+
+| where | what was seen |
+|---|---|
+| occupancy split, learned fallback (decision 9.129) | the sourced drug-target pairs are not representative of the unsourced ones, so a class median fitted on them may not transfer (`fallback_class_definition_2026-11-18.md`) |
+| TPM to nCPM fallback (decision 9.129, option D) | the genes outside Huuki-Myers et al. 2025 Table S5 are mostly low-expressed in brain (median TPM about 0.03 against 8 to 17); a fallback reported at 48 to 63 per cent within two-fold on all genes reached 36 to 51 per cent on those genes, and 84 per cent of them could not be scored at all (`tpm_fallback_holdout_2026-11-18.md`) |
+| carrier shares (`sequesters`) | 28 of the 35 numeric shares come from one paper's calculation on isolated proteins (McNamara and Meiman 2019, Table 3); old drugs and drugs whose original regulatory reviews are unposted have no carrier data at all; a class claim (SSRIs binding mainly AAG) traced back to secondary statements with no primary measurement found (`carrier_class_definition_2026-11-18.md`, `carrier_fulltext_2026-11-18.md`) |
+| kinase substrates (item 4 above) | the source itself states the concentration: "Just 20% of kinases are responsible for the phosphorylation of 87% of currently annotated substrates" |
+
+**Kinds of bias to look for (standard terms).** Study bias (well-studied genes, drugs and targets collect more
+records); publication bias (positive or large effects are more often published); ascertainment of the measurable
+(values below detection, or proteins that are hard to purify, are missing rather than small); method bias (isolated
+protein against whole plasma, one assay type dominating a class); and circular curation (a database row derived from
+another database or from a review, counted as an independent source).
+
+**Ways to correct it, to be read and appraised on Fable before any is proposed.**
+- Measure it first: for each curated table, compare the sourced rows with the unsourced ones on the covariates the
+  build already has (expression, publication count, drug approval year, target family), as the two passes above did.
+- Score every fallback on held-out rows that resemble the rows it will be applied to, not on all sourced rows.
+- Stratify or weight by publication count, so that well-studied entities do not set a class value alone.
+- Treat missing values as possibly missing not at random, with a sensitivity analysis on how far the result moves.
+- Prefer systematic screens over literature-curated rows where both exist, and use the screens to estimate the bias of
+  the curated rows.
+- Count sources by independence (CLAUDE.md, "Manual curation takes more than one source"), tracing a secondary
+  statement to its primary measurement before it counts.
+
+**Known limits (do not overstate these in writing).**
+- The four cases above are the ones that surfaced while answering other questions, not a measured survey.
+- A correction that reweights or imputes is itself a modelling choice and falls under the closest-to-physiology rule:
+  it needs a stated justification where it replaces a sourced value.
+- Some bias cannot be corrected from the project's data at all: a value never measured for any member of a class leaves
+  nothing to calibrate against.
+
+---
+
+## 16. DNA methylation as a mechanism
+
+Tagged 2026-11-19, at the owner's request: "Can you please add a dna methylation mechanism to the exploration queue?"
+Nothing here is started, and no literature has been read for it; the graph facts below were read by the session on 19
+November 2026 from `data/processed/graph_full_neuronal_split_binders_drugs_v5` (files dated 12 November 2026, not the
+registered v5 of decision 9.106).
+
+**What the graph holds today.**
+- **The reaction is there, and leads nowhere.** DNMT1, DNMT3A, DNMT3B, DNMT3L and TRDMT1 catalyse three Human-GEM
+  reactions (`MAR04072` in the cytosol, `MAR08640` and `MAR08641` in the nucleus) that turn DNA and S-adenosylmethionine
+  into DNA-5-methylcytosine and S-adenosylhomocysteine. The product node `MAM01722n` has one outgoing edge, into the
+  artificial biomass reaction `MAR00021`; `MAM01722c` has none. No edge runs from a methylation state to the
+  transcription of any gene.
+- **The methyl supply is cut.** SAM and SAH (`MAM02877*`, `MAM02871*`) are tagged currency
+  (`graph/tag_currency_metabolites.py`, `DEFAULT_CURRENCY_METABOLITE_NAMES`), so a change in the SAM:SAH ratio, which
+  would set the rate of every methyltransferase, does not propagate.
+- **The methylation enzymes and readers act as transcription factors instead.** 544 `regulates_transcription_of` edges
+  leave DNMT1 (185), DNMT3A (60), DNMT3B (70), DNMT3L (3), MBD1 (17), MBD2 (89), MBD3 (1), MECP2 (34), TET1 (15) and TET2 (1),
+  all from CollecTRI. A locus-specific mark is thus written as a direct signed edge from the enzyme's
+  protein node to its target genes, with no state in between.
+- **Demethylation is absent.** TET1 to TET3 carry ascorbate and Fe2+ `cofactor_of` edges, but catalyse no reaction:
+  the oxidation of 5-methylcytosine is not in the graph.
+- **One drug acts here.** 5-aza-2'-deoxycytidine (decitabine) is in `configs/centrally_acting_drugs.csv` with targets
+  DNMT1 and DNMT3A, marked "target only, no measured Kp,uu,brain".
+
+**The idea.** Represent methylation as a state between the enzymes and transcription: a methylation node (per locus,
+per gene, or per class of loci) written by the DNMTs from SAM, erased by the TETs, read by MECP2 and the MBD proteins,
+and acting on the transcription of the genes it covers. The SAM:SAH ratio would then reach it from one-carbon
+metabolism, which the cofactor edges of `graph/cofactor_edges.py` already name as "the methyl supply of
+S-adenosylmethionine".
+
+**What a pass would need to settle (research, so on Fable).**
+- A source for which genes a methylation state governs in brain cell classes, with sign, that is not CollecTRI's
+  enzyme-to-gene edges again: methylome data by cell class, or curated promoter and enhancer methylation effects.
+- Whether SAM and SAH should leave the currency list for this route alone, and what that does to the other
+  methyltransferases that share them (catechol O-methyltransferase among them).
+- The time scale: methylation is usually taken to change slowly relative to signalling (the session's statement, not
+  yet sourced), which would place it with item 11 (chronic exposure) and the readout question there rather than with
+  the acute fixed point.
+
+**Known limits (do not overstate these in writing).**
+- **DNMT1 is a lockbox perturbation** (`configs/lockbox_v2.json`, both `DNMT1` and `cluster:DNMT1`). A mechanism built
+  around it changes how a held-out perturbation propagates, so the work is outcome-blind only while the lockbox is
+  undrawn, and its design must not use any result on that perturbation.
+- The CollecTRI edges may already carry much of the effect in sign; adding a state could change little in the readout
+  while adding parameters, which the pass should measure before proposing a build.
+- Methylation is locus-specific; any node coarser than a locus is an approximation and needs the justification the
+  closest-to-physiology rule asks for.

@@ -143,6 +143,16 @@ fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_clust
 # pineal, and the build summary says so. The FANTOM5 table of Expression Atlas E-MTAB-3358 that filled the column on
 # 20 October 2026 is no longer fetched (docs/data_sources.md records why).
 
+# GEO GSE217837 (Kang et al. 2023, Genome Medicine, doi:10.1186/s13073-023-01179-2): single-cell and single-nucleus
+# RNA-seq of the same human islets side by side, plus islets grafted in vivo, the islet check of the TPM-to-nCPM
+# conversion (item 37, 19 November 2026). ftp.ncbi.nlm.nih.gov disallows every path in its robots file; these three
+# files are fetched under the exception in CLAUDE.md "Reading sources" for a data file its provider published for
+# download: the addresses are the "Supplementary file" links of the series page, which the owner read off that page
+# and gave on 19 November 2026. GEO's series page itself stays unread (it answers with a check that the visitor is human).
+fetch "$raw_directory/geo/GSE217837/GSE217837_scRNA_count_matrix.csv.gz" "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE217nnn/GSE217837/suppl/GSE217837%5FscRNA%5Fcount%5Fmatrix%2Ecsv%2Egz" 7431fbad604e919b955a3b9f328c992be889a3b96326eb621c3d4dd50ce2b363
+fetch "$raw_directory/geo/GSE217837/GSE217837_snRNA_count_matrix.csv.gz" "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE217nnn/GSE217837/suppl/GSE217837%5FsnRNA%5Fcount%5Fmatrix%2Ecsv%2Egz" 6bb5bff54c69447886a0d9a0b7efc87afafc5aab060b982f73d3d9b3d9f7d0fb
+fetch "$raw_directory/geo/GSE217837/GSE217837_graft_vivo_snRNA_count_matrix.csv.gz" "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE217nnn/GSE217837/suppl/GSE217837%5Fgraft%5Fvivo%5FsnRNA%5Fcount%5Fmatrix%2Ecsv%2Egz" a85f71aa43be66a294edc980b9f53f44c1a25986fbdcd8b11cea74fe2c1f7625
+
 # The adult human brain atlas's genes x clusters aggregate (Siletti et al. 2023, PMID 37824663; the authors' Dropbox link
 # from the README of github.com/linnarsson-lab/adult-human-brain): mean UMI per nucleus for 59,480 genes in the 461
 # clusters, the source of the noradrenergic_neuron class (cluster 398; graph/siletti_cluster_classes.py, decision 9.76).
@@ -332,6 +342,41 @@ if [ "$with_cellxgene" = "yes" ]; then
   for dissection_name in dissection_sn_rn dissection_sn dissection_pag_dr dissection_pag; do
     version_identifier="${dissection_versions[$dissection_name]%%:*}"
     recorded_prefix="${dissection_versions[$dissection_name]##*:}"
+    dissection_path="$raw_directory/siletti_cellxgene/$dissection_name.h5ad"
+    fetch "$dissection_path" "https://datasets.cellxgene.cziscience.com/$version_identifier.h5ad" || continue
+    measured_prefix="$(sha256sum "$dissection_path" | cut -c1-16)"
+    if [ "$measured_prefix" = "$recorded_prefix" ]; then
+      echo "  sha256 prefix $measured_prefix matches the recorded one"
+    else
+      echo "  DRIFT: sha256 prefix $measured_prefix, recorded $recorded_prefix" >&2
+      printf '%s\t-\t%s\t%s\tDRIFT\n' "$dissection_path" "$measured_prefix" "$recorded_prefix" >> "$report_path"
+    fi
+  done
+  # The files holding cluster 400, the forebrain cholinergic neurons, for the two cholinergic classes (striatal and
+  # basal forebrain) the owner ruled on 16 November 2026: the Splatter supercluster file, which holds all 769 of the
+  # cluster's nuclei, and the eleven dissections that hold any of them, for the cross-check of the subcluster split
+  # against anatomy ("use all eleven"). Served from datasets.cellxgene.cziscience.com by immutable dataset version id.
+  # The ids were read on 16 November 2026 from the collection listing of api.cellxgene.cziscience.com, a host the owner
+  # ruled a requested block later that day (experiments/read_public_page.py, REQUESTED_BLOCK_HOSTS); the files are
+  # data files the provider publishes for download, so CLAUDE.md's exception for a pinned script download covers them.
+  # Licence: CC BY 4.0 on CELLxGENE; the Allen Institute lists the same atlas as CC BY-NC 4.0 (docs/data_sources.md).
+  declare -A cholinergic_versions=(
+    [supercluster_splatter]="c4a41c58-06df-47a6-96cf-24c930d7de47:37d97ae58bb007a8"
+    [dissection_si]="b96a3b7a-fd57-4e6b-bbbb-d7472f5fab75:36061e91bd1c0454"
+    [dissection_bnst]="76b2a022-ee9e-486a-a1e8-9c694fc68d85:7121eb482bec8065"
+    [dissection_hthpo]="a7fa6631-1c0c-44b7-9acf-d096909223d6:a951a147f78e1e3a"
+    [dissection_nac]="68668a7b-bf41-42ce-8756-41979eb8377b:e755a5d197ad4c37"
+    [dissection_cab]="defe49cc-ccee-42ca-9251-a6ec33f11b65:44545219fd42802e"
+    [dissection_gpe]="14a1aeeb-0b9f-48d1-b14d-a912f479e2fc:2d73e6c3d721ba03"
+    [dissection_pu]="99a7f50b-40a2-4ac6-8d74-3b1cefe5dcfe:ebbabc190cf37d3b"
+    [dissection_aon]="d7f9e68a-e253-4ceb-ae6b-7870fdef7f07:4a2f7e73f865e159"
+    [dissection_cmn]="087cb570-932a-4096-8b65-de6778dc29d9:18d791d85921cddb"
+    [dissection_cen]="3fe49186-e665-4999-bc7b-2cff4d5bf817:18c76e45cd12c4d9"
+    [dissection_sep]="816e6677-96a8-4c9f-90cd-833c71c468c5:2b50c5c139d20da1"
+  )
+  for dissection_name in "${!cholinergic_versions[@]}"; do
+    version_identifier="${cholinergic_versions[$dissection_name]%%:*}"
+    recorded_prefix="${cholinergic_versions[$dissection_name]##*:}"
     dissection_path="$raw_directory/siletti_cellxgene/$dissection_name.h5ad"
     fetch "$dissection_path" "https://datasets.cellxgene.cziscience.com/$version_identifier.h5ad" || continue
     measured_prefix="$(sha256sum "$dissection_path" | cut -c1-16)"

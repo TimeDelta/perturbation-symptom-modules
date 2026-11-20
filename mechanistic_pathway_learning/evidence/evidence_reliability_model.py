@@ -1,5 +1,13 @@
 """Learned evidence reliability (experiment design, section 4.3, learned weighting).
 
+What this module is NOT, as of 18 November 2026. Its posterior is **not** the evidence prior's strength setter:
+decision 9.50 (16 October 2026) retired it in that role in favour of discrete tiers by evidence type with one
+tempering exponent, and decision 9.59 (16 October 2026) then replaced the tiers' fixed probabilities, where it is
+fitted, with the held-out-label regression of `calibrated_reliability.py` ("the regression says what to believe and
+the tiers say how much"). This module is still built and still used where the rows below say so; it is not the
+mechanism to read for how much an evidence prior pulls. Read `docs/status.md` and `docs/open_decisions.md` for what
+is current, never a module docstring alone.
+
 Fixed grade weights and count-based weights share a flaw: they are set by hand.
 This module learns how much to trust each evidence source from the pattern of
 agreement across sources, treating every source as a noisy sensor of the true
