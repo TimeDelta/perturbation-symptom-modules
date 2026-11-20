@@ -64,6 +64,12 @@ step data/raw/uniprot/uniprot_human_reviewed.tsv.gz "UniProt proteome, GO, hp-ba
 # the release Reactome serves, until the lockbox is drawn (decision 9.111); the fetch links data/raw/reactome/current to it
 step data/raw/reactome/current/pathways.json "Reactome pathway exports, the release Reactome serves" python experiments/fetch_reactome_pathways.py
 step data/raw/uniprot/uniprot_plasma_binders.tsv.gz "UniProt plasma binder annotations" python experiments/fetch_plasma_binder_annotations.py
+# the organelle channel annotations of decision 9.75. Nothing in the build reads this file: the four curated reactions
+# that rest on it are written out in experiments/build_neuronal_graph_variant.py, and
+# tests/test_organelle_channel_annotations.py checks them against it, so where the step sits does not matter. Until
+# 20 November 2026 no step fetched it (it was fetched once, by hand, on 20 October), so on a rebuilt disk that test
+# was skipped
+step data/raw/uniprot/uniprot_organelle_channels.tsv.gz "UniProt organelle channel annotations" python experiments/fetch_organelle_channel_annotations.py
 step data/raw/plasma_protein_binding/fraction_unbound_database.xlsx "fraction-unbound database" python experiments/fetch_fraction_unbound_database.py
 # about 45 minutes uncached (RxNav, UniChem and ChEMBL at a few requests a second); it also extends data/raw/chembl/targets.json,
 # which the gene and protein split reads, so it comes before the split
@@ -183,8 +189,9 @@ if [ "$stage" = "graphs" ]; then
 fi
 
 # --- the monogenic slice (pilot) tables the slice-era tests read ---------------------------------------------------
-# data/processed/graph and data/processed/evidence are copied from the release, as graph_full is; the manganese,
-# neuronal and gene/protein-split variants are built on the slice graph the same way as on the full one.
+# data/processed/graph and data/processed/evidence are copied from the release, as graph_full was until 16 October
+# 2026 (it is built since, decision 9.53); the manganese, neuronal and gene/protein-split variants are built on the
+# slice graph the same way as on the full one.
 if [ "$stage" = "slice" ]; then
   step "$processed/graph/nodes.parquet" "slice graph, from data/releases/v0.4" cp -r data/releases/v0.4/graph "$processed/graph"
   step "$processed/evidence/evidence_records.parquet" "slice evidence table, from data/releases/v0.4" cp -r data/releases/v0.4/evidence_slice_sweeps "$processed/evidence"

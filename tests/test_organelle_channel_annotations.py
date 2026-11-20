@@ -60,7 +60,8 @@ def test_each_curated_organelle_reaction_moves_one_ion_across_one_organelle_memb
         assert curated.membrane_potential_sign is None, "a movement inside the cell tells the plasma membrane potential nothing"
 
 
-@pytest.mark.skipif(not PINNED_PATH.exists(), reason="the pinned UniProt file is fetched by experiments/fetch_organelle_channel_annotations.py")
+@pytest.mark.skipif(not PINNED_PATH.exists(), reason=f"{DEFAULT_PINNED_PATH} is not fetched here; PYTHONPATH=. python "
+                    "experiments/fetch_organelle_channel_annotations.py fetches it, a step of bash scripts/rebuild_data_layer.sh")
 def test_each_curated_organelle_reaction_is_a_uniprot_catalytic_activity_at_that_membrane():
     table = transport_reactions(PINNED_PATH)
     assert set(table.gene) == set(ORGANELLE_CHANNEL_GENES)

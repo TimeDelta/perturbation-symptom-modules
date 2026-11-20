@@ -12,8 +12,9 @@
 #
 # Sources with their own script are not fetched here: experiments/fetch_chembl_drug_targets.py,
 # fetch_node_descriptor_sources.py (UniProt proteome, GO, hp-base.owl, ChEBI), fetch_reactome_pathways.py,
-# fetch_plasma_binder_annotations.py, fetch_onsides_identifier_bridge.py, fetch_fraction_unbound_database.py,
-# fetch_pubtator_relations.py, fetch_ctd_chemical_disease.py and
+# fetch_plasma_binder_annotations.py, fetch_organelle_channel_annotations.py (decision 9.75),
+# fetch_onsides_identifier_bridge.py, fetch_fraction_unbound_database.py, fetch_pubtator_relations.py,
+# fetch_ctd_chemical_disease.py and
 # python -m mechanistic_pathway_learning.evidence.gene_identifier_map (HGNC). The one script this file does call is
 # experiments/fetch_sfari_mouse_models.py (decision 9.93) and experiments/fetch_chembl_rat_behaviour.py (9.94), because
 # neither source has a file to fetch with curl.
