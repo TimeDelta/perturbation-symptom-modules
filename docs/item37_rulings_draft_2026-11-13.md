@@ -555,43 +555,46 @@ Köhler et al. 1993), waits on a Fable reading of Köhler et al. 1993, which the
   there is the session's construction and is recorded as such under the modelling rule. **(iii) may have no members**:
   its only one was D2, whose fit uses 5 nM dopamine, which the voltammetry pass of the same day puts nearer 20 nM
   (at which the high end gives occupancy 0.24 against 0.11 measured).
-- **Revised again the same day: no learned affinity; the midpoint is fixed and a two-build screen measures what the
-  ranges are worth.** The owner weighed branching on each range instead of learning it and saw the cost: "I'd have to
-  branch at every range with that option, which would quickly explode given the multiple loops to get to steady
-  state" - worse than the sign multiverse, since a sign has two states while an affinity range is continuous, so
-  branching means a grid over 20 or 45 receptors with a full fixed-point solve at each point, and item 1 of
-  `docs/exploration_queue.md` does not help (its rank-one Woodbury updates and series equivalence classes are for
-  sign flips). Offered a middle option, the owner: "I like the middle option for the affinity". **So**: every range
-  stays at its midpoint with no learned parameter, and after the item-37 build two runs - every range at its
-  high-affinity end, then every range at its low end - measure how far the ranges can move predictions. Two runs
-  rather than a grid. **Its limit, recorded**: because headroom K/C is monotone in K, the two runs bracket each
-  node's headroom, but not the predictions, since paths of mixed sign can make an output non-monotone in any one K;
-  it is a screen, not a bound. If predictions barely move, the fixed midpoint stands and no parameter is wanted; if
-  they move, the learned form returns with its evidence. **This settles the counting questions**: there is no 45
-  against 20, and no separate ruling for the two orexin receptors, every range being treated alike. **The parameter
-  count was never the argument**: 20 parameters is 0.005 per cent of the nominal 405,908 and 0.1 per cent of the
-  identifiable bound of 19,927; the reason to prefer a fixed value is that a free parameter can absorb error from
-  elsewhere in the model and hide it, which the bounds limit but do not prevent.
-- **Superseded within the day: the unsettled affinity end becomes a learned parameter that starts at the midpoint.** The
-  owner, after the ruling above: "I think it's probably better design to start a learned param at the midpoint for
-  the affinity end even though it could cost params in an already overburdened dataset", adding that the module
-  supports are being reduced separately. So where GtoPdb gives a range and no occupancy measurement settles which end
-  holds, the affinity is not fixed at a constructed midpoint but learned, initialised there, which removes the need to
-  justify the construction as a fixed value: the midpoint becomes a starting point and not a claim. **The cost,
-  counted on the receptor pass's table**: of the 431 receptor proteins in v5, 83 have a sourced or thin affinity and
-  **45 of those carry a GtoPdb range** (35 class A and 9 class C GPCRs and one Cys-loop receptor; 32 are drug
-  targets), so a learned affinity per receptor adds 45 parameters, against at most 22 for the whole per-relation-type
-  fallback. **Open, for the owner** (the session's reading of how the revision meets the earlier ruling, not assumed):
-  whether a depletion-null bound (HTR1A: K at or above about 9 nM) becomes a constraint the learned value may not
-  cross, which keeps the in vivo evidence the earlier ruling rested on; whether D2 keeps its measured occupancy fixed
-  or also learns from it; and whether one learned shift in log K per receptor family (two or three parameters, the
-  high- against low-affinity balance being set by G-protein coupling, which is plausibly a family property) would
-  serve instead of 45, which matters while the parameter count is being reduced.
+- **Revised the same day: the unsettled affinity end becomes a learned parameter that starts at the midpoint.** The
+  owner, 17 November 2026 at 20:38 UTC, after the ruling above: "I think it's probably better design to start a learned
+  param at the midpoint for the affinity end even though it could cost params in an already overburdened dataset",
+  adding that the module supports are being reduced separately. So where GtoPdb gives a range and no occupancy
+  measurement settles which end holds, the affinity is not fixed at a constructed midpoint but learned, initialised
+  there, which removes the need to justify the construction as a fixed value: the midpoint becomes a starting point and
+  not a claim. **The cost, counted on the receptor pass's table**: of the 431 receptor proteins in v5, 83 have a sourced
+  or thin affinity and **45 of those carry a GtoPdb range** (35 class A and 9 class C GPCRs and one Cys-loop receptor;
+  32 are drug targets), so a learned affinity per receptor adds 45 parameters, against at most 22 for the whole
+  per-relation-type fallback. **Open, for the owner** (the session's reading of how the revision meets the earlier
+  ruling, not assumed): whether a depletion-null bound (HTR1A: K at or above about 9 nM) becomes a constraint the
+  learned value may not cross, which keeps the in vivo evidence the earlier ruling rested on; whether D2 keeps its
+  measured occupancy fixed or also learns from it; and whether one learned shift in log K per receptor family (two or
+  three parameters, the high- against low-affinity balance being set by G-protein coupling, which is plausibly a family
+  property) would serve instead of 45, which matters while the parameter count is being reduced.
 - **A depletion-null bound is a hard constraint on the learned affinity.** The owner, on the first of the questions
   above: "Yes to the depletion null bound hard constraint on the learned param". So where a depletion study finds no
   rise in tracer binding, the learned K may not fall below the bound the null implies (HTR1A: K at or above about 9 nM
   at 1.4 nM ambient serotonin, so headroom at or above 6.4); the fit can move the affinity anywhere the in vivo
   evidence allows and nowhere it forbids.
+- **Revised again the same day, and superseded on 18 November 2026: no learned affinity; the midpoint is fixed and a
+  two-build screen measures what the ranges are worth.** The owner weighed branching on each range instead of learning
+  it and saw the cost: "I'd have to branch at every range with that option, which would quickly explode given the
+  multiple loops to get to steady state" - worse than the sign multiverse, since a sign has two states while an affinity
+  range is continuous, so branching means a grid over 20 or 45 receptors with a full fixed-point solve at each point,
+  and item 1 of `docs/exploration_queue.md` does not help (its rank-one Woodbury updates and series equivalence classes
+  are for sign flips). Offered a middle option, the owner, at 23:43 UTC: "I like the middle option for the affinity".
+  **So**: every range stays at its midpoint with no learned parameter, and after the item-37 build two runs - every
+  range at its high-affinity end, then every range at its low end - measure how far the ranges can move predictions. Two
+  runs rather than a grid. **Its limit, recorded**: because headroom K/C is monotone in K, the two runs bracket each
+  node's headroom, but not the predictions, since paths of mixed sign can make an output non-monotone in any one K; it
+  is a screen, not a bound. If predictions barely move, the fixed midpoint stands and no parameter is wanted; if they
+  move, the learned form returns with its evidence. **This settles the counting questions**: there is no 45 against 20,
+  and no separate ruling for the two orexin receptors, every range being treated alike. **The parameter count was never
+  the argument**: 20 parameters is 0.005 per cent of the nominal 405,908 and 0.1 per cent of the identifiable bound of
+  19,927; the reason to prefer a fixed value is that a free parameter can absorb error from elsewhere in the model and
+  hide it, which the bounds limit but do not prevent. **Superseded on 18 November 2026.** The owner, at 17:34 UTC: "i
+  thought i ruled against doing the two-build screen version and sticking to learned params inside the soft/hard clamped
+  bounds based on evidence prior since the 5-ht1a disbelief comment". So the learned parameter of the two bullets above
+  stands, inside the clamped bounds recorded below, and no two-build screen is run.
 - **The hard bound needs human in vivo evidence AND complete depletion; otherwise it is soft.** The owner, 18
   November 2026, on whether in vivo evidence should be ranked by species (their first proposal) or by how complete
   the depletion was (the session's): "i guess the nulls should hard bound only for human invivo complete depletion.
