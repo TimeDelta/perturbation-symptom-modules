@@ -9,9 +9,10 @@ This script is that fallback with its limits written into code, so that a resear
      that serves no robots file places no restriction, which is what the protocol says, so that is read;
      --treat-missing-robots-as-refusal restores the stricter behaviour this script started with;
   2. a page that answers with a check that the visitor is human is reported as refused and not saved. A status that
-     says the service is busy or down rather than closed to this reader (429, 503) is reported as transient and not
-     as a refusal, so the caller may wait and request the same address on the same host again (the owner, 17 November
-     2026: "429 and 503 status codes should not count as refusals");
+     says the service is busy or down rather than closed to this reader (429, 503, and 500 and a timeout with them)
+     is reported as transient and not as a refusal, so the caller may wait and request the same address on the same
+     host again (the owner, 17 November 2026: "429 and 503 status codes should not count as refusals"; 500 and the
+     timeout as the item 37 rulings draft records, section 13);
   3. an address that carries a personal identifier (an e-mail address) is not requested;
   4. every page read is saved with its address, time and SHA-256, in a directory that holds nothing else.
 
@@ -72,7 +73,12 @@ CHALLENGE_STATUS_CODES = frozenset({401, 403, 407})
 # codes should not count as refusals". A page that carries a challenge marker in its body is still a refusal at any
 # status, and the throttling is still obeyed: the caller waits and retries the same address on the same host rather
 # than going to a cache, a mirror or another host.
-TRANSIENT_STATUS_CODES = frozenset({429, 503})
+# 500 (internal server error) and a request that times out are treated the same way, the reading the item 37 rulings
+# draft records beside the owner's repeat of the ruling (section 13, 18 November 2026: "they don't count as blocks so
+# retry them"; "The session treats 500 and a timeout the same way"), confirmed with the draft on 20 November 2026:
+# both say the service failed, not that it closed itself to this reader. Europe PMC answered 500 to a research pass of
+# 20 November 2026 (section 22).
+TRANSIENT_STATUS_CODES = frozenset({429, 500, 503})
 CHALLENGE_MARKERS = (
     "verify you are a human", "verify you are human", "are you a robot", "captcha", "altcha-widget", "cf-chl",
     "challenge-platform", "enable javascript and cookies to continue", "unusual traffic", "access denied",
@@ -227,6 +233,14 @@ def text_of_page(page_source: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(without_tags)).strip()
 
 
+def is_timeout(error: BaseException) -> bool:
+    """True when a request failed by timing out: a read that timed out raises TimeoutError (socket.timeout), and a
+    connection that timed out arrives as a URLError whose reason is one."""
+    if isinstance(error, TimeoutError):
+        return True
+    return isinstance(error, urllib.error.URLError) and isinstance(getattr(error, "reason", None), TimeoutError)
+
+
 def request_bytes(address: str) -> tuple[int, str, bytes]:
     """Status code, content type and body of one GET. An HTTP error status is returned, not raised."""
     request = urllib.request.Request(address, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml,text/plain,application/pdf;q=0.9,*/*;q=0.5"})
@@ -295,6 +309,11 @@ class PublicPageReader:
         try:
             status_code, content_type, body = request_bytes(address)
         except Exception as error:  # noqa: BLE001
+            if is_timeout(error):  # transient, as a 500 is (TRANSIENT_STATUS_CODES)
+                return record | {"reason": f"the request timed out, which is not a refusal ({error}); "
+                                           f"wait and request this same address on this same host again, rather than a "
+                                           f"cache, a mirror or another host",
+                                 "transient": True}
             return record | {"reason": f"the request failed ({error})"}
         is_text = "pdf" not in content_type.lower() and not body.startswith(b"%PDF")
         response_text = body.decode("utf-8", errors="replace") if is_text else ""

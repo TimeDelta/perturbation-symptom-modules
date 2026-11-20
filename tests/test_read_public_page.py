@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -68,13 +69,46 @@ def test_a_human_check_is_recognised_and_an_ordinary_page_is_not():
 
 def test_a_busy_or_unavailable_service_is_not_a_refusal():
     """429 and 503 say the service is busy or down, which is no statement about permission (the owner, 17 November
-    2026: "429 and 503 status codes should not count as refusals"). A challenge marker in the body is still a
-    refusal whatever the status."""
+    2026: "429 and 503 status codes should not count as refusals"); 500 goes with them (item 37 rulings draft,
+    section 13). A challenge marker in the body is still a refusal whatever the status."""
     assert not read_public_page.looks_like_challenge(429, "Too Many Requests")
     assert not read_public_page.looks_like_challenge(503, "Service Unavailable")
-    assert read_public_page.TRANSIENT_STATUS_CODES == frozenset({429, 503})
+    assert not read_public_page.looks_like_challenge(500, "Internal Server Error")
+    assert read_public_page.TRANSIENT_STATUS_CODES == frozenset({429, 500, 503})
     assert not read_public_page.TRANSIENT_STATUS_CODES & read_public_page.CHALLENGE_STATUS_CODES
     assert read_public_page.looks_like_challenge(503, "<html><body>Checking your browser before accessing the site.</body></html>")
+
+
+@pytest.mark.parametrize("status_code", [429, 500, 503])
+def test_a_transient_status_is_reported_for_a_retry_and_nothing_is_saved(tmp_path, monkeypatch, status_code):
+    def answer(address):
+        if address.endswith("/robots.txt"):
+            return 200, "text/plain", b"User-agent: *\nDisallow: /private/\n"
+        return status_code, "text/html", b"<html><body>Server error</body></html>"
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    record = read_public_page.PublicPageReader(tmp_path).read("https://example.org/page")
+    assert record["read"] is False and record["transient"] is True
+    assert "not a refusal" in record["reason"] and "same address on this same host" in record["reason"]
+    assert not any(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize("error", [TimeoutError("timed out"),
+                                   urllib.error.URLError(TimeoutError("timed out"))])
+def test_a_timed_out_request_is_transient_and_another_failure_is_not(tmp_path, monkeypatch, error):
+    """A timeout is transient as a 500 is (item 37 rulings draft, section 13); a refused connection is not."""
+    def answer(address):
+        if address.endswith("/robots.txt"):
+            return 404, "text/plain", b""
+        raise error
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    record = read_public_page.PublicPageReader(tmp_path).read("https://example.org/page")
+    assert record["read"] is False and record.get("transient") is True and "timed out" in record["reason"]
+    assert not read_public_page.is_timeout(ConnectionRefusedError("refused"))
+    assert not read_public_page.is_timeout(urllib.error.URLError(ConnectionRefusedError("refused")))
 
 
 def test_a_refused_address_makes_no_request(tmp_path):
