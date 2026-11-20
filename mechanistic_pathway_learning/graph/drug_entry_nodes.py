@@ -135,13 +135,22 @@ def sign_compound_edges(edges: pd.DataFrame, compound_node_ids: set[str], mechan
     """The merge's changes to one compound's edges (module docstring), one record per edge row: for each (target node,
     sign) of mechanism, every edge from one of compound_node_ids to that target. An unsigned row (binds, sign 0) takes
     the sign under activates or inhibits, by its direction, with MERGED_SIGN_EVIDENCE added to its evidence; a row of
-    activates or inhibits whose sign points the mechanism's way is kept as sourced (changed False).
+    activates or inhibits whose sign points the mechanism's way is kept as sourced (changed False). A target node the
+    mechanism names twice with one sign (two of the drug's targets sharing it) is taken once.
 
     Refused: a target the compound has no edge to (item 37 rulings draft, P1.1b: the merge would lose that part of the
-    mechanism), a mechanism sign of 0 (there is no direction to move), a row whose sign points the other way, a row of
-    any other relation or a binds row with a sign, a signed relation the graph does not list, and a change that would
-    give one source two edges of one relation to the target. Each record holds the row's position in edges, its
-    endpoints, its relation, sign and evidence before and after, and the perturbations merged."""
+    mechanism), a target node the mechanism names with two signs, a mechanism sign of 0 (there is no direction to
+    move), a row whose sign points the other way, a row of any other relation or a binds row with a sign, a signed
+    relation the graph does not list, and a change that would give one source two edges of one relation to the target.
+    Each record holds the row's position in edges, its endpoints, its relation, sign and evidence before and after, and
+    the perturbations merged."""
+    signs_of_target: dict[str, set[float]] = {}
+    for target_node_id, mechanism_sign in mechanism:
+        signs_of_target.setdefault(str(target_node_id), set()).add(float(mechanism_sign))
+    twice = sorted(target_node_id for target_node_id, target_signs in signs_of_target.items() if len(target_signs) > 1)
+    if twice:
+        raise ValueError(f"the mechanism of {perturbation_ids} gives {twice} two signs ({[sorted(signs_of_target[node]) for node in twice]}); curate it first")
+    mechanism = [(target_node_id, target_signs.pop()) for target_node_id, target_signs in signs_of_target.items()]
     records: list[dict] = []
     source_ids, target_ids = edges.source_id.to_numpy(), edges.target_id.to_numpy()
     relations, signs, evidence = edges.relation_type.to_numpy(), edges.sign.to_numpy(), edges.evidence_source.to_numpy()

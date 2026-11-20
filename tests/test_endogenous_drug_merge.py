@@ -156,6 +156,17 @@ def test_the_merge_refuses_what_it_would_lose_or_contradict() -> None:
     duplicated = pd.concat([edges, edges.iloc[[3]].assign(relation_type="activates", sign=1.0)], ignore_index=True)  # a signed copy beside the binds row
     with pytest.raises(ValueError, match="two edges of one relation"):
         add_drug_entry_nodes(nodes, duplicated, RELATIONS, SEEDS, GRAPH_COMPOUNDS, compound_mechanisms=AGONISM)
+    with pytest.raises(ValueError, match="two signs"):  # two of the drug's targets share a node and disagree on it
+        merged(compound_mechanisms={MEL: [("PROTEIN:R1", 1.0), ("PROTEIN:R1", -1.0)]})
+
+
+def test_a_node_two_targets_share_is_signed_once() -> None:
+    """On a graph without the gene and protein split, two targets naming one gene give its node twice
+    (GraphNodeLookup.perturbation_nodes); with one sign the node's edge is signed once, as for a single target."""
+    _, _, _, once_edges, _, _, once = merged()
+    _, _, _, twice_edges, _, _, twice = merged(compound_mechanisms={MEL: AGONISM[MEL] + [("PROTEIN:R1", 1.0)]})
+    pd.testing.assert_frame_equal(twice_edges, once_edges)
+    assert twice["compound_edges_signed_at_the_merge"] == once["compound_edges_signed_at_the_merge"]
 
 
 def test_both_arms_of_the_ablation_read_the_signed_edges(tmp_path: Path) -> None:
