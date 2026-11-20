@@ -42,9 +42,13 @@ ordering. you can just overwrite existing order").
    verification later").
 2. **Item 14, the curation sweep over the drug target table.** Conflicting ChEMBL actions are flagged for curation
    since 20 November 2026 (27 conflicts off the v5 drug set wait), and the amendment found further cases by hand
-   (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query.
+   (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query over the ChEMBL_37 cache
+   through the corrected readers, which needs no rebuild (started 20 November 2026); the count of affected edges
+   waits on the rebuild.
 3. **Item 7, endosomal pH.** A monogenic gene with psychiatric phenotypes is absent from the graph, so its labels
-   are lost; measure first, then a data-layer fix.
+   are lost. The measurement was taken on 7 November 2026 (below); what remains is design (an endosome
+   compartment, the import of `R-HSA-425986`, how its proton pools connect), then the owner's ruling, then a build.
+   A re-measurement on the files of 12 November 2026 would be history once the amendment's rulings are built.
 4. **Item 9, the Krebs cycle and oxidative burden.** One owner ruling plus sourced rows.
 5. **Item 6, the fast/slow partition.** Ready for the owner's ruling on the split.
 6. **Item 11, chronic exposure**, and 7. **item 12, receptor-number plasticity** (decision 9.118): design passes,
