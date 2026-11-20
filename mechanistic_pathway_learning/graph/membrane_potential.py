@@ -82,8 +82,8 @@ IONS_WITH_A_CONDUCTANCE_TERM: tuple[str, ...] = ("Na+", "K+", "Cl-", "Ca2+")
 # KCC2 have acted: d ln[ion]_i per uA/cm2 of the ion's own sustained inward current. Derived from Düsterwald et al.
 # 2018 Table 1 with no learned parameter (docs/extracellular_pool_sensitivities_2026-11-07.md), and registered as
 # amendment item 37 after the owner's ruling of 4 November 2026 in decision 9.112. These are the DIAGONAL of a 3x3
-# response matrix whose cross-terms are not zero (a sustained sodium current moves potassium by -0.0248 and chloride
-# by +0.0126): item 37 registers the diagonal alone, and the cross-terms it drops are a stated limit of the build,
+# response matrix whose cross-terms are not zero (per uA/cm2 of sustained inward sodium current, ln[K+]i moves by
+# -0.0109 and ln[Cl-]i by +0.1366): item 37 registers the diagonal alone, and the cross-terms it drops are a stated limit of the build,
 # not an omission.
 PUMP_CLAMPED_POOL_SENSITIVITY = {"Na+": 0.0995, "K+": 0.0035, "Cl-": 0.833}
 
