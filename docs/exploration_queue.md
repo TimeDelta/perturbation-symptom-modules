@@ -37,7 +37,9 @@ ordering. you can just overwrite existing order").
 1. **Item 15, literature bias in the curated sources.** That amendment rules many values fitted on sourced rows and applied
    to unsourced ones (class centres, sibling medians, shared offsets, the carrier-share classes), which is the case
    item 15 describes; how to correct for it is best known before those fallbacks are built. A literature pass, and
-   nothing in the build depends on it until it reports. Started 20 November 2026.
+   nothing in the build depends on it until it reports. Started 20 November 2026 on Opus at the owner's request, so
+   it needs verification on Fable before it is relied on (the owner: "just note the literature pass as needing fable
+   verification later").
 2. **Item 14, the curation sweep over the drug target table.** Conflicting ChEMBL actions are flagged for curation
    since 20 November 2026 (27 conflicts off the v5 drug set wait), and the amendment found further cases by hand
    (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query.

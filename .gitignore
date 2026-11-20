@@ -20,3 +20,4 @@ slurm-*.out
 
 # personal permission grants, not team-wide
 .claude/settings.local.json
+session_archives/
