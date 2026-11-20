@@ -25,40 +25,36 @@ against 1,030 redistribution edges on the v0.4 slice" (`docs/coproduct_of_de_nov
 "Modelling" requires, and the owner may extend the ruling to it. No item cites finding 10 or any other number of the
 retired table.
 
-## Priority order (7 November 2026)
+## Priority order (20 November 2026)
 
-The owner asked on 7 November 2026 to "prioritize the exploration queue and start the next few items". The order is
-the session's (on Opus), by four tests: how much closer to physiology the item brings the model (CLAUDE.md
-"Modelling"), whether its first step can run now that the v5 drug graph exists (decision 9.106), what it costs, and
-whether the owner can follow it. Items 7, 9, 6, 5, 10, 4, 8 and 2 were all worked that day (their findings are dated additions in
-each item, read on Fable where they needed sources); only items 1 and 3 are not started, both held deliberately
-(1 for after the 9.112 rebuild, 3 as the largest change). So the sentence above that "nothing here is started" no
-longer holds: it is true only of items 1 and 3.
+The owner asked on 20 November 2026 to "prioritize the exploration queue then start an opus 5.5 subagent to start
+research on the next highest priority item". The order is the session's (on Opus), by five tests: how much closer to
+physiology the item brings the model, whether its first step can run now, what it costs, whether the owner can follow
+it, and whether it bears on what the amendment of `docs/item37_rulings_draft_2026-11-13.md` has just ruled, since its fallbacks, class centres and curation rows
+are being sourced now. It replaces the order of 7 November 2026 (the owner: "i don't care about maintaining previous
+ordering. you can just overwrite existing order").
 
-1. **Item 7, endosomal pH (SLC9A6, SLC9A9).** A monogenic gene with psychiatric phenotypes turns out to be absent from
-   the graph, so its labels are lost; cheap to measure, a data-layer change to fix.
-2. **Item 9, the Krebs cycle and oxidative burden.** The route the physiology needs is missing by construction; the
-   fix is one owner ruling (a metabolite-driven `produces_oxidant`) plus sourced rows.
-3. **Item 6, the fast/slow partition and the `coproduct_of` split.** Its sources were re-read on 6 November 2026 and
-   the split is computable from the stoichiometry, so it is ready for the owner's ruling on the split.
-4. **Item 5, occupancy as the drug seed magnitude.** Most of the data exists; its literature needed a Fable recheck,
-   started 7 November 2026; then the cheap field-level measurement.
-5. **Item 10, the shunt.** A literature pass to count the perturbations whose main mechanism is shunting inhibition,
-   so the 9.112 limit is counted rather than described.
-6. **Item 4, phosphorylation.** One Fable count decides whether to drop it.
-7. **Item 2, CollecTRI sign recuration.** Cheap research; it feeds a sign prior rather than a mechanism.
-8. **Item 1, sensitivity-matrix rank.** Methodologically strong but heavy; better after the 9.112 rebuild, when
-   the operator it would factor is the one that will be tested.
-9. **Item 8, the VAMP1 share.** Small expected effect on one membership weight.
-10. **Item 3, protein electrostatics.** The largest change and the hardest to follow; stays parked.
+1. **Item 15, literature bias in the curated sources.** That amendment rules many values fitted on sourced rows and applied
+   to unsourced ones (class centres, sibling medians, shared offsets, the carrier-share classes), which is the case
+   item 15 describes; how to correct for it is best known before those fallbacks are built. A literature pass, and
+   nothing in the build depends on it until it reports. Started 20 November 2026.
+2. **Item 14, the curation sweep over the drug target table.** Conflicting ChEMBL actions are flagged for curation
+   since 20 November 2026 (27 conflicts off the v5 drug set wait), and the amendment found further cases by hand
+   (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query.
+3. **Item 7, endosomal pH.** A monogenic gene with psychiatric phenotypes is absent from the graph, so its labels
+   are lost; measure first, then a data-layer fix.
+4. **Item 9, the Krebs cycle and oxidative burden.** One owner ruling plus sourced rows.
+5. **Item 6, the fast/slow partition.** Ready for the owner's ruling on the split.
+6. **Item 11, chronic exposure**, and 7. **item 12, receptor-number plasticity** (decision 9.118): design passes,
+   larger, and the tardive dyskinesia construct waits on them.
+8. **Item 5, occupancy as the drug seed magnitude.** Partly taken up by the amendment, which carries a target weighted by
+   occupancy (R3); what remains is to be re-read against that ruling.
+9. **Item 10, the shunt.** 10. **Item 4, phosphorylation.** 11. **Item 2, CollecTRI signs.**
+12. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
+13. **Item 1, sensitivity-matrix rank**, after the rebuild. 14. **Item 8, the VAMP1 share.**
+15. **Item 3, protein electrostatics**, the largest change.
 
-Added later on 7 November 2026: items 11 and 12 (chronic exposure and receptor-number plasticity), and then item 13
-(co-prescription confounding in FAERS), were queued at the owner's request after this order was set, and are not placed in it.
-Item 14 (the curation sweep over the drug target table) was queued on 9 November 2026, likewise after the order was set
-and likewise unplaced; its first step is a query over the ChEMBL action types and costs little. Items 11 and 12 are literature passes, so their first step can
-run now; item 13's first form is an hour of engineering on rows already read; their place in the order is the owner's.
-Item 15 (literature bias in the curated sources) was queued on 18 November 2026 and item 16 (DNA methylation) on 19
-November 2026, likewise unplaced.
+Item 13 (co-prescription in FAERS) stays parked by the owner's ruling and is not placed.
 
 ---
 
