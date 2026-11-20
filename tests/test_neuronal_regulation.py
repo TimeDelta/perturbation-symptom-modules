@@ -176,12 +176,88 @@ def test_peroxynitrite_does_not_also_produce_a_nitrite_edge():
 
 
 def test_a_row_naming_two_species_still_gives_both():
-    """The fix drops a key that is a proper substring of another matched key, and must not touch a row that names two
-    unrelated species. Three rows of the curated tables do."""
+    """The nitrite fix drops a key that is a proper substring of another matched key, and must not touch a row that
+    names two unrelated species. Two values of docs/curated_oxidant_sources.csv name superoxide and hydrogen peroxide
+    together, on three rows: XDH's and CYP2E1's 'superoxide and hydrogen peroxide' and PRODH's 'reactive oxygen species
+    (superoxide/hydrogen peroxide)' (NOS2's 'superoxide and peroxynitrite (when L-arginine depleted)' is held by
+    test_peroxynitrite_does_not_also_produce_a_nitrite_edge). SOD1's 'hydrogen peroxide (from superoxide dismutation)'
+    was asserted here as a third value until 20 November 2026; it names hydrogen peroxide and its precursor, and now
+    gives hydrogen peroxide alone (test_sod1_row_names_hydrogen_peroxide_and_not_its_precursor)."""
     both = [OXIDANT_BASES["hydrogen peroxide"], OXIDANT_BASES["superoxide"]]
     assert oxidant_bases("superoxide and hydrogen peroxide") == both
-    assert oxidant_bases("hydrogen peroxide (from superoxide dismutation)") == both
     assert oxidant_bases("reactive oxygen species (superoxide/hydrogen peroxide)") == both
+
+
+def test_sod1_row_names_hydrogen_peroxide_and_not_its_precursor():
+    """SOD1 dismutes superoxide to hydrogen peroxide, and its row of docs/curated_oxidant_sources.csv says so in prose,
+    'hydrogen peroxide (from superoxide dismutation)'. Until 20 November 2026 the substring match also found
+    'superoxide' there and gave SOD1 a produces_oxidant edge to superoxide, the reverse of its physiology (defect (1) of
+    decision 9.122; GENE:SOD1 -> MAM02631m on the graph data/processed/graph_full_neuronal built 12 November 2026). The
+    words after 'from', up to the next parenthesis or the end of the name, now name a precursor and are not matched."""
+    sources = pd.read_csv(Path("docs/curated_oxidant_sources.csv"))
+    sod1 = sources[sources.source_gene == "SOD1"]
+    assert sod1.species_produced.tolist() == ["hydrogen peroxide (from superoxide dismutation)"]
+    assert oxidant_bases(sod1.species_produced.iloc[0]) == [HYDROGEN_PEROXIDE]
+    nodes, edges, relation_types = base_graph()
+    sod1_node = {"node_id": "GENE:SOD1", "node_type": "gene", "display_name": "SOD1", "gene_symbol": "SOD1", "in_metabolic_layer": False, "degree": 0}
+    nodes = pd.concat([nodes, pd.DataFrame([sod1_node])], ignore_index=True).reindex(columns=NODE_COLUMNS)
+    no_targets = pd.DataFrame(columns=["species", "target_gene", "effect_sign", "pmid"])
+    _, new_edges, _, summary = add_oxidative_regulation(nodes, edges, relation_types, no_targets, sod1)
+    production = new_edges[new_edges.relation_type == "produces_oxidant"]
+    base_of = nodes.set_index("node_id").base_metabolite_id
+    assert production.source_id.tolist() == ["GENE:SOD1"] and base_of[production.target_id].tolist() == [HYDROGEN_PEROXIDE]
+    assert summary["source_edges"] == 1
+    # the clause holds every precursor it names, up to the parenthesis
+    assert oxidant_bases("peroxynitrite (from superoxide and nitric oxide)") == [OXIDANT_BASES["peroxynitrite"]]
+
+
+# Every species value of the two curated oxidant tables on 20 November 2026, with the oxidants it resolved to under the
+# rule of 9 November 2026 (before: the substring match and the nitrite drop, commit ce4350c9) and under the precursor
+# rule added on 20 November 2026 (after). A row's oxidants depend on its species value alone, so the 61 rows the tables
+# held that day (38 targets, 23 sources) are pinned through their 18 values. A value added later goes in with before
+# None and the oxidants its row's quote names.
+RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE = {
+    ("targets", "hydrogen peroxide"): (["hydrogen peroxide"], ["hydrogen peroxide"]),
+    ("targets", "4-hydroxynonenal"): (["4-hydroxynonenal"], ["4-hydroxynonenal"]),
+    ("targets", "superoxide"): (["superoxide"], ["superoxide"]),
+    ("targets", "peroxynitrite"): (["peroxynitrite"], ["peroxynitrite"]),
+    ("targets", "nitric oxide"): (["nitric oxide"], ["nitric oxide"]),
+    ("targets", "hydroxyl radical"): (["hydroxyl radical"], ["hydroxyl radical"]),
+    ("targets", "reactive oxygen species (unspecified oxidant)"): ([], []),
+    ("targets", "reactive oxygen species (unspecified; thiol oxidant diamide / cadmium-induced oxidation)"): ([], []),
+    ("sources", "superoxide"): (["superoxide"], ["superoxide"]),
+    ("sources", "hydrogen peroxide"): (["hydrogen peroxide"], ["hydrogen peroxide"]),
+    ("sources", "reactive oxygen species (superoxide/hydrogen peroxide)"): (["hydrogen peroxide", "superoxide"], ["hydrogen peroxide", "superoxide"]),
+    ("sources", "superoxide and hydrogen peroxide"): (["hydrogen peroxide", "superoxide"], ["hydrogen peroxide", "superoxide"]),
+    ("sources", "hydrogen peroxide (reactive oxygen species from monoamine deamination)"): (["hydrogen peroxide"], ["hydrogen peroxide"]),
+    ("sources", "hypochlorous acid (from H2O2 and chloride)"): (["hypochlorous acid"], ["hypochlorous acid"]),
+    ("sources", "lipid hydroperoxides"): ([], []),
+    ("sources", "superoxide (when BH4-deficient/uncoupled)"): (["superoxide"], ["superoxide"]),
+    ("sources", "superoxide and peroxynitrite (when L-arginine depleted)"): (["superoxide", "peroxynitrite"], ["superoxide", "peroxynitrite"]),
+    ("sources", "hydrogen peroxide (from superoxide dismutation)"): (["hydrogen peroxide", "superoxide"], ["hydrogen peroxide"]),
+}
+
+
+def test_the_precursor_rule_changed_sod1_row_alone():
+    """The before/after table above: every value resolves as its after column says, and SOD1's is the one value
+    whose oxidants the precursor rule changed."""
+    name_of = {base: key for key, base in OXIDANT_BASES.items()}
+    for (table, value), (_, after) in RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE.items():
+        assert [name_of[base] for base in oxidant_bases(value)] == after, (table, value)
+    changed = {key: (before, after) for key, (before, after) in RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE.items()
+               if before is not None and before != after}
+    assert changed == {("sources", "hydrogen peroxide (from superoxide dismutation)"): (["hydrogen peroxide", "superoxide"], ["hydrogen peroxide"])}
+
+
+def test_every_species_value_of_the_curated_oxidant_tables_is_pinned():
+    """Every row of both tables, read from the CSVs, has its species value in the table above, so that table is the
+    full one, and a value added later is checked against its row's quote before it reaches the graph."""
+    for table, path, column in (("targets", "docs/curated_oxidant_targets.csv", "species"),
+                                ("sources", "docs/curated_oxidant_sources.csv", "species_produced")):
+        pinned = {value for pinned_table, value in RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE if pinned_table == table}
+        unpinned = sorted(set(pd.read_csv(Path(path))[column]) - pinned)
+        assert not unpinned, (f"{path} holds species values that RESOLUTION_BEFORE_AND_AFTER_THE_PRECURSOR_RULE lacks: {unpinned}; "
+                              "add each with before None and the oxidants its row's quote names")
 
 
 def test_nitrite_still_resolves_when_a_row_names_it_alone():

@@ -17,6 +17,8 @@ absent from the graph, are reported rather than invented.
 """
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 
 TARGET_RELATION, SOURCE_RELATION = "oxidatively_modifies", "produces_oxidant"
@@ -24,6 +26,9 @@ TARGET_RELATION, SOURCE_RELATION = "oxidatively_modifies", "produces_oxidant"
 OXIDANT_BASES = {"hydrogen peroxide": "MAM02041", "superoxide": "MAM02631", "nitric oxide": "MAM02609", "peroxynitrite": "MAM02714",
                  "hydroxyl radical": "MAM02149", "4-hydroxynonenal": "MAM00988", "hypochlorous acid": "MAM02156", "nitrite": "MAM02588",
                  "nitrogen dioxide": "MAM02591"}
+# the words after "from" in a species name, up to the next parenthesis or the end of the name: what the species is made
+# from, which oxidant_bases leaves unmatched
+PRECURSOR_CLAUSE = re.compile(r"\bfrom\b[^()]*")
 COMPARTMENT_WORDS = (("mitochondri", "m"), ("peroxisom", "x"), ("endoplasmic reticulum", "r"), ("nucle", "n"), ("lysosom", "l"),
                      ("extracellular", "e"), ("intermembrane", "i"))
 
@@ -33,17 +38,31 @@ def oxidant_bases(species: str) -> list[str]:
     without a metabolite (lipid hydroperoxides) or an unresolved one ('reactive oxygen species (unspecified)'). A row
     that names two ('superoxide and hydrogen peroxide') gives both.
 
-    The match is by substring, because a row names its species in prose and may name two of them. A key that is a
-    proper substring of another matched key is then dropped, which corrects a defect found on 9 November 2026: the
-    nine keys have exactly one substring relation, 'nitrite' inside 'peroxynitrite', so every peroxynitrite row also
-    produced a nitrite edge. Two rows of docs/curated_oxidant_targets.csv carried it ('peroxynitrite' and 'superoxide
-    and peroxynitrite (when L-arginine depleted)'), and no row of either table names plain nitrite, so nitrite's own
-    entry is now unreachable from the tables as they stand and is kept for a row that names it.
+    The match is by substring, because a row names its species in prose and may name two of them. Two rules narrow
+    it, one for each half of defect (1) of decision 9.122 (recorded 8 November 2026):
 
-    The drop is by key and not by species name, so a row that deliberately named both would lose the shorter one. No
-    row does, and a row that needs both wants two rows rather than a looser rule here.
+      - The words after 'from', up to the next parenthesis or the end of the name (PRECURSOR_CLAUSE), say what the
+        species is made from, and are not matched. Until 20 November 2026 they were, so SOD1's row of
+        docs/curated_oxidant_sources.csv, 'hydrogen peroxide (from superoxide dismutation)', also matched
+        'superoxide' and gave SOD1 a produces_oxidant edge to superoxide, the reverse of the dismutation it
+        catalyses. Of the rows the two tables held that day, the rule changed SOD1's alone: the only other rows that
+        said 'from', MAOA's ('hydrogen peroxide (reactive oxygen species from monoamine deamination)') and MPO's
+        ('hypochlorous acid (from H2O2 and chloride)'), named no key after it.
+      - A key that is a proper substring of another matched key is dropped (since 9 November 2026): the nine keys
+        have exactly one substring relation, 'nitrite' inside 'peroxynitrite', so every peroxynitrite row also
+        produced a nitrite edge. Eight rows carried it, seven of docs/curated_oxidant_targets.csv through
+        'peroxynitrite' and one of docs/curated_oxidant_sources.csv through 'superoxide and peroxynitrite (when
+        L-arginine depleted)'. No row of either table names plain nitrite, so nitrite's own entry is unreachable from
+        the tables as they stand and is kept for a row that names it.
+
+    Each rule has a limit. The drop is by key and not by species name, so a row that deliberately named both
+    peroxynitrite and nitrite would lose nitrite; and the clause after 'from' runs to the next parenthesis or the end
+    of the name, so a product named after the precursor inside it ('superoxide from complex I and hydrogen peroxide')
+    would be lost. No row does either, and a row that needs it wants two rows, or its precursor in parentheses, rather
+    than a looser rule here. tests/test_neuronal_regulation.py pins what every species value of the two tables
+    resolves to.
     """
-    name = str(species).lower()
+    name = PRECURSOR_CLAUSE.sub("", str(species).lower())
     matched = {key: base for key, base in OXIDANT_BASES.items() if key in name}
     return [base for key, base in matched.items()
             if not any(other != key and key in other for other in matched)]
