@@ -35,7 +35,8 @@ def blocked_reactions(model_path: Path, cache_path: Path) -> list[str]:
 
     from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_cobra_model
 
-    # with configs/human_gem_corrections.csv applied; a cache written before 20 November 2026 holds the pinned model's list
+    # with configs/human_gem_corrections.csv applied. The cache is not keyed on that table, so one written before the
+    # table last changed holds another model's list (before 20 November 2026, the pinned model's)
     model = read_human_gem_cobra_model(model_path)
     blocked = sorted(find_blocked_reactions(model, open_exchanges=True, processes=1))
     cache_path.parent.mkdir(parents=True, exist_ok=True)

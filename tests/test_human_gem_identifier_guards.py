@@ -1,6 +1,6 @@
 """Guards on Human-GEM's metabolite identifiers and corrected reactions, read after configs/human_gem_corrections.csv is
-applied (rulings Q2 and Q5c of 20 November 2026, docs/item37_rulings_draft_2026-11-13.md section 21; Q5d and the
-15(R)-HEPE repair of the same day, section 22).
+applied (rulings Q2 and Q5c of 20 November 2026, docs/item37_rulings_draft_2026-11-13.md section 21; Q5d, the
+15(R)-HEPE repair, NAAA's other reactions and the palmitoylethanolamide transport of the same day, section 22).
 
 Q2: no metChEBIID may resolve to an isotopically labelled ChEBI record, or be absent from the pinned ChEBI release
 (data/raw/chebi/chebi_core.obo.gz, release 257). A pass of 20 November 2026 found six metabolites (ten compartment
@@ -13,10 +13,11 @@ Q5c: the compartment rows that share one metsNoComp must agree on the first bloc
 and on their model name (the SBML name). Before the corrections both cases of ruling Q5 fail it: MAM03652's cytosolic
 row is palmitoylethanolamide, a different key, and MAM20077's two rows carry the names of two unrelated compounds.
 
-Q5d and 15(R)-HEPE: the corrected reactions are what the rulings say (MAR20093 wholly in the lysosome; MAR02560 and
-MAR02571 the one-way glutathione-dependent reduction with the glutathione peroxidases), every reaction the
-corrections touch balances in elements and charge, and no reaction of the model is less balanced in charge than the
-pinned one is.
+Q5d, 15(R)-HEPE, NAAA's other reactions and the transport: the corrected reactions are what the rulings say (MAR20093
+to MAR20097 wholly in the lysosome, MAR20096 and MAR20097 with ASAH1 beside NAAA, MAR05339 without NAAA; MAR02560 and
+MAR02571 the one-way glutathione-dependent reduction with the glutathione peroxidases; the added MAR90001 a reversible,
+gene-free palmitoylethanolamide transport from cytosol to lysosome), every reaction the corrections touch or add
+balances in elements and charge, and no reaction of the model is less balanced in charge than the pinned one is.
 
 The cases these guards find that no ruling has repaired yet are listed below by name, each with its reason, so the
 tests pass now and fail on any new case. A listed case that no longer occurs fails as well, so the list is shortened
@@ -90,12 +91,18 @@ LEFT_AS_PINNED_FLAGGED_FOR_FOLLOW_UP = {
     "MAR02567": "15(R)-HEPE hydrolysis, nucleus: left as pinned, flagged for follow-up (the owner, 20 November 2026); unadjudicated",
     "MAR02577": "15(R)-HEPE hydrolysis, peroxisome: left as pinned, flagged for follow-up (the owner, 20 November 2026); unadjudicated",
 }
-# Q5d. Species in no reaction after the corrections; the pinned model has none. MAM03885c is the cytosolic
-# palmitoylethanolamide row ruling Q5a gave MAM03652c; its only reaction, MAR20093, moved to the lysosome. Whether the
-# row should stay is not ruled, so it stays and is listed.
+# Species in no reaction after the corrections; the pinned model has none. Each is the cytosolic substrate of one of
+# NAAA's reactions, which was its only reaction and moved to the lysosome (the owner, 20 November 2026: "accept the
+# five NAAA verdicts"). Whether the rows should stay is not ruled, so they stay and are listed. MAM03885c, the
+# cytosolic palmitoylethanolamide row ruling Q5a gave MAM03652c, was listed here until the transport MAR90001 (the
+# owner, 20 November 2026: "yes, option 1 as long as it passes the check") put it in a reaction again.
 SPECIES_IN_NO_REACTION_NOT_YET_ADJUDICATED = {
-    "MAM03885c": "cytosolic palmitoylethanolamide (ruling Q5a), whose only reaction MAR20093 moved to the lysosome (Q5d); unadjudicated",
+    "MAM03550c": "cytosolic N-dodecanoylethanolamine, whose only reaction MAR20094 moved to the lysosome; unadjudicated",
+    "MAM03977c": "cytosolic N-tetradecanoylethanolamine, whose only reaction MAR20095 moved to the lysosome; unadjudicated",
+    "MAM20075c": "cytosolic N-dodecanoylsphingosine, whose only reaction MAR20097 moved to the lysosome; unadjudicated",
+    "MAM20076n": "N-hexadecanoylsphingosine, compartment c despite its n suffix, whose only reaction MAR20096 moved to the lysosome; unadjudicated",
 }
+NAAA, ASAH1 = "ENSG00000138744", "ENSG00000104763"
 GLUTATHIONE_PEROXIDASES = {"ENSG00000116157", "ENSG00000117592", "ENSG00000164294", "ENSG00000167468", "ENSG00000176153",
                            "ENSG00000198704", "ENSG00000211445", "ENSG00000224586", "ENSG00000233276"}
 
@@ -277,7 +284,7 @@ def test_every_correction_finds_its_row_in_the_pinned_files(corrected_sbml_text)
 def test_the_renamed_ids_are_unused_in_the_pinned_files_and_used_once_after():
     corrections = read_human_gem_corrections()
     texts = [path.read_text() for path in (METABOLITES_PATH, SBML_PATH, YAML_PATH) if path.exists()]
-    for new in list(corrections.species_ids.values()) + list(corrections.species_added):
+    for new in list(corrections.species_ids.values()) + list(corrections.species_added) + list(corrections.reactions_added):
         assert all(new not in text for text in texts), f"{new} is already in a pinned Human-GEM file"
     assert "MAM20089" not in "".join(texts), "MAM20089 was to be an id unused by the pinned model"
 
@@ -290,11 +297,11 @@ def test_the_renames_reach_the_table_and_the_sbml(corrected_metabolites, correct
     assert "MAM03652c" not in rows.index and "MAM20077m" not in rows.index
     names = model_names(corrected_sbml_text)
     assert names["MAM03885c"] == "Palmitoylethanolamide" and "MAM03652c" not in names and "MAM20077m" not in names
-    # the renames reach every speciesReference: no reference to an old id is left. MAM20089m keeps its reactions;
-    # MAM03885c has none, because its only reaction, MAR20093, moved to the lysosome (Q5d) and takes MAM03885l
+    # the renames reach every speciesReference: no reference to an old id is left. MAM20089m keeps its reactions
     assert 'species="M_MAM20089m"' in corrected_sbml_text and 'species="M_MAM03885l"' in corrected_sbml_text
+    # MAM03885c's only reaction, MAR20093, moved to the lysosome (Q5d); it is in the added transport MAR90001 alone
     assert 'species="M_MAM03652c"' not in corrected_sbml_text and 'species="M_MAM20077m"' not in corrected_sbml_text
-    assert 'species="M_MAM03885c"' not in corrected_sbml_text and 'id="M_MAM03885c"' in corrected_sbml_text
+    assert reactions_of(corrected_sbml_text, "MAM03885c") == {"MAR90001"} and 'id="M_MAM03885c"' in corrected_sbml_text
 
 
 @needs_model
@@ -379,6 +386,10 @@ def imbalance(participants: dict[str, float], properties: dict) -> tuple[float |
     return charge, {element: value for element, value in elements.items() if abs(value) > 1e-9}
 
 
+def reactions_of(sbml_text: str, species: str) -> set[str]:
+    return {reaction for reaction, participants in reaction_participants(sbml_text).items() if species in participants}
+
+
 def reaction_opening(sbml_text: str, reaction: str) -> str:
     return re.search(rf'<reaction [^>]*\bid="R_{reaction}"[^>]*>', sbml_text).group(0)
 
@@ -407,6 +418,29 @@ def test_the_corrected_reactions_are_what_the_rulings_say(corrected_sbml_text, c
     rows = corrected_metabolites.set_index("mets")
     assert rows.at["MAM03885l", "metChEBIID"] == "CHEBI:71464" and rows.at["MAM01797l", "metChEBIID"] == "CHEBI:16000"
     assert rows.at["MAM03885l", "metHMR2ID"] == "" and rows.at["MAM01797l", "metRetired"] == ""
+    # NAAA's other reactions: each wholly in the lysosome, on the added species, every coefficient as pinned
+    assert reactions["MAR20094"] == {"MAM02040l": -1.0, "MAM03550l": -1.0, "MAM01797l": 1.0, "MAM02344l": 1.0}
+    assert reactions["MAR20095"] == {"MAM02040l": -1.0, "MAM03977l": -1.0, "MAM01797l": 1.0, "MAM02494l": 1.0}
+    assert reactions["MAR20096"] == {"MAM02040l": -1.0, "MAM20076l": -1.0, "MAM02674l": 1.0, "MAM02929l": 1.0}
+    assert reactions["MAR20097"] == {"MAM02040l": -1.0, "MAM20075l": -1.0, "MAM02344l": 1.0, "MAM02929l": 1.0}
+    for reaction in ("MAR20094", "MAR20095"):
+        assert reaction_genes(corrected_sbml_text, reaction) == {NAAA}
+    for reaction in ("MAR20096", "MAR20097"):
+        assert reaction_genes(corrected_sbml_text, reaction) == {ASAH1, NAAA}
+    for reaction in ("MAR20093", "MAR20094", "MAR20095", "MAR20096", "MAR20097"):
+        assert 'fbc:lowerFluxBound="cobra_0_bound"' in reaction_opening(corrected_sbml_text, reaction)
+    assert reaction_genes(corrected_sbml_text, "MAR05339") == reaction_genes(SBML_PATH.read_text(), "MAR05339") - {NAAA}
+    assert len(reaction_genes(corrected_sbml_text, "MAR05339")) == 11
+    # the palmitoylethanolamide transport, added
+    assert reactions["MAR90001"] == {"MAM03885c": -1.0, "MAM03885l": 1.0} and reaction_genes(corrected_sbml_text, "MAR90001") == set()
+    opening = reaction_opening(corrected_sbml_text, "MAR90001")
+    assert 'reversible="true"' in opening and 'fbc:lowerFluxBound="cobra_default_lb"' in opening and 'fbc:upperFluxBound="cobra_default_ub"' in opening
+    assert 'name="transport of palmitoylethanolamide (cytosol to lysosome)"' in opening
+    for species, name in (("MAM03550l", "C12:0-Ethanolamide, Didecanoyl Ethanolamide"), ("MAM20076l", "N-hexadecanoylsphing-4-enine")):
+        assert names[species] == name
+    assert rows.at["MAM20076l", "metChEBIID"] == "CHEBI:72959" and rows.at["MAM03550l", "metsNoComp"] == "MAM03550"
+    assert re.search(r'<species [^>]*id="M_MAM20076l"[^>]*compartment="l"', corrected_sbml_text)
+    assert "MAM20076c" not in rows.index, "the alternative rename was not chosen"
     pinned = reaction_participants(SBML_PATH.read_text())
     for reaction in LEFT_AS_PINNED_FLAGGED_FOR_FOLLOW_UP:
         assert reactions[reaction] == pinned[reaction], f"{reaction} is to stay as pinned"
@@ -415,13 +449,14 @@ def test_the_corrected_reactions_are_what_the_rulings_say(corrected_sbml_text, c
 
 @needs_model
 def test_no_reaction_is_less_balanced_in_charge_after_the_corrections(corrected_sbml_text):
-    """Every reaction the corrections touch balances in elements and charge; no other reaction's charge balance changes.
-    The two copies of 15(R)-HEPE hydrolysis left as pinned keep their +2, listed with the owner's reason."""
+    """Every reaction the corrections touch or add balances in elements and charge; no other reaction's charge balance
+    changes. The two copies of 15(R)-HEPE hydrolysis left as pinned keep their +2, listed with the owner's reason."""
     pinned_text = SBML_PATH.read_text()
     pinned, corrected = reaction_participants(pinned_text), reaction_participants(corrected_sbml_text)
     pinned_properties, corrected_properties = species_properties(pinned_text), species_properties(corrected_sbml_text)
-    assert set(pinned) == set(corrected)
-    touched = read_human_gem_corrections().corrected_reactions()
+    added = set(read_human_gem_corrections().reactions_added)
+    assert set(corrected) == set(pinned) | added and not set(pinned) & added
+    touched = read_human_gem_corrections().corrected_reactions() | added
     for reaction in sorted(touched):
         charge, elements = imbalance(corrected[reaction], corrected_properties)
         assert charge == 0 and elements == {}, f"{reaction} does not balance after its correction: charge {charge}, elements {elements}"

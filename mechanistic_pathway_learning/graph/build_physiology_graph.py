@@ -4,8 +4,11 @@ Layers and sources:
   metabolic      Human-GEM (SBML from github.com/SysBioChalmers/Human-GEM) via cobra, with the species and reaction
                  corrections of configs/human_gem_corrections.csv applied (graph/human_gem_corrections.py; since
                  20 November 2026 MAM03652c is MAM03885c and MAM20077m is MAM20089m, rulings Q5a and Q5b, MAR20093
-                 runs in the lysosome on the added species MAM03885l and MAM01797l, ruling Q5d, and MAR02560 and
-                 MAR02571 are one-way glutathione-dependent reductions with the glutathione peroxidases):
+                 runs in the lysosome on the added species MAM03885l and MAM01797l, ruling Q5d, MAR02560 and
+                 MAR02571 are one-way glutathione-dependent reductions with the glutathione peroxidases, NAAA's other
+                 reactions MAR20094 to MAR20097 run in the lysosome too, ASAH1 joins NAAA on MAR20096 and MAR20097
+                 and NAAA leaves MAR05339, and the added reaction MAR90001 transports palmitoylethanolamide between
+                 cytosol and lysosome):
                  metabolite nodes (compartment-specific), reaction nodes, gene nodes,
                  edges substrate_of (metabolite -> reaction), product_of (reaction -> metabolite),
                  catalyzed_by (gene -> reaction, from the gene-protein-reaction rule; the AND/OR
@@ -115,13 +118,24 @@ def gene_symbols_from_table(genes_table_path: Path | None) -> dict[str, str]:
 
 def subsystem_by_reaction(model, model_yaml_path: Path | None = None) -> dict[str, str]:
     """Reaction id -> subsystem. SBML groups when the file has them; else the Human-GEM yml, whose reaction
-    entries carry a subsystem list (the first entry is kept), parsed line by line to avoid loading the whole document."""
+    entries carry a subsystem list (the first entry is kept), parsed line by line to avoid loading the whole document.
+    A reaction that neither gives takes the "subsystem" note a reaction_added row of configs/human_gem_corrections.csv
+    writes on the reaction it adds, which the pinned yml cannot hold."""
     subsystems: dict[str, str] = {}
     for group in getattr(model, "groups", []):
         for member in group.members:
             subsystems.setdefault(member.id, group.name)
-    if subsystems or model_yaml_path is None or not model_yaml_path.exists():
-        return subsystems
+    if not subsystems and model_yaml_path is not None and model_yaml_path.exists():
+        subsystems = subsystems_from_yaml(model_yaml_path)
+    for reaction in getattr(model, "reactions", []):
+        if reaction.id not in subsystems and (note := (getattr(reaction, "notes", None) or {}).get("subsystem")):
+            subsystems[reaction.id] = note
+    return subsystems
+
+
+def subsystems_from_yaml(model_yaml_path: Path) -> dict[str, str]:
+    """Reaction id -> the first entry of its subsystem list in the Human-GEM yml."""
+    subsystems: dict[str, str] = {}
     current_reaction: str | None = None
     in_subsystem_list = False
     with open(model_yaml_path, encoding="utf-8") as yaml_file:

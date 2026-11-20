@@ -280,17 +280,33 @@ def test_the_repository_table_parses():
     pristanate = "CC(C)CCC[C@@H](C)CCC[C@@H](C)CCC[C@H](C)C(=O)[O-]"
     assert {row_id for row_id, column, _, corrected in corrections.values if column == "metSmiles" and corrected == pristanate} == {
         "MAM02766c", "MAM02766e", "MAM02766r", "MAM02766x"}
-    # Q5d: MAR20093 moves to the lysosome, on two added species; 15(R)-HEPE: MAR02560 and MAR02571 are rewritten, and
+    # Q5d: MAR20093 moves to the lysosome, on two added species; NAAA's other reactions: MAR20094 to MAR20097 move there
+    # too, on four more added species and the added MAM01797l; 15(R)-HEPE: MAR02560 and MAR02571 are rewritten, and
     # their nuclear and peroxisomal copies MAR02567 and MAR02577 are left as pinned, flagged for follow-up
-    assert corrections.species_added == {"MAM03885l": "MAM03885e", "MAM01797l": "MAM01797c"}
-    assert corrections.reaction_species == {"MAR20093": {"MAM03652c": "MAM03885l", "MAM02040c": "MAM02040l", "MAM01797c": "MAM01797l",
-                                                         "MAM02674c": "MAM02674l"}}
+    assert corrections.species_added == {"MAM03885l": "MAM03885e", "MAM01797l": "MAM01797c", "MAM03550l": "MAM03550c", "MAM03977l": "MAM03977c",
+                                         "MAM20076l": "MAM20076n", "MAM20075l": "MAM20075c"}
+    water = {"MAM02040c": "MAM02040l"}
+    assert corrections.reaction_species == {
+        "MAR20093": {"MAM03652c": "MAM03885l", **water, "MAM01797c": "MAM01797l", "MAM02674c": "MAM02674l"},
+        "MAR20094": {"MAM03550c": "MAM03550l", **water, "MAM01797c": "MAM01797l", "MAM02344c": "MAM02344l"},
+        "MAR20095": {"MAM03977c": "MAM03977l", **water, "MAM01797c": "MAM01797l", "MAM02494c": "MAM02494l"},
+        "MAR20096": {"MAM20076n": "MAM20076l", **water, "MAM02674c": "MAM02674l", "MAM02929c": "MAM02929l"},
+        "MAR20097": {"MAM20075c": "MAM20075l", **water, "MAM02344c": "MAM02344l", "MAM02929c": "MAM02929l"}}
+    assert "MAM20076n" not in corrections.species_ids, "the alternative rename MAM20076n -> MAM20076c was not chosen"
     assert corrections.reaction_equations == {
         "MAR02560": ("MAM00373c + MAM02040c <=> MAM00375c + 2 MAM02039c", "MAM00375c + 2 MAM02026c -> MAM00373c + MAM02027c + MAM02040c"),
         "MAR02571": ("MAM00373r + MAM02040r <=> MAM00375r + 2 MAM02039r", "MAM00375r + 2 MAM02026r -> MAM00373r + MAM02027r + MAM02040r")}
     peroxidases = " or ".join(["ENSG00000116157", "ENSG00000117592", "ENSG00000164294", "ENSG00000167468", "ENSG00000176153",
                                "ENSG00000198704", "ENSG00000211445", "ENSG00000224586", "ENSG00000233276"])
-    assert corrections.reaction_gene_rules == {"MAR02560": ("", peroxidases), "MAR02571": ("", peroxidases)}
+    naaa, asah1 = "ENSG00000138744", "ENSG00000104763"
+    mar05339_rest = ["ENSG00000068903", "ENSG00000077463", "ENSG00000096717", "ENSG00000124523", "ENSG00000124596", "ENSG00000132744",
+                     "ENSG00000133315", "ENSG00000142082", "ENSG00000157045", "ENSG00000172264", "ENSG00000187531"]
+    assert corrections.reaction_gene_rules == {"MAR02560": ("", peroxidases), "MAR02571": ("", peroxidases),
+                                               "MAR20096": (naaa, f"{asah1} or {naaa}"), "MAR20097": (naaa, f"{asah1} or {naaa}"),
+                                               "MAR05339": (" or ".join(sorted(mar05339_rest + [naaa])), " or ".join(mar05339_rest))}
+    # the palmitoylethanolamide transport, the one added reaction
+    assert corrections.reactions_added == {"MAR90001": {"equation": "MAM03885c <=> MAM03885l", "name": "transport of palmitoylethanolamide (cytosol to lysosome)",
+                                                        "subsystem": "Transport reactions"}}
     assert corrections.reaction_names == {reaction: ("15(R)-HEPE hydrolysis", "Glutathione: 15(R)-HpEPE oxidoreductase") for reaction in ("MAR02560", "MAR02571")}
     assert not {"MAR02567", "MAR02577"} & corrections.corrected_reactions()
     with open(DEFAULT_CORRECTIONS_PATH, newline="", encoding="utf-8") as handle:
@@ -300,7 +316,8 @@ def test_the_repository_table_parses():
 
 # The species_added and reaction kinds, on a small cobra model written to SBML by cobra itself, so the SBML text is in
 # the form the pinned file has (cobra wrote it) and the corrected text can be read back and compared with the corrected
-# cobra model.
+# cobra model. MAR40 is an added transport between the renamed row MAM00012c and the added MAM00012l, as MAR90001 is
+# between MAM03885c and MAM03885l in the repository table.
 
 REACTION_ROWS = [
     row("species_id", "MAM00011c", "mets", "MAM00011c", "MAM00012c"),
@@ -314,7 +331,12 @@ REACTION_ROWS = [
         "MAM00060c + 2 MAM00090c -> MAM00050c + MAM00091c + MAM00020c"),
     row("reaction_gene_rule", "MAR20", "gene_reaction_rule", "", "G1 or (G2 and G3)"),
     row("reaction_name", "MAR20", "name", "hydrolysis", "Glutathione: oxidoreductase"),
+    row("reaction_added", "MAR40", "equation", "", "MAM00012c <=> MAM00012l"),
+    row("reaction_added", "MAR40", "name", "", "transport of amide (cytosol to lysosome)"),
+    row("reaction_added", "MAR40", "subsystem", "", "Transport reactions"),
 ]
+
+ADDED_REACTION_ROWS = REACTION_ROWS[-3:]
 
 REACTION_METABOLITES_TSV = (
     "mets\tmetsNoComp\tmetChEBIID\tmetHMR2ID\tmetRetired\n"
@@ -384,6 +406,8 @@ def test_the_reaction_kinds_are_split(reaction_corrections):
                                                                "MAM00040c": "MAM00040l"}}
     assert set(reaction_corrections.reaction_equations) == set(reaction_corrections.reaction_gene_rules) == set(reaction_corrections.reaction_names) == {"MAR20"}
     assert reaction_corrections.corrected_reactions() == {"MAR10", "MAR20"}
+    assert reaction_corrections.reactions_added == {"MAR40": {"equation": "MAM00012c <=> MAM00012l", "name": "transport of amide (cytosol to lysosome)",
+                                                              "subsystem": "Transport reactions"}}
 
 
 def test_an_added_species_copies_its_corrected_template_after_it_and_leaves_the_compartment_row_cells_empty(tmp_path, reaction_corrections):
@@ -419,8 +443,14 @@ def test_the_sbml_takes_the_added_species_and_the_corrected_reactions(fixture_sb
                                              ("out", "MAM00050", "c", 1.0), ("out", "MAM00091", "c", 1.0)]
     opening = re.search(r'<reaction [^>]*id="R_MAR20"[^>]*>', corrected).group(0)
     assert 'name="Glutathione: oxidoreductase"' in opening and 'reversible="false"' in opening and 'fbc:lowerFluxBound="cobra_0_bound"' in opening
-    assert "MAM00011c" not in corrected and 'species="M_MAM00012c"' not in corrected, "the rename reaches every reference, and MAR10 moved"
+    assert "MAM00011c" not in corrected, "the rename reaches every reference"
+    assert corrected.count('species="M_MAM00012c"') == 1, "MAR10 moved; the renamed row is in the added transport MAR40 alone"
     assert metabolite_charges_from_sbml(corrected)["MAM00030"] == 1
+    added = re.search(r'<reaction [^>]*id="R_MAR40".*?</reaction>', corrected, re.DOTALL).group(0)
+    assert 'reversible="true"' in added and 'fbc:lowerFluxBound="cobra_default_lb"' in added and 'fbc:upperFluxBound="cobra_default_ub"' in added
+    assert 'sboTerm="SBO:0000655"' in added and "geneProduct" not in added and "<p>subsystem: Transport reactions</p>" in added
+    assert "<p>rxnFrom: configs/human_gem_corrections.csv, added by this project and not in Human-GEM</p>" in added
+    assert sorted(participants["MAR40"]) == [("in", "MAM00012", "c", 1.0), ("out", "MAM00012", "l", 1.0)]
 
 
 def test_the_corrected_sbml_and_the_corrected_cobra_model_are_one_model(fixture_sbml, reaction_corrections, tmp_path):
@@ -433,15 +463,18 @@ def test_the_corrected_sbml_and_the_corrected_cobra_model_are_one_model(fixture_
 
     def signature(model):
         return ({reaction.id: (reaction.name, sorted((metabolite.id, amount) for metabolite, amount in reaction.metabolites.items()), reaction.bounds,
-                               canonical_gene_rule(parse_gene_rule(reaction.gene_reaction_rule))) for reaction in model.reactions},
+                               canonical_gene_rule(parse_gene_rule(reaction.gene_reaction_rule)), reaction.notes.get("rxnFrom"),
+                               reaction.notes.get("subsystem"), reaction.annotation.get("sbo")) for reaction in model.reactions},
                 {metabolite.id: (metabolite.name, metabolite.compartment, metabolite.formula, metabolite.charge) for metabolite in model.metabolites})
 
     from_text = read_sbml_model(str(path))
     from_model = read_human_gem_cobra_model(tmp_path / "pinned.xml", tmp_path / "reaction_corrections.csv")
     assert signature(from_text) == signature(from_model)
     reactions, species = signature(from_model)
-    assert reactions["MAR20"] == ("Glutathione: oxidoreductase", sorted([("MAM00060c", -1.0), ("MAM00090c", -2.0), ("MAM00050c", 1.0), ("MAM00091c", 1.0),
-                                                                          ("MAM00020c", 1.0)]), (0.0, 1000.0), "((G2 and G3) or G1)")
+    assert reactions["MAR20"][:4] == ("Glutathione: oxidoreductase", sorted([("MAM00060c", -1.0), ("MAM00090c", -2.0), ("MAM00050c", 1.0), ("MAM00091c", 1.0),
+                                                                              ("MAM00020c", 1.0)]), (0.0, 1000.0), "((G2 and G3) or G1)")
+    assert reactions["MAR40"] == ("transport of amide (cytosol to lysosome)", [("MAM00012c", -1.0), ("MAM00012l", 1.0)], (-1000.0, 1000.0), "",
+                                  "configs/human_gem_corrections.csv, added by this project and not in Human-GEM", "Transport reactions", "SBO:0000655")
     assert reactions["MAR10"][1] == sorted([("MAM00012l", -1.0), ("MAM00020l", -1.0), ("MAM00030l", 1.0), ("MAM00040l", 1.0)])
     assert species["MAM00012l"] == ("Amide", "l", "C18H37NO2", 0) and species["MAM00012c"] == ("Amide", "c", "C18H37NO2", 0)
     assert from_model.reactions.MAR20.check_mass_balance() == {}
@@ -456,7 +489,9 @@ def test_the_graph_builder_sees_the_moved_and_rewritten_reactions(reaction_corre
     assert reactions.at["MAR20", "display_name"] == "Glutathione: oxidoreductase"
     assert set(edges[(edges.relation_type == "catalyzed_by") & (edges.target_id == "MAR20")].source_id) == {"G1", "G2", "G3"}
     assert ((edges.source_id == "MAM00090c") & (edges.target_id == "MAR20") & (edges.stoichiometric_coefficient == 2.0)).any()
-    assert nodes.set_index("node_id").at["MAM00012c", "degree"] == 0, "the renamed cytosolic row stays, in no reaction"
+    assert nodes.set_index("node_id").at["MAM00012c", "degree"] == 1, "the renamed cytosolic row stays, in the added transport alone"
+    assert reactions.at["MAR40", "reversible"] and reactions.at["MAR40", "subsystem"] == "Transport reactions"
+    assert not ((edges.relation_type == "catalyzed_by") & (edges.target_id == "MAR40")).any(), "the added transport has no gene"
 
 
 @pytest.mark.parametrize("changed_row, message", [
@@ -516,6 +551,58 @@ def test_a_reaction_takes_participant_moves_or_an_equation_not_both_and_no_parti
 
 def test_a_reaction_or_template_absent_from_the_files_is_reported(fixture_sbml, reaction_corrections):
     table = pd.DataFrame({"mets": ["MAM00011c", "MAM00030c"]})
-    assert corrections_without_their_row(table, None, reaction_corrections) == ["species_added MAM00012l"]
+    # without MAM00012e there is no MAM00012l, so the transport that needs it is reported too
+    assert corrections_without_their_row(table, None, reaction_corrections) == ["species_added MAM00012l", "reaction_added MAR40"]
     without_mar20 = re.sub(r'<reaction [^>]*id="R_MAR20".*?</reaction>', "", fixture_sbml, flags=re.DOTALL)
-    assert corrections_without_their_row(table, without_mar20, reaction_corrections)[-1:] == ["reaction MAR20"]
+    assert "reaction MAR20" in corrections_without_their_row(table, without_mar20, reaction_corrections)
+    full_table = pd.DataFrame({"mets": ["MAM00011c", "MAM00012e", "MAM00030c"]})
+    assert corrections_without_their_row(full_table, fixture_sbml, reaction_corrections) == []
+    holding_mar40 = fixture_sbml.replace('id="R_MAR20"', 'id="R_MAR40"')
+    assert "reaction_added MAR40" in corrections_without_their_row(full_table, holding_mar40, reaction_corrections)
+
+
+def added_reaction_rows(reaction, equation):
+    return [row("reaction_added", reaction, "equation", "", equation), row("reaction_added", reaction, "name", "", "added"),
+            row("reaction_added", reaction, "subsystem", "", "Transport reactions")]
+
+
+def test_an_added_reaction_the_sbml_or_the_model_already_holds_raises(fixture_sbml):
+    corrections = parse_corrections(added_reaction_rows("MAR10", "MAM00020c <=> MAM00020l"))
+    with pytest.raises(ValueError, match="already holds reaction R_MAR10"):
+        correct_sbml_text(fixture_sbml, corrections)
+    with pytest.raises(ValueError, match="already holds it"):
+        correct_cobra_model(reaction_fixture_model(), corrections)
+
+
+def test_an_added_reaction_whose_species_is_absent_is_skipped_and_reported(fixture_sbml):
+    corrections = parse_corrections(added_reaction_rows("MAR50", "MAM00099c -> MAM00020l"))
+    assert correct_sbml_text(fixture_sbml, corrections) == fixture_sbml
+    assert "MAR50" not in correct_cobra_model(reaction_fixture_model(), corrections).reactions
+    assert corrections_without_their_row(pd.DataFrame({"mets": ["MAM00020l"]}), fixture_sbml, corrections) == ["reaction_added MAR50"]
+
+
+def test_a_one_way_added_reaction_takes_a_zero_lower_bound_and_a_reaction_sbo_term(fixture_sbml, tmp_path):
+    from cobra.io import read_sbml_model
+
+    corrections = parse_corrections(added_reaction_rows("MAR50", "MAM00020c + MAM00040c -> MAM00040l + MAM00020l"))
+    corrected = correct_sbml_text(fixture_sbml, corrections)
+    opening = re.search(r'<reaction [^>]*id="R_MAR50"[^>]*>', corrected).group(0)
+    assert 'reversible="false"' in opening and 'fbc:lowerFluxBound="cobra_0_bound"' in opening and 'sboTerm="SBO:0000655"' in opening
+    (tmp_path / "corrected.xml").write_text(corrected)
+    assert read_sbml_model(str(tmp_path / "corrected.xml")).reactions.MAR50.bounds == correct_cobra_model(reaction_fixture_model(), corrections).reactions.MAR50.bounds == (0.0, 1000.0)
+    reaction = parse_corrections(added_reaction_rows("MAR50", "MAM00020c + MAM00040c -> MAM00030c"))
+    assert 'sboTerm="SBO:0000176"' in re.search(r'<reaction [^>]*id="R_MAR50"[^>]*>', correct_sbml_text(fixture_sbml, reaction)).group(0)
+
+
+@pytest.mark.parametrize("rows, message", [
+    ([row("reaction_added", "MAR50", "equation", "MAM00001c <=> MAM00001l", "MAM00001c <=> MAM00001l")], "empty pinned_value|equals the pinned"),
+    ([row("reaction_added", "MAR50", "gene_reaction_rule", "", "G1")], "column one of"),
+    ([row("reaction_added", "MAR50", "equation", "", "MAM00001c = MAM00001l")], "neither"),
+    ([row("reaction_added", "MAM00001l", "equation", "", "MAM00001c <=> MAM00001l")], "reaction id"),
+    (added_reaction_rows("MAR50", "MAM00001c <=> MAM00001l")[:2], r"has no \['subsystem'\] row"),
+    (added_reaction_rows("MAR50", "MAM00001c <=> MAM00001l") + [row("species_id", "MAM00001c", "mets", "MAM00001c", "MAM00002c")], "by the pinned id"),
+    (added_reaction_rows("MAR50", "MAM00001c <=> MAM00001l") + [row("reaction_gene_rule", "MAR50", "gene_reaction_rule", "", "G1")], "added and also corrected"),
+])
+def test_malformed_added_reaction_rows_are_refused(rows, message):
+    with pytest.raises(ValueError, match=message):
+        parse_corrections(rows)

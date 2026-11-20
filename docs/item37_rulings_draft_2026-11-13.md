@@ -233,7 +233,8 @@ and that the orexin neurons cannot be a class of their own at cluster resolution
   the expression values are attached after the last stage that adds gene nodes, a correction of the code and not a
   change of what brain-expressed means; built together with section 7's rule in one rebuild; the before-and-after
   counts (genes whose flag changes, pores and catalysts, drug targets moving from a plasma to a brain site) shown to
-  the owner before anything is committed; and a test that fails while a gene node whose symbol is in the expression
+  the owner once the rebuild has run, the code being committable before them (the owner, 20 November 2026, told that
+  the counts come only from a build: "oh. then i don't need the counts before it's committed for 8c"); and a test that fails while a gene node whose symbol is in the expression
   table carries no value.
 
 ## 9. Saturation inside the fixed point (decision 9.81, open)
@@ -1816,6 +1817,22 @@ ninetieth range), **and S3b**, whether the centring error, an optimum fixed at e
   through the Consensus connector after jbc.org's robots file refused the page reader, and Casasampere et al. 2015
   there after Europe PMC answered HTTP 500 (transient, to be retried). Those readings are treated as unread; the owner
   supplied both JBC papers the same day, and a Fable pass checks every claim against them.
+- **NAAA's other reactions, each decided on its own; the five verdicts accepted.** The owner: "accept the five NAAA
+  verdicts". From the Fable passes of 20 November 2026 (`naaa_other_reactions_2026-11-20.md` and
+  `naaa_recheck_2026-11-20.md` in the session scratchpad), rechecked against the two JBC papers the owner supplied
+  (36 of 37 quotations verbatim, one corrected, none absent): MAR20094 (C12:0 ethanolamide; one source, 4% of the
+  palmitoylethanolamide rate, Tsuboi et al. 2005) and MAR20095 (C14:0 ethanolamide; 27% in Tsuboi et al. 2005, 48% in
+  Ueda et al. 2001, one laboratory) move to the lysosome with NAAA kept; MAR20096 (C16 ceramide, whose substrate id
+  MAM20076n is a cytosolic row misnamed) and MAR20097 (C12 ceramide) move to the lysosome with the gene rule ASAH1 or
+  NAAA, NAAA's ceramide activity being about 0.15% of its palmitoylethanolamide rate; MAR05339, which deacetylates one
+  urocanate-cysteine metabolite, loses the NAAA gene and is otherwise unchanged (upstream issue #553; PR #884 removed
+  NAAA from its neighbours only). Casasampere et al. 2015's fold values stay unverified (Europe PMC HTTP 500 on five
+  spaced retries; its abstract supports NAAA's minor ceramide activity).
+- **The palmitoylethanolamide transport passes its check, as a reversible gene-free exchange** MAM03885c <=> MAM03885l:
+  Tsuboi et al. 2005, p. 11090, "These results suggested the presence of passive or active transport of NAEs to
+  lysosomes", an inference with no mechanism tested, and Petrosino et al. 2015 independently (abstract). A form with a
+  gene or one-way fails the check. MAR20093 still carries no flux in the model, having no cytosolic source of the
+  substrate and no exit for ethanolamine from the lysosome; the graph's edges are unaffected by that.
 - **Pristanic acid takes the (2S,6R,10R) structure, with ChEBI `CHEBI:761004;CHEBI:77268`** on the c, e, r and x rows
   of MAM02766. The owner: "Pristanic acid accept". CHEBI:761004 in ChEBI 257 carries upstream 2.1.1's structure, and
   Ferdinandusse et al. 2002 fix 6R,10R independently; CHEBI:77268 is kept beside it because Rhea names the reaction by
