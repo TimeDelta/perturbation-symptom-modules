@@ -310,11 +310,18 @@ PH_WEIGHT_EPSILON = 1e-30
 # and calibrated as the pH one is, for the same reason: deviations in arbitrary units.
 STORE_SENSITIVITY_TARGET_ARGUMENT = 0.5
 # The width w in w_pH = exp(-(delta pH / w) ** 2) is the pH distance from the optimum at which activity falls to 1/e,
-# not the half-width at half-maximum, which is 0.83 * w. The seed is not sourced and is not typical: a Fable pass of
-# 20 November 2026 read 71 BRENDA pH-range rows over 25 EC numbers and found a median w of 1.47 (interquartile range
-# 1.06 to 1.82), so 1.0 sits near the 24th percentile and makes a typical enzyme more pH-sensitive than the median
-# curve. Replacing it is ruling S3a of item 37, not yet ruled. There is no learned floor on w.
-DEFAULT_PH_ACTIVITY_WIDTH = 1.0  # pH units; see the comment above
+# not the half-width at half-maximum, which is 0.83 * w. It is learned per compartment as the fallback for enzymes with
+# no sourced curve, seeded at 1.5 and held between 0.7 and 2.8 by a bounded transform (ruling S3a of item 37, the
+# owner, 20 November 2026: "S3a accepted as fallback"). The three numbers are sourced: a Fable pass of 20 November
+# 2026 read 71 BRENDA pH-range rows over 25 EC numbers and found a median w of 1.47 (interquartile range 1.06 to
+# 1.82), and 0.7 and 2.8 are their tenth and ninetieth percentiles. The bound is enforced by the transform
+# w = low + (high - low) * sigmoid(logit) rather than by projection after a step, which item 37's clamped-learning
+# ruling prefers for its vanishing rather than dead gradients at the bound (18 November 2026). Every compartment of a
+# run before 20 November 2026 was seeded at 1.0, unbounded, which sat near the 24th percentile and made a typical
+# enzyme more pH-sensitive than the median curve. Still not built: an enzyme with a sourced curve taking its own optimum
+# and width, which waits on S3b (enzyme pH optima centred on the compartment's resting pH, a decision of its own).
+DEFAULT_PH_ACTIVITY_WIDTH = 1.5  # pH units, the seed; see the comment above
+PH_ACTIVITY_WIDTH_BOUNDS = (0.7, 2.8)  # pH units, the tenth and ninetieth percentiles of the sourced widths
 SMALLEST_PROTON_FRACTION = -0.999999
 BOTTLENECK_CHUNK = 32  # columns of the flattened batch-by-class gather taken at once; see class_bottleneck
 DEFAULT_FIXED_POINT_TOLERANCE = 1e-3
@@ -723,7 +730,7 @@ class LinearResponseEncoder(nn.Module):
         if (ph_proton_node_index is None) != (ph_compartment_of_node is None):
             raise ValueError("ph_proton_node_index and ph_compartment_of_node are given together or not at all")
         if ph_proton_node_index is None:
-            self.ph_proton_node_index = self.ph_compartment_of_node = self.log_ph_sensitivity = None
+            self.ph_proton_node_index = self.ph_compartment_of_node = self.log_ph_sensitivity = self.ph_activity_width_logit = None
         else:
             if ph_compartment_of_node.shape[0] != num_graph_nodes:
                 raise ValueError("ph_compartment_of_node needs one entry per graph node")
@@ -735,10 +742,12 @@ class LinearResponseEncoder(nn.Module):
             self.register_buffer("ph_compartment_of_node", ph_compartment_of_node.long(), persistent=False)
             self.log_ph_sensitivity = nn.Parameter(torch.zeros(ph_proton_node_index.shape[0]))
             # w of each compartment's pH-activity curve, the pH distance at which activity falls to 1/e (see
-            # DEFAULT_PH_ACTIVITY_WIDTH); one per compartment and learned, with the optimum taken as the compartment's
-            # resting pH because no per-reaction pH optimum exists at the scale of this graph
-            self.log_ph_activity_width = nn.Parameter(
-                torch.full((ph_proton_node_index.shape[0],), math.log(DEFAULT_PH_ACTIVITY_WIDTH)))
+            # DEFAULT_PH_ACTIVITY_WIDTH); one per compartment and learned inside PH_ACTIVITY_WIDTH_BOUNDS through the
+            # logit of its place between them (ph_activity_width), with the optimum taken as the compartment's resting
+            # pH because no per-reaction pH optimum exists at the scale of this graph
+            low, high = PH_ACTIVITY_WIDTH_BOUNDS
+            self.ph_activity_width_logit = nn.Parameter(torch.full(
+                (ph_proton_node_index.shape[0],), math.log((DEFAULT_PH_ACTIVITY_WIDTH - low) / (high - DEFAULT_PH_ACTIVITY_WIDTH))))
             self.ph_sensitivity_calibrated = False
             self.compartment_ph_sensitivity_report: dict[str, float] | None = None
         # the calcium stores (see STORE_SENSITIVITY_TARGET_ARGUMENT). Both tensors or neither; a node whose store index
@@ -1212,6 +1221,13 @@ class LinearResponseEncoder(nn.Module):
     def clear_cone_reach_cache(self) -> None:
         self.cone_reach_cache = {}
 
+    def ph_activity_width(self) -> Tensor:
+        """[compartments] the width w of each compartment's pH-activity curve, in pH units, held inside
+        PH_ACTIVITY_WIDTH_BOUNDS by the bounded transform low + (high - low) * sigmoid(logit) (ruling S3a of item 37;
+        see DEFAULT_PH_ACTIVITY_WIDTH)."""
+        low, high = PH_ACTIVITY_WIDTH_BOUNDS
+        return low + (high - low) * torch.sigmoid(self.ph_activity_width_logit)
+
     def compartment_ph_weight(self, state: Tensor) -> Tensor:
         """[N, B, C] multiplier from the settled proton deviation of each node's compartment, 1 where a node has none.
 
@@ -1231,7 +1247,7 @@ class LinearResponseEncoder(nn.Module):
         deviation = state[self.ph_proton_node_index]  # [compartments, B, C]
         fraction = torch.exp(self.log_ph_sensitivity)[:, None, None] * deviation  # the fractional change in [H+]
         change_in_ph = -torch.log10(torch.clamp(1.0 + fraction, min=1.0 + SMALLEST_PROTON_FRACTION))
-        per_compartment = torch.exp(-(change_in_ph / torch.exp(self.log_ph_activity_width)[:, None, None]) ** 2)
+        per_compartment = torch.exp(-(change_in_ph / self.ph_activity_width()[:, None, None]) ** 2)
         ones = torch.ones_like(per_compartment[:1])
         with_none = torch.cat([per_compartment, ones], dim=0)  # the last row is the weight of a node in no compartment
         has_none = torch.full_like(self.ph_compartment_of_node, per_compartment.shape[0])

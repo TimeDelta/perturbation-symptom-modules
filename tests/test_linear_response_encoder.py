@@ -1061,6 +1061,44 @@ def test_the_ph_inputs_are_refused_unless_they_agree():
                               ph_compartment_of_node=torch.tensor([0, 1, 0, 0, 0, 0]))  # compartment 1 has no proton node
 
 
+def test_the_ph_width_is_seeded_at_the_sourced_median_and_held_inside_the_sourced_range():
+    """Ruling S3a of item 37 (the owner, 20 November 2026: "S3a accepted as fallback"): the learned width is seeded at
+    1.5 and held between 0.7 and 2.8, the tenth and ninetieth percentiles of 71 BRENDA rows, by a bounded transform, so
+    no optimiser step can carry it outside and the gradient vanishes towards a bound rather than stopping dead."""
+    from mechanistic_pathway_learning.models.linear_response_encoder import (
+        DEFAULT_PH_ACTIVITY_WIDTH, PH_ACTIVITY_WIDTH_BOUNDS)
+
+    assert DEFAULT_PH_ACTIVITY_WIDTH == 1.5 and PH_ACTIVITY_WIDTH_BOUNDS == (0.7, 2.8)
+    encoder = build_ph_encoder()
+    assert torch.allclose(encoder.ph_activity_width(), torch.tensor([1.5]))
+    low, high = PH_ACTIVITY_WIDTH_BOUNDS
+    with torch.no_grad():
+        for logit in (-1e4, -30.0, 0.0, 30.0, 1e4):
+            encoder.ph_activity_width_logit.fill_(logit)
+            width = float(encoder.ph_activity_width())
+            assert low - 1e-6 <= width <= high + 1e-6  # float32 rounding at a saturated sigmoid
+    with torch.no_grad():
+        encoder.ph_activity_width_logit.fill_(0.0)
+    node_index, sign_and_magnitude = torch.tensor([[0]]), torch.tensor([[[1.0, 1.0]]])
+    settled = encoder.response(node_index, sign_and_magnitude).permute(1, 0, 2).detach()
+    encoder.compartment_ph_weight(settled)[1].sum().backward()
+    assert encoder.ph_activity_width_logit.grad is not None and bool(torch.isfinite(encoder.ph_activity_width_logit.grad).all())
+    # a wider curve is less pH-sensitive: at the upper bound the weight is at least the weight at the lower bound
+    with torch.no_grad():
+        encoder.ph_activity_width_logit.fill_(-1e4)
+        at_low = encoder.compartment_ph_weight(settled)[1]
+        encoder.ph_activity_width_logit.fill_(1e4)
+        at_high = encoder.compartment_ph_weight(settled)[1]
+    assert bool((at_high >= at_low).all())
+
+
+def test_an_encoder_without_ph_inputs_has_no_ph_width_parameter():
+    encoder = LinearResponseEncoder(6, ["activates"], torch.tensor([0]), torch.tensor([1]), torch.zeros(1, dtype=torch.long),
+                                    torch.ones(1), torch.eye(6), 4)
+    assert encoder.ph_activity_width_logit is None
+    assert not any("ph_activity_width" in name for name, _ in encoder.named_parameters())
+
+
 def test_the_governing_proton_node_is_the_pool_the_reactions_use():
     """Two pools describe one species: Human-GEM's node carries 50 to 100 times the reactions of Reactome's in every
     compartment both describe, so it governs; a compartment only Reactome names is governed by its node."""
