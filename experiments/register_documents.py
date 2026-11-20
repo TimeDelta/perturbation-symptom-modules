@@ -10,10 +10,18 @@ suite, so this script is the way a new document gets in:
                                                               the flag, so a guess never passes for a classification
   python experiments/register_documents.py --prune-missing    drop entries whose file git no longer tracks
   python experiments/register_documents.py --report           print the register as a table
+  python experiments/register_documents.py --rename OLD NEW   rename an entry's key where it stands, keeping its fields,
+                                                              when a document moves (experiments/move_documents.py
+                                                              renames the keys of the files it moves the same way)
 
 How the class is guessed, for --add-missing only: a header that names the script that wrote the file is `generated`;
 anything else is `living`, with the review fields set from the last commit that touched it, which is the one claim
-about it the log supports.
+about it the log supports. --add-missing also prints where the placement rule puts the document once its class is
+confirmed (docs/documentation_process.md, "Where documents live"), since a generated page, a record or a draft that
+sits at the top of docs/ fails tests/test_documentation_process.py.
+
+The register is written as two-space JSON in its own order (`registry_text`): a new entry goes at the end and a
+renamed key stays where it was, so each change touches only its own lines.
 """
 from __future__ import annotations
 
@@ -25,8 +33,11 @@ import sys
 from mechanistic_pathway_learning.documentation import (
     REGISTRY_PATH,
     REPOSITORY_ROOT,
+    expected_location,
     git_output,
     names_its_generator,
+    registry_text,
+    renamed_in_place,
     sha256_of,
     unregistered_and_missing,
 )
@@ -64,8 +75,16 @@ def load() -> dict:
 
 
 def save(registry: dict) -> None:
-    registry["documents"] = dict(sorted(registry["documents"].items()))
-    REGISTRY_PATH.write_text(json.dumps(registry, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    REGISTRY_PATH.write_text(registry_text(registry), encoding="utf-8")
+
+
+def rename_entry(registry: dict, old: str, new: str) -> None:
+    """Rename the key `old` to `new` where it stands in the register, its fields unchanged."""
+    if old not in registry["documents"]:
+        raise SystemExit(f"{old} is not in the register")
+    if new in registry["documents"]:
+        raise SystemExit(f"{new} is in the register already")
+    registry["documents"] = renamed_in_place(registry["documents"], {old: new})
 
 
 def report(registry: dict) -> str:
@@ -86,6 +105,7 @@ def main() -> int:
     parser.add_argument("--add-missing", action="store_true")
     parser.add_argument("--prune-missing", action="store_true")
     parser.add_argument("--report", action="store_true")
+    parser.add_argument("--rename", nargs=2, metavar=("OLD", "NEW"), help="rename an entry's key where it stands, after a move")
     parser.add_argument("--refresh-frozen-hashes", action="store_true", help="recompute the sha256 of every frozen document; only for a deliberate re-freeze")
     arguments = parser.parse_args()
     registry = load()
@@ -95,8 +115,13 @@ def main() -> int:
     if arguments.add_missing:
         for path in unregistered:
             registry["documents"][path] = guessed_entry(path)
-            print(f"added {path} as {registry['documents'][path]['class']} (unconfirmed)")
+            entry = registry["documents"][path]
+            print(f"added {path} as {entry['class']} (unconfirmed); as a {entry['class']} it belongs at {expected_location(path, entry)}")
             changed = True
+    if arguments.rename:
+        rename_entry(registry, *arguments.rename)
+        print(f"renamed {arguments.rename[0]} to {arguments.rename[1]} in place")
+        changed = True
     if arguments.prune_missing:
         for path in missing:
             del registry["documents"][path]

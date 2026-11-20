@@ -11,6 +11,7 @@ regression in a check shows up as a failing fixture rather than as a stale docum
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from datetime import date
 
@@ -21,6 +22,8 @@ from mechanistic_pathway_learning.documentation import (
     DOCUMENT_CLASSES,
     REPOSITORY_ROOT,
     STAMP_POLICY_DATE,
+    TOP_LEVEL_EXCEPTIONS,
+    TOPIC_RULE_SOURCES,
     append_only_violation,
     closed_decision_ids,
     dangling_links,
@@ -29,9 +32,11 @@ from mechanistic_pathway_learning.documentation import (
     decision_ids_in_log,
     decision_ids_owing_nothing,
     duplicated_decision_ids,
+    expected_location,
     item_ids_in_registration,
     last_change_date,
     literal_newline_escapes,
+    load_moved_paths,
     load_registry,
     names_its_generator,
     parse_stamp,
@@ -39,9 +44,11 @@ from mechanistic_pathway_learning.documentation import (
     referenced_repository_paths,
     session_state_phrases,
     sha256_of,
+    strip_class_directory,
     unregistered_and_missing,
     unresolved_decision_references,
     unresolved_item_references,
+    whole_path_pattern,
 )
 
 DECISION_LOG = REPOSITORY_ROOT / "docs" / "open_decisions.md"
@@ -233,8 +240,10 @@ def test_paths_named_by_living_and_generated_documents_exist(registry):
     """A record may name a file that has since moved; a living or generated document may not."""
     dangling = {}
     for path, entry in registry.items():
-        if path == "docs/status.md":
-            continue  # it reports the absent paths the living documents name, so it names them too
+        if path in ("docs/status.md", "docs/file_index.md"):
+            # status.md reports the absent paths the living documents name, so it names them too; file_index.md prints
+            # every moved path of configs/moved_paths.json, the old ones on purpose
+            continue
         if entry.document_class in ("living", "generated"):
             allowed = set(entry.fields.get("names_absent_paths", {}))
             missing = [missing_path for missing_path in dangling_paths(document_text(path)) if missing_path not in allowed]
@@ -505,3 +514,180 @@ def test_the_status_check_accepts_a_decision_whose_commit_arrived_after_the_page
     assert not only_pending_decisions_dated(committed, dated + "an extra line\n")
     assert not only_pending_decisions_dated(dated, dated.replace("9.48 (2026-10-16, open)", "9.49 (2026-10-16, open)")), "a different decision is not a dated one"
     assert not only_pending_decisions_dated(committed, dated.replace("9.48 (2026-10-16, open)", "9.48 (uncommitted, closed)")), "still uncommitted, and a changed status"
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# where documents live (20 November 2026; docs/documentation_process.md, "Where documents live")
+
+
+@pytest.fixture(scope="module")
+def moved_paths():
+    return load_moved_paths()
+
+
+def tracked_paths(*roots: str) -> list[str]:
+    return [line for line in subprocess.run(["git", "ls-files", *roots], cwd=REPOSITORY_ROOT, capture_output=True, text=True,
+                                            check=True).stdout.splitlines() if line]
+
+
+def test_every_document_sits_where_its_class_puts_it(registry, moved_paths):
+    """A document that is not a planned move is where expected_location puts it: living and frozen documents and the
+    listed exceptions at the top of docs/, generated pages in docs/generated/, records in docs/records/<YYYY-MM>/,
+    drafts in docs/drafts/."""
+    planned = {entry["from"] for entry in moved_paths["planned"]}
+    misplaced = {path: expected_location(path, entry.fields) for path, entry in registry.items()
+                 if path not in planned and expected_location(path, entry.fields) != path}
+    assert not misplaced, ("these documents are not where their class puts them; move each with `git mv` to the path shown (the name "
+                           "unchanged) and rename its register key with `python experiments/register_documents.py --rename OLD NEW`, "
+                           f"or plan the move in configs/moved_paths.json (docs/documentation_process.md, \"Where documents live\"): {misplaced}")
+
+
+def test_the_top_of_docs_holds_no_unregistered_file_but_the_bibliography_and_planned_moves(registry, moved_paths):
+    """A data file goes beside the document that explains it (docs/generated/ for what a script wrote, a record's month
+    folder for a record's attachment), not at the top of docs/."""
+    planned = {entry["from"] for entry in moved_paths["planned"]}
+    stray = [path for path in tracked_paths("docs") if path.count("/") == 1
+             and path not in registry and path not in TOP_LEVEL_EXCEPTIONS and path not in planned]
+    assert not stray, f"move these beside the document that explains them, or into docs/generated/ if a script wrote them: {stray}"
+
+
+def test_the_top_level_exceptions_are_tracked_and_explained():
+    tracked = set(tracked_paths("docs"))
+    for path, why in TOP_LEVEL_EXCEPTIONS.items():
+        assert path in tracked and path.count("/") == 1, f"{path} is a top-level exception but not a tracked file at the top of docs/"
+        assert why, f"{path} needs its reason"
+
+
+def test_moved_paths_are_gone_and_their_targets_exist(moved_paths):
+    """Every move made is made (the old path is gone and the new one, or the last of a chain of moves, is tracked),
+    and every move planned is still to make (its source is tracked and its destination free)."""
+    tracked = set(tracked_paths())
+    made = {entry["from"]: entry["to"] for entry in moved_paths["moves"]}
+    for entry in moved_paths["moves"]:
+        assert {"from", "to", "date", "phase"} <= set(entry), f"a move records from, to, date and phase: {entry}"
+        date.fromisoformat(entry["date"])
+    for old, new in made.items():
+        assert old not in tracked, f"{old} moved to {new} on its date, and a file is tracked at the old path again"
+        final, seen = new, {old}
+        while final in made and final not in seen:
+            seen.add(final)
+            final = made[final]
+        assert final in tracked, f"{old} moved to {new}, and {final} is not tracked"
+    for entry in moved_paths["planned"]:
+        assert entry["from"] in tracked, f"planned move of {entry['from']}: the file is not tracked (if it moved, record it under moves)"
+        assert not (REPOSITORY_ROOT / entry["to"]).exists(), f"planned move of {entry['from']}: {entry['to']} exists already"
+        assert isinstance(entry["phase"], int) and entry["phase"] >= 1
+    sources = [entry["from"] for entry in moved_paths["moves"] + moved_paths["planned"]]
+    assert len(sources) == len(set(sources)), "a path is moved once; a later move of the new path starts from the new path"
+
+
+def test_no_code_or_yaml_config_names_a_moved_path(moved_paths):
+    """Code, scripts, tests, the hooks and the YAML configs name the new path of every file that moved. Records,
+    quotations, the provenance columns of tables and the immutable releases keep the old one, as written, and
+    docs/file_index.md maps it to the new one."""
+    sources = tracked_paths("experiments", "mechanistic_pathway_learning", "scripts", "tests", "slurm", ".claude")
+    sources += [path for path in tracked_paths("configs") if path.endswith((".yaml", ".yml"))]
+    sources = [path for path in sources if path not in TOPIC_RULE_SOURCES]  # the TOPICS rules name documents without the class directory
+    patterns = {entry["from"]: whole_path_pattern(entry["from"]) for entry in moved_paths["moves"]}
+    offenders = {}
+    for source in sources:
+        try:
+            text = (REPOSITORY_ROOT / source).read_text(encoding="utf-8")
+        except (UnicodeDecodeError, FileNotFoundError):
+            continue
+        named = [old for old, pattern in patterns.items() if os.path.basename(old) in text and pattern.search(text)]
+        if named:
+            offenders[source] = named
+    assert not offenders, f"these name a moved file by its old path; give them the new one (configs/moved_paths.json): {offenders}"
+
+
+def test_the_class_directory_is_read_off_a_path_and_the_rule_places_each_class():
+    assert strip_class_directory("docs/generated/x.md") == "docs/x.md"
+    assert strip_class_directory("docs/records/2026-10/x.md") == "docs/x.md"
+    assert strip_class_directory("docs/drafts/x.md") == "docs/x.md"
+    assert strip_class_directory("docs/generated/mechanism_cards/run/a.md") == "docs/mechanism_cards/run/a.md"
+    assert strip_class_directory("docs/records/2026-10/exposure_sources/a.md") == "docs/exposure_sources/a.md"
+    assert strip_class_directory("docs/x.md") == "docs/x.md" and strip_class_directory("README.md") == "README.md"
+    assert strip_class_directory("docs/records/x.md") == "docs/records/x.md", "a records folder without a month is not a class directory"
+    assert expected_location("docs/x.md", {"class": "generated"}) == "docs/generated/x.md"
+    assert expected_location("docs/x.md", {"class": "record", "recorded": "2026-11-07"}) == "docs/records/2026-11/x.md"
+    assert expected_location("docs/x.md", {"class": "draft"}) == "docs/drafts/x.md"
+    assert expected_location("docs/generated/x.md", {"class": "living"}) == "docs/x.md"
+    assert expected_location("docs/x.md", {"class": "frozen"}) == "docs/x.md"
+    assert expected_location("docs/mechanism_cards/run/a.md", {"class": "generated"}) == "docs/generated/mechanism_cards/run/a.md"
+    assert expected_location("docs/open_decisions.md", {"class": "record", "recorded": "2026-10-01"}) == "docs/open_decisions.md"
+    assert expected_location("docs/figures/a.md", {"class": "generated"}) == "docs/figures/a.md"
+    assert expected_location("README.md", {"class": "living"}) == "README.md"
+
+
+def git_in(root, *arguments: str, day: str | None = None) -> str:
+    environment = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+    if day:
+        environment.update(GIT_AUTHOR_DATE=f"{day}T12:00:00+00:00", GIT_COMMITTER_DATE=f"{day}T12:00:00+00:00")
+    return subprocess.run(["git", "-C", str(root), *arguments], check=True, capture_output=True, text=True, env=environment).stdout
+
+
+def fixture_repository(tmp_path, files: dict[str, str], day: str) -> None:
+    git_in(tmp_path, "init", "-q")
+    for name, text in files.items():
+        (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / name).write_text(text)
+    git_in(tmp_path, "add", ".")
+    git_in(tmp_path, "commit", "-q", "-m", "first", day=day)
+
+
+def test_a_pure_rename_keeps_the_date_of_the_last_change_to_the_text(tmp_path):
+    """A page generated before the stamp must not look regenerated on the day it moved: a pure rename, staged or
+    committed, keeps the date of the last change to the text; a rename with an edit is dated by the edit."""
+    fixture_repository(tmp_path, {"docs/a.md": "# A\n", "docs/b.md": "# B\n"}, "2026-10-01")
+    (tmp_path / "docs" / "generated").mkdir()
+    git_in(tmp_path, "mv", "docs/a.md", "docs/generated/a.md")
+    assert last_change_date("docs/generated/a.md", root=tmp_path) == date(2026, 10, 1), "a staged pure rename"
+    git_in(tmp_path, "commit", "-q", "-m", "move", day="2026-11-20")
+    assert last_change_date("docs/generated/a.md", root=tmp_path) == date(2026, 10, 1), "a committed pure rename"
+    git_in(tmp_path, "mv", "docs/b.md", "docs/generated/b.md")
+    (tmp_path / "docs" / "generated" / "b.md").write_text("# B, regenerated\n")
+    assert last_change_date("docs/generated/b.md", root=tmp_path) == date.today(), "a rename with an edit in the working tree"
+    git_in(tmp_path, "add", ".")
+    assert last_change_date("docs/generated/b.md", root=tmp_path) == date.today(), "a rename with an edit, staged"
+    git_in(tmp_path, "commit", "-q", "-m", "move and edit", day="2026-11-21")
+    assert last_change_date("docs/generated/b.md", root=tmp_path) == date(2026, 11, 21), "a committed rename with an edit"
+    (tmp_path / "docs" / "generated" / "a.md").write_text("# A, regenerated\n")
+    git_in(tmp_path, "commit", "-q", "-am", "regenerate", day="2026-11-22")
+    assert last_change_date("docs/generated/a.md", root=tmp_path) == date(2026, 11, 22)
+    assert [day for _, day in documentation.content_change_commits("docs/generated/a.md", root=tmp_path)] == ["2026-11-22", "2026-10-01"]
+
+
+def test_a_renamed_record_is_checked_against_its_old_text(tmp_path):
+    """A record moved and edited in one commit is compared with what HEAD holds at its old path, so the edit cannot
+    pass as a new file."""
+    entries = "".join(f"entry {number}: what the source said on page {number}\n" for number in range(1, 13))
+    fixture_repository(tmp_path, {"docs/r.md": "# Record\n\n" + entries, "docs/s.md": "# Second record\n\n" + entries.upper()}, "2026-10-01")
+    (tmp_path / "docs" / "records" / "2026-10").mkdir(parents=True)
+    git_in(tmp_path, "mv", "docs/r.md", "docs/records/2026-10/r.md")
+    assert append_only_violation("docs/records/2026-10/r.md", root=tmp_path) is None, "a pure rename changes nothing"
+    (tmp_path / "docs" / "records" / "2026-10" / "r.md").write_text("# Record\n\n" + entries.replace("entry 1:", "entry 1, corrected:"))
+    git_in(tmp_path, "add", ".")
+    assert "line 3" in append_only_violation("docs/records/2026-10/r.md", root=tmp_path)
+    git_in(tmp_path, "mv", "docs/s.md", "docs/records/2026-10/s.md")
+    (tmp_path / "docs" / "records" / "2026-10" / "s.md").write_text("# Second record\n\n" + entries.upper() + "\nAdded 20 November 2026: a dated addition.\n")
+    git_in(tmp_path, "add", ".")
+    assert append_only_violation("docs/records/2026-10/s.md", root=tmp_path) is None, "an addition after a move is still an addition"
+
+
+def test_the_review_check_ignores_a_pure_rename(tmp_path):
+    """A living document reviewed before a file it names moved is not due because of the move; a change to the moved
+    file's text, before or after the move, still makes it due."""
+    from experiments.generate_status import commits_touching_since
+
+    fixture_repository(tmp_path, {"docs/a.md": "# A\n", "docs/b.md": "# B\n"}, "2026-10-01")
+    reviewed = git_in(tmp_path, "rev-parse", "HEAD").strip()
+    (tmp_path / "docs" / "generated").mkdir()
+    git_in(tmp_path, "mv", "docs/a.md", "docs/generated/a.md")
+    git_in(tmp_path, "commit", "-q", "-m", "move a", day="2026-11-20")
+    assert commits_touching_since({"docs/generated/a.md"}, reviewed, root=tmp_path) == []
+    (tmp_path / "docs" / "b.md").write_text("# B, changed\n")
+    git_in(tmp_path, "commit", "-q", "-am", "change b", day="2026-11-21")
+    git_in(tmp_path, "mv", "docs/b.md", "docs/generated/b.md")
+    git_in(tmp_path, "commit", "-q", "-m", "move b", day="2026-11-22")
+    assert commits_touching_since({"docs/generated/a.md", "docs/generated/b.md"}, reviewed, root=tmp_path) == ["docs/generated/b.md"]

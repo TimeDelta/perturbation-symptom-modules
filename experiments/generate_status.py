@@ -34,9 +34,9 @@ from mechanistic_pathway_learning.documentation import (
     REPOSITORY_ROOT,
     STAMP_POLICY_DATE,
     DECISION_LOG_PATH,
+    content_change_commits,
     dangling_paths,
     decision_ids_owing_nothing,
-    git_output,
     head_commit,
     last_change_date,
     load_registry,
@@ -121,18 +121,20 @@ def decisions() -> dict:
             "duplicated": history.duplicated_now, "literal_newlines": history.literal_newlines_now}
 
 
-def commits_touching_since(paths: set[str], since_commit: str) -> list[str]:
-    """Registered paths that have commits after `since_commit`."""
+def commits_touching_since(paths: set[str], since_commit: str, root: Path = REPOSITORY_ROOT) -> list[str]:
+    """Paths whose text changed in a commit after `since_commit`. A commit that only moved a file (git's R100, as the
+    docs/ reorganization of 20 November 2026 did) is not a change to it, and the file's history is followed back
+    through the move, so a living document that names a moved file is not reported as due for that reason."""
     changed = []
     for path in sorted(paths):
-        if not (REPOSITORY_ROOT / path).exists():
+        if not (root / path).exists():
             continue
         try:
-            log = git_output("log", "--format=%h", f"{since_commit}..HEAD", "--", path)
+            commits = content_change_commits(path, root, since=since_commit, limit=1)
         except subprocess.CalledProcessError:  # an as_of_commit the log no longer holds, after a rebase
             changed.append(f"{path} (as_of_commit {since_commit} is not in the log)")
             continue
-        if log.strip():
+        if commits:
             changed.append(path)
     return changed
 

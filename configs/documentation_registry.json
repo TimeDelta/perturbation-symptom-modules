@@ -220,11 +220,13 @@
     },
     "docs/drug_administration_routes.md": {
       "class": "generated",
-      "generator": "experiments/tabulate_drug_routes.py"
+      "generator": "experiments/tabulate_drug_routes.py",
+      "family": "drug_administration_routes"
     },
     "docs/drug_administration_routes_v4.md": {
       "class": "generated",
-      "generator": "experiments/tabulate_drug_routes.py"
+      "generator": "experiments/tabulate_drug_routes.py",
+      "family": "drug_administration_routes"
     },
     "docs/drug_entry_nodes.md": {
       "class": "record",
@@ -430,11 +432,13 @@
     },
     "docs/label_plasma_binders.md": {
       "class": "generated",
-      "generator": "experiments/scope_label_plasma_binder_coverage.py"
+      "generator": "experiments/scope_label_plasma_binder_coverage.py",
+      "family": "label_plasma_binders"
     },
     "docs/label_plasma_binders_v4.md": {
       "class": "generated",
-      "generator": "experiments/scope_label_plasma_binder_coverage.py"
+      "generator": "experiments/scope_label_plasma_binder_coverage.py",
+      "family": "label_plasma_binders"
     },
     "docs/label_source_review.md": {
       "class": "record",
@@ -448,11 +452,13 @@
     },
     "docs/leakage_group_rules.md": {
       "class": "generated",
-      "generator": "experiments/measure_leakage_group_rules.py"
+      "generator": "experiments/measure_leakage_group_rules.py",
+      "family": "leakage_group_rules"
     },
     "docs/leakage_group_rules_evidence_full_v2.md": {
       "class": "generated",
-      "generator": "experiments/measure_leakage_group_rules.py"
+      "generator": "experiments/measure_leakage_group_rules.py",
+      "family": "leakage_group_rules"
     },
     "docs/leakage_only_adversary.md": {
       "class": "generated",
@@ -572,11 +578,13 @@
     },
     "docs/module_health_fast_leak_results.md": {
       "class": "generated",
-      "generator": "experiments/module_health.py"
+      "generator": "experiments/module_health.py",
+      "family": "module_health_results"
     },
     "docs/module_health_results.md": {
       "class": "generated",
-      "generator": "experiments/module_health.py"
+      "generator": "experiments/module_health.py",
+      "family": "module_health_results"
     },
     "docs/module_names.md": {
       "class": "generated",
@@ -678,27 +686,33 @@
     },
     "docs/phase2_baselines.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase2_baselines_disease_cluster.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase2_baselines_full_disease_cluster.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase2_baselines_full_gene.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase2_baselines_full_v2.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase2_baselines_full_v2_development.md": {
       "class": "generated",
-      "generator": "experiments/run_baselines.py"
+      "generator": "experiments/run_baselines.py",
+      "family": "phase2_baselines"
     },
     "docs/phase3_main_model.md": {
       "class": "generated",
@@ -799,11 +813,13 @@
     },
     "docs/rewiring_null_distribution.md": {
       "class": "generated",
-      "generator": "experiments/run_rewiring_null_distribution.py"
+      "generator": "experiments/run_rewiring_null_distribution.py",
+      "family": "rewiring_null_distribution"
     },
     "docs/rewiring_null_distribution_walk_graph.md": {
       "class": "generated",
-      "generator": "experiments/run_rewiring_null_distribution.py"
+      "generator": "experiments/run_rewiring_null_distribution.py",
+      "family": "rewiring_null_distribution"
     },
     "docs/rodent_readout_human_evidence.md": {
       "class": "generated",
