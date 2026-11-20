@@ -1917,7 +1917,9 @@ Rewritten 19 November 2026, after the rulings of section 17.
 - **Occupancy split.** The sibling-subtype centre, waiting on the ChEMBL harvest (section 14), which stopped early at
   23 of 42 target files and was restarted on 19 November 2026; the 206 pairs with no value, group by group; cocaine's
   missing transporter targets (section 17, P4).
-- **Carrier share.** The plasma AAG concentration every member is rescaled to (section 17, C17); the nefazodone
+- **Carrier share.** The temperature of every fraction-unbound measurement, and for each one taken away from
+  37 °C a 37 °C measurement or the binding enthalpy for a van 't Hoff correction (the owner, 20 November 2026, "yes" to
+  sourcing them; queued for Fable; the correction itself to be ruled once the values are in). The plasma AAG concentration every member is rescaled to (section 17, C17); the nefazodone
   closure, which waits only on the reading passes (C10); Tatsuno et al. 1986, the originator study behind every
   argatroban figure, which has no PubMed record and needs a library request, and is the only route to that study's
   method, pH and temperature.
