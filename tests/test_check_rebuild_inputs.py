@@ -5,6 +5,7 @@ container holding earlier outputs keeps them and reports success (decision 9.106
 its input tables was regenerated describes the old table while the skip rule keeps it (the BRENDA ordering of the
 handoff of 26 October 2026, live again because decision 9.88's no-activation rule regenerates that table).
 """
+import ast
 import os
 import subprocess
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from experiments.check_rebuild_inputs import (
+    blob_bytes,
     GENERATORS_OF_TABLE,
     INPUTS_OF_OUTPUT,
     REBUILD_SCRIPT,
@@ -115,9 +117,13 @@ def test_every_input_the_guard_names_exists(input_name):
 
 
 def commit_file(root, path, text, when):
-    """Write a file and commit it at a fixed time, so a test can order two commits without sleeping."""
+    """Write a file (text, or bytes when given bytes) and commit it with fixed dates, so the history of a test is the same
+    on every run."""
     (root / path).parent.mkdir(parents=True, exist_ok=True)
-    (root / path).write_text(text)
+    if isinstance(text, bytes):
+        (root / path).write_bytes(text)
+    else:
+        (root / path).write_text(text)
     environment = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when,
                    "GIT_AUTHOR_NAME": "test", "GIT_AUTHOR_EMAIL": "test@example.com",
                    "GIT_COMMITTER_NAME": "test", "GIT_COMMITTER_EMAIL": "test@example.com"}
@@ -159,7 +165,7 @@ def write(rows, path):
 ], ids=["comment only", "docstring only", "code"])
 def test_only_a_change_to_the_generators_code_puts_its_table_behind(tmp_path, edit, reported):
     """A commit that changes only a generator's comments or docstrings changes nothing it writes, so the table is not
-    reported (20 November 2026: a reorganization of docs/ that rewrote two comments' paths in
+    reported (20 November 2026: a reorganization of docs/ that changed one comment line and one module-docstring line of
     experiments/extract_brenda_enzyme_regulation.py made the commit-date comparison report the table as behind it)."""
     table, generators = GENERATORS_OF_TABLE[0]
     generator = generators[0]
@@ -182,9 +188,102 @@ def test_a_generator_that_does_not_parse_is_compared_as_text(tmp_path):
     assert tables_behind_their_generator(tmp_path) == [(table, generator)]
 
 
+def start_repository(tmp_path, generator_text, generator=None):
+    """A repository holding a generator and then its table, so the table is current; returns (table, generator)."""
+    table, generators = GENERATORS_OF_TABLE[0]
+    generator = generator or generators[0]
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True, capture_output=True)
+    commit_file(tmp_path, generator, generator_text, "2026-11-01T00:00:00+00:00")
+    commit_file(tmp_path, table, "the derived table\n", "2026-11-02T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == []
+    return table, generator
+
+
+@pytest.mark.parametrize("edit", [
+    lambda code: code.replace('"""Writes the derived table."""', '"""Writes the derived table described in docs/records/."""'),
+    lambda code: code.replace("import csv", "# the standard library's writer,\n# kept for its quoting\nimport csv"),
+    lambda code: code.replace('"""Each row as a line."""', '"""Each row as a line.\n\n    Rows are written in order.\n    """'),
+], ids=["module docstring", "comment that adds lines", "docstring that adds lines"])
+def test_edits_that_move_lines_but_not_code_are_not_reported(tmp_path, edit):
+    """A module docstring, and comments or docstrings that add lines, shift every later line number; the comparison
+    leaves positions out, so none of these is a change."""
+    table, generator = start_repository(tmp_path, GENERATOR_CODE)
+    commit_file(tmp_path, generator, edit(GENERATOR_CODE), "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == []
+
+
+def test_class_and_async_function_docstrings_are_not_code(tmp_path):
+    source = 'class Writer:\n    """One."""\n\n    async def write(self):\n        """Two."""\n        return 1\n'
+    table, generator = start_repository(tmp_path, source)
+    commit_file(tmp_path, generator, source.replace("One.", "One, edited.").replace("Two.", "Two, edited."),
+                "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == []
+
+
+def test_a_code_change_committed_with_the_regenerated_table_is_current(tmp_path):
+    """The table's own commit holds the new code, so the table holds its output: comparing against the commit before
+    the table's would report it wrongly."""
+    table, generator = start_repository(tmp_path, GENERATOR_CODE)
+    (tmp_path / generator).write_text(GENERATOR_CODE.replace('"w"', '"a"'))
+    (tmp_path / table).write_text("the derived table, regenerated\n")
+    subprocess.run(["git", "add", generator, table], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "-c", "user.name=test", "-c", "user.email=test@example.com", "commit", "-q", "-m", "both"],
+                   cwd=tmp_path, check=True, capture_output=True)
+    assert tables_behind_their_generator(tmp_path) == []
+
+
+def test_the_comparison_reads_head_and_not_the_working_tree(tmp_path):
+    """An uncommitted edit is not what the rebuild of a clone reads, so it is not reported."""
+    table, generator = start_repository(tmp_path, GENERATOR_CODE)
+    (tmp_path / generator).write_text(GENERATOR_CODE.replace('"w"', '"a"'))
+    assert tables_behind_their_generator(tmp_path) == []
+
+
+def test_an_input_that_is_not_python_is_compared_byte_for_byte(tmp_path):
+    """A corrections table changes the output with any byte, line endings included."""
+    table, generators = GENERATORS_OF_TABLE[0]
+    corrections = next(name for name in generators if name.endswith(".csv"))
+    table, corrections = start_repository(tmp_path, "id,value\nA,1\n", generator=corrections)
+    commit_file(tmp_path, corrections, b"id,value\r\nA,1\r\n", "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == [(table, corrections)]
+
+
+def test_a_coding_declaration_is_honoured_and_a_non_utf8_file_does_not_crash(tmp_path):
+    """The same bytes under another coding line are different strings at run time, so the change counts; a file in
+    latin-1 is valid Python and must not stop the preflight."""
+    source = '# -*- coding: utf-8 -*-\nNAME = "\u00e9"\n'.encode("utf-8")
+    table, generator = start_repository(tmp_path, source)
+    commit_file(tmp_path, generator, source.replace(b"utf-8", b"latin-1"), "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == [(table, generator)]
+    latin = '# -*- coding: latin-1 -*-\nNAME = "\u00e9"\n'.encode("latin-1")
+    commit_file(tmp_path, generator, latin, "2026-11-04T00:00:00+00:00")
+    tables_behind_their_generator(tmp_path)  # runs without a UnicodeDecodeError
+
+
+def test_a_git_failure_raises_instead_of_reading_as_a_change(tmp_path):
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True, capture_output=True)
+    commit_file(tmp_path, "unrelated.txt", "so the repository has a commit\n", "2026-11-01T00:00:00+00:00")
+    with pytest.raises(RuntimeError, match="cat-file"):
+        blob_bytes("0" * 40, tmp_path)
+
+
+@pytest.mark.parametrize("generator", [name for _, names in GENERATORS_OF_TABLE for name in names if name.endswith(".py")])
+def test_no_watched_script_reads_its_docstrings_at_run_time(generator):
+    """Docstrings are left out of the comparison because they change nothing a script writes. A script that read
+    __doc__ into its output would break that, so only argparse's description=__doc__, used for --help alone, is allowed."""
+    module = ast.parse((REPOSITORY_ROOT / generator).read_text())
+    allowed = {id(keyword.value) for node in ast.walk(module) if isinstance(node, ast.Call)
+               for keyword in node.keywords if keyword.arg == "description"}
+    readers = [node.lineno for node in ast.walk(module)
+               if ((isinstance(node, ast.Name) and node.id == "__doc__")
+                   or (isinstance(node, ast.Attribute) and node.attr == "__doc__")) and id(node) not in allowed]
+    assert readers == [], f"{generator} reads __doc__ at lines {readers}"
+
+
 def test_a_table_git_knows_nothing_of_is_not_reported(tmp_path):
-    """An untracked table, or a clone too shallow to hold its commit, gives no commit time; the guard says nothing
-    rather than guessing, because a false report here would send an operator to regenerate a current table."""
+    """A table git knows nothing of has no last commit to compare against; the guard says nothing rather than guessing,
+    because a false report here would send an operator to regenerate a current table. (A shallow clone is a different
+    case: git answers with the boundary commit, so main() does not run the comparison there.)"""
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True, capture_output=True)
     commit_file(tmp_path, "unrelated.txt", "so the repository has a commit\n", "2026-11-01T00:00:00+00:00")
     assert tables_behind_their_generator(tmp_path) == []

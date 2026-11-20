@@ -22,16 +22,19 @@ fails when an input is newer.
 table is committed, not built by the rebuild, so the two checks above never look at it: the rebuild reads whatever is in
 git. On 2 November 2026 it held no `no_activation` row, two days after decision 9.88's rule was built into
 `experiments/extract_brenda_enzyme_regulation.py`, so a rebuild would have written a neuronal graph describing the rule
-the owner replaced. This script compares each such table's last commit with the code of the scripts that generate it,
-as it stood in that commit and as it stands at HEAD, and reports a table whose generator's code has changed since. A
-commit that changes only a generator's comments or docstrings is not counted, since it changes nothing the script
-writes and CLAUDE.md asks that comments be kept current (20 November 2026: a reorganization of docs/ that rewrote paths
-in two comments of `experiments/extract_brenda_enzyme_regulation.py` made the commit-date comparison report the table
-as behind it). It reports rather than refuses, because the regeneration cannot run
-first: it needs a gene-and-protein-split graph that only the rebuild builds, which is why the regeneration is the
-rebuild's `brenda` stage (`scripts/rebuild_data_layer.sh`). Commits, not modification times, because on a fresh
-clone every tracked file carries the checkout time and a modification-time comparison between two tracked files says
-nothing.
+the owner replaced. This script compares each such table with the scripts and input files it is generated from: each
+one as it stood in the table's last commit against the same file at HEAD. A Python file counts as changed only when its
+syntax tree without docstrings differs, so an edit to comments or docstrings alone, a change of layout, or a change
+later reverted is not counted: none changes what the script writes, and CLAUDE.md asks that comments be kept current
+(20 November 2026: a reorganization of docs/ that changed one comment line and one module-docstring line of
+`experiments/extract_brenda_enzyme_regulation.py` made the commit-date comparison this replaced report the table as
+behind it). Any other file, or a Python file that does not parse, is compared byte for byte. A file absent from the
+table's commit counts as changed, so a script renamed since then is reported until the table is regenerated. It reports
+rather than refuses, because the regeneration cannot run first: it needs a gene-and-protein-split graph that only the
+rebuild builds, which is why the regeneration is the rebuild's `brenda` stage (`scripts/rebuild_data_layer.sh`).
+Commits, not modification times, because on a fresh clone every tracked file carries the checkout time and a
+modification-time comparison between two tracked files says nothing. In a shallow clone the table's last commit may lie
+beyond the clone's boundary, so the comparison is not made there and the script says so.
 
 What it does not do: it does not check that an input's *contents* are current, only its modification time, so a table
 edited and restored looks unchanged. On a fresh clone every tracked file carries the checkout time, which is earlier
@@ -74,38 +77,68 @@ INPUTS_OF_OUTPUT: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
-# Committed derived tables, and the scripts whose output they hold. These are not built by the rebuild - they are in git
-# and the rebuild reads them - so neither check above covers them; this pairing is what makes a table that predates its
-# own rule visible. configs/brenda_metabolite_enzyme_regulation.csv is written by the mapping script from the records the
-# extraction script writes, so a change to either leaves the committed table behind (decision 9.88).
+# Committed derived tables, and the scripts and input files their content follows from. These are not built by the
+# rebuild - they are in git and the rebuild reads them - so neither check above covers them; this pairing is what makes a
+# table that predates its own rule visible. configs/brenda_metabolite_enzyme_regulation.csv is written by the mapping
+# script from the records the extraction script writes (decision 9.88), and since 20 November 2026 (4c9ec119) the mapping
+# reads Human-GEM's metabolites through the corrections applied where the model is read: the corrections table, the
+# module that applies it, and the module whose human_gem_metabolites_by_chebi() indexes the result. A change to any of them
+# can leave the committed table behind; a code change anywhere in those two modules counts, not only in the functions the
+# mapping calls.
 GENERATORS_OF_TABLE: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("configs/brenda_metabolite_enzyme_regulation.csv",
-     ("experiments/extract_brenda_enzyme_regulation.py", "experiments/map_brenda_regulation_to_graph.py")),
+     ("experiments/extract_brenda_enzyme_regulation.py", "experiments/map_brenda_regulation_to_graph.py",
+      "mechanistic_pathway_learning/graph/human_gem_corrections.py", "configs/human_gem_corrections.csv",
+      "mechanistic_pathway_learning/evidence/laboratory_abnormality_labels.py")),
 )
 
 
+def git(arguments: list[str], root: Path) -> subprocess.CompletedProcess:
+    """A git command's result as bytes, never raising."""
+    return subprocess.run(["git", *arguments], cwd=root, capture_output=True, check=False)
+
+
+def repository_is_shallow(root: Path = REPOSITORY_ROOT) -> bool:
+    """True when the clone holds truncated history (as mechanistic_pathway_learning.documentation.repository_is_shallow,
+    kept here so the preflight imports nothing from the package)."""
+    return git(["rev-parse", "--is-shallow-repository"], root).stdout.decode().strip() == "true"
+
+
 def last_commit_hash(path: str, root: Path = REPOSITORY_ROOT) -> str | None:
-    """The last commit touching this path, or None when git knows nothing of it (an untracked file, or a clone too
-    shallow to hold the commit)."""
-    result = subprocess.run(["git", "log", "-1", "--format=%H", "--", path],
-                            cwd=root, capture_output=True, text=True, check=False)
-    if result.returncode != 0 or not result.stdout.strip():
-        return None
-    return result.stdout.strip()
+    """The last commit touching this path, or None when git knows nothing of it (an untracked file). In a shallow clone
+    this is the clone's boundary commit when the real one lies beyond it, which is why main() does not run the
+    comparison there."""
+    result = git(["log", "-1", "--format=%H", "--", path], root)
+    commit = result.stdout.decode().strip()
+    return commit if result.returncode == 0 and commit else None
 
 
-def committed_text(path: str, commit: str, root: Path = REPOSITORY_ROOT) -> str | None:
-    """The file as it stands in that commit, or None when the commit does not hold it."""
-    result = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=root, capture_output=True, text=True, check=False)
-    return result.stdout if result.returncode == 0 else None
+def blob_id(path: str, commit: str, root: Path = REPOSITORY_ROOT) -> str | None:
+    """The id of the file at this path in that commit, or None when the commit does not hold it. Read from the tree, so a
+    partial clone needs no download for it. A git failure raises with git's own message rather than reading as absent."""
+    result = git(["ls-tree", "--full-tree", commit, "--", path], root)
+    if result.returncode != 0:
+        raise RuntimeError(f"git ls-tree {commit} -- {path} failed: {result.stderr.decode().strip()}")
+    entry = result.stdout.decode().strip()
+    return entry.split()[2] if entry else None
 
 
-def code_without_comments_or_docstrings(source: str) -> str | None:
-    """A Python source's syntax tree with every docstring dropped, as text to compare; comments never reach the tree.
-    None when the source does not parse, so the caller falls back to comparing the text itself."""
+def blob_bytes(blob: str, root: Path = REPOSITORY_ROOT) -> bytes:
+    """A file's bytes from its id; a git failure (for example a partial clone with its remote out of reach) raises with
+    git's own message."""
+    result = git(["cat-file", "blob", blob], root)
+    if result.returncode != 0:
+        raise RuntimeError(f"git cat-file blob {blob} failed: {result.stderr.decode().strip()}")
+    return result.stdout
+
+
+def code_without_docstrings(source: bytes) -> str | None:
+    """A Python source's syntax tree with every docstring dropped, as text to compare; comments, layout and line numbers
+    never reach it. Parsed from bytes, so a coding declaration is honoured. None when the source does not parse, so the
+    caller compares the bytes instead."""
     try:
         module = ast.parse(source)
-    except SyntaxError:
+    except (SyntaxError, ValueError):
         return None
     for node in ast.walk(module):
         if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body:
@@ -116,34 +149,34 @@ def code_without_comments_or_docstrings(source: str) -> str | None:
     return ast.dump(module, include_attributes=False)
 
 
-def code_changed(before: str | None, after: str | None, path: str) -> bool:
-    """Whether a generator's code differs between two versions. A version that does not exist counts as different. A
-    Python file is compared by its syntax tree without docstrings, so a change to comments or docstrings alone is not a
-    change; anything else, or a version that does not parse, is compared as text."""
-    if before is None or after is None:
-        return True
+def code_changed(before: bytes, after: bytes, path: str) -> bool:
+    """Whether a file differs between two versions in a way that can change what it produces. A Python file is compared
+    by its syntax tree without docstrings, so comments, docstrings and layout alone are not a change; anything else, or a
+    version that does not parse, is compared byte for byte."""
     if path.endswith(".py"):
-        before_code = code_without_comments_or_docstrings(before)
-        after_code = code_without_comments_or_docstrings(after)
+        before_code, after_code = code_without_docstrings(before), code_without_docstrings(after)
         if before_code is not None and after_code is not None:
             return before_code != after_code
     return before != after
 
 
 def tables_behind_their_generator(root: Path = REPOSITORY_ROOT) -> list[tuple[str, str]]:
-    """(table, generator) for every committed derived table whose generator's code at HEAD differs from its code in the
-    table's last commit, so the committed table cannot hold that generator's output. A generator edited only in its
-    comments or docstrings since then is not reported (see the module docstring)."""
+    """(table, generator) for every committed derived table one of whose scripts or input files differs at HEAD from its
+    version in the table's last commit, so the committed table may not hold that version's output. Assumes full
+    history; main() does not call it in a shallow clone. See the module docstring for what counts as a difference."""
     behind = []
     for table, generators in GENERATORS_OF_TABLE:
         table_commit = last_commit_hash(table, root)
         if table_commit is None:
             continue
         for generator in generators:
-            if last_commit_hash(generator, root) is None:
-                continue
-            in_table_commit = committed_text(generator, table_commit, root)
-            if code_changed(in_table_commit, committed_text(generator, "HEAD", root), generator):
+            current = blob_id(generator, "HEAD", root)
+            if current is None:
+                continue  # not in HEAD: the test of every named file's existence catches a rename not carried here
+            then = blob_id(generator, table_commit, root)
+            if then is None:
+                behind.append((table, generator))
+            elif then != current and code_changed(blob_bytes(then, root), blob_bytes(current, root), generator):
                 behind.append((table, generator))
     return behind
 
@@ -233,12 +266,18 @@ def main() -> None:
             print(f"   {output}  is older than  {input_name}")
         print("Delete the output and run the rebuild again, or regenerate the input before the step that reads it.")
         raise SystemExit(1)
-    behind = tables_behind_their_generator()
+    if repository_is_shallow():
+        print("\nNOT CHECKED: this clone is shallow, so a committed derived table's last commit may lie beyond its "
+              "boundary and the comparison with its generators would be wrong. Deepen it (git fetch --depth=1000 origin "
+              "main) and run this again.")
+        behind = []
+    else:
+        behind = tables_behind_their_generator()
     if behind:
-        print("\nBEHIND: a committed derived table is older than the code of a script that generates it, so it cannot "
-              "hold that script's output:")
+        print("\nBEHIND: a committed derived table was committed without the current version of a script or input it is "
+              "generated from, so it may not hold that version's output:")
         for table, generator in behind:
-            print(f"   {table}  was last committed before a change to the code of  {generator}")
+            print(f"   {table}  was last committed without the current version of  {generator}")
         print("The rebuild reads the committed table, so the graph it writes describes the older version. Regenerate it "
               "with the brenda stage (bash scripts/rebuild_data_layer.sh brenda), which runs after the graphs stage "
               "because the mapping needs the split graph that stage builds, then rerun the graphs stage on the new "
