@@ -8,7 +8,8 @@ data/processed/audit/physiology_audit.json:
   1. graph integrity: duplicate edges, self-loops, dangling endpoints, contradictory signs, unsigned fractions,
      degree concentration, whether stoichiometric coefficients survive into the graph the model reads;
   2. compartments: a non-transport reaction whose substrates and products sit in different compartments;
-  3. mass and charge balance of the Human-GEM reactions, from the SBML through cobra, boundary reactions excluded;
+  3. mass and charge balance of the Human-GEM reactions, from the SBML through cobra with the corrections of
+     configs/human_gem_corrections.csv, boundary reactions excluded;
   4. the cited validation set (configs/physiology_validation_set.csv): established chains the evidence should hold
      and established negatives it should not contradict, with the drug's target and sign checked against the table;
   5. evidence coverage per symptom, by class, grade and negatives;
@@ -117,11 +118,12 @@ def compartment_consistency(nodes: pd.DataFrame, edges: pd.DataFrame) -> dict:
 
 
 def mass_charge_balance(sbml_path: Path, limit_examples: int = 15) -> dict:
-    """Every reaction's elemental and charge balance from the SBML through cobra; boundary, exchange, demand and sink
-    reactions are not balanced by construction and are counted apart."""
-    import cobra
+    """Every reaction's elemental and charge balance from the SBML through cobra, with configs/human_gem_corrections.csv
+    applied (the model the graph is built from); boundary, exchange, demand and sink reactions are not balanced by
+    construction and are counted apart."""
+    from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_cobra_model
 
-    model = cobra.io.read_sbml_model(str(sbml_path))
+    model = read_human_gem_cobra_model(sbml_path)
     boundary = {reaction.id for reaction in model.boundary}
     unbalanced, proton_only, charge_only = [], [], []
     for reaction in model.reactions:

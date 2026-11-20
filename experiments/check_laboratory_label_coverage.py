@@ -20,6 +20,7 @@ from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import 
     parse_hpo_chemical_definitions,
     read_chebi_relations,
 )
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 
 DIRECTION_NAMES = {1: "increased", -1: "decreased", 0: "abnormal, no direction"}
 
@@ -67,7 +68,7 @@ def main() -> None:
 
     definitions = parse_hpo_chemical_definitions(arguments.hpo_owl.read_text())
     names, neighbours, children = read_chebi_relations(arguments.chebi_obo)
-    metabolites_by_chebi = human_gem_metabolites_by_chebi(pd.read_csv(arguments.human_gem_metabolites, sep="\t"))
+    metabolites_by_chebi = human_gem_metabolites_by_chebi(read_human_gem_metabolites(arguments.human_gem_metabolites))
     excluded_metabolites = frozenset(generic_metabolite_ids(pd.read_parquet(arguments.full_graph / "nodes.parquet")))
     mapping_by_term = {}
     for definition in definitions:

@@ -30,6 +30,7 @@ from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import 
     read_chebi_relations,
 )
 from mechanistic_pathway_learning.graph.build_physiology_graph import load_brain_expression
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites, read_human_gem_sbml_text
 from mechanistic_pathway_learning.graph.neurotransmission_regulation import add_release_regulation
 from mechanistic_pathway_learning.graph.node_descriptors import metabolite_charges_from_sbml
 from mechanistic_pathway_learning.graph.brenda_enzyme_regulation import (
@@ -351,7 +352,7 @@ def main() -> None:
     uniprot = pd.read_csv(arguments.uniprot_table, sep="\t")
     gene_of_uniprot = {accession: gene for accession, gene in zip(uniprot["Entry"], uniprot["Gene Names (primary)"]) if isinstance(gene, str)}
     names, neighbours, children = read_chebi_relations(arguments.chebi_obo)
-    metabolites_by_chebi = human_gem_metabolites_by_chebi(pd.read_csv(arguments.human_gem_metabolites, sep="\t"))
+    metabolites_by_chebi = human_gem_metabolites_by_chebi(read_human_gem_metabolites(arguments.human_gem_metabolites))
     if "MN2" in set(nodes.base_metabolite_id.dropna()):
         metabolites_by_chebi[MANGANESE_CHEBI] = {"MN2"}  # Mn(2+) of the manganese variant
 
@@ -359,7 +360,7 @@ def main() -> None:
         mapped, _ = map_definition_to_metabolites(ChemicalDefinition("", (chebi_id,), 0, ""), names, neighbours, children, metabolites_by_chebi)
         return sorted(mapped)[0] if mapped else None
 
-    human_gem_sbml = arguments.human_gem_sbml.read_text()
+    human_gem_sbml = read_human_gem_sbml_text(arguments.human_gem_sbml)  # with configs/human_gem_corrections.csv applied
     ion_charges = {base: charge for base, charge in metabolite_charges_from_sbml(human_gem_sbml).items() if base in set(INORGANIC_IONS.values())}
     # the Reactome-only ions. They join ion_bases so `ions_moved_inward` counts them and ion_charges so the net charge
     # sees them; they are absent from NEURONAL_POOL_DRIVING_FORCE, so no pool node is built for them.

@@ -32,6 +32,7 @@ from mechanistic_pathway_learning.documentation import provenance_stamp
 from mechanistic_pathway_learning.evaluation.experiment_data import GENE_TO_PROTEIN_FILE
 from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import (
     ChemicalDefinition, human_gem_metabolites_by_chebi, map_definition_to_metabolites, read_chebi_relations)
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 from mechanistic_pathway_learning.graph.plasma_binding import add_plasma_carriage, curated_carriage_rows, uniprot_carriage_rows
 
 # Copied unchanged, which is sound only because carriage adds nothing these files read. Two model inputs follow the
@@ -109,7 +110,7 @@ def main() -> None:
     curated = pd.read_csv(arguments.curated_table)
     carriage_rows = pd.concat([uniprot_carriage_rows(binder_table, BINDER_GENES), curated_carriage_rows(curated)], ignore_index=True)
     names, neighbours, children = read_chebi_relations(arguments.chebi_obo)
-    metabolites_by_chebi = human_gem_metabolites_by_chebi(pd.read_csv(arguments.human_gem_metabolites, sep="\t"))
+    metabolites_by_chebi = human_gem_metabolites_by_chebi(read_human_gem_metabolites(arguments.human_gem_metabolites))
 
     def bases_of_chebi(chebi_id: str) -> set[str]:
         mapped, _ = map_definition_to_metabolites(ChemicalDefinition("", (chebi_id,), 0, ""), names, neighbours, children, metabolites_by_chebi)

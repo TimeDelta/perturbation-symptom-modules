@@ -54,10 +54,11 @@ def summarize_shift(baseline_samples, perturbed_samples, baseline_fva, perturbed
 
 
 def run_for_gene_index(model_path: Path, output_directory: Path, gene_index: int, num_samples: int, processes: int, random_seed: int) -> Path:
-    from cobra.io import load_model, read_sbml_model
+    from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_cobra_model
 
     output_directory.mkdir(parents=True, exist_ok=True)
-    model = read_sbml_model(str(model_path)) if model_path.suffix.lower() == ".xml" else load_model(str(model_path))
+    # Human-GEM with configs/human_gem_corrections.csv applied, as the graph builder reads it
+    model = read_human_gem_cobra_model(model_path)
     gene_list_path = output_directory / "gene_order.json"
     if not gene_list_path.exists():
         gene_list_path.write_text(json.dumps([gene.id for gene in model.genes]))

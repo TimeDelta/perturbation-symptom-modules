@@ -1,12 +1,17 @@
 """Physiology graph construction (design section 4.1).
 
 Layers and sources:
-  metabolic      Human-GEM (SBML from github.com/SysBioChalmers/Human-GEM) via cobra:
+  metabolic      Human-GEM (SBML from github.com/SysBioChalmers/Human-GEM) via cobra, with the species and reaction
+                 corrections of configs/human_gem_corrections.csv applied (graph/human_gem_corrections.py; since
+                 20 November 2026 MAM03652c is MAM03885c and MAM20077m is MAM20089m, rulings Q5a and Q5b, MAR20093
+                 runs in the lysosome on the added species MAM03885l and MAM01797l, ruling Q5d, and MAR02560 and
+                 MAR02571 are one-way glutathione-dependent reductions with the glutathione peroxidases):
                  metabolite nodes (compartment-specific), reaction nodes, gene nodes,
                  edges substrate_of (metabolite -> reaction), product_of (reaction -> metabolite),
                  catalyzed_by (gene -> reaction, from the gene-protein-reaction rule; the AND/OR
                  structure of the rule is kept as a reaction attribute, not expanded, in version 1).
-                 Reversible reactions get both orientations of their substrate and product edges.
+                 Every reaction's substrate and product edges follow its nominal direction only; a reversible one
+                 carries the reversible flag on its node (build_metabolic_layer says why the mirror edges went).
                  A reaction whose metabolites span more than one compartment is tagged is_transport;
                  those reactions are the only edges that connect compartments.
   signaling      OmniPath post-translational interactions (omnipath, pathwayextra, ligrecextra):
@@ -14,7 +19,7 @@ Layers and sources:
                  (binds edges are added in both directions). Protein complexes written as
                  A_B_C are expanded to their member genes.
   small molecule OmniPath small_molecule_protein interactions joined to Human-GEM metabolites
-                 by PubChem identifier (metabolites.tsv): binds edges from a metabolite node
+                 by PubChem identifier (metabolites.tsv, read with configs/human_gem_corrections.csv applied): binds edges from a metabolite node
                  (its extracellular instance when present, else every compartment instance)
                  to the receptor or enzyme node, so dopamine reaches DRD1-5 and so on.
   transcription  CollecTRI regulons: regulates_transcription_of with the consensus sign.
@@ -57,6 +62,12 @@ from pathlib import Path
 
 import pandas as pd
 
+from mechanistic_pathway_learning.graph.human_gem_corrections import (
+    DEFAULT_CORRECTIONS_PATH as DEFAULT_HUMAN_GEM_CORRECTIONS_PATH,
+    correct_cobra_model,
+    read_human_gem_corrections,
+    read_human_gem_metabolites,
+)
 from mechanistic_pathway_learning.graph.tag_currency_metabolites import retag_currency_by_name, tag_currency_metabolites
 
 RELATION_TYPES: list[str] = [
@@ -75,15 +86,19 @@ RELATION_TYPES: list[str] = [
 ]
 
 
-def load_human_gem(model_path: Path):
+def load_human_gem(model_path: Path, corrections_path: Path | None = DEFAULT_HUMAN_GEM_CORRECTIONS_PATH):
+    """The cobra model from the SBML (or a pickled cobra model), with the species and reaction corrections of
+    configs/human_gem_corrections.csv applied; corrections_path=None gives the model as the file holds it."""
     import pickle
 
     if model_path.suffix == ".pkl":
         with open(model_path, "rb") as cached:
-            return pickle.load(cached)
-    from cobra.io import read_sbml_model
+            model = pickle.load(cached)
+    else:
+        from cobra.io import read_sbml_model
 
-    return read_sbml_model(str(model_path))
+        model = read_sbml_model(str(model_path))
+    return correct_cobra_model(model, read_human_gem_corrections(corrections_path))
 
 
 def gene_symbols_from_table(genes_table_path: Path | None) -> dict[str, str]:
@@ -442,11 +457,12 @@ def build_transcription_layer(nodes: pd.DataFrame, regulons_path: Path) -> tuple
 
 def build_small_molecule_layer(nodes: pd.DataFrame, small_molecule_path: Path, metabolites_table_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     metabolites_by_pubchem: dict[str, list[str]] = defaultdict(list)
-    with open(metabolites_table_path, encoding="utf-8") as metabolites_file:
-        for row in csv.DictReader(metabolites_file, delimiter="\t"):
-            pubchem_id = (row.get("metPubChemID") or "").strip()
-            if pubchem_id:
-                metabolites_by_pubchem[pubchem_id].append(row["mets"])
+    # read as text (a PubChem id must not become a float), with configs/human_gem_corrections.csv applied
+    metabolites_table = read_human_gem_metabolites(metabolites_table_path, dtype=str, keep_default_na=False)
+    for species, pubchem_cell in zip(metabolites_table["mets"], metabolites_table.get("metPubChemID", pd.Series([""] * len(metabolites_table)))):
+        pubchem_id = (pubchem_cell or "").strip()
+        if pubchem_id:
+            metabolites_by_pubchem[pubchem_id].append(species)
     known_nodes = set(nodes.node_id)
     edge_rows: list[dict] = []
     symbols: set[str] = set()

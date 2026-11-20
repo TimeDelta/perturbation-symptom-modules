@@ -29,6 +29,7 @@ from sklearn.metrics import roc_auc_score
 from mechanistic_pathway_learning.evaluation.experiment_data import load_experiment_data
 from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import build_label_table, generic_metabolite_ids, read_chebi_relations
 from mechanistic_pathway_learning.graph.cofactor_edges import CARRIER_RULES, cofactor_edge_mask
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 from mechanistic_pathway_learning.models.linear_response_encoder import LinearResponseEncoder
 
 STEP_COUNTS = (8, 32, 128)
@@ -117,7 +118,7 @@ def main() -> None:
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster")
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
     labels = build_label_table(arguments.hpo_owl.read_text(), pd.read_csv(arguments.hpo_annotations, sep="\t"), read_chebi_relations(arguments.chebi_obo),
-                               pd.read_csv(arguments.human_gem_metabolites, sep="\t"), frozenset(generic_metabolite_ids(nodes)))
+                               read_human_gem_metabolites(arguments.human_gem_metabolites), frozenset(generic_metabolite_ids(nodes)))
     slice_genes = set(data.perturbation_ids)
     labels = labels[labels.gene_symbol.isin(slice_genes) & labels.base_metabolite_id.isin(set(nodes.base_metabolite_id.dropna()))].reset_index(drop=True)
     signs = sorted({sign for row in data.perturbation_signs for sign in np.atleast_1d(row)})

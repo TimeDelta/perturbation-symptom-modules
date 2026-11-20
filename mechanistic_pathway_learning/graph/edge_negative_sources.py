@@ -19,6 +19,7 @@ from mechanistic_pathway_learning.graph import huri_tested_space as huri
 from mechanistic_pathway_learning.graph import negatome_negatives as negatome
 from mechanistic_pathway_learning.graph import perturbseq_responses as perturbseq
 from mechanistic_pathway_learning.graph.edge_negative_evidence import SOURCES, summarise_negative_evidence
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 
 
 @dataclass
@@ -94,7 +95,7 @@ def assemble_negative_evidence(evidence: pd.DataFrame, edges: pd.DataFrame, node
                 accessions_of_symbol: dict[str, set[str]] = {}
                 for accession, symbol in symbol_of_accession.items():
                     accessions_of_symbol.setdefault(symbol, set()).add(accession)
-                metabolites = pd.read_csv(paths.human_gem_metabolites, sep="\t", usecols=["metsNoComp", "metChEBIID"]) if Path(paths.human_gem_metabolites).is_file() else None
+                metabolites = read_human_gem_metabolites(paths.human_gem_metabolites, usecols=["metsNoComp", "metChEBIID"]) if Path(paths.human_gem_metabolites).is_file() else None
                 compounds = chembl.compound_ids_of_nodes(nodes, chembl.chebi_of_base(metabolites), chembl.read_chebi_mapping(paths.chembl_chebi_mapping),
                                                          chembl.read_pubchem_mapping(paths.chembl_pubchem_mapping))
                 targets = chembl.target_ids_of_nodes(nodes, chembl.read_target_mapping(paths.chembl_target_mapping), accessions_of_symbol)

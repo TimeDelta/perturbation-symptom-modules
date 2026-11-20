@@ -40,6 +40,7 @@ from mechanistic_pathway_learning.graph.chembl_activity_negatives import (
     read_target_mapping,
     target_ids_of_nodes,
 )
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 from mechanistic_pathway_learning.graph.negatome_negatives import accession_symbols
 
 SERVICE = "https://www.ebi.ac.uk/chembl/api/data"
@@ -95,7 +96,7 @@ def main() -> int:
     targets_of_accession = read_target_mapping(arguments.target_mapping)
     chembl_of_chebi = read_chebi_mapping(arguments.chebi_mapping)
     chembl_of_pubchem = read_pubchem_mapping(arguments.pubchem_mapping)
-    human_gem_chebi = chebi_of_base(pd.read_csv(arguments.metabolites, sep="\t", usecols=["metsNoComp", "metChEBIID"]) if arguments.metabolites.is_file() else None)
+    human_gem_chebi = chebi_of_base(read_human_gem_metabolites(arguments.metabolites, usecols=["metsNoComp", "metChEBIID"]) if arguments.metabolites.is_file() else None)
     accessions_of_symbol: dict[str, set[str]] = {}
     for accession, symbol in accession_symbols(arguments.hgnc).items():
         accessions_of_symbol.setdefault(symbol, set()).add(accession)

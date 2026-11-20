@@ -49,6 +49,7 @@ from mechanistic_pathway_learning.evidence.laboratory_abnormality_labels import 
     map_definition_to_metabolites,
     read_chebi_relations,
 )
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites
 
 
 def human_accessions_by_ec_number(uniprot_path: Path) -> dict[str, set[str]]:
@@ -147,7 +148,7 @@ def main() -> None:
     accessions_of_ec = human_accessions_by_ec_number(arguments.uniprot)
     term_of_name = chebi_id_by_lowercase_name(arguments.chebi_obo)
     chebi_names, chebi_neighbours, chebi_children = read_chebi_relations(arguments.chebi_obo)
-    metabolites_by_chebi = human_gem_metabolites_by_chebi(pd.read_csv(arguments.metabolites_table, sep="\t"))
+    metabolites_by_chebi = human_gem_metabolites_by_chebi(read_human_gem_metabolites(arguments.metabolites_table))
 
     base_of_ligand_name: dict[str, str] = {}
     ligand_resolution_counts = collections.Counter()

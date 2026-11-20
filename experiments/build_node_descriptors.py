@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from mechanistic_pathway_learning.graph.human_gem_corrections import read_human_gem_metabolites, read_human_gem_sbml_text
 from mechanistic_pathway_learning.graph.node_descriptors import assemble_node_descriptor_table, metabolite_descriptors, reaction_enzyme_classes
 
 
@@ -33,8 +34,10 @@ def main() -> None:
                         help="annotation vectors of the Reactome protein entities (data/processed/node_descriptors/complex_descriptors.parquet)")
     arguments = parser.parse_args()
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")
-    sbml_text = arguments.human_gem_sbml.read_text()
-    metabolite_table = metabolite_descriptors(pd.read_csv(arguments.human_gem_metabolites, sep="\t"), sbml_text)
+    # both with configs/human_gem_corrections.csv applied, so a renamed or added species keys its own descriptors and
+    # charge, and a corrected reaction its own EC classes
+    sbml_text = read_human_gem_sbml_text(arguments.human_gem_sbml)
+    metabolite_table = metabolite_descriptors(read_human_gem_metabolites(arguments.human_gem_metabolites), sbml_text)
     reaction_table = reaction_enzyme_classes(sbml_text)
     protein_table = None if arguments.no_proteins else pd.read_parquet(arguments.protein_descriptors)
     complex_table = None if arguments.complex_descriptors is None else pd.read_parquet(arguments.complex_descriptors)
