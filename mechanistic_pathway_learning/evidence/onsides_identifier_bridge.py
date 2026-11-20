@@ -39,11 +39,13 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from mechanistic_pathway_learning.evidence.load_drug_label_events import is_nervous_system_atc
-from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (  # noqa: F401 (mechanisms_by_parent_and_molecule is re-exported)
+from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (  # noqa: F401 (mechanisms_by_parent_and_molecule and withheld_count are re-exported)
+    ActionConflict,
     DrugTarget,
     has_dominant_target,
     mechanism_targets,
     mechanisms_by_parent_and_molecule,
+    withheld_count,
 )
 
 BRIDGE_METHOD_UNII_UNICHEM = "unii_unichem"
@@ -227,22 +229,27 @@ def unify_with_sider(ingredient_id: str, chembl_parent: str | None, cids_by_pare
     return stitch_flat_id_from_pubchem_cid(chosen_cid), chosen_cid, list(candidate_cids[1:]), unification_method
 
 
-def mechanism_targets_for_parent(chembl_parent: str | None, mechanisms_by_molecule: dict[str, list[dict]], targets: dict[str, dict], human_only: bool = True, missing_target_ids: set[str] | None = None) -> list[DrugTarget]:
+def mechanism_targets_for_parent(chembl_parent: str | None, mechanisms_by_molecule: dict[str, list[dict]], targets: dict[str, dict], human_only: bool = True, missing_target_ids: set[str] | None = None,
+                                 action_resolutions=None, conflicts: list[ActionConflict] | None = None) -> list[DrugTarget]:
     """Mechanism targets of a parent molecule, one entry per ChEMBL target, as drug_targets_for_pubchem_cid builds them for SIDER.
 
     A target id without a record in targets is kept (its organism is unknown, so the human filter cannot drop it
     and its gene symbols are empty) and added to missing_target_ids when a set is passed, so callers can report
-    a missing record rather than a missing graph gene.
+    a missing record rather than a missing graph gene. A target whose rows disagree on the action is resolved by
+    action_resolutions (None: configs/chembl_action_conflict_resolutions.csv) or withheld, and appended to conflicts
+    when a list is passed (mechanism_targets).
     """
     if chembl_parent is None:
         return []
-    return mechanism_targets([chembl_parent], mechanisms_by_molecule, targets, human_only=human_only, missing_target_ids=missing_target_ids)
+    return mechanism_targets([chembl_parent], mechanisms_by_molecule, targets, human_only=human_only, missing_target_ids=missing_target_ids,
+                             action_resolutions=action_resolutions, conflicts=conflicts)
 
 
-def passes_single_target_rule(drug_targets: list[DrugTarget], max_targets: int | None = 1) -> bool:
+def passes_single_target_rule(drug_targets: list[DrugTarget], max_targets: int | None = 1, withheld_targets: int = 0) -> bool:
     """The version 1 pharmacological bar on targets, the same rule SIDER drugs pass (has_dominant_target with one
-    target by default; max_targets None or 0 lifts the cap)."""
-    return has_dominant_target(drug_targets, max_targets=max_targets)
+    target by default; max_targets None or 0 lifts the cap; withheld_targets, the targets withheld for an unresolved
+    action conflict, count against the cap)."""
+    return has_dominant_target(drug_targets, max_targets=max_targets, withheld_targets=withheld_targets)
 
 
 def passes_nervous_system_rule(bridge: IngredientBridge) -> bool:

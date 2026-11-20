@@ -69,6 +69,7 @@ from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import (  #
     stitch_flat_id_from_pubchem_cid,
     unichem_chembl_ids,
     unify_with_sider,
+    withheld_count,
 )
 
 RXNAV_API = "https://rxnav.nlm.nih.gov/REST"
@@ -295,6 +296,9 @@ def main() -> None:
     print("phase 5: SIDER unification, ATC codes and mechanism targets", flush=True)
     mechanisms = fetch_all_mechanisms(arguments.chembl_dir)
     mechanisms_by_molecule = mechanisms_by_parent_and_molecule(mechanisms)
+    # Read as fetched, deliberately not through read_pubchem_to_chembl: configs/chembl_parent_corrections.csv was derived
+    # from this bridge, and tests/test_chembl_parent_corrections.py uses the bridge as the independent witness of each
+    # drug's parent. Building the bridge from the corrected map would let the table confirm itself (20 November 2026).
     pubchem_to_chembl_with_parents = json.loads((arguments.chembl_dir / "pubchem_to_chembl_with_parents.json").read_text())
     molecule_parents = json.loads((arguments.chembl_dir / "molecule_parents.json").read_text()) if (arguments.chembl_dir / "molecule_parents.json").exists() else {}
     sider_parents_by_cid = sider_parent_molecules(pubchem_to_chembl_with_parents, molecule_parents, mechanisms)
@@ -341,9 +345,10 @@ def main() -> None:
     if missing_target_ids:
         errors.append({"phase": "chembl_targets", "error": f"{len(missing_target_ids)} targets not in targets.json" + (" and --skip-target-fetch given" if arguments.skip_target_fetch else " after the fetch"), "target_chembl_ids": missing_target_ids})
     for bridge in bridges.values():
-        drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets)
-        bridge.mechanism_target_ids = sorted(target.target_chembl_id for target in drug_targets)
-        bridge.single_mechanism_target = passes_single_target_rule(drug_targets)
+        conflicts: list = []
+        drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets, conflicts=conflicts)
+        bridge.mechanism_target_ids = sorted(target.target_chembl_id for target in drug_targets)  # a target withheld for an unresolved action conflict is not listed
+        bridge.single_mechanism_target = passes_single_target_rule(drug_targets, withheld_targets=withheld_count(conflicts))
         bridge.nervous_system_atc = passes_nervous_system_rule(bridge)
 
     counts = bridge_counts(bridges)

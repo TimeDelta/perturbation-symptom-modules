@@ -22,7 +22,10 @@ Drugs are keyed by RxNorm ingredient; the identifier bridge (onsides_identifier_
 ingredient to its ChEMBL parent, its mechanism targets and, when the parent or the name is a SIDER drug's,
 to that drug's PubChem identifier so SIDER and OnSIDES report on one perturbation. The qualification rule
 is the one SIDER rows pass (assemble_evidence_table.py): a single mechanism target and the ATC N proxy for
-central action, so an ingredient without any ATC code does not qualify. A statement carried only by
+central action, so an ingredient without any ATC code does not qualify. A target whose ChEMBL rows give the parent
+more than one action type, with no row of configs/chembl_action_conflict_resolutions.csv, is withheld and listed
+(map_drug_targets_to_graph_nodes.mechanism_targets); an ingredient left with no target that way fails with
+chembl_action_conflict_unresolved. A statement carried only by
 combination-product labels is disqualified (combination_label_only): the label of carbidopa/levodopa
 says nothing about carbidopa alone.
 
@@ -47,7 +50,7 @@ from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import Ingr
 from mechanistic_pathway_learning.evidence.sider_drug_names import readable_drug_name
 from mechanistic_pathway_learning.perturbation.gtopdb_drug_targets import pubchem_cid_from_perturbation_id
 from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import GraphNodeLookup, graph_compound_targets
-from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import DrugTarget
+from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import ActionConflict, DrugTarget, action_conflict_report_rows, withheld_count
 
 ONSIDES_RELEASE = "v3.1.1"
 ONSIDES_RELEASE_DATE = "2026-04-22"
@@ -59,6 +62,7 @@ OTHER_SECTION_EVIDENCE_CODE = "other_section"
 ADVERSE_REACTIONS_RUBRIC_SECTIONS = ("AR", NON_US_LABEL_SECTION)  # sections whose text is the adverse-reactions text of the label
 COMBINATION_LABEL_ONLY_REASON = "combination_label_only"
 TARGET_RECORD_MISSING_REASON = "target_record_missing"
+ACTION_CONFLICT_REASON = "chembl_action_conflict_unresolved"  # every mechanism target withheld for an unresolved action conflict
 ONSIDES_EXTRA_COLUMNS: tuple[str, ...] = (
     "ingredient_id", "meddra_term_type", "label_section", "source_country", "label_count", "single_ingredient_label_count", "labels_of_ingredient_in_country",
     "max_pred1", "mean_pred1", "match_methods", "chembl_parent", "unified_with_sider", "qualifies", "disqualified_reason",
@@ -147,13 +151,14 @@ class OnsidesQualification:
     atc_known: bool
     missing_target_ids: list[str] = field(default_factory=list)  # mechanism targets without a record in targets.json
     target_source: str = "ChEMBL"  # "curated" when the targets come from curated_targets_by_perturbation (decision 9.117)
+    action_conflicts: list[ActionConflict] = field(default_factory=list)  # targets whose ChEMBL rows disagree on the action, resolved or withheld
 
 
 def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping[str, list[dict]], targets: Mapping[str, dict],
                        compounds_by_chembl_id: Mapping[str, list[str]] | None = None, max_drug_targets: int | None = 1,
                        admitted_atc_prefixes: tuple[str, ...] = NERVOUS_SYSTEM_ATC_PREFIXES,
                        curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
-                       excluded_perturbations: Mapping[str, str] | None = None) -> OnsidesQualification:
+                       excluded_perturbations: Mapping[str, str] | None = None, action_resolutions=None) -> OnsidesQualification:
     """The E2 qualification of section 4.2 for one ingredient, the rule SIDER rows pass: a single mechanism target and an ATC N code.
 
     An ingredient with no mechanism target at all whose parent is listed in configs/drugs_acting_as_graph_compounds.csv
@@ -166,27 +171,40 @@ def qualify_ingredient(bridge: IngredientBridge, mechanisms_by_molecule: Mapping
     the targets of an ingredient whose ChEMBL route finds none, by the bridge's perturbation_id, including one the bridge
     found no ChEMBL parent for; target_source records it. An ingredient whose perturbation excluded_perturbations names
     (configs/excluded_drug_perturbations.csv, decision 9.121 C4) fails with excluded_by_curation before any other test.
+    A target withheld for an unresolved ChEMBL action conflict (action_resolutions, None reading
+    configs/chembl_action_conflict_resolutions.csv; mechanism_targets) counts against the single-target rule, keeps the
+    ingredient from the graph-compound and curated fallbacks, which are for an ingredient ChEMBL gives no target, and,
+    when it leaves no target, fails the ingredient with chembl_action_conflict_unresolved; action_conflicts lists it.
     """
     missing_target_ids: set[str] = set()
-    drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets, missing_target_ids=missing_target_ids)
-    drug_targets = graph_compound_targets(drug_targets, None, [bridge.chembl_parent] if bridge.chembl_parent else [], {}, compounds_by_chembl_id or {})
+    conflicts: list[ActionConflict] = []
+    drug_targets = mechanism_targets_for_parent(bridge.chembl_parent, mechanisms_by_molecule, targets, missing_target_ids=missing_target_ids,
+                                                action_resolutions=action_resolutions, conflicts=conflicts)
+    withheld = withheld_count(conflicts)
     target_source = "ChEMBL"
-    if not drug_targets and curated_targets_by_perturbation and bridge.perturbation_id in curated_targets_by_perturbation:
-        drug_targets, target_source = list(curated_targets_by_perturbation[bridge.perturbation_id]), "curated"
+    if not withheld:
+        drug_targets = graph_compound_targets(drug_targets, None, [bridge.chembl_parent] if bridge.chembl_parent else [], {}, compounds_by_chembl_id or {})
+        if not drug_targets and curated_targets_by_perturbation and bridge.perturbation_id in curated_targets_by_perturbation:
+            drug_targets, target_source = list(curated_targets_by_perturbation[bridge.perturbation_id]), "curated"
     atc_known = bool(bridge.atc_codes)
     missing = sorted(missing_target_ids)
+
+    def qualification(qualifies: bool, reason: str) -> OnsidesQualification:
+        return OnsidesQualification(qualifies, reason, drug_targets, atc_known, missing, target_source, conflicts)
+
     if excluded_perturbations and bridge.perturbation_id in excluded_perturbations:
-        return OnsidesQualification(False, "excluded_by_curation", drug_targets, atc_known, missing, target_source)
+        return qualification(False, "excluded_by_curation")
     if bridge.chembl_parent is None and target_source != "curated":  # curated targets stand in for a parent the bridge did not find
-        return OnsidesQualification(False, "no_chembl_parent", drug_targets, atc_known, missing, target_source)
-    if not passes_single_target_rule(drug_targets, max_drug_targets):
-        return OnsidesQualification(False, "no_single_mechanism_target", drug_targets, atc_known, missing, target_source)
+        return qualification(False, "no_chembl_parent")
+    if not drug_targets and withheld:
+        return qualification(False, ACTION_CONFLICT_REASON)
+    if not passes_single_target_rule(drug_targets, max_drug_targets, withheld_targets=withheld):
+        return qualification(False, "no_single_mechanism_target")
     if not atc_known:
-        return OnsidesQualification(False, "no_atc_code", drug_targets, atc_known, missing, target_source)
+        return qualification(False, "no_atc_code")
     if not has_admitted_atc_code(list(bridge.atc_codes), admitted_atc_prefixes):
-        reason = "atc_not_nervous_system" if tuple(admitted_atc_prefixes) == NERVOUS_SYSTEM_ATC_PREFIXES else "atc_not_admitted"
-        return OnsidesQualification(False, reason, drug_targets, atc_known, missing, target_source)
-    return OnsidesQualification(True, "", drug_targets, atc_known, missing, target_source)
+        return qualification(False, "atc_not_nervous_system" if tuple(admitted_atc_prefixes) == NERVOUS_SYSTEM_ATC_PREFIXES else "atc_not_admitted")
+    return qualification(True, "")
 
 
 def section_limitation_clause(label_section: str) -> str:
@@ -225,6 +243,7 @@ def onsides_reports(
     complex_target_narrowing=None,
     curated_targets_by_perturbation: Mapping[str, list[DrugTarget]] | None = None,
     excluded_perturbations: Mapping[str, str] | None = None,
+    action_resolutions=None,
 ) -> tuple[pd.DataFrame, dict]:
     """Report rows (REPORT_COLUMNS first, then ONSIDES_EXTRA_COLUMNS) for every statement; qualifies marks the rows that enter the evidence table.
 
@@ -233,7 +252,9 @@ def onsides_reports(
     (perturbation/gtopdb_drug_targets.ComplexTargetNarrowing, decision 8.11) narrows an ingredient's ChEMBL complex
     targets to the subunits GtoPdb names before it is seeded, matched by the unified SIDER drug's PubChem CID or the
     ingredient's name, as the SIDER route matches the same drug. curated_targets_by_perturbation is qualify_ingredient's
-    fallback for an ingredient with no ChEMBL target (decision 9.117); excluded_perturbations its exclusion list (9.121 C4)."""
+    fallback for an ingredient with no ChEMBL target (decision 9.117); excluded_perturbations its exclusion list (9.121 C4);
+    action_resolutions its resolutions of ChEMBL action conflicts. counts["chembl_action_conflicts"] holds the rows of the
+    conflicts report (action_conflict_report_rows, route OnSIDES) of every bridged ingredient with statements."""
     if not isinstance(node_lookup, GraphNodeLookup):
         node_lookup = GraphNodeLookup(dict(node_lookup), {}, {})
     scored = statements.max_pred1.where(statements.match_methods.astype(str).str.contains("PMB"))
@@ -242,15 +263,20 @@ def onsides_reports(
     qualifications: dict[str, OnsidesQualification] = {}
     narrowed_targets: dict[str, list] = {}
     narrowing_by_ingredient: dict[str, dict] = {}
+    conflict_rows: list[dict] = []
     rows: list[dict] = []
     for statement in statements.itertuples(index=False):
         bridge = bridges.get(str(statement.ingredient_id))
         if bridge is None:
             counts["ingredients_without_bridge"] += 1
             continue
-        qualification = qualifications.get(bridge.ingredient_id) or qualify_ingredient(bridge, mechanisms_by_molecule, targets, compounds_by_chembl_id, max_drug_targets, admitted_atc_prefixes,
-                                                                                   curated_targets_by_perturbation, excluded_perturbations)
-        qualifications[bridge.ingredient_id] = qualification
+        qualification = qualifications.get(bridge.ingredient_id)
+        if qualification is None:
+            qualification = qualify_ingredient(bridge, mechanisms_by_molecule, targets, compounds_by_chembl_id, max_drug_targets, admitted_atc_prefixes,
+                                               curated_targets_by_perturbation, excluded_perturbations, action_resolutions)
+            qualifications[bridge.ingredient_id] = qualification
+            conflict_rows.extend(action_conflict_report_rows(bridge.perturbation_id, bridge.ingredient_name, f"OnSIDES ingredient {bridge.ingredient_id}",
+                                                             qualification.action_conflicts))
         drug_targets = qualification.drug_targets
         if complex_target_narrowing is not None and qualification.qualifies:  # only an ingredient that can enter is narrowed and recorded
             if bridge.ingredient_id not in narrowed_targets:
@@ -309,6 +335,7 @@ def onsides_reports(
     table = pd.DataFrame(rows, columns=columns)
     counts["qualifying_ingredients"] = int(table[table.qualifies].ingredient_id.nunique()) if len(table) else 0
     counts["qualifying_perturbations"] = int(table[table.qualifies].perturbation_id.nunique()) if len(table) else 0
+    counts["chembl_action_conflicts"] = conflict_rows
     if complex_target_narrowing is not None:  # decision 8.11, recorded only when the narrowing is on
         counts["complex_target_narrowing"] = {**complex_target_narrowing.provenance,
                                              "ingredients_narrowed": sum(1 for record in narrowing_by_ingredient.values() if record["narrowed"]),

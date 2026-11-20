@@ -17,7 +17,11 @@ to ChEBI (Human-GEM's metChEBIID, or a base id that is itself a ChEBI id, as the
 them) and ChEBI to ChEMBL through UniChem's ChEMBL-ChEBI mapping (EBI FTP, src1src7). A drug node DRUG:<perturbation>
 through its PubChem compound (the STITCH id CID1xxxxxxxx) and the PubChem-to-ChEMBL map the drug target fetch pins
 (data/raw/chembl/pubchem_to_chembl_with_parents.json), or its ChEMBL id when the perturbation is named by one.
-Activities are queried by parent compound, so a salt's records count for its parent.
+Activities are queried by parent compound, so a salt's records count for its parent. The map is read with the
+parents of configs/chembl_parent_corrections.csv added (read_pubchem_mapping), the same corrected map the mechanism
+route reads: for the PubChem ids it lists, the map as fetched holds no id or only a form other than the parent, which
+no activity's parent_molecule_chembl_id matches. Until 20 November 2026 the map was read as fetched, so those drugs'
+edges would have found no ChEMBL activity record; the v5 build (12 November 2026) carries no activity columns.
 
 Which targets. A protein node through its UniProt accession, a gene node through HGNC's UniProt ids, and the accession
 to a ChEMBL target of type SINGLE PROTEIN through ChEMBL's chembl_uniprot_mapping.txt. A protein complex or family
@@ -30,7 +34,6 @@ effect is at physiological concentration; the table keeps each record's limit so
 from __future__ import annotations
 
 import gzip
-import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -38,6 +41,7 @@ import numpy as np
 import pandas as pd
 
 from mechanistic_pathway_learning.graph.edge_evidence import accession_of, symbol_of
+from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import CHEMBL_PARENT_CORRECTIONS_PATH, read_pubchem_to_chembl
 
 DEFAULT_ACTIVITIES = Path("data/raw/chembl_37/edge_activities.parquet")
 DEFAULT_TARGET_MAPPING = Path("data/raw/chembl_37/chembl_uniprot_mapping.txt")
@@ -233,5 +237,7 @@ def chembl_edge_columns(evidence: pd.DataFrame, compounds: dict[str, set[str]], 
                          "chembl_documents": documents}, index=evidence.index)
 
 
-def read_pubchem_mapping(path: Path = DEFAULT_PUBCHEM_MAPPING) -> dict[str, list[str]]:
-    return json.loads(Path(path).read_text(encoding="utf-8")) if Path(path).is_file() else {}
+def read_pubchem_mapping(path: Path = DEFAULT_PUBCHEM_MAPPING, corrections_path: Path | None = CHEMBL_PARENT_CORRECTIONS_PATH) -> dict[str, list[str]]:
+    """PubChem CID -> ChEMBL ids, the cache map with configs/chembl_parent_corrections.csv applied
+    (perturbation/map_drug_targets_to_graph_nodes.read_pubchem_to_chembl); {} without a map file."""
+    return read_pubchem_to_chembl(Path(path), corrections_path) if Path(path).is_file() else {}

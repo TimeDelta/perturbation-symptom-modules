@@ -9,6 +9,10 @@ collisions), independent of SIDER's own ChEMBL mapping and qualification: a pair
 
 Usage:
   OMP_NUM_THREADS=1 python experiments/build_onsides_reports.py   # writes data/processed/onsides/onsides_reports.parquet, a summary and docs/onsides_label_slice.md
+
+Beside the reports the build writes chembl_action_conflicts.csv: every target to which a bridged ingredient's ChEMBL
+rows give more than one action type, resolved by --chembl-action-conflict-resolutions or withheld until a row is
+curated (map_drug_targets_to_graph_nodes.mechanism_targets, the ruling of 20 November 2026).
 """
 from __future__ import annotations
 
@@ -44,11 +48,15 @@ from mechanistic_pathway_learning.evidence.onsides_identifier_bridge import (
 )
 from mechanistic_pathway_learning.perturbation.gtopdb_drug_targets import DEFAULT_BINDING_SITES_PATH, GTOPDB_DIRECTORY, ComplexTargetNarrowing
 from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
+    ACTION_CONFLICTS_REPORT_FILENAME,
+    CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH,
     DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH,
     NON_PROTEIN_TARGETS_PATH,
     GraphNodeLookup,
     check_graph_compounds_have_no_mechanism,
     load_drugs_acting_as_graph_compounds,
+    read_action_conflict_resolutions,
+    write_action_conflicts_report,
 )
 
 SIDER_LABEL_SOURCE = "SIDER-label"
@@ -127,6 +135,9 @@ def main() -> None:
     parser.add_argument("--onsides-parquet-dir", type=Path, default=Path("data/raw/onsides/v3.1.1/parquet"))
     parser.add_argument("--bridge", type=Path, default=Path("data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json"))
     parser.add_argument("--chembl-dir", type=Path, default=Path("data/raw/chembl"))
+    parser.add_argument("--chembl-action-conflict-resolutions", type=Path, default=CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH,
+                        help="curated actions for the drug-target pairs whose ChEMBL rows disagree on the action; a conflict without a row is withheld "
+                             "and listed in chembl_action_conflicts.csv. Pass the same file to assemble_evidence_table.py")
     parser.add_argument("--sider-dir", type=Path, default=Path("data/raw/sider_4.1"), help="SIDER 4.1 tables: the LLT-to-PT pairing and the raw 2015 label events of the overlap")
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph_full"))
     parser.add_argument("--crosswalk", type=Path, default=Path("docs/symptom_crosswalk.csv"))
@@ -186,10 +197,13 @@ def main() -> None:
     narrowing = ComplexTargetNarrowing.from_gtopdb(arguments.gtopdb_dir, arguments.binding_sites, narrow_by_site_structure=arguments.narrow_by_site_structure) if arguments.narrow_complex_targets else None
     reports, counts = onsides_reports(statements, bridges, mechanisms_by_molecule, targets, node_lookup, compounds_by_chembl_id, arguments.max_drug_targets or None, admitted_atc_prefixes,
                                       complex_target_narrowing=narrowing, curated_targets_by_perturbation=curated_targets,
-                                      excluded_perturbations=excluded)
+                                      excluded_perturbations=excluded,
+                                      action_resolutions=read_action_conflict_resolutions(arguments.chembl_action_conflict_resolutions))
+    conflict_rows = counts.pop("chembl_action_conflicts")
 
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     reports.to_parquet(arguments.output_dir / "onsides_reports.parquet", index=False)
+    write_action_conflicts_report(conflict_rows, arguments.output_dir / ACTION_CONFLICTS_REPORT_FILENAME)
     qualifying = reports[reports.qualifies]
     sider_pairs = qualified_sider_pairs(arguments.evidence_dir)
     raw_sider_pairs = raw_sider_label_pairs(arguments.sider_dir, arguments.crosswalk) if (arguments.sider_dir / "meddra_all_se.tsv.gz").exists() else set()
@@ -202,7 +216,10 @@ def main() -> None:
                "reports_by_unification_method": {method: int(count) for method, count in qualifying.ingredient_id.map(lambda ingredient_id: bridges[ingredient_id].unification_method).value_counts().items()},
                "qualifying_drugs_unified_with_sider": int(qualifying[qualifying.unified_with_sider].perturbation_id.nunique()),
                "qualifying_drugs_onsides_only": int(qualifying[~qualifying.unified_with_sider].perturbation_id.nunique()),
-               "curated_wiring": wiring}
+               "curated_wiring": wiring,
+               "chembl_action_conflicts": {"resolutions": str(arguments.chembl_action_conflict_resolutions), "report": ACTION_CONFLICTS_REPORT_FILENAME,
+                                           "drug_target_pairs_withheld": sum(1 for row in conflict_rows if row["status"] == "withheld"),
+                                           "drug_target_pairs_resolved": sum(1 for row in conflict_rows if row["status"] == "resolved")}}
     (arguments.output_dir / "onsides_summary.json").write_text(json.dumps(summary, indent=1))
 
     lines = [f"# OnSIDES {ONSIDES_RELEASE} later label slice (generated by experiments/build_onsides_reports.py)", "",

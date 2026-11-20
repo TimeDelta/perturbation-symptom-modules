@@ -34,6 +34,7 @@ from pathlib import Path
 import pandas as pd
 
 from mechanistic_pathway_learning.evidence.sider_chemical_matching import pubchem_cid_of_stitch_flat_id
+from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import read_pubchem_to_chembl
 
 CHEMBL_ACTIVITY_API = "https://www.ebi.ac.uk/chembl/api/data/activity"
 # Every standard_type in ChEMBL that could carry a cooperativity factor or the dose ratio one is computed from.
@@ -67,11 +68,12 @@ def fetch_chembl_activities(cache_path: Path) -> None:
 
 
 def study_drug_labels_by_chembl_id(evidence_directory: Path, chembl_directory: Path) -> dict[str, str]:
-    """Every ChEMBL molecule id of a study drug -> the drug's label, through the PubChem mapping."""
+    """Every ChEMBL molecule id of a study drug -> the drug's label, through the PubChem mapping with
+    configs/chembl_parent_corrections.csv applied (read_pubchem_to_chembl; the map as fetched until 20 November 2026)."""
     records = pd.read_parquet(evidence_directory / "evidence_records.parquet",
                               columns=["perturbation_id", "perturbation_type", "perturbation_label"])
     drugs = records[records.perturbation_type == "drug"][["perturbation_id", "perturbation_label"]].drop_duplicates()
-    pubchem_to_chembl = json.loads((chembl_directory / "pubchem_to_chembl_with_parents.json").read_text())
+    pubchem_to_chembl = read_pubchem_to_chembl(chembl_directory / "pubchem_to_chembl_with_parents.json")
     label_by_chembl_id = {}
     for drug in drugs.itertuples(index=False):
         for chembl_id in pubchem_to_chembl.get(str(pubchem_cid_of_stitch_flat_id(drug.perturbation_id)), []):

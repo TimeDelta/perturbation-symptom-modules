@@ -5,8 +5,15 @@ Steps, each idempotent and cached under data/raw/chembl/:
   2. unichem_pubchem_to_chembl.json    SIDER PubChem CIDs -> ChEMBL molecule ids via UniChem
                                        (flat id first, stereo ids as fallback)
   3. molecule_parents.json             salt form -> parent molecule, because mechanisms are on parents
-  4. pubchem_to_chembl_with_parents.json  the resolved mapping used downstream
+  4. pubchem_to_chembl_with_parents.json  the resolved mapping used downstream (each UniChem id with its
+                                       molecule_hierarchy parent added)
   5. targets.json                      target records with gene symbols for every target hit
+
+The resolved mapping misses the true parent where UniChem returns nothing, returns a registration whose
+molecule_hierarchy parent is itself, or returns a salt that carries mechanisms of its own (step 3 looks up the parent
+only of ids without a mechanism). A rerun writes the same mapping, so the parents are added where it is read:
+configs/chembl_parent_corrections.csv, applied by
+mechanistic_pathway_learning/perturbation/map_drug_targets_to_graph_nodes.read_pubchem_to_chembl (20 November 2026).
 
 Usage:
   python experiments/fetch_chembl_drug_targets.py --sider-dir data/raw/sider_4.1 --chembl-dir data/raw/chembl

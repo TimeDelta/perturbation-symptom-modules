@@ -44,7 +44,7 @@ import hashlib
 import json
 import os
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
@@ -113,15 +113,21 @@ from mechanistic_pathway_learning.evidence.load_monogenic_phenotype_annotations 
 )
 from mechanistic_pathway_learning.perturbation.gtopdb_drug_targets import DEFAULT_BINDING_SITES_PATH, GTOPDB_DIRECTORY, ComplexTargetNarrowing
 from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import (
+    ACTION_CONFLICTS_REPORT_FILENAME,
+    CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH,
     DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH,
     NON_PROTEIN_TARGETS_PATH,
+    ActionConflict,
     GraphNodeLookup,
+    action_conflict_report_rows,
     check_graph_compounds_have_no_mechanism,
     drug_targets_for_pubchem_cid,
     graph_compound_targets,
     has_dominant_target,
     load_chembl_caches,
     load_drugs_acting_as_graph_compounds,
+    withheld_count,
+    write_action_conflicts_report,
 )
 
 
@@ -186,6 +192,8 @@ class AssembledEvidence:
     genes_seeded_as_gain_of_function: tuple[str, ...] = ()  # genes seeded with sign +1 (seed_gain_of_function_genes_positive), sorted
     allele_summary: dict | None = None  # allele_perturbations: the alleles by class and the basis of each mechanism (decision 9.54)
     complex_target_narrowing: dict | None = None  # decision 8.11: per drug, the ChEMBL complex targets narrowed to GtoPdb's subunits
+    # rows of chembl_action_conflicts.csv (map_drug_targets_to_graph_nodes.action_conflict_report_rows, route SIDER), one per drug and target
+    chembl_action_conflicts: list[dict] = field(default_factory=list)
 
 
 def disease_cluster_ids_from_reports(reports: pd.DataFrame, max_genes_per_linking_entry: int | None = DEFAULT_DISEASE_CLUSTER_MAX_GENES) -> dict[str, str]:
@@ -545,8 +553,13 @@ def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None, identit
                                        sider_directory: Path | None = None) -> dict[int, list[str]]:
     """SIDER PubChem CID -> the ChEMBL parents the OnSIDES bridge unified with it (empty without a bridge file).
 
-    The SIDER route reaches ChEMBL through UniChem; for a CID UniChem leaves without a usable ChEMBL id, the parent
-    the bridge found for the same drug by RxNorm, UNII or name is the fallback (docs/drug_targets_any_type.md).
+    The SIDER route reaches ChEMBL through UniChem (the cache map pubchem_to_chembl_with_parents.json, with the parents
+    of configs/chembl_parent_corrections.csv added when it is read, map_drug_targets_to_graph_nodes.read_pubchem_to_chembl);
+    for a CID that map leaves without a usable ChEMBL id, the parent the bridge found for the same drug by RxNorm, UNII
+    or name is the fallback (docs/drug_targets_any_type.md). Until 20 November 2026 the map
+    was read as fetched, and for the table's CIDs whose cached ids carry no mechanism this fallback was the only route
+    to the parent (the v5 build reached each of them in the bridge this way); the table makes their targets
+    independent of the bridge file being present.
     identity_overrides_path (configs/perturbation_identity_overrides.csv, decisions 9.117 and 9.121) is applied to the
     bridge first, as build_onsides_reports.py applies it, so a parent override or a merge reaches the SIDER drug too.
     """
@@ -569,13 +582,26 @@ def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None, identit
 
 
 def sider_drug_targets(pubchem_cid: int, caches, bridge_parents_by_cid: dict[int, list[str]], compounds_by_pubchem_cid: dict[int, list[str]],
-                       compounds_by_chembl_id: dict[str, list[str]]) -> list:
-    """Mechanism targets of a SIDER drug: the UniChem route, then the bridge parents when it finds no target, then the
-    graph-compound fallback for a drug that is itself a graph metabolite."""
-    drug_targets = drug_targets_for_pubchem_cid(pubchem_cid, caches)
+                       compounds_by_chembl_id: dict[str, list[str]], conflicts: list[ActionConflict] | None = None) -> list:
+    """Mechanism targets of a SIDER drug: the UniChem route (caches.pubchem_to_chembl, the cache map with
+    configs/chembl_parent_corrections.csv applied by load_chembl_caches), then the bridge parents when it finds no
+    target, then the graph-compound fallback for a drug that is itself a graph metabolite. The bridge parents are not
+    added to a drug the UniChem route already gives targets, so an identity override applied to the bridge parents
+    does not reach such a drug.
+
+    A target whose ChEMBL rows disagree on the action is resolved by caches.action_resolutions or withheld
+    (map_drug_targets_to_graph_nodes.mechanism_targets) and appended to conflicts when a list is passed. A route that
+    finds only withheld targets has found targets, so neither fallback is taken for it."""
+    found: list[ActionConflict] = []
+    drug_targets = drug_targets_for_pubchem_cid(pubchem_cid, caches, conflicts=found)
     bridge_parents = bridge_parents_by_cid.get(int(pubchem_cid), [])
-    if not drug_targets and bridge_parents:
-        drug_targets = drug_targets_for_pubchem_cid(pubchem_cid, caches, extra_chembl_ids=bridge_parents)
+    if not drug_targets and not withheld_count(found) and bridge_parents:
+        found = []
+        drug_targets = drug_targets_for_pubchem_cid(pubchem_cid, caches, extra_chembl_ids=bridge_parents, conflicts=found)
+    if conflicts is not None:
+        conflicts.extend(found)
+    if withheld_count(found):
+        return drug_targets
     chembl_ids = list(caches.pubchem_to_chembl.get(str(pubchem_cid), [])) + bridge_parents
     return graph_compound_targets(drug_targets, int(pubchem_cid), chembl_ids, compounds_by_pubchem_cid, compounds_by_chembl_id)
 
@@ -699,6 +725,7 @@ def assemble(
     excluded_perturbations: dict[str, str] | None = None,
     rejected_indications: set[tuple[str, str]] | None = None,
     curated_label_events_path: Path | None = None,
+    action_resolutions_path: Path | None = CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH,
 ) -> AssembledEvidence:
     """Build the report table, aggregate it to observations, fit the report-level reliability model and weight the observations.
 
@@ -727,7 +754,13 @@ def assemble(
     lowercase), configs/rejected_sider_indications.csv, decision 9.124) drops SIDER indication rows that misread a label;
     curated_label_events_path (configs/curated_label_events.csv, decision 9.117 group (ii), ruled 9 November 2026) adds
     the hand-curated label rows of the drugs neither pinned source holds, seeded on the curated targets; all six None
-    build as every table before 8 November 2026 was built."""
+    build as every table before 8 November 2026 was built.
+
+    action_resolutions_path (configs/chembl_action_conflict_resolutions.csv) gives the curated action of a drug and
+    target whose ChEMBL rows carry more than one action type; a conflict without a row withholds that target (the
+    ruling of 20 November 2026, map_drug_targets_to_graph_nodes.mechanism_targets), the withheld target counting
+    against max_drug_targets and keeping the drug from the curated-target fallback, and every conflict met is listed in
+    chembl_action_conflicts. None resolves none. Every table before 20 November 2026 kept the action of the last row read."""
     if allele_perturbations and seed_gain_of_function_genes_positive:
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
     if weighting not in WEIGHTINGS:
@@ -789,8 +822,9 @@ def assemble(
 
     drug_targets_by_perturbation: dict[str, str] = {}
     narrowing_by_perturbation: dict[str, dict] = {}
+    conflict_rows_by_perturbation: dict[str, list[dict]] = {}
     if sider_directory is not None and chembl_directory is not None and (chembl_directory / "targets.json").exists():
-        caches = load_chembl_caches(chembl_directory)
+        caches = load_chembl_caches(chembl_directory, action_resolutions_path=action_resolutions_path)
         bridge_parents_by_cid = bridge_chembl_parents_by_sider_cid(onsides_bridge_path, identity_overrides_path, sider_directory)
         compounds_by_pubchem_cid, compounds_by_chembl_id = load_drugs_acting_as_graph_compounds(drugs_acting_as_graph_compounds_path) if drugs_acting_as_graph_compounds_path else ({}, {})
         check_graph_compounds_have_no_mechanism(compounds_by_chembl_id, caches.mechanisms_by_molecule)
@@ -799,12 +833,16 @@ def assemble(
                 continue
             if rejected_indications and event.relation == "relieves" and (event.stitch_flat_id, event.meddra_preferred_term.lower()) in rejected_indications:
                 continue
-            drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id)
+            event_conflicts: list[ActionConflict] = []
+            drug_targets = sider_drug_targets(event.pubchem_cid, caches, bridge_parents_by_cid, compounds_by_pubchem_cid, compounds_by_chembl_id, event_conflicts)
+            if event_conflicts and event.stitch_flat_id not in conflict_rows_by_perturbation:
+                conflict_rows_by_perturbation[event.stitch_flat_id] = action_conflict_report_rows(event.stitch_flat_id, event.drug_name, f"SIDER CID {event.pubchem_cid}", event_conflicts)
+            withheld = withheld_count(event_conflicts)
             target_source = "ChEMBL"
-            if not drug_targets and curated_targets_by_perturbation and event.stitch_flat_id in curated_targets_by_perturbation:
+            if not drug_targets and not withheld and curated_targets_by_perturbation and event.stitch_flat_id in curated_targets_by_perturbation:
                 drug_targets, target_source = list(curated_targets_by_perturbation[event.stitch_flat_id]), "curated"
             atc_codes = supplemented_atc_codes(event.stitch_flat_id, event.atc_codes, atc_code_supplements or {})
-            if not (has_dominant_target(drug_targets, max_drug_targets) and has_admitted_atc_code(atc_codes, admitted_atc_prefixes)):
+            if not (has_dominant_target(drug_targets, max_drug_targets, withheld) and has_admitted_atc_code(atc_codes, admitted_atc_prefixes)):
                 continue
             if complex_target_narrowing is not None:
                 drug_targets, narrowing_record = complex_target_narrowing.narrow(drug_targets, event.pubchem_cid, event.drug_name)
@@ -890,7 +928,7 @@ def assemble(
         narrowing_summary = {**complex_target_narrowing.provenance, "drugs_narrowed": sum(1 for record in narrowing_by_perturbation.values() if record["narrowed"]),
                              "by_drug": dict(sorted(narrowing_by_perturbation.items()))}
     return AssembledEvidence(observations, pd.DataFrame(unmapped), reports, reliability_fit, len(dropped_unknown_provenance), tuple(sorted(gain_of_function_genes)), allele_summary,
-                             narrowing_summary)
+                             narrowing_summary, [row for perturbation_id in sorted(conflict_rows_by_perturbation) for row in conflict_rows_by_perturbation[perturbation_id]])
 
 
 def summarize_observations(observations: pd.DataFrame, unmapped: pd.DataFrame) -> dict:
@@ -973,7 +1011,10 @@ def main() -> None:
     parser.add_argument("--reliability-global-scale", type=float, default=1.0, help="multiplier on the posterior under --weighting reliability")
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/evidence"))
     parser.add_argument("--extra-reports", type=Path, nargs="*", default=[], help="report tables produced outside the assembler (OnSIDES label statements, literature reports) appended to the report table and the reliability fit")
-    parser.add_argument("--onsides-bridge", type=Path, default=None, help="OnSIDES ingredient identifier bridge; its ChEMBL parents are the fallback for SIDER CIDs UniChem leaves without a mechanism")
+    parser.add_argument("--chembl-action-conflict-resolutions", type=Path, default=CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH,
+                        help="curated actions for the drug-target pairs whose ChEMBL rows disagree on the action; a conflict without a row is withheld "
+                             "and listed in chembl_action_conflicts.csv. Pass the same file to build_onsides_reports.py")
+    parser.add_argument("--onsides-bridge", type=Path, default=None, help="OnSIDES ingredient identifier bridge; its ChEMBL parents are the fallback for SIDER CIDs whose ChEMBL ids (UniChem's, with configs/chembl_parent_corrections.csv applied) give no mechanism")
     parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/drug_targets_any_type.md)")
     parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs with no mechanism target that are themselves a graph metabolite")
     parser.add_argument("--seed-gain-of-function-genes-positive", action="store_true",
@@ -1037,11 +1078,13 @@ def main() -> None:
                          identity_overrides_path=arguments.perturbation_identity_overrides,
                          excluded_perturbations=read_excluded_drug_perturbations(arguments.excluded_drug_perturbations) if arguments.excluded_drug_perturbations is not None else None,
                          rejected_indications=read_rejected_sider_indications(arguments.rejected_indications) if arguments.rejected_indications is not None else None,
-                         curated_label_events_path=arguments.curated_label_events)
+                         curated_label_events_path=arguments.curated_label_events,
+                         action_resolutions_path=arguments.chembl_action_conflict_resolutions)
     arguments.output_dir.mkdir(parents=True, exist_ok=True)
     for name, table in (("evidence_records.parquet", assembled.observations), ("unmapped_records.parquet", assembled.unmapped), ("evidence_reports.parquet", assembled.reports)):  # atomic replace for concurrent readers
         table.to_parquet(arguments.output_dir / (name + ".tmp"), index=False)
         os.replace(arguments.output_dir / (name + ".tmp"), arguments.output_dir / name)
+    write_action_conflicts_report(assembled.chembl_action_conflicts, arguments.output_dir / ACTION_CONFLICTS_REPORT_FILENAME)
     summary = summarize_observations(assembled.observations, assembled.unmapped)
     summary["grade_a_policy"] = arguments.grade_a_policy
     summary["weighting"] = arguments.weighting
@@ -1051,6 +1094,9 @@ def main() -> None:
     if assembled.allele_summary is not None:  # decision 9.54, recorded only when the alleles are perturbations
         summary["alleles"] = {**assembled.allele_summary, "orphadata_product1": str(arguments.orphadata_product1), "neomorphic_alleles": str(arguments.neomorphic_alleles)}
     summary["complex_target_narrowing"] = assembled.complex_target_narrowing  # decision 8.11; None when built with --no-narrow-complex-targets
+    summary["chembl_action_conflicts"] = {"resolutions": str(arguments.chembl_action_conflict_resolutions), "report": ACTION_CONFLICTS_REPORT_FILENAME,
+                                          "drug_target_pairs_withheld": sum(1 for row in assembled.chembl_action_conflicts if row["status"] == "withheld"),
+                                          "drug_target_pairs_resolved": sum(1 for row in assembled.chembl_action_conflicts if row["status"] == "resolved")}
     if arguments.admitted_atc_prefixes is not None:
         summary["admitted_atc_prefixes"] = {"file": str(arguments.admitted_atc_prefixes), "prefixes": list(read_admitted_atc_prefixes(arguments.admitted_atc_prefixes))}
     if arguments.atc_code_supplements is not None:

@@ -53,6 +53,7 @@ from mechanistic_pathway_learning.evidence.load_pubtator_relations import (
 )
 from mechanistic_pathway_learning.evidence.mesh_symptom_descriptors import descriptor_lookup, load_symptom_mesh_descriptors
 from mechanistic_pathway_learning.evidence.pubmed_publication_dates import fetch_publication_dates
+from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import read_pubchem_to_chembl
 from mechanistic_pathway_learning.evidence.sider_chemical_matching import (
     ChemicalMatch,
     chemical_matches_by_mesh_id,
@@ -187,11 +188,13 @@ def match_unresolved_chemicals_by_mesh_label(client: CachedRateLimitedClient, ch
 
 def stitch_ids_with_chembl_mapping(chembl_directory: Path, stitch_ids: set[str]) -> set[str]:
     """The STITCH flat ids among stitch_ids whose PubChem CID has a non-empty ChEMBL list in pubchem_to_chembl_with_parents.json
-    (the drugs the assembler can join to targets); empty when the file is absent."""
+    (the drugs the assembler can join to targets); empty when the file is absent. The map is read with
+    configs/chembl_parent_corrections.csv applied (read_pubchem_to_chembl), the same map the assembler joins through, so a
+    drug the corrections give a parent counts as joinable here too; until 20 November 2026 this read the map as fetched."""
     mapping_path = Path(chembl_directory) / "pubchem_to_chembl_with_parents.json"
     if not mapping_path.exists():
         return set()
-    mapping = json.loads(mapping_path.read_text())
+    mapping = read_pubchem_to_chembl(mapping_path)
     preferred: set[str] = set()
     for stitch_id in stitch_ids:
         entry = mapping.get(str(pubchem_cid_of_stitch_flat_id(stitch_id)))

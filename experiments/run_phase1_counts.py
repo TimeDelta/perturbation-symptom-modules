@@ -30,6 +30,7 @@ from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes i
     drug_targets_for_pubchem_cid,
     has_dominant_target,
     load_chembl_caches,
+    withheld_count,
 )
 
 GRADE_A_OR_B_PERTURBATIONS_PER_SYMPTOM = 15
@@ -93,8 +94,9 @@ def main() -> None:
     if e2_available:
         caches = load_chembl_caches(arguments.chembl_dir)
         for event in load_sider_events(arguments.sider_dir, arguments.crosswalk):
-            drug_targets = drug_targets_for_pubchem_cid(event.pubchem_cid, caches)
-            if not (has_dominant_target(drug_targets) and is_nervous_system_atc(event.atc_codes)):
+            conflicts: list = []  # a target withheld for an unresolved ChEMBL action conflict still counts against the single-target rule
+            drug_targets = drug_targets_for_pubchem_cid(event.pubchem_cid, caches, conflicts=conflicts)
+            if not (has_dominant_target(drug_targets, withheld_targets=withheld_count(conflicts)) and is_nervous_system_atc(event.atc_codes)):
                 continue
             target_genes = {symbol for target in drug_targets for symbol in target.gene_symbols}
             if event.relation == "induces":

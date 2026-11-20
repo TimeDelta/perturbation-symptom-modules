@@ -26,6 +26,16 @@ RxNorm, UNII or name.
   `mechanism_targets` is the one function that turns ChEMBL ids into targets for both label sources.
 - The SIDER route (`sider_drug_targets` in assemble_evidence_table.py) uses the bridge's ChEMBL parent only when the
   UniChem route gives no target (`--onsides-bridge`).
+
+  **Added 20 November 2026.** The fallback above is no longer what the SIDER route relies on for these drugs. The
+  UniChem route's misses turned out to be resolver output, not stale data: for 184 PubChem ids UniChem returns a dead
+  registration whose hierarchy parent is itself, so re-fetching writes the same non-parent ids. They are now repaired
+  where the map is read, by `configs/chembl_parent_corrections.csv` through `read_pubchem_to_chembl`
+  (perturbation/map_drug_targets_to_graph_nodes.py), which both the mechanism route and the activity route
+  (graph/chembl_activity_negatives.py) use. The bridge fallback is still in the code, as a second route, and the
+  bridge itself is built from the map as fetched, since the table was derived from it and the bridge is the guard
+  test's independent witness. On `graph_full_neuronal_split_binders_drugs_v5` (12 November 2026) the corrected map gives
+  none of the 224 PubChem-keyed drugs a different target set.
 - `GraphNodeLookup.nodes_of_target` places every ChEMBL target type on the graph where a node exists:
 
   | ChEMBL target type | graph nodes |

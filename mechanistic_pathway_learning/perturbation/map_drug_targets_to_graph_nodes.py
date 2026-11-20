@@ -22,16 +22,42 @@ A complex target's magnitude 1 is spread over its subunits' nodes; the evidence 
 subunits the Guide to PHARMACOLOGY names for the drug, each with its own sign (DrugTarget.gene_signs;
 perturbation/gtopdb_drug_targets.ComplexTargetNarrowing, decision 8.11).
 
-Inputs are the caches written by experiments/fetch_chembl_drug_targets.py.
+Inputs are the caches written by experiments/fetch_chembl_drug_targets.py. Its PubChem-to-ChEMBL map
+(pubchem_to_chembl_with_parents.json) is read through read_pubchem_to_chembl, which adds the parents of
+configs/chembl_parent_corrections.csv. For some PubChem ids of the ChEMBL_37 cache (184 when the table was made,
+20 November 2026) the map holds no id, or only forms other than the parent that carries the drug's mechanisms and
+activity records: a registration UniChem returns whose molecule_hierarchy parent is itself, or a salt the fetch never
+resolved to its parent because the salt carries mechanisms of its own. A refetch writes the same map, so the
+correction is made where the map is read. Both readers of the map, the mechanism route here (load_chembl_caches)
+and the activity route of graph/chembl_activity_negatives.py (read_pubchem_mapping), go through it.
+
+One drug, one target, one action. When the mechanism rows of a drug's ChEMBL ids give one target more than one action
+type (docetaxel's tubulin INHIBITOR and STABILISER), the owner's ruling of 20 November 2026 is to "always flag for
+curation instead" of choosing one. mechanism_targets takes the action a row of configs/chembl_action_conflict_resolutions.csv
+names for the pair; without such a row it withholds the target, so the drug gets no edge to it, and reports the
+conflict (ActionConflict), which the evidence build and the OnSIDES build write as chembl_action_conflicts.csv. A
+withheld target still counts against the single-target rule and still keeps a drug from the fallbacks meant for a drug
+ChEMBL gives no target. Every run before 20 November 2026 kept the action of the last row read.
 """
 from __future__ import annotations
 
+import csv
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
 
+PUBCHEM_TO_CHEMBL_FILENAME = "pubchem_to_chembl_with_parents.json"
+CHEMBL_RELEASE_FILENAME = "chembl_release.json"
+# PubChem CID -> the ChEMBL parent the cache misses, verified against the pinned release it names (chembl_release)
+CHEMBL_PARENT_CORRECTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "chembl_parent_corrections.csv"
+# (drug ChEMBL id, target ChEMBL id) -> the action curated for a pair whose ChEMBL rows disagree (module docstring)
+CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "chembl_action_conflict_resolutions.csv"
+ACTION_CONFLICT_RESOLUTION_COLUMNS = ("drug_chembl_id", "target_chembl_id", "chosen_action", "sources", "note")
+ACTION_CONFLICTS_REPORT_FILENAME = "chembl_action_conflicts.csv"
 NON_PROTEIN_TARGETS_PATH = Path("configs/non_protein_drug_targets.csv")
 DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH = Path("configs/drugs_acting_as_graph_compounds.csv")
 EXOGENOUS_SUPPLY = "EXOGENOUS SUPPLY"  # action of a drug that is itself the graph compound it raises
@@ -88,11 +114,42 @@ class DrugTarget:
         return float(self.gene_signs.get(gene_symbol, self.sign))
 
 
+@dataclass(frozen=True)
+class ActionConflictResolution:
+    """A row of configs/chembl_action_conflict_resolutions.csv: the action curated for one drug and target."""
+    drug_chembl_id: str
+    target_chembl_id: str
+    chosen_action: str
+    sources: str
+    note: str = ""
+
+
+@dataclass(frozen=True)
+class ActionConflict:
+    """One target to which a drug's ChEMBL mechanism rows give more than one action type (module docstring).
+
+    resolved_action is the action of the resolution row applied, and None for a target withheld until one is curated."""
+    drug_chembl_ids: tuple[str, ...]  # the ChEMBL ids the drug was looked up by
+    target_chembl_id: str
+    action_types: tuple[str, ...]  # the distinct action types of the rows, sorted
+    mechanism_rows: tuple[str, ...]  # "<molecule_chembl_id>:<action_type>:<mec_id>" of each row naming the target
+    target_pref_name: str | None = None
+    gene_symbols: tuple[str, ...] = ()
+    resolved_action: str | None = None
+    resolution_drug_chembl_id: str | None = None
+
+    @property
+    def withheld(self) -> bool:
+        return self.resolved_action is None
+
+
 @dataclass
 class ChemblCaches:
     pubchem_to_chembl: dict[str, list[str]]
     mechanisms_by_molecule: dict[str, list[dict]]
     targets: dict[str, dict]
+    # configs/chembl_action_conflict_resolutions.csv as read_action_conflict_resolutions keys it; None reads that table
+    action_resolutions: Mapping[tuple[str, str], ActionConflictResolution] | None = None
 
 
 def mechanisms_by_parent_and_molecule(mechanisms: list[dict]) -> dict[str, list[dict]]:
@@ -110,54 +167,221 @@ def mechanisms_by_parent_and_molecule(mechanisms: list[dict]) -> dict[str, list[
     return by_molecule
 
 
-def load_chembl_caches(chembl_directory: Path) -> ChemblCaches:
-    pubchem_to_chembl = json.loads((chembl_directory / "pubchem_to_chembl_with_parents.json").read_text())
+def read_chembl_parent_corrections(path: Path | None = CHEMBL_PARENT_CORRECTIONS_PATH) -> tuple[dict[str, list[str]], set[str]]:
+    """(PubChem CID as the cache keys it -> the ChEMBL parents to add, the ChEMBL releases the rows were verified on)
+    of configs/chembl_parent_corrections.csv; ({}, set()) without a table."""
+    if path is None or not Path(path).exists():
+        return {}, set()
+    corrections: dict[str, list[str]] = {}
+    releases: set[str] = set()
+    with open(path, newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            parent = (row.get("correct_parent_chembl_id") or "").strip()
+            if not parent:
+                continue
+            cid = str(int(row["pubchem_cid"]))
+            if parent not in corrections.setdefault(cid, []):
+                corrections[cid].append(parent)
+            releases.add((row.get("chembl_release") or "").strip())
+    return corrections, releases
+
+
+def corrected_pubchem_to_chembl(pubchem_to_chembl: dict[str, list[str]], corrections: dict[str, list[str]]) -> dict[str, list[str]]:
+    """pubchem_to_chembl with each correction's parents added to its CID's ids (a union: the cache's own ids are kept,
+    since a salt registered as a mechanism molecule resolves through them; a CID the cache lacks or maps to nothing
+    gets the parents alone). A new dict; the input is not changed."""
+    corrected = {cid: list(chembl_ids) for cid, chembl_ids in pubchem_to_chembl.items()}
+    for cid, parents in corrections.items():
+        chembl_ids = corrected.setdefault(cid, [])
+        chembl_ids.extend(parent for parent in parents if parent not in chembl_ids)
+    return corrected
+
+
+def read_pubchem_to_chembl(mapping_path: Path, corrections_path: Path | None = CHEMBL_PARENT_CORRECTIONS_PATH) -> dict[str, list[str]]:
+    """The cache's PubChem-to-ChEMBL map with configs/chembl_parent_corrections.csv applied (module docstring).
+
+    The table's parents were verified against one ChEMBL release, so when the cache directory names its release
+    (chembl_release.json beside the map) and a row names another, this refuses rather than add an id the cache's
+    release may not hold. corrections_path None reads the map as the fetch wrote it.
+    """
+    mapping_path = Path(mapping_path)
+    pubchem_to_chembl = json.loads(mapping_path.read_text(encoding="utf-8"))
+    corrections, releases = read_chembl_parent_corrections(corrections_path)
+    if not corrections:
+        return pubchem_to_chembl
+    release_path = mapping_path.parent / CHEMBL_RELEASE_FILENAME
+    if release_path.exists():
+        cache_release = json.loads(release_path.read_text(encoding="utf-8")).get("chembl_db_version")
+        if releases != {cache_release}:
+            raise ValueError(f"{corrections_path} was verified on {sorted(releases)} but {mapping_path} is from {cache_release}; "
+                             "re-verify every row against the new release before applying it")
+    return corrected_pubchem_to_chembl(pubchem_to_chembl, corrections)
+
+
+def read_action_conflict_resolutions(path: Path | None = CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH) -> dict[tuple[str, str], ActionConflictResolution]:
+    """(drug ChEMBL id, target ChEMBL id) -> its row of configs/chembl_action_conflict_resolutions.csv; {} without a table.
+
+    Refuses a table with other columns, a row without both ids, a chosen action ACTION_TYPE_SIGN does not know, a row
+    that names no source (a curated row names its sources), and a pair given twice."""
+    if path is None or not Path(path).exists():
+        return {}
+    resolutions: dict[tuple[str, str], ActionConflictResolution] = {}
+    with open(path, newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) != ACTION_CONFLICT_RESOLUTION_COLUMNS:
+            raise ValueError(f"{path} has columns {reader.fieldnames}, expected {list(ACTION_CONFLICT_RESOLUTION_COLUMNS)}")
+        for line_number, row in enumerate(reader, start=2):
+            values = {column: (row.get(column) or "").strip() for column in ACTION_CONFLICT_RESOLUTION_COLUMNS}
+            resolution = ActionConflictResolution(values["drug_chembl_id"], values["target_chembl_id"], values["chosen_action"].upper(), values["sources"], values["note"])
+            if not resolution.drug_chembl_id or not resolution.target_chembl_id:
+                raise ValueError(f"{path} line {line_number}: a row needs both drug_chembl_id and target_chembl_id")
+            if resolution.chosen_action not in ACTION_TYPE_SIGN:
+                raise ValueError(f"{path} line {line_number}: chosen_action {values['chosen_action']!r} is not an action type of ACTION_TYPE_SIGN")
+            if not resolution.sources:
+                raise ValueError(f"{path} line {line_number}: a curated row names its sources")
+            key = (resolution.drug_chembl_id, resolution.target_chembl_id)
+            if key in resolutions:
+                raise ValueError(f"{path} line {line_number}: {key} is resolved twice")
+            resolutions[key] = resolution
+    return resolutions
+
+
+@lru_cache(maxsize=8)
+def _cached_action_conflict_resolutions(path: str, modified_ns: int, size: int) -> dict[tuple[str, str], ActionConflictResolution]:
+    return read_action_conflict_resolutions(Path(path))
+
+
+def default_action_conflict_resolutions() -> dict[tuple[str, str], ActionConflictResolution]:
+    """configs/chembl_action_conflict_resolutions.csv, read again only when the file changes; {} without it."""
+    path = CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH
+    if not path.exists():
+        return {}
+    stat = path.stat()
+    return _cached_action_conflict_resolutions(str(path), stat.st_mtime_ns, stat.st_size)
+
+
+def load_chembl_caches(chembl_directory: Path, corrections_path: Path | None = CHEMBL_PARENT_CORRECTIONS_PATH,
+                       action_resolutions_path: Path | None = CHEMBL_ACTION_CONFLICT_RESOLUTIONS_PATH) -> ChemblCaches:
+    """The ChEMBL caches of chembl_directory, the PubChem-to-ChEMBL map corrected by read_pubchem_to_chembl and the
+    action conflicts resolved by action_resolutions_path (None: no conflict is resolved, every one is withheld)."""
+    pubchem_to_chembl = read_pubchem_to_chembl(Path(chembl_directory) / PUBCHEM_TO_CHEMBL_FILENAME, corrections_path)
     mechanisms_by_molecule = mechanisms_by_parent_and_molecule(json.loads((chembl_directory / "mechanisms.json").read_text()))
     targets = json.loads((chembl_directory / "targets.json").read_text())
-    return ChemblCaches(pubchem_to_chembl, mechanisms_by_molecule, targets)
+    return ChemblCaches(pubchem_to_chembl, mechanisms_by_molecule, targets, read_action_conflict_resolutions(action_resolutions_path))
+
+
+def normalized_action_type(action_type: str | None) -> str | None:
+    """A ChEMBL action type upper-cased and stripped; None or blank stays None (a row recording no action)."""
+    return (action_type or "").strip().upper() or None
 
 
 def mechanism_targets(chembl_ids: list[str], mechanisms_by_molecule: dict[str, list[dict]], targets: dict[str, dict], human_only: bool = True,
-                      missing_target_ids: set[str] | None = None) -> list[DrugTarget]:
-    """Mechanism targets of the given ChEMBL molecules, one entry per ChEMBL target (families count as one).
+                      missing_target_ids: set[str] | None = None,
+                      action_resolutions: Mapping[tuple[str, str], ActionConflictResolution] | None = None,
+                      conflicts: list[ActionConflict] | None = None) -> list[DrugTarget]:
+    """Mechanism targets of the given ChEMBL molecules (the ids of one drug), one entry per ChEMBL target (families count as one).
+
+    When the rows naming one target, over all of chembl_ids, carry more than one action type (compared upper-cased; a
+    row with no action type counts as one more), no action is chosen from them (module docstring, ruling of 20 November
+    2026): the target takes the chosen action of the action_resolutions row keyed by one of chembl_ids and the target,
+    and is withheld without one. Each such target is appended to conflicts, when a list is passed, as an ActionConflict,
+    resolved or withheld. action_resolutions None reads configs/chembl_action_conflict_resolutions.csv; {} resolves
+    nothing. Two resolution rows for one target under two of the drug's ids that choose different actions are refused.
+    Every run before 20 November 2026 kept the action of the last row read.
 
     A target id without a record in targets is kept (its organism is unknown, so the human filter cannot drop it, and
     it has no gene symbols) and added to missing_target_ids when a set is passed.
     """
-    targets_by_id: dict[str, DrugTarget] = {}
+    if action_resolutions is None:
+        action_resolutions = default_action_conflict_resolutions()
+    rows_by_target: dict[str, list[tuple[str, dict]]] = {}
     for chembl_id in chembl_ids:
         for mechanism in mechanisms_by_molecule.get(chembl_id, []):
             target_id = mechanism.get("target_chembl_id")
             if not target_id:
                 continue
-            record = targets.get(target_id)
-            if record is None:
-                if missing_target_ids is not None:
-                    missing_target_ids.add(target_id)
-                record = {}
-            if human_only and record.get("organism") not in (None, "Homo sapiens"):
+            rows_by_target.setdefault(target_id, [])
+            if all(mechanism is not seen for _, seen in rows_by_target[target_id]):  # a row keyed by both a salt and its parent is one row
+                rows_by_target[target_id].append((chembl_id, mechanism))
+    drug_targets: list[DrugTarget] = []
+    for target_id, rows in rows_by_target.items():
+        record = targets.get(target_id)
+        if record is None:
+            if missing_target_ids is not None:
+                missing_target_ids.add(target_id)
+            record = {}
+        if human_only and record.get("organism") not in (None, "Homo sapiens"):
+            continue
+        action_types = {normalized_action_type(mechanism.get("action_type")) for _, mechanism in rows}
+        action_type = rows[-1][1].get("action_type")
+        if len(action_types) > 1:
+            drug_ids = tuple(dict.fromkeys(chembl_id for chembl_id in chembl_ids if chembl_id))
+            resolutions = {action_resolutions[(drug_id, target_id)] for drug_id in drug_ids if (drug_id, target_id) in action_resolutions}
+            if len({resolution.chosen_action for resolution in resolutions}) > 1:
+                raise ValueError(f"the resolutions of {target_id} under {drug_ids} choose different actions: {sorted(resolutions, key=str)}")
+            resolution = min(resolutions, key=lambda resolution: resolution.drug_chembl_id) if resolutions else None
+            if conflicts is not None:
+                conflicts.append(ActionConflict(
+                    drug_ids, target_id, tuple(sorted(action or "None" for action in action_types)),
+                    tuple(f"{mechanism.get('molecule_chembl_id')}:{mechanism.get('action_type')}:{mechanism.get('mec_id')}" for _, mechanism in rows),
+                    record.get("pref_name"), tuple(record.get("gene_symbols", [])),
+                    resolution.chosen_action if resolution else None, resolution.drug_chembl_id if resolution else None))
+            if resolution is None:
                 continue
-            targets_by_id[target_id] = DrugTarget(target_id, mechanism.get("action_type"), record.get("gene_symbols", []), record.get("target_type"),
-                                                  record.get("pref_name"), record.get("accessions", []))
-    return list(targets_by_id.values())
+            action_type = resolution.chosen_action
+        drug_targets.append(DrugTarget(target_id, action_type, record.get("gene_symbols", []), record.get("target_type"),
+                                       record.get("pref_name"), record.get("accessions", [])))
+    return drug_targets
 
 
-def drug_targets_for_pubchem_cid(pubchem_cid: int, caches: ChemblCaches, human_only: bool = True, extra_chembl_ids: list[str] | None = None) -> list[DrugTarget]:
-    """Mechanism targets for a SIDER drug. extra_chembl_ids adds molecules found another way (the ChEMBL parent the
-    OnSIDES bridge unified with the drug when UniChem returned none for its PubChem id)."""
+def withheld_count(conflicts: list[ActionConflict]) -> int:
+    """How many distinct targets conflicts withholds (ActionConflict.withheld)."""
+    return len({conflict.target_chembl_id for conflict in conflicts if conflict.withheld})
+
+
+ACTION_CONFLICTS_REPORT_COLUMNS = ("perturbation_id", "perturbation_label", "route", "drug_chembl_ids", "target_chembl_id", "target_pref_name",
+                                   "gene_symbols", "action_types", "mechanism_rows", "status", "resolved_action", "resolution_drug_chembl_id")
+
+
+def action_conflict_report_rows(perturbation_id: str, perturbation_label: str, route: str, conflicts: list[ActionConflict]) -> list[dict]:
+    """Rows of the conflicts report (ACTION_CONFLICTS_REPORT_COLUMNS) for one drug; status is withheld or resolved."""
+    return [{"perturbation_id": perturbation_id, "perturbation_label": perturbation_label, "route": route,
+             "drug_chembl_ids": ";".join(conflict.drug_chembl_ids), "target_chembl_id": conflict.target_chembl_id,
+             "target_pref_name": conflict.target_pref_name or "", "gene_symbols": ";".join(conflict.gene_symbols),
+             "action_types": ";".join(conflict.action_types), "mechanism_rows": ";".join(conflict.mechanism_rows),
+             "status": "withheld" if conflict.withheld else "resolved", "resolved_action": conflict.resolved_action or "",
+             "resolution_drug_chembl_id": conflict.resolution_drug_chembl_id or ""} for conflict in conflicts]
+
+
+def write_action_conflicts_report(rows: list[dict], path: Path) -> None:
+    """Write the conflicts report, one row per distinct row of rows, sorted; the header alone when there is none."""
+    unique = sorted({tuple(str(row[column]) for column in ACTION_CONFLICTS_REPORT_COLUMNS) for row in rows})
+    pd.DataFrame(unique, columns=list(ACTION_CONFLICTS_REPORT_COLUMNS)).to_csv(path, index=False)
+
+
+def drug_targets_for_pubchem_cid(pubchem_cid: int, caches: ChemblCaches, human_only: bool = True, extra_chembl_ids: list[str] | None = None,
+                                 conflicts: list[ActionConflict] | None = None) -> list[DrugTarget]:
+    """Mechanism targets for a SIDER drug, through its ids in caches.pubchem_to_chembl (the cache map with
+    configs/chembl_parent_corrections.csv applied, read_pubchem_to_chembl). extra_chembl_ids adds molecules found
+    another way (the ChEMBL parents the OnSIDES bridge unified with the drug, when these ids give no target). A target
+    whose rows disagree on the action is resolved by caches.action_resolutions or withheld, and appended to conflicts
+    (mechanism_targets)."""
     chembl_ids = list(caches.pubchem_to_chembl.get(str(pubchem_cid), [])) + [chembl_id for chembl_id in extra_chembl_ids or [] if chembl_id]
-    return mechanism_targets(chembl_ids, caches.mechanisms_by_molecule, caches.targets, human_only=human_only)
+    return mechanism_targets(chembl_ids, caches.mechanisms_by_molecule, caches.targets, human_only=human_only,
+                             action_resolutions=caches.action_resolutions, conflicts=conflicts)
 
 
-def has_dominant_target(drug_targets: list[DrugTarget], max_targets: int | None = 1) -> bool:
+def has_dominant_target(drug_targets: list[DrugTarget], max_targets: int | None = 1, withheld_targets: int = 0) -> bool:
     """Version 1 dominant-target rule: at most max_targets distinct ChEMBL targets with a mechanism.
 
     Affinity margins are not yet used; a ChEMBL protein-family target (for example the GABA-A
     receptor) counts as one target even though it maps to many gene nodes. max_targets None or 0 lifts the cap: any
     drug with at least one mechanism target passes, and each of its targets is seeded with magnitude 1 spread over
-    that target's nodes (docs/drug_targets_any_type.md, "Lifting the single-target rule").
+    that target's nodes (docs/drug_targets_any_type.md, "Lifting the single-target rule"). withheld_targets counts the
+    targets withheld for an unresolved action conflict (mechanism_targets, withheld_count) against the cap, so
+    withholding one of two targets does not admit a drug the rule would refuse; a drug needs a kept target to pass.
     """
-    return len(drug_targets) > 0 and (not max_targets or len(drug_targets) <= max_targets)
+    return len(drug_targets) > 0 and (not max_targets or len(drug_targets) + withheld_targets <= max_targets)
 
 
 def load_drugs_acting_as_graph_compounds(path: Path = DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH) -> tuple[dict[int, list[str]], dict[str, list[str]]]:
