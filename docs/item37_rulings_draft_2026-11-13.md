@@ -155,6 +155,13 @@ P_K = P_Na assumed. The owner: "that makes way more sense for c. confirm c split
 no Pf, the owner asked "are there any relevant cases currently? if not, might be able to not decide."; there are,
 and section 4 holds the route agreed for them.
 
+**Added 20 November 2026: TRPV5 and TRPV6 are checked again under the rule of 18 November.** They left the
+reaction under section 1's part (iii), which admitted only pores on a central neuron; the owner replaced that rule
+on 18 November 2026 ("cell central class is the rule", section 12), so glial, ependymal and choroid plexus and
+central vascular cells count. Whether either channel sits on any central cell class is to be checked on Fable, and
+both stay out until that check shows one, since a pore with no evidence of a central cell class is not added. The
+owner, 20 November 2026, on this proposal: "Yea".
+
 **TRPA1, ruled.** The session asked whether TRPA1, best known in sensory ganglia, sits on a central neuron under
 section 1's part (iii). A Fable pass of 16 November 2026 found functional TRPA1 on central neurons in rodents, from
 three independent laboratories (layer 5 pyramidal neurons of somatosensory cortex, Kheradpezhouh et al. 2017, with a
