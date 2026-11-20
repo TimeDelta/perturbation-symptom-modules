@@ -1211,6 +1211,17 @@ by code, then "The rest of those lettered suggestions are accepted as-is", and l
   antagonists, and Schwarz 1979 and Macdonald and McLean 1986 show only non-subtype effects at millimolar
   concentrations. In the build phenobarbital holds 13 GABA-A edges and no sodium-channel edge. No source gives PEMA
   any target.
+- **Added 20 November 2026: P5's class-level annotation becomes one yes-or-no gate per sodium-channel subtype, in the
+  registered model.** The owner, after the mark of 16.26 above: "Actually, maybe we make it a categorical edge", "I mean
+  force it to choose one like the categorical gates"; then, on the session's point that a drug may act on several
+  subtypes at once: "Actually it might hit more than one toe so need one binary gate per type" ("toe" read as "type");
+  and "Make them part of the registered model". So primidone's sodium-channel action is carried by one binary edge gate
+  per Nav subtype, the hard yes-or-no gates of decisions 9.57 and 9.62(e), each starting at the prior its evidence gives
+  and opened or closed by the data. They enter the registered model with the gates of decision 9.122's amendment and
+  pass its identifiability screen after the held-out draw; a gate that fails the screen keeps P5's class-level
+  annotation at reduced weight. The ten priors are equal, at the reduced weight a family-level annotation gets (the
+  owner: "2 yes"), and the same gates apply to similar cases only (the owner: "only similar cases"), read as a drug
+  whose mechanism is known only for a whole protein family, with no source naming a member.
 - **P6. Four audit rows are corrected to their sources**: amphetamine (4-hydroxyamphetamine and norephedrine are
   minor active metabolites, against the audit's "inactive"), brexpiprazole (the label says DM-3411 does not
   contribute therapeutically, which is stronger than "less active"), buprenorphine (norbuprenorphine is potent in
