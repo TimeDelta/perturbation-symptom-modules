@@ -389,7 +389,8 @@ Köhler et al. 1993), waits on a Fable reading of Köhler et al. 1993, which the
   organic substrate until their concentrations are registered; a reversible Human-GEM reaction is written in its
   resting direction and the gate carries reversal; amphetamine's reverse route stays gated on the drug, as built. It
   replaces, for these exchangers, a direction fixed at build time (decision 9.112) and an always-available reverse
-  route (decision 9.127's concern; the owner on VMAT2: "gated on amphetamine"). The owner had meant a conditional
+  route (decision 9.127's concern; for VMAT2 the session proposed on 9 November 2026 a reaction "gated on
+  amphetamine", after the owner asked "What about reversal of VMAT2?"). The owner had meant a conditional
   route from the start ("i wasn't suggesting an ALWAYS reversible route ... only a conditionally reversible one"),
   and on the proposal: "yes. that reversal route implementation is acceptable". Each exchanger's case (NCX under
   9.127, NCKX's MAR01529 and MAR07632) is still settled on its own physiology.
