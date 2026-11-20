@@ -88,6 +88,11 @@ CHALLENGE_MARKERS = (
     # A research pass of 8 November 2026 found www.tga.gov.au's Akamai gate saved as if it were the page: 200, about
     # 2,300 bytes, an empty title, and the check only in a form posting to /_sec/verify with a bm-verify field.
     "bm-verify", "/_sec/verify",
+    # A research pass of 18 November 2026 met pubmed.ncbi.nlm.nih.gov's gate: HTTP 203, 5,591 bytes, a page titled with
+    # the host name alone, "Cookies must be enabled" in a hidden block, and a JavaScript proof-of-work whose only
+    # markers are its constants (const challengeId, challengeDomain, bits). None of the words above matched, so it was
+    # reported as a plain "HTTP 203" rather than a refusal (item 37 rulings draft, section 13: "the reader's missed case").
+    "cookies must be enabled", "challengeid", "challengedomain",
 )
 # Cloudflare injects its passive bot-telemetry script (/cdn-cgi/challenge-platform/scripts/jsd/main.js) into ordinary
 # pages it serves in full, so a "challenge-platform" match inside that script alone is not a check that the visitor is

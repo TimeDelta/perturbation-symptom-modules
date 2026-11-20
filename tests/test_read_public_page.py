@@ -222,6 +222,22 @@ def test_an_akamai_bm_verify_gate_is_a_refusal():
                                                      + "Verify the dose before use. " * 400 + "</p></body></html>")
 
 
+def test_pubmeds_http_203_cookie_and_proof_of_work_gate_is_a_refusal():
+    """pubmed.ncbi.nlm.nih.gov answered HTTP 203 with a 5,591-byte page whose only markers are "Cookies must be
+    enabled" and the constants of a proof-of-work script, and the reader reported it as a plain "HTTP 203" (a research
+    pass of 18 November 2026; item 37 rulings draft, section 13, "the reader's missed case")."""
+    gate = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>pubmed.ncbi.nlm.nih.gov</title>'
+            '<style>body { visibility: hidden; }</style></head><body>'
+            '<div id="cookie-required" class="cookie-required-message" hidden><h1>Cookies must be enabled</h1>'
+            '<p>Enable cookies for <span id="cookie-domain">pubmed.ncbi.nlm.nih.gov</span> and reload this page to '
+            'continue.</p></div><script>const challengeId = "abc"; const challengeDomain = "pubmed.ncbi.nlm.nih.gov";'
+            ' const bits = 18; const maxMs = 313000;</script></body></html>')
+    assert read_public_page.looks_like_challenge(203, gate)
+    assert read_public_page.looks_like_challenge(203, gate.replace("Cookies must be enabled", "Loading"))
+    assert not read_public_page.looks_like_challenge(200, "<html><body><h1>Why cookies must be enabled</h1><p>"
+                                                     + "A long help page about cookies. " * 800 + "</p></body></html>")
+
+
 def test_a_page_carrying_only_cloudflares_passive_telemetry_script_is_read():
     """WormBase's release directory listing (200, 5,173 bytes) was refused on 24 October 2026 because Cloudflare had
     injected its bot-telemetry script, whose path holds "challenge-platform", into the full page (decision 9.95)."""
