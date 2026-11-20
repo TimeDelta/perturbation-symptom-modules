@@ -22,10 +22,14 @@ fails when an input is newer.
 table is committed, not built by the rebuild, so the two checks above never look at it: the rebuild reads whatever is in
 git. On 2 November 2026 it held no `no_activation` row, two days after decision 9.88's rule was built into
 `experiments/extract_brenda_enzyme_regulation.py`, so a rebuild would have written a neuronal graph describing the rule
-the owner replaced. This script compares the commit date of each such table against the commit dates of the scripts that
-generate it and reports the ones that are behind. It reports rather than refuses, because the regeneration cannot run
+the owner replaced. This script compares each such table's last commit with the code of the scripts that generate it,
+as it stood in that commit and as it stands at HEAD, and reports a table whose generator's code has changed since. A
+commit that changes only a generator's comments or docstrings is not counted, since it changes nothing the script
+writes and CLAUDE.md asks that comments be kept current (20 November 2026: a reorganization of docs/ that rewrote paths
+in two comments of `experiments/extract_brenda_enzyme_regulation.py` made the commit-date comparison report the table
+as behind it). It reports rather than refuses, because the regeneration cannot run
 first: it needs a gene-and-protein-split graph that only the rebuild builds, which is why the regeneration is the
-rebuild's `brenda` stage (`scripts/rebuild_data_layer.sh`). Commit dates, not modification times, because on a fresh
+rebuild's `brenda` stage (`scripts/rebuild_data_layer.sh`). Commits, not modification times, because on a fresh
 clone every tracked file carries the checkout time and a modification-time comparison between two tracked files says
 nothing.
 
@@ -41,6 +45,7 @@ Usage, from the repository root:
 from __future__ import annotations
 
 import argparse
+import ast
 import re
 import subprocess
 from pathlib import Path
@@ -79,27 +84,66 @@ GENERATORS_OF_TABLE: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
-def last_commit_time(path: str, root: Path = REPOSITORY_ROOT) -> int | None:
-    """When the last commit touching this path was made, as a Unix time, or None when git knows nothing of it (an
-    untracked file, or a clone too shallow to hold the commit)."""
-    result = subprocess.run(["git", "log", "-1", "--format=%ct", "--", path],
+def last_commit_hash(path: str, root: Path = REPOSITORY_ROOT) -> str | None:
+    """The last commit touching this path, or None when git knows nothing of it (an untracked file, or a clone too
+    shallow to hold the commit)."""
+    result = subprocess.run(["git", "log", "-1", "--format=%H", "--", path],
                             cwd=root, capture_output=True, text=True, check=False)
     if result.returncode != 0 or not result.stdout.strip():
         return None
-    return int(result.stdout.strip())
+    return result.stdout.strip()
+
+
+def committed_text(path: str, commit: str, root: Path = REPOSITORY_ROOT) -> str | None:
+    """The file as it stands in that commit, or None when the commit does not hold it."""
+    result = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=root, capture_output=True, text=True, check=False)
+    return result.stdout if result.returncode == 0 else None
+
+
+def code_without_comments_or_docstrings(source: str) -> str | None:
+    """A Python source's syntax tree with every docstring dropped, as text to compare; comments never reach the tree.
+    None when the source does not parse, so the caller falls back to comparing the text itself."""
+    try:
+        module = ast.parse(source)
+    except SyntaxError:
+        return None
+    for node in ast.walk(module):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body:
+            first = node.body[0]
+            is_docstring = isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+            if is_docstring and isinstance(first.value.value, str):
+                node.body = node.body[1:] or [ast.Pass()]
+    return ast.dump(module, include_attributes=False)
+
+
+def code_changed(before: str | None, after: str | None, path: str) -> bool:
+    """Whether a generator's code differs between two versions. A version that does not exist counts as different. A
+    Python file is compared by its syntax tree without docstrings, so a change to comments or docstrings alone is not a
+    change; anything else, or a version that does not parse, is compared as text."""
+    if before is None or after is None:
+        return True
+    if path.endswith(".py"):
+        before_code = code_without_comments_or_docstrings(before)
+        after_code = code_without_comments_or_docstrings(after)
+        if before_code is not None and after_code is not None:
+            return before_code != after_code
+    return before != after
 
 
 def tables_behind_their_generator(root: Path = REPOSITORY_ROOT) -> list[tuple[str, str]]:
-    """(table, generator) for every committed derived table whose last commit predates a generator's last commit, so
-    the committed table cannot hold that generator's output."""
+    """(table, generator) for every committed derived table whose generator's code at HEAD differs from its code in the
+    table's last commit, so the committed table cannot hold that generator's output. A generator edited only in its
+    comments or docstrings since then is not reported (see the module docstring)."""
     behind = []
     for table, generators in GENERATORS_OF_TABLE:
-        table_time = last_commit_time(table, root)
-        if table_time is None:
+        table_commit = last_commit_hash(table, root)
+        if table_commit is None:
             continue
         for generator in generators:
-            generator_time = last_commit_time(generator, root)
-            if generator_time is not None and generator_time > table_time:
+            if last_commit_hash(generator, root) is None:
+                continue
+            in_table_commit = committed_text(generator, table_commit, root)
+            if code_changed(in_table_commit, committed_text(generator, "HEAD", root), generator):
                 behind.append((table, generator))
     return behind
 
@@ -191,10 +235,10 @@ def main() -> None:
         raise SystemExit(1)
     behind = tables_behind_their_generator()
     if behind:
-        print("\nBEHIND: a committed derived table is older than a script that generates it, so it cannot hold that "
-              "script's output:")
+        print("\nBEHIND: a committed derived table is older than the code of a script that generates it, so it cannot "
+              "hold that script's output:")
         for table, generator in behind:
-            print(f"   {table}  was last committed before  {generator}")
+            print(f"   {table}  was last committed before a change to the code of  {generator}")
         print("The rebuild reads the committed table, so the graph it writes describes the older version. Regenerate it "
               "with the brenda stage (bash scripts/rebuild_data_layer.sh brenda), which runs after the graphs stage "
               "because the mapping needs the split graph that stage builds, then rerun the graphs stage on the new "

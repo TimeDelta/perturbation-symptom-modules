@@ -141,6 +141,47 @@ def test_a_table_committed_before_its_generator_is_reported(tmp_path):
     assert tables_behind_their_generator(tmp_path) == []
 
 
+GENERATOR_CODE = '''"""Writes the derived table."""
+import csv
+
+
+def write(rows, path):
+    """Each row as a line."""
+    with open(path, "w") as handle:
+        csv.writer(handle).writerows(rows)
+'''
+
+
+@pytest.mark.parametrize("edit, reported", [
+    (lambda code: code.replace("import csv", "import csv  # the standard library's writer"), False),
+    (lambda code: code.replace("Each row as a line.", "Each row as one line of the table, named in docs/."), False),
+    (lambda code: code.replace('"w"', '"a"'), True),
+], ids=["comment only", "docstring only", "code"])
+def test_only_a_change_to_the_generators_code_puts_its_table_behind(tmp_path, edit, reported):
+    """A commit that changes only a generator's comments or docstrings changes nothing it writes, so the table is not
+    reported (20 November 2026: a reorganization of docs/ that rewrote two comments' paths in
+    experiments/extract_brenda_enzyme_regulation.py made the commit-date comparison report the table as behind it)."""
+    table, generators = GENERATORS_OF_TABLE[0]
+    generator = generators[0]
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True, capture_output=True)
+    commit_file(tmp_path, generator, GENERATOR_CODE, "2026-11-01T00:00:00+00:00")
+    commit_file(tmp_path, table, "the derived table\n", "2026-11-02T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == []
+    commit_file(tmp_path, generator, edit(GENERATOR_CODE), "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == ([(table, generator)] if reported else [])
+
+
+def test_a_generator_that_does_not_parse_is_compared_as_text(tmp_path):
+    """A version that is not valid Python cannot be compared by its syntax tree, so any change to its text counts."""
+    table, generators = GENERATORS_OF_TABLE[0]
+    generator = generators[0]
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=tmp_path, check=True, capture_output=True)
+    commit_file(tmp_path, generator, "not python (\n", "2026-11-01T00:00:00+00:00")
+    commit_file(tmp_path, table, "the derived table\n", "2026-11-02T00:00:00+00:00")
+    commit_file(tmp_path, generator, "not python ( # edited\n", "2026-11-03T00:00:00+00:00")
+    assert tables_behind_their_generator(tmp_path) == [(table, generator)]
+
+
 def test_a_table_git_knows_nothing_of_is_not_reported(tmp_path):
     """An untracked table, or a clone too shallow to hold its commit, gives no commit time; the guard says nothing
     rather than guessing, because a false report here would send an operator to regenerate a current table."""
