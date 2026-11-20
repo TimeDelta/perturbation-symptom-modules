@@ -332,7 +332,7 @@ def test_end_to_end_hard_gates_train_run_the_binary_pass_and_save_the_scored_rea
 
 def test_the_binary_pass_anneals_its_learning_rate_when_asked_and_keeps_it_by_default(tmp_path):
     """--edge-gate-binary-learning-rate-decay multiplies the binary pass's rate after each epoch, as the simulations'
-    --binary-learning-rate-decay does (batch 4 of docs/edge_gate_simulation.md: 0.8 settled the pass in every world);
+    --binary-learning-rate-decay does (batch 4 of docs/records/2026-10/edge_gate_simulation.md: 0.8 settled the pass in every world);
     the default 1 keeps the rate the trainer has always used."""
     paths = write_toy_dataset(tmp_path)
     write_edge_evidence(paths["graph"])

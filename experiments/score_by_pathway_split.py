@@ -1,7 +1,7 @@
 """Score the out-of-fold predictions separately for genes whose pathway the split divides and genes whose pathway it does not.
 
 The disease-cluster split puts most held-out genes in a pathway that also has training genes, and those pairs share
-symptom labels above baseline (docs/fold_mechanism_sharing.md). If a model's advantage comes from that, it should be
+symptom labels above baseline (docs/generated/fold_mechanism_sharing.md). If a model's advantage comes from that, it should be
 concentrated in the split-pathway stratum. Each held-out gene goes to one stratum, by its primary Human-GEM subsystem
 (the subsystem most of its reactions belong to, catch-all subsystems excluded):
 
@@ -13,7 +13,7 @@ next to popularity's (a constant per symptom, which scores the stratum's base ra
 bootstrap of each model against the random walk inside the stratum. Predictions are pooled across folds, since one
 fold holds too few unsplit genes to score.
 
-Usage: python experiments/score_by_pathway_split.py [--runs NAME ...] [--output docs/score_by_pathway_split.md]
+Usage: python experiments/score_by_pathway_split.py [--runs NAME ...] [--output docs/generated/score_by_pathway_split.md]
 """
 from __future__ import annotations
 
@@ -94,7 +94,7 @@ def main() -> None:
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--num-bootstrap", type=int, default=1000)
-    parser.add_argument("--output", type=Path, default=Path("docs/score_by_pathway_split.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/score_by_pathway_split.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster")

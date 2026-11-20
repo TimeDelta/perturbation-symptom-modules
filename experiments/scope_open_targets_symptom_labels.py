@@ -97,7 +97,7 @@ ANIMAL_READOUT_PATTERN = r"locomotor|catalep|(in|de)creased (motor|spontaneous) 
 # "punding / stereotyped repetitive behaviour" as a rodent readout before it could become a compulsive_behavior
 # label, while the study's pattern for that symptom was matching the same word as the symptom itself. Treating the
 # word as human instead would credit the rodent rows, so neither reading is right and the rows are marked for the
-# human-evidence reading of docs/rodent_readout_human_evidence.md rather than decided here.
+# human-evidence reading of docs/generated/rodent_readout_human_evidence.md rather than decided here.
 SPECIES_AMBIGUOUS_READOUT_PATTERN = r"stereotyp"
 # Parkinsonian wording in the wide sense, which psychomotor_retardation matched until 9 October 2026. Drug-induced
 # parkinsonism and depressive psychomotor slowing are treated differently in the clinic, which is why the user asked

@@ -111,6 +111,6 @@ later step of a build runs, so that one build mixes two commits; they pull once 
 prompts name are `CLAUDE.md`, `docs/status.md`, `docs/open_decisions.md`, `docs/data_layer_rebuild.md` and this page.
 
 The October routines, paused since 9 October 2026, pulled first and named docs/confirmatory_runbook.md,
-docs/preregistration.md, docs/graph_content_null_results.md, docs/membrane_potential_reach.md and
+docs/preregistration.md, docs/records/2026-10/graph_content_null_results.md, docs/records/2026-10/membrane_potential_reach.md and
 docs/literature_appraisal_staging.md (written by the paced literature appraisal of 7 October 2026,
 `scripts/literature_pacing.sh`: read it, never edit it).

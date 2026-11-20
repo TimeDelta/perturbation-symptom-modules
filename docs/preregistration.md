@@ -1,7 +1,7 @@
 # Pre-registration skeleton (to be completed before Phase 3 and posted to OSF)
 
 Frozen in Phase 0 and 1: symptom set and HPO term exclusions (docs/symptom_crosswalk.csv, audited in
-docs/hpo_term_audit.md), curated module scaffolding (docs/curated_pathway_modules.csv), pinned data
+docs/generated/hpo_term_audit.md), curated module scaffolding (docs/curated_pathway_modules.csv), pinned data
 versions (docs/data_sources.md), evidence grading policy and weights (configs/evidence_assembly.yaml:
 grade A by curated-synopsis provenance with frequency scaling), splits and metrics (configs/evaluation.yaml).
 
@@ -38,7 +38,7 @@ rewiring; grade shuffle; peripheral-event control.
 
 Precision of the primary comparison on the monogenic slice (451 perturbations, disease-cluster
 grouped split): the paired-bootstrap 95 percent half-width of a pooled macro AUPRC difference between
-two models is about 0.015 to 0.02 (docs/phase3_main_model.md), so the minimum difference of 0.05 is
+two models is about 0.015 to 0.02 (docs/generated/phase3_main_model.md), so the minimum difference of 0.05 is
 detectable there; on the curated-module hold-out (37 perturbations) it is not, which is why the
 subsystem definition of the pathway split is proposed above. The full data (drug perturbations and the
 signaling layers) will shift these widths and the statement is to be recomputed before posting.
@@ -49,7 +49,7 @@ doi:10.1073/pnas.1708274114, on preregistration when "the data are preexisting")
 
 - The monogenic slice is a pilot. It has one layer of the graph (the metabolic layer), 451 genes, no brain
   expression and no drug perturbations, and on it even a readout trained on the random walk's own distributions
-  does not beat the untrained walk (docs/trained_diffusion_readout.md), so the slice cannot separate a weak mechanism
+  does not beat the untrained walk (docs/generated/trained_diffusion_readout.md), so the slice cannot separate a weak mechanism
   from too few labels. Its result, that no trained configuration beats the random walk, does not trigger the failure
   criterion above, and no component (the linear-response encoder, the pathway modules, the node descriptors) is
   dropped on its strength. This is the user's decision of 7 October: the mechanistic encoder and the node properties
@@ -91,7 +91,7 @@ data/processed/label_selection/better_v1_full.parquet, selection version better_
   frequency), and every pair counted fully in scoring; the selection removes the set-aside pairs from both.
 
 Symptom list expanded on 7 October 2026 at the user's request, before any full-graph model was scored (docs/symptom_crosswalk.csv,
-audited in docs/hpo_term_audit.md; data/processed/evidence_full_v2; the better_v1 rule above applied to it:
+audited in docs/generated/hpo_term_audit.md; data/processed/evidence_full_v2; the better_v1 rule above applied to it:
 data/processed/label_selection/better_v1_full_v2.parquet, SHA-256 c691a9aa…). This replaces evidence_full and better_v1_full
 (ffb06fb4…) for every full-graph run; the slice keeps its own evidence table.
 
@@ -186,7 +186,7 @@ confirmation.
   --with-kg-embedding --rewiring-method integer_draws), which also scores them on that seed's permuted labels. The best
   baseline of a reading is the one with the highest seed-mean lockbox score, chosen without reference to any model. The
   relational GNN with sigmoid head, a comparator in the skeleton, is now one of the four tested models; popularity and
-  degree_popularity are added because they score highest on the full graph (docs/phase2_baselines_full_v2.md).
+  degree_popularity are added because they score highest on the full graph (docs/generated/phase2_baselines_full_v2.md).
 - Readings (seed mean of model minus best baseline on the lockbox rows): macro AUPRC over the 18 lockbox symptoms; micro
   AUPRC over every symptom with five or more kept positives in the whole data (20); both after ranking every score inside
   degree strata; the permutation difference in differences (the advantage on the real labels minus the advantage when model
@@ -265,7 +265,7 @@ user's go-ahead.
 Amendment, 8 October 2026, before any lockbox run and before the slice runs it names had started: how the node
 descriptors enter. The user keeps the descriptors in both encoders ("I really don't want to drop them") and asked how to
 stop them overwhelming the graph, so the drop branch of the descriptor rule above is withdrawn: neither encoder's
-confirmatory configurations drop --node-descriptors. The rule's readings are still reported (docs/descriptor_rule.md).
+confirmatory configurations drop --node-descriptors. The rule's readings are still reported (docs/generated/descriptor_rule.md).
 On 8 October they were: linear response, mean of the six differences +0.002 (macro per fold -0.003, pooled +0.006,
 within strata +0.007; micro -0.004, -0.001, +0.007); message passing -0.018 (macro -0.022, +0.002, -0.007; micro -0.040
 [-0.057, -0.022], -0.033 [-0.052, -0.012], -0.006). The message-passing reference, b3_typed_nodes, was trained before the
@@ -299,8 +299,8 @@ Slice arms (runs/encoder, five disease-cluster folds each): b3_typed_nodes_descr
 b3_typed_nodes_descriptors_brain_zero_init_slow, b3_linear_response_cofactors_descriptors_brain_seed_masked and
 b3_linear_response_cofactors_descriptors_brain_zero_init_slow, each one change from its *_descriptors_brain arm (the
 plain arm). Readings per arm: graph reliance, the mean over folds of the macro and micro AUPRC lost on the rewired graph,
-averaged over the two (docs/graph_reliance.md); and the six differences of experiments/compare_twin_runs.py against the
-plain arm (docs/descriptor_treatments.md). Rule, per encoder: a treatment qualifies if its graph reliance is larger than
+averaged over the two (docs/generated/graph_reliance.md); and the six differences of experiments/compare_twin_runs.py against the
+plain arm (docs/generated/descriptor_treatments.md). Rule, per encoder: a treatment qualifies if its graph reliance is larger than
 the plain arm's and the mean of its six differences against the plain arm is at least -0.01. The qualifying treatment
 with the larger graph reliance replaces plain in that encoder's two confirmatory configurations; if none qualifies,
 plain stays. Point estimates, as in the descriptor rule, because the slice does not resolve differences of this size.
@@ -328,13 +328,13 @@ encoder). On the slice every seed is a gene, so without_gene removes what seed_m
 compute. These arms join seed_masked and zero_init_slow under the treatment rule of the previous amendment (graph reliance
 above the plain arm's, mean of the six differences against the plain arm at least -0.01, the larger graph reliance among
 those that qualify). Arms the iteration adds later are dated here before they run, and every arm tried is reported in
-docs/graph_reliance.md and docs/descriptor_treatments.md, chosen or not: selecting among slice arms makes the slice
+docs/generated/graph_reliance.md and docs/generated/descriptor_treatments.md, chosen or not: selecting among slice arms makes the slice
 estimate of the chosen arm optimistic, which does not reach the lockbox, since the lockbox is scored once by a model
 fixed before it is opened.
 
 Readings of the treatment rule (8 October 2026, descriptor_treatments_message_passing and _linear_response ended; graph
-reliance from docs/graph_reliance.md as the mean of macro and micro reliance, the six differences against the plain arm
-from docs/descriptor_treatments.md). Not applied: it waits for the user's confirmation (docs/confirmatory_runbook.md,
+reliance from docs/generated/graph_reliance.md as the mean of macro and micro reliance, the six differences against the plain arm
+from docs/generated/descriptor_treatments.md). Not applied: it waits for the user's confirmation (docs/confirmatory_runbook.md,
 step 2b).
 
 | encoder | arm | graph reliance | mean of six differences | qualifies |
@@ -353,7 +353,7 @@ step 2b).
 | linear response | without_protein | -0.0030 | +0.0047 | no (reliance below plain) |
 
 What the readings support. Every arm moves graph reliance by 0.01 to 0.02, against standard deviations over folds of
-about 0.02 (docs/graph_reliance.md, one rewiring seed), so the order among arms is not resolved. In the message-passing
+about 0.02 (docs/generated/graph_reliance.md, one rewiring seed), so the order among arms is not resolved. In the message-passing
 encoder without_protein leads without_gene by 0.0003 in reliance, a tie; it is also the only arm with a clear AUPRC
 gain over the plain arm (micro +0.043 pooled, 95 percent interval +0.021 to +0.063; macro +0.018, -0.002 to +0.036),
 and against b3_typed_nodes without descriptors it gains +0.021 macro pooled (+0.005 to +0.039). In the linear-response
@@ -560,8 +560,8 @@ day). Each is a defect against text already in this specification, not a change 
   entries against about 135,000). --rewiring-method walk_graph (experiments/run_baselines.py and
   experiments/run_rewiring_null_distribution.py; negative_controls.rewire_walk_graph) rewires the walk's own graph so
   every node keeps its number of neighbours. The development reading that the slice wiring carries signal for the walk
-  (docs/rewiring_null_distribution.md, 0 of 20 rewirings as good as the real graph, p = 0.048) used the old null. Rerun
-  with the new one (docs/rewiring_null_distribution_walk_graph.md), the 20 rewirings give 0.264 ± 0.011 (best 0.285)
+  (docs/generated/rewiring_null_distribution.md, 0 of 20 rewirings as good as the real graph, p = 0.048) used the old null. Rerun
+  with the new one (docs/generated/rewiring_null_distribution_walk_graph.md), the 20 rewirings give 0.264 ± 0.011 (best 0.285)
   against 0.293 on the real graph, again none as good (p = 0.048), so the reading stands. No confirmatory reading uses
   the walk's rewiring.
   Added 27 October 2026: the numbers in this bullet (0.264, 0.285, 0.293, p = 0.048) are finding 8 of
@@ -659,7 +659,7 @@ day). Each is a defect against text already in this specification, not a change 
 - Open, for the user's decision: no confirmatory baseline is fitted per perturbation type. Over labelled development
   pairs the base rate is 0.159 for drugs and 0.063 for genes, higher for drugs on 16 of 22 symptoms, and the lockbox
   holds 64 drugs of 317 against 78 of 1,222 in development. A predictor that knows only whether a perturbation is a drug
-  therefore earns a share of every reading. experiments/measure_perturbation_type_offset.py (docs/perturbation_type_offset.md)
+  therefore earns a share of every reading. experiments/measure_perturbation_type_offset.py (docs/generated/perturbation_type_offset.md)
   draws 200 pseudo-lockboxes of 39 drugs and 154 genes from the development set, fits the predictors on the rest and
   scores the four H1 readings as the scorer does. Against the better of popularity and degree_popularity in each draw
   (mean, 2.5 and 97.5 percentiles):
@@ -840,7 +840,7 @@ decisions, after the precision estimate they asked for).
   without a catalyzed_by edge stay. reaction_brain_gtex_brain_max correlates 0.24 between the real and the rewired
   graph and changes on 56 percent of reaction rows; every other descriptor column is unchanged.
 - Still open: --bce-in-log-space, the per-type popularity baselines, the secondary contrasts and --start-at-weighted-optimum
-  (docs/best_epoch_zero.md: on the first family's pilots the noisy-OR leaks stayed at the raw base rate, 0.061, against a
+  (docs/records/2026-10/best_epoch_zero.md: on the first family's pilots the noisy-OR leaks stayed at the raw base rate, 0.061, against a
   loss-optimal constant of 0.204, and the modules supplied the difference; the sigmoid head reached the constant within
   the first epoch; no pilot's best validation loss fell below that of a constant per-symptom prediction). The second family's
   development runs (its four configurations on the five grouped development folds of lockbox_v2 with seed 0, and the
@@ -868,13 +868,13 @@ modules are fixed first.
   noisy-OR head only indirectly.
 - Leak start (the user, the same day: "Ya. Start at the optimum."). The second family's noisy-OR configurations and
   their no-descriptor ablations carry --start-at-weighted-optimum, so each leak starts at its symptom's loss-optimal
-  constant and not at the raw base rate (docs/best_epoch_zero.md). The slice runs of docs/module_health.md now say
+  constant and not at the raw base rate (docs/records/2026-10/best_epoch_zero.md). The slice runs of docs/module_health.md now say
   whether the leak start is enough or more of the fix is needed. The v2 runs still wait for that reading.
 - Not decided: the descriptor treatments (the restricted picks above); where the descriptors
   sit (the user: "The genes shouldn't need descriptors but the proteins should"; in graph_full_neuronal a gene node
   stands for the gene and its product, and 11,723 of the 12,810 gene nodes take part in a protein-level relation, while
   the 1,681 protein_entity nodes are Reactome complexes and sets); the confirmatory pathway test (options and the
-  decisions it needs: docs/pathway_test_options.md).
+  decisions it needs: docs/records/2026-10/pathway_test_options.md).
 - The user, the same day, on the gene and protein split (docs/gene_protein_split.md): "The rest of that suggested split
   between the genes and proteins makes sense I think except the registered degree strata SHOULD change to the new split",
   and "the brain expression is still provided via pseudo-gene descriptors". Then: "It's just that the descriptors would
@@ -897,7 +897,7 @@ graph that splits genes from proteins. This closes the last question of the amen
   `data/processed/graph_full_neuronal_split`; the node descriptors come from
   `full_neuronal_split_descriptors_brain_expression.parquet`, which puts the 64 protein components on the 12,709
   protein nodes and the 27 brain region and cell-class expression columns on the gene nodes, with the metabolite and
-  reaction blocks and the compartment features as they already were (docs/node_descriptor_columns.md, version 3); the
+  reaction blocks and the compartment features as they already were (docs/generated/node_descriptor_columns.md, version 3); the
   linear-response encoder reads `full_neuronal_split_cell_class_weights.parquet`; message passing gets a third layer,
   because a perturbed gene node reaches its protein one hop later (decision 9 of docs/gene_protein_split.md). The
   development baselines (runs/full/v2_development.sh) and the lockbox baselines and scoring
@@ -941,7 +941,7 @@ a rule. No lockbox run has started, and none of these changes a finished run.
   the annotations still rises at the last point (0.113 at rank 48, 0.127 at 64), so the prespecified rule "the smallest
   rank reaching 95 percent of the best on the grid" selects the largest rank on offer. The width is not what keeps the
   graph in charge; the descriptor treatments do (the amendment of 8 October on how the node descriptors enter, and the
-  graph-reliance reading of docs/graph_reliance.md), and the no-descriptor ablation of step 1d measures what the
+  graph-reliance reading of docs/generated/graph_reliance.md), and the no-descriptor ablation of step 1d measures what the
   descriptors are worth on their own. If the treatments leave the descriptors dominant, the answer is a treatment or a
   dropped block, not a narrower table.
 - **Repeated affinity measurements of one drug-target pair are aggregated by their maximum** ("Oh. In that case, I
@@ -972,9 +972,9 @@ a rule. No lockbox run has started, and none of these changes a finished run.
 - **The leakage-group rules are measured, and the registered grouping stays until the user decides** ("I don't like the
   alphabetical thing. Try the other version of family tie breaking and also make sure to include a measurement of the
   remaining leakage confound from this decision."). experiments/measure_leakage_group_rules.py, run on two evidence
-  tables because the answer differs between them: docs/leakage_group_rules.md on the off-target scoping table
+  tables because the answer differs between them: docs/generated/leakage_group_rules.md on the off-target scoping table
   (evidence_full_v3_max3_targets, up to three mechanism targets per drug) and
-  docs/leakage_group_rules_evidence_full_v2.md on the table the confirmatory family reads (evidence_full_v2, one
+  docs/generated/leakage_group_rules_evidence_full_v2.md on the table the confirmatory family reads (evidence_full_v2, one
   mechanism target per drug).
   - The tie-break by best-bound mechanism target does what it was asked to do where it applies. On the scoping table it
     takes the largest group from 0.18 to 0.14 of the drugs and moves 15 drugs, among them the antipsychotics, from a
@@ -999,7 +999,7 @@ a rule. No lockbox run has started, and none of these changes a finished run.
   Pfam families, EC numbers and GO molecular function terms and the intersection (minimum) of their GO cellular
   component and UniProt location terms, with a DefinedSet or CandidateSet taking the mean over its members because it
   is a disjunction rather than a machine; the vector is standardised with the proteome's statistics and projected onto
-  the same annotation-space directions the protein descriptors use. docs/complex_descriptors.md reports the one
+  the same annotation-space directions the protein descriptors use. docs/generated/complex_descriptors.md reports the one
   measurement that decides whether the entity block can share the protein block's columns: the correlation, over the
   proteome, between the projection of a protein's recorded annotations and the projection of the annotations predicted
   from its sequence. Wiring the table into a graph's node_descriptors.parquet is a build step, and whether the
@@ -1008,7 +1008,7 @@ a rule. No lockbox run has started, and none of these changes a finished run.
   later"): `psychomotor_retardation` matches `\bbradykine`, so the relabelling of the DRD2-inhibition claim to
   bradykinesia lands back on the symptom it was taken off; and `compulsive_behavior` matches `stereotyp`, which
   `ANIMAL_READOUT_PATTERN` also matches, so human punding cannot enter as a label without an exception to the
-  rodent-readout filter (docs/rodent_readout_human_evidence.md). Neither is changed here.
+  rodent-readout filter (docs/generated/rodent_readout_human_evidence.md). Neither is changed here.
 
 ## Amendment, 9 October 2026 (third)
 
@@ -1021,7 +1021,7 @@ Three decisions and one question from the user, each quoted.
   `27ed5e89ccb369d9`. The 64 protein components now carry the entity annotation vectors on 1,527 of the 1,681 protein
   entity nodes, and the new column `protein_has_complex_descriptors` marks those rows, because an entity's vector is
   the projection of its recorded annotations while a protein's is the projection of the annotations predicted from its
-  sequence, and the two are not the same quantity (docs/complex_descriptors.md). What did not change: the split graph's
+  sequence, and the two are not the same quantity (docs/generated/complex_descriptors.md). What did not change: the split graph's
   `nodes.parquet`, `edges.parquet` and `gene_to_protein.parquet` reproduce byte-identically, gene rows still carry no
   protein column, protein rows no other column, and the protein nodes' own values are unchanged. No confirmatory or
   development run has been launched on the new table, per the second half of the instruction; the pilots are the
@@ -1049,14 +1049,14 @@ Three decisions and one question from the user, each quoted.
 - **Target family is recoverable from the graph and from the descriptors, which bounds what any drug grouping can buy**
   (the user's question: "is there any graph structure or attribute that corresponds to family? That might be another
   source of leakage."). Yes, and strongly: experiments/measure_family_in_graph.py, reported in
-  docs/family_in_graph.md, scores each channel by leave-one-out nearest neighbour over the graph's gene nodes with a
+  docs/generated/family_in_graph.md, scores each channel by leave-one-out nearest neighbour over the graph's gene nodes with a
   GtoPdb family. On the 104 genes that are drug mechanism targets (20 families, chance rate 0.092), a held-out gene's
   family is recovered 0.904 of the time from the 64 protein components, 0.912 from its graph neighbours and 0.973 from
   its Reactome protein-entity memberships; the brain expression block, which carries nothing about a family's
   sequence, reaches 0.173. Over all 2,651 family-bearing gene nodes (498 families, chance 0.004) the figures are 0.790,
   0.576 and 0.821 against 0.043. Same-family gene pairs share a Reactome protein entity 0.732 of the time against
   0.023 for different-family pairs.
-  - What follows for the grouping question of docs/leakage_group_rules.md: a family-grouped split changes which drugs
+  - What follows for the grouping question of docs/generated/leakage_group_rules.md: a family-grouped split changes which drugs
     share a fold, not whether the model can tell which family a held-out target belongs to. The confound is a property
     of the graph and of the descriptor block, so the registered grouping `disease_cluster_and_targets` leaves it
     available too. This is not an argument for or against the family rule; it is a ceiling on what grouping drugs can
@@ -1082,7 +1082,7 @@ started, so no finished run changes meaning and nothing is re-scored.
   recorded in docs/confirmatory_runbook.md, step 1b.
 - **What the variant is.** The split graph plus 27 `binds` edges, sign 0, from the extracellular copy of a cargo
   metabolite to its binder protein: 19 cargo metabolites and the 11 binder proteins AFP, ALB, APOA1, APOB, ORM1,
-  ORM2, RBP4, SERPINA6, SERPINA7, SHBG and TTR (docs/plasma_binder_graph.md). It is a strict superset of the split
+  ORM2, RBP4, SERPINA6, SERPINA7, SHBG and TTR (docs/generated/plasma_binder_graph.md). It is a strict superset of the split
   graph: the same node ids, the same `relation_types.json` and the same 279,757 edge rows as its prefix, checked
   through the trainer's loader with nothing trained. The node descriptor table
   (`full_neuronal_split_descriptors_brain_expression.parquet`, 138 columns, SHA-256 `df38d78c78ffe6d4`) and the
@@ -1091,7 +1091,7 @@ started, so no finished run changes meaning and nothing is re-scored.
   `catalyzed_by`, which carriage leaves alone. In the assembled feature matrix exactly one column moves, the
   log-degree, on exactly the 30 nodes the edges touch.
 - **What does not change, measured.** experiments/measure_carriage_graph_effect.py, reported in
-  docs/plasma_binder_confirmatory_effect.md: the perturbation ids, the symptom list, the leakage group ids, the
+  docs/generated/plasma_binder_confirmatory_effect.md: the perturbation ids, the symptom list, the leakage group ids, the
   outcome matrix, the label mask and the weights are identical with and without the carriage edges, so
   configs/lockbox_v2.json, the better_v2 selection, configs/head_choice.json, the two tested models, the decision
   rule, the one-sided 0.025 H1-then-H2 sequence and the floors all stand.
@@ -1614,7 +1614,7 @@ study is trying to represent, so removing the drug to tidy the split would remov
 The cost is stated with it: the opioid and monoamine blocks stay joined, so the largest block holds 116 of 231 drugs,
 50.2 percent of the drugs and 27.0 percent of the kept positive pairs. That is no worse than the table in use, whose
 largest block holds 51.4 percent and 27.2 percent, so the rebuild does not degrade the split it inherits
-(docs/rebuild_leakage_cost.md). The held-out draw therefore cannot separate opioids from monoamines, and no claim may
+(docs/generated/rebuild_leakage_cost.md). The held-out draw therefore cannot separate opioids from monoamines, and no claim may
 rest on its doing so.
 
 **17. The enzyme, carrier and two-drug statements are training labels, in both encoders** (user, 12 October 2026:
@@ -1630,13 +1630,13 @@ symptom does not occur, which no source states. Under `--equal-drug-shares` a co
 so a drug with a statement does not take two drugs' share.
 
 **18. Multiplicity: H1 first, then H2 and P1 by Holm at one-sided 0.025 per model** (user, 12 October 2026, on the
-three ways set out in docs/pathway_test_options.md: "Accepted"). The chance of a false claim stays at most 0.025 per
+three ways set out in docs/records/2026-10/pathway_test_options.md: "Accepted"). The chance of a false claim stays at most 0.025 per
 model and at most 0.05 across the two. H2 therefore needs p below 0.0125 unless P1 also passes. P1 is read only behind
 the two gates, G1 (stability) and G2 (faithfulness), which are preconditions and not tests at a level: the claim passes
 only if G1, G2 and the Holm-adjusted test all pass, and a precondition can only lower the chance of passing, so the
 conjunction keeps the level. The option this rejects is P1 on its own at 0.025, which would let the chance that at least
 one of the four claims (two models x H1 and P1) passes by luck reach 0.10. Registered before any confirmatory module
-exists, which is the condition docs/pathway_test_options.md set for fixing it at all.
+exists, which is the condition docs/records/2026-10/pathway_test_options.md set for fixing it at all.
 
 **19. The probability clamp stays off, and is checked on the development runs** (user, 12 October 2026: "Leave the
 clamp off for now but make sure you check for the issue in the dev runs"). The training loss keeps the logarithms of P
@@ -1767,7 +1767,7 @@ rule, positive input weights, carrier relations and extracellular coupling for t
 signs for message passing, equal drug shares, the placebo negative weight of 0.5, the weighted-optimum start, the
 noisy-OR initialisation and learning rates, and the refit on validation. Three safeguards come with it, because a
 default that carries a registered choice is how commit `9df62ee` changed a registered model silently
-(`docs/confirmatory_architecture_review.md`, row 8). `experiments/run_main_model_batch.py` states the same model as
+(`docs/records/2026-10/confirmatory_architecture_review.md`, row 8). `experiments/run_main_model_batch.py` states the same model as
 explicit flags, `tests/test_registered_defaults.py` holds the two equal so a default cannot drift from the
 registration without a test failing, and `VALUES_BEFORE_THE_V4_DEFAULTS` gives every such argument the value it held
 before this date, so a finished run is rebuilt as the model it was trained as and not as the current default. Each
@@ -1996,7 +1996,7 @@ affine maps of one another whatever their leaks, so they correlate at 1 and rank
 leak scales and does not reorder. The shared ranking falls as any module activation rises, so it ranks by total
 module activation, the degree-like quantity the input-size and degree controls already account for. Measured at the
 registered 8 modules and 24 symptoms over three seeds
-(`experiments/label_review/untrained_symptom_degeneracy.py`, `docs/untrained_symptom_degeneracy.json`): smallest
+(`experiments/label_review/untrained_symptom_degeneracy.py`, `docs/generated/untrained_symptom_degeneracy.json`): smallest
 correlation between untrained symptoms 1.000000, **zero** perturbations ranked differently by any two of them,
 against 0.47 to 0.80 once one symptom trains.
 
@@ -2267,7 +2267,7 @@ drugs outside the nervous-system code, four have a sentence naming them that sta
 penetration: **codeine, cyclobenzaprine, hydrocodone and ondansetron**. That list is a shortlist and not a verdict.
 The pattern that produced it cannot tell an assertion from a hedge: ondansetron's own label says "It is **not
 certain** whether ondansetron's antiemetic action is mediated centrally, peripherally, or in both sites", which the
-pattern counts as an action sentence and a reader would not. `docs/label_central_action_reading.md` holds the
+pattern counts as an action sentence and a reader would not. `docs/records/2026-10/label_central_action_reading.md` holds the
 proposed reading of each; decision 3.2 is that reading and remains the owner's.
 
 **a(i). The registered limitation of part (a): it filters on documentation, not on physiology.** Recorded on
@@ -2519,7 +2519,7 @@ is item 5c step 1: occupancy is the magnitude, so an engagement near zero contri
 needed or wanted. The held-out split is on **mechanism targets** and off-target sharing is reported rather than
 split on, which is item 25 with its secondary stratum 25c. (Corrected 13 October 2026: this paragraph said "the
 occupancy threshold above which an off-target enters the input is decision 1.3 and remains the owner's". There is
-no such threshold and there never was. `docs/off_targets_under_the_target_split.md` measures what admitting
+no such threshold and there never was. `docs/generated/off_targets_under_the_target_split.md` measures what admitting
 off-targets to the **split** would cost, which is a sensitivity reading of an alternative item 25 had already
 declined; promoting its "the threshold is the dial" into an open decision invented one. The owner: "I thought we
 already settled on option three".) The conflict with item 5 is closed by item 5a, which lifted the prohibition on
@@ -2547,7 +2547,7 @@ as pathways.
 - **Which held drugs of item 14 are admitted once their missing part is supplied**, narrowed twice since this bullet
   was written. The rule is registered and item 31 tightened part (a) to a stated central action, which drops nine
   drugs that penetration alone had admitted. Of the four held drugs, the search of 13-14 October
-  (`docs/four_held_drugs_search.md`) resolves two: **carvedilol** against admission on positive evidence, since it is
+  (`docs/records/2026-10/four_held_drugs_search.md`) resolves two: **carvedilol** against admission on positive evidence, since it is
   a P-glycoprotein substrate at the blood-brain barrier with brain uptake rising up to three-fold under cyclosporin A
   (Bart et al. 2005, doi 10.1038/sj.bjp.0706283), which puts Kp,uu,brain below 1; and **timolol** as unmeasured,
   its Kp,uu,brain being absent from all 34 Kp,uu tables and from PubMed. **Oxprenolol and pindolol are blocked by a
@@ -2799,7 +2799,7 @@ registered-rules change, so no `Amends:` trailer, and this was checked rather th
 free-fraction, Kp,uu or measurement-noise value, so no registered value is touched. The quotes, the routes, the
 refusals and the licence of each source are in `docs/label_source_review.md` section 38.
 
-To fill in: Phase 1 counts per symptom and grade (docs/phase1_counts.md); final symptom set after
+To fill in: Phase 1 counts per symptom and grade (docs/generated/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
 GWAS enrichment test; the open questions 8 to 10 of design section 11 (frequency as weight or target;
 subsystem versus curated pathway split; the deterioration-term exclusion).

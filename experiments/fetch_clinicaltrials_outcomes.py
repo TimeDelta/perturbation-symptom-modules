@@ -7,7 +7,7 @@ mechanistic_pathway_learning/evidence/clinical_trial_outcomes.py and the scale-t
 configs/trial_outcome_scale_crosswalk.csv (fine constructs; --symptom-level coarse maps them to the coarse crosswalk's).
 
 Outputs: <output-dir>/clinical_trial_outcome_reports.parquet, clinical_trial_outcome_summary.json and the generated
-page docs/clinical_trial_outcome_evidence.md.
+page docs/generated/clinical_trial_outcome_evidence.md.
 
 Usage:
   python experiments/fetch_clinicaltrials_outcomes.py --evidence-dir data/processed/evidence_full_v5
@@ -67,7 +67,7 @@ def main() -> int:
     parser.add_argument("--fine-crosswalk", type=Path, default=FINE_CROSSWALK_PATH)
     parser.add_argument("--cache-dir", type=Path, default=Path("data/raw/clinicaltrials_outcomes"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/clinical_trial_outcomes"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/clinical_trial_outcome_evidence.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/clinical_trial_outcome_evidence.md"))
     parser.add_argument("--no-effect-margin", type=float, default=NO_EFFECT_MARGIN, help="standardised difference inside which a construct is read as not moved; a choice (9.48's thresholds)")
     parser.add_argument("--pause", type=float, default=0.5)
     parser.add_argument("--limit-drugs", type=int, default=None)

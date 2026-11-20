@@ -29,7 +29,7 @@ experiments/make_brenda_human_subset.py; the graph directory is an example and s
       --output data/processed/brenda_regulation_records.csv
   python experiments/map_brenda_regulation_to_graph.py --regulation-records data/processed/brenda_regulation_records.csv \
       --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4 --output configs/brenda_metabolite_enzyme_regulation.csv \
-      --summary docs/brenda_regulation_mapping.json --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \
+      --summary docs/generated/brenda_regulation_mapping.json --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \
       --no-activation-output configs/brenda_metabolite_enzyme_no_activation.csv \
       --compare-with data/processed/brenda_metabolite_enzyme_regulation_before_9_88.csv
 """

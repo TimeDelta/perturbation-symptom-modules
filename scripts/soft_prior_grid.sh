@@ -1,5 +1,5 @@
 #!/bin/bash
-# The soft-prior grid on the development folds (docs/soft_priors.md, section 4): the global strength and the
+# The soft-prior grid on the development folds (docs/records/2026-10/soft_priors.md, section 4): the global strength and the
 # tempering exponent are chosen on development data before any registration, and the permuted control is run at
 # the chosen point afterwards. This script only loops the batch runner over the grid; it does not choose.
 #

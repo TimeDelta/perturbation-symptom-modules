@@ -14,7 +14,7 @@ from experiments.map_brenda_regulation_to_graph import human_accessions_by_ec_nu
 
 UNIPROT_PATH = Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz")
 MAPPED_PAIRS_PATH = Path("configs/brenda_metabolite_enzyme_regulation.csv")
-MAPPING_SUMMARY_PATH = Path("docs/brenda_regulation_mapping.json")
+MAPPING_SUMMARY_PATH = Path("docs/generated/brenda_regulation_mapping.json")
 
 
 @pytest.mark.skipif(not UNIPROT_PATH.exists(), reason="the pinned UniProt dump is not present")

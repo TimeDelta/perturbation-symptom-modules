@@ -119,7 +119,7 @@ def main() -> None:
     parser.add_argument("--any-atc-dir", type=Path, default=Path("data/processed/label_review/evidence_any_atc_cap3"))
     parser.add_argument("--any-atc-selection", type=Path, default=Path("data/processed/label_review/selection_any_atc_cap3.parquet"))
     parser.add_argument("--output", type=Path, default=Path("data/processed/label_review/rebuild_leakage_cost.json"))
-    parser.add_argument("--document", type=Path, default=Path("docs/rebuild_leakage_cost.md"))
+    parser.add_argument("--document", type=Path, default=Path("docs/generated/rebuild_leakage_cost.md"))
     arguments = parser.parse_args()
 
     # The rebuild's own table: the no-limit rows, plus the two drugs the central-action rule admits, read from the

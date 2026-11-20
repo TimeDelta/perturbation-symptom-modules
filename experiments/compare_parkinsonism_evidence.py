@@ -18,7 +18,7 @@ code, so a rebuild today lands on v3 whatever the crosswalk says, and v2 is not 
 The user's decision of 9 October 2026 ("just get rid of the v2 test at this point since it was never used anyways.
 v3 is the usable one for now") is why v2 is neither rebuilt nor reported here.
 
-Writes docs/parkinsonism_symptom.md. Reads no lockbox outcome. Idempotent.
+Writes docs/generated/parkinsonism_symptom.md. Reads no lockbox outcome. Idempotent.
 
 Usage:
   python experiments/compare_parkinsonism_evidence.py
@@ -35,7 +35,7 @@ NEW_SYMPTOM = "parkinsonism"
 # fitted or derived across symptoms, so a new symptom moves them by construction; reported rather than asserted
 COLUMNS_A_NEW_SYMPTOM_MAY_MOVE = ("reliability_posterior", "disease_cluster_id")
 ROW_ORDER = ["perturbation_id", "symptom", "source", "relation"]
-OUTPUT_DOCUMENT = Path("docs/parkinsonism_symptom.md")
+OUTPUT_DOCUMENT = Path("docs/generated/parkinsonism_symptom.md")
 
 
 def file_digest(path: Path) -> str:

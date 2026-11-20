@@ -2,7 +2,7 @@
 own nodes do (design section 5.7; graph/reactome_import.py, neurotransmission_regulation.py, oxidative_regulation.py,
 redox_pools.py).
 
-Three readings, written to docs/neuronal_variant_comparison.md:
+Three readings, written to docs/generated/neuronal_variant_comparison.md:
   - accuracy of the variant against the same configuration on the metabolic graph and against the variant without its
     curated receptor and oxidant layers: the per-fold macro AUPRC, the paired per-fold difference with a t interval over
     the folds both runs finished, the paired bootstrap over perturbations of the pooled out-of-fold difference (macro
@@ -109,7 +109,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph"), help="the metabolic graph, whose degrees define the strata")
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/neuronal_variant_comparison.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/neuronal_variant_comparison.md"))
     parser.add_argument("--num-bootstrap", type=int, default=1000, help="the same count as compare_twin_runs.py, so its cached pairs are reused")
     arguments = parser.parse_args()
 

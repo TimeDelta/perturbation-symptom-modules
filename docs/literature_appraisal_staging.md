@@ -54,7 +54,7 @@ Every row also states, in one line each:
 
 ## Questions under appraisal
 
-Q1 was opened on 7 October 2026 against the result then recorded in `docs/graph_content_null_results.md`: on the
+Q1 was opened on 7 October 2026 against the result then recorded in `docs/records/2026-10/graph_content_null_results.md`: on the
 monogenic slice pilot (the metabolic slice graph, 451 genes, one layer) the graph's wiring carried signal that an
 unsigned random walk extracted and the signed mechanistic encoders had not been shown to add to. The owner ruled on
 21 October 2026 (decision 9.82) that those slice comparisons with the random walk are history, measured on a graph
@@ -71,7 +71,7 @@ well, named here with their graph and date and not evidence about the current gr
 - **Q2.** Where edge signs are reported to help, what fraction of nodes receive messages of
   both signs? (Our graph, measured 7 October 2026 on the metabolic slice graph `data/processed/graph`: 7,811 of 21,337
   destinations, 36.6%, and all of them annihilate under the encoder's cross-relation mean;
-  `docs/graph_content_null_results.md` and `docs/membrane_potential_reach.md`. Added 27 October 2026: a slice-period
+  `docs/records/2026-10/graph_content_null_results.md` and `docs/records/2026-10/membrane_potential_reach.md`. Added 27 October 2026: a slice-period
   count retired as evidence by the owner's ruling of that day; the share on the current graph is uncounted.)
 - **Q3.** Is noisy-OR pooling over pathway modules reported against a linear or sum-pooled
   alternative anywhere, with a held-out comparison?
@@ -200,7 +200,7 @@ property this project measured by hand. Signed-graph balance, which the authors 
 consistency, is the condition under which the signs carry no structure of their own: a
 balanced signed graph is switching-equivalent to the all-positive graph, so propagation over
 it differs from unsigned propagation by a node-wise sign that a linear readout absorbs. If
-our graph is close to balanced, the null result in `docs/graph_content_null_results.md` has
+our graph is close to balanced, the null result in `docs/records/2026-10/graph_content_null_results.md` has
 a stated cause rather than an open puzzle.
 
 **Where this does not apply.** Balance is a condition on the sign product around each cycle,
@@ -260,7 +260,7 @@ Set aside from this search on the record, with the reason:
   over-optimistic because of protein complexes, and its complex-aware splits, bear on the disease-cluster split
   rather than on Q1. Note for the split section of the design document, not a Q1 row.
 - Shim, 2015, PLoS ONE: direct neighbourhood against whole-network diffusion, unsigned; the finding that pathway
-  connectivity decides which wins bears on the reach question in docs/membrane_potential_reach.md, not on Q1.
+  connectivity decides which wins bears on the reach question in docs/records/2026-10/membrane_potential_reach.md, not on Q1.
 
 ### Second mechanism-named search (slot 12, one Consensus search, 20 records)
 
@@ -456,7 +456,7 @@ from balanced as a signed graph gets, and switching equivalence does not apply.
 That closes the balance thread opened by the first row. The signs are not reducible to an unsigned
 graph, so the null result cannot be explained by the signs carrying no structure. It is explained, if
 at all, by the encoder discarding the structure they carry, which is what the row-sum measurement in
-docs/membrane_potential_reach.md shows.
+docs/records/2026-10/membrane_potential_reach.md shows.
 
 **Measurement that now has a point:** run `experiments/measure_signed_graph_balance.py` on the derived
 relation stack rather than the stored edge table, to report the frustration per relation and confirm
@@ -492,7 +492,7 @@ for a phenotype, with the baseline run and the signed component ablated. Two pap
 on association or similarity graphs without the ablation, one supplies the balance condition and one
 has no bearing. If that holds through the rest of the queue, the strict form of Q1 is an open question
 rather than a settled negative, which makes the unsigned random-walk baseline in
-docs/graph_content_null_results.md more unusual as a reported result than as a failure.
+docs/records/2026-10/graph_content_null_results.md more unusual as a reported result than as a failure.
 
 ### The pattern across the five rows, which is more informative than any single one
 
@@ -842,12 +842,12 @@ Why `moderate`. The evaluation is held out and the baseline at issue is run, but
 chance and no spread over drugs is printed in the text.
 
 What it suggests for our comparison. Direction and sign are separate attributes, and this paper is evidence for
-direction alone. When this note was written, the note on our null result (docs/graph_content_null_results.md) did not
+direction alone. When this note was written, the note on our null result (docs/records/2026-10/graph_content_null_results.md) did not
 say whether the random walk with restart follows edge direction or symmetrises the graph. It has since answered
 (section "The baseline is undirected and the encoders are not", 7 October 2026): the walk symmetrises the graph and
 both trained encoders follow the stored direction, so the signed encoder had been compared with a baseline that
 lacks both direction and sign, and a directed unsigned arm is the comparison that separates the two. That arm is
-`experiments/score_directed_random_walk.py` (docs/directed_random_walk.md); its results are not in this file.
+`experiments/score_directed_random_walk.py` (docs/generated/directed_random_walk.md); its results are not in this file.
 
 No instruction-like text was found in the article.
 
@@ -991,7 +991,7 @@ is fitted. It still does not reach Q1, for a reason worth keeping: on a directio
 prediction to make, so the comparison Q1 asks for only exists for the strength of a response or for a phenotype
 ranking, and the abstract reports neither against a sign-blind model. Its headline accuracies also need the
 majority-direction rate beside them before they can be credited. Our sign check on the HPO laboratory labels
-(docs/linear_response_sign_check.md, generated 7 October 2026 on the slice graph of that day) has the majority
+(docs/generated/linear_response_sign_check.md, generated 7 October 2026 on the slice graph of that day) has the majority
 direction at 0.806, above the untrained signed response at 0.615 (the "plain, 8 steps, pool" reading), so an accuracy
 near 80 percent is uninformative until the base rate is known (added 27 October 2026: those two numbers are finding 10,
 retired as evidence by the owner's ruling of that day and decision 9.103; the point that a base rate is needed does

@@ -3,7 +3,7 @@
 Why. The metabolic layer could receive but almost could not act: of 266,966 edges, 591 ran metabolite to protein and
 only **four** of those were `inhibits`, so no metabolite could regulate an enzyme in the graph. BRENDA supplies 4,143
 pairs that land on nodes the graph already holds - 1,552 `inhibits`, 482 `activates` and 2,109 `cofactor_of` - over 501
-metabolites and 1,364 enzymes (`experiments/map_brenda_regulation_to_graph.py`, `docs/brenda_regulation_mapping.json`).
+metabolites and 1,364 enzymes (`experiments/map_brenda_regulation_to_graph.py`, `docs/generated/brenda_regulation_mapping.json`).
 
 Licence. "The usage of the BRENDA data is licensed under Creative Commons Attribution License CC BY 4.0", read on the
 provider's download page and again at `copy.php`, which the shipped README points to, so the derived table ships here.

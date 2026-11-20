@@ -23,7 +23,7 @@ class, the first that holds:
 
 Usage:
   python experiments/audit_channel_conduction.py --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v5 \\
-      --markdown-output docs/channel_conduction_audit.md
+      --markdown-output docs/generated/channel_conduction_audit.md
 """
 from __future__ import annotations
 
@@ -170,7 +170,7 @@ def main() -> None:
     parser.add_argument("--uniprot-table", type=Path, default=Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz"))
     parser.add_argument("--go-annotations", type=Path, default=Path("data/raw/gene_ontology/goa_human.gaf.gz"))
     parser.add_argument("--go-ontology", type=Path, default=Path("data/raw/gene_ontology/go-basic.obo"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/channel_conduction_audit.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/channel_conduction_audit.md"))
     parser.add_argument("--table-output", type=Path, default=None, help="CSV, one row per channel gene in the graph")
     arguments = parser.parse_args()
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")

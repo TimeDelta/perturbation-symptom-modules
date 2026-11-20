@@ -11,7 +11,7 @@ Steps:
   5. ICA rotation of the same subspace (seed 0) for reading, its stability against seeds 1 to 4, and for each
      independent component the annotations it correlates with most.
 Outputs: data/processed/node_descriptors/protein_descriptors.parquet (rrr_1 ... rrr_k),
-protein_descriptors_ica.parquet (ica_1 ... ica_k), protein_descriptor_fit.json and docs/protein_descriptor_report.md.
+protein_descriptors_ica.parquet (ica_1 ... ica_k), protein_descriptor_fit.json and docs/generated/protein_descriptor_report.md.
 
 With --per-entry-only it refits once at the ridge penalty and rank recorded in protein_descriptor_fit.json, writes the
 descriptors of each reviewed entry (indexed by accession) to protein_descriptors_per_entry.parquet, for the split graph's
@@ -107,7 +107,7 @@ def main() -> None:
     parser.add_argument("--slice-nodes", type=Path, default=Path("data/processed/graph/nodes.parquet"))
     parser.add_argument("--full-nodes", type=Path, default=Path("data/processed/graph_full/nodes.parquet"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/node_descriptors"))
-    parser.add_argument("--report", type=Path, default=Path("docs/protein_descriptor_report.md"))
+    parser.add_argument("--report", type=Path, default=Path("docs/generated/protein_descriptor_report.md"))
     parser.add_argument("--per-entry-only", action="store_true",
                         help="write only the per-entry descriptors, refitted at the recorded penalty and rank (the other outputs are left as they are)")
     arguments = parser.parse_args()

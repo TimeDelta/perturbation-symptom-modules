@@ -93,7 +93,7 @@ def test_the_requirement_keeps_eleven_of_the_seventeen_and_the_six_lost_are_the_
     Of the 17 drugs that passed part (a) before the requirement, 11 survive it: codeine, cyclobenzaprine,
     felodipine, hydrocodone, indomethacin, metoprolol, nebivolol, nimodipine, omeprazole, ondansetron, propranolol.
     The 6 lost are bisoprolol, granisetron, metformin, palonosetron, pindolol and timolol, and each is lost on a
-    sentence quoted in WRONGLY_ADMITTED_WITHOUT_IT or in docs/label_central_action.md. So it is a correction and
+    sentence quoted in WRONGLY_ADMITTED_WITHOUT_IT or in docs/generated/label_central_action.md. So it is a correction and
     not a trade, which is why no compensating relaxation was added.
     """
     assert len(WRONGLY_ADMITTED_WITHOUT_IT) == 5, "bisoprolol's sentence is in the document rather than here"

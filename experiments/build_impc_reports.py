@@ -2,7 +2,7 @@
 
 Reads the pinned IMPC release 24.0 files under data/raw/impc, HGNC for the mouse-to-human map and the graph's gene
 nodes; writes data/processed/impc/impc_reports.parquet (the evidence_reports schema plus rubric_cross_species and
-rubric_proxy_validity), impc_summary.json and the generated docs/impc_knockout_evidence.md.
+rubric_proxy_validity), impc_summary.json and the generated docs/generated/impc_knockout_evidence.md.
 
 Usage:
   python experiments/build_impc_reports.py --graph-dir data/processed/graph_full
@@ -41,7 +41,7 @@ def main() -> int:
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph_full"))
     parser.add_argument("--crosswalk", type=Path, default=DEFAULT_CROSSWALK_PATH)
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/impc"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/impc_knockout_evidence.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/impc_knockout_evidence.md"))
     parser.add_argument("--include-weak", action="store_true")
     arguments = parser.parse_args()
 

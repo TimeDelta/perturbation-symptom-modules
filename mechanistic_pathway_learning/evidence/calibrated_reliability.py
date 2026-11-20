@@ -61,7 +61,7 @@ column by sqrt(source_deviation_penalty) before the fit and the fitted weight by
 the same optimum as a per-coefficient penalty because sklearn's L2 term is 0.5 w^T w. Why 10: with REGULARISATION_C 1
 the deviations then carry a Gaussian prior with standard deviation 1/sqrt(10), about 0.32 on the log-odds, so a mouse
 source is expected to differ from the other mouse sources by a factor of about 1.4 in the odds unless its own cells say
-more; it is a numerical choice, not a physiological one, and the measurement record (docs/mouse_sources_measured_v5.md)
+more; it is a numerical choice, not a physiological one, and the measurement record (docs/generated/mouse_sources_measured_v5.md)
 gives the coefficients at 1, 10 and 100. With one source per species the pooled columns are those of the form before
 9.93, so under species_form "pooled" a run whose reports hold IMPC as the only mouse source fits the model it fitted
 before, bit for bit (tested); under the default the same run now fits mouse apart, which is the ruling's intent.
@@ -88,7 +88,7 @@ the decision asked for. When no pair carries a statistic the columns are not mad
 the statistics fits the model it fitted before.
 
 Popularity. It is a feature so that the volume of reports on a well-studied perturbation is attributed to reporting
-propensity rather than to truth (the SAR reading of positive-only sources, docs/soft_priors.md); the prediction is
+propensity rather than to truth (the SAR reading of positive-only sources, docs/records/2026-10/soft_priors.md); the prediction is
 read with popularity set to its median over the training rows, so the prior carries the report-type effect and not
 the popularity effect. The raw prediction is kept beside it in the summary for the reader.
 
@@ -98,7 +98,7 @@ negatives among them the tiers are kept and the summary says why.
 
 What it is not. Not Dawid-Skene: there is no latent truth and no conditional-independence assumption; the target is
 the label table, with its own ascertainment, which is why the popularity term exists and why the arm is read against
-the permuted prior (docs/soft_priors.md, section 3).
+the permuted prior (docs/records/2026-10/soft_priors.md, section 3).
 """
 from __future__ import annotations
 

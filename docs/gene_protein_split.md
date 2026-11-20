@@ -230,7 +230,7 @@ Code changes, all inactive on a merged graph:
 
 The user: "I'm ok with regenerating the pre-registered input but don't rerun the same pilots until we've completely
 nailed down the design options." The split descriptor tables were rebuilt so the Reactome protein entities carry their
-own annotation vectors in the protein block (docs/complex_descriptors.md): 138 columns against 137, SHA-256
+own annotation vectors in the protein block (docs/generated/complex_descriptors.md): 138 columns against 137, SHA-256
 `df38d78c78ffe6d4`. `nodes.parquet`, `edges.parquet` and `gene_to_protein.parquet` reproduce byte-identically, and the
 split summary's checks still hold (no protein column on a gene row, no other column on a protein row, every other
 column unchanged on the nodes that existed before).

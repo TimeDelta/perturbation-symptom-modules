@@ -1,6 +1,6 @@
 """The trainer's defaults are the registered v4 model (the owner, 13 October 2026: "all of the v4 stuff should be ON by
 default"), held equal to the explicit flag lists of experiments/run_main_model_batch.py so that a default cannot drift
-from the registration without this test failing (docs/confirmatory_architecture_review.md, row 8)."""
+from the registration without this test failing (docs/records/2026-10/confirmatory_architecture_review.md, row 8)."""
 import sys
 from pathlib import Path
 

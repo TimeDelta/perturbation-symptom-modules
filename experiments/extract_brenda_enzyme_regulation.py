@@ -44,7 +44,7 @@ pattern is not widened ("Don't widen then"), and the rule is the conservative on
 for now"). Until 1 November 2026 every activating-compound entry was written as `activates` whatever its note said, and
 the summary only counted the notes stating no effect. On release 2026.1 the rule turns two of the 47 such notes into
 negatives, pyrazole on EC 1.1.1.284 and Ca2+/calmodulin on EC 2.7.1.23, and leaves the rest as they were, which matches
-the Fable reading of all 47 in docs/brenda_activator_note_classification_2026-11-01.md.
+the Fable reading of all 47 in docs/records/2026-11/brenda_activator_note_classification_2026-11-01.md.
 """
 import argparse
 import collections
@@ -116,7 +116,7 @@ NAMES_A_COMPOUND = re.compile(r"\bby\s+(?!(?:the|this|that|it|its|either|both|ex
 # --- the activating-compound field (decision 9.88, the owner's rulings of 1 November 2026) ---------------------------
 # The owner ruled on 26 October 2026 that "\"no effect\" should not have an activates edge", and on 1 November 2026,
 # after a Fable reading of every activator note the absence pattern catches
-# (docs/brenda_activator_note_classification_2026-11-01.md), "Don't widen then" and, of the conservative rule, "That's a
+# (docs/records/2026-11/brenda_activator_note_classification_2026-11-01.md), "Don't widen then" and, of the conservative rule, "That's a
 # defensible rule. Use it for now". So the candidates are only the notes NO_INHIBITION_OR_EFFECT already catches, and a
 # note becomes a negative only when it denies an effect on this human enzyme and states no activation anywhere.
 # Activator notes of no effect are mostly comparisons ("increases activity of the mitochondrial enzyme, no effect on the

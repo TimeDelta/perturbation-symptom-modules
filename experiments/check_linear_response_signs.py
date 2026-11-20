@@ -14,7 +14,7 @@ Agreement is compared with always predicting the majority direction ("increased"
 as a score for "increased".
 
 Usage:
-  OMP_NUM_THREADS=1 python experiments/check_linear_response_signs.py --markdown-output docs/linear_response_sign_check.md
+  OMP_NUM_THREADS=1 python experiments/check_linear_response_signs.py --markdown-output docs/generated/linear_response_sign_check.md
 """
 from __future__ import annotations
 

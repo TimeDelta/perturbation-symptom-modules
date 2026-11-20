@@ -1,5 +1,5 @@
 """Measure the mouse report sources of decision 9.93 against a label selection, fit the calibrated reliability regression
-with and without them, and write the generated record docs/mouse_sources_measured_v5.md.
+with and without them, and write the generated record docs/generated/mouse_sources_measured_v5.md.
 
 For each mouse source (IMPC-knockout and the three of 9.93: MGI-literature, MGI-screen, SFARI-mouse-models):
   1. calls and absences (relation induces; the relieves calls are counted apart), the human genes they cover and the
@@ -170,7 +170,7 @@ def main() -> int:
     parser.add_argument("--species-dir", type=Path, default=None, help="where the tables of 9.94 are (default --mouse-dir, else --processed-dir)")
     parser.add_argument("--all-validities-dir", type=Path, default=None, help="the tables of 9.94 built with every validity class, for their counts")
     parser.add_argument("--graph-note", default="the v5 data layer rebuilt on 22 October 2026 from main at 608df34, before the coupling edge types of pull request #11")
-    parser.add_argument("--output", type=Path, default=Path("docs/mouse_sources_measured_v5.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/mouse_sources_measured_v5.md"))
     arguments = parser.parse_args()
 
     processed = arguments.processed_dir

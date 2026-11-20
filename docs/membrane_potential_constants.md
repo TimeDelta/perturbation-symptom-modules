@@ -633,8 +633,8 @@ Decision 9.112's three remaining sub-questions, as the session briefed them that
 ## Bicarbonate through GABA_A and glycine receptors: the ruling of 7 November 2026
 
 Three Fable passes of 7 November 2026 took the owner's "source the bicarbonate first" to the primary literature
-(`docs/bicarbonate_gaba_2026-11-07.md`, `docs/anion_permeability_pdfs_2026-11-07.md`,
-`docs/per_class_chloride_2026-11-07.md`; computations in `experiments/derive_gaba_reversal_with_bicarbonate.py` and
+(`docs/records/2026-11/bicarbonate_gaba_2026-11-07.md`, `docs/records/2026-11/anion_permeability_pdfs_2026-11-07.md`,
+`docs/records/2026-11/per_class_chloride_2026-11-07.md`; computations in `experiments/derive_gaba_reversal_with_bicarbonate.py` and
 `experiments/derive_gaba_reversal_from_permeability_tables.py`). HCO3- is 23.5 to 26 mM outside and 11 to 17 mM inside
 mature central neurons; the HCO3-/Cl- permeability ratio is 0.18 for GABA_A and 0.11 for glycine receptors in Bormann
 et al. 1987, 0.44 and 0.40 in Fatima-Shad and Barry 1993. At the registered constants E_rev - V_rest then runs from

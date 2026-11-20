@@ -229,7 +229,7 @@ def test_an_unbound_fraction_sentence_must_keep_counting_as_a_binding_statement(
     A refinement was proposed on 14 October 2026: exclude "fraction" when the "un" prefix is present, so that a
     fraction-unbound figure stops reading as a binding statement. It was tested against the data and rejected,
     because valproate's albumin carrier rests on exactly that construction. The sentence below is the one recorded
-    in docs/label_plasma_binders.md and docs/label_plasma_binders_v4.md as valproate's albumin evidence; the
+    in docs/generated/label_plasma_binders.md and docs/generated/label_plasma_binders_v4.md as valproate's albumin evidence; the
     proposed pattern `\bunbound\b(?!\s+fractions?)` does not match it, so the change would have dropped a carrier
     the screen was written to find.
 

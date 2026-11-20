@@ -1,10 +1,10 @@
 # Literature survey, evidence class E3: retrieval and appraisal (PubTator3 and CTD)
 
 Status: both halves implemented and first run on 3 October 2026. The adversarial review of the component
-(docs/design_review_v04.md, third table) produced fixes that went into the code on 6 October 2026, and the chain was
+(docs/records/2026-10/design_review_v04.md, third table) produced fixes that went into the code on 6 October 2026, and the chain was
 rerun the same day on the PubTator3 bulk file that NCBI published on 6 October (section 7); the counts in this
 document and in release v0.4 are from that build unless a paragraph names the 3 October build. The rule-based appraisal and the survey
-(experiments/survey_literature.py, docs/literature_survey.md) join the two relation tables with the document
+(experiments/survey_literature.py, docs/generated/literature_survey.md) join the two relation tables with the document
 metadata into literature_reports.parquet, which enters the assembled table and the reliability fit through
 assemble_evidence_table.py --extra-reports as grade E soft priors. Design sections 3.1, 4.2 (E3 paragraph), 4.3
 and 6.1; report schema in docs/evidence_reports_spec.md section 1.
@@ -35,7 +35,7 @@ remains unconfigured.
 | experiments/fetch_ctd_chemical_disease.py | the CTD fetch (section 6) |
 | experiments/fetch_pubtator_documents.py | document metadata per PMID: species and year from the PubTator3 export, publication types from esummary; capped, directional PMIDs first, resumable (section 6a) |
 | mechanistic_pathway_learning/evidence/rule_based_evidence_appraisal.py | study design, species flags, rubric features and rubric weight from the document metadata (section 6a) |
-| experiments/survey_literature.py | joins relations, documents and appraisal into literature_reports.parquet, writes literature_summary.json and docs/literature_survey.md with the overlap against the assembled table |
+| experiments/survey_literature.py | joins relations, documents and appraisal into literature_reports.parquet, writes literature_summary.json and docs/generated/literature_survey.md with the overlap against the assembled table |
 | tests/test_literature_relations.py | fixtures for relation-type mapping, Disease-Gene signs, mixed-polarity demotion, descriptor-level flags, gene id precedence, one drug per chemical, CTD evidence mapping, name matching, source names, schema |
 | tests/test_rule_based_evidence_appraisal.py | design precedence (review, then species, then publication types), weights, the unfetched-metadata design |
 

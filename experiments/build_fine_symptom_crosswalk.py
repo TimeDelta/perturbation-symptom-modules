@@ -2,7 +2,7 @@
 
 Reads docs/symptom_crosswalk.csv, configs/symptom_construct_additions.csv, configs/fine_construct_term_overrides.csv,
 configs/fine_construct_extra_roots.csv, hp.obo and the SIDER MedDRA vocabulary; writes docs/symptom_crosswalk_fine.csv, configs/impc_symptom_crosswalk_fine.csv
-and docs/fine_symptom_constructs.md (generated, stamped). The rules are in evidence/symptom_constructs.py: a coarse
+and docs/generated/fine_symptom_constructs.md (generated, stamped). The rules are in evidence/symptom_constructs.py: a coarse
 row's terms are shared out among its HPO roots by the ontology's own vocabulary, an added construct takes the MedDRA
 preferred terms whose words the ontology uses for it, an extra root splits a construct out below a coarse row's roots
 without changing the coarse row, and every assignment is listed with how it was made.
@@ -46,7 +46,7 @@ from mechanistic_pathway_learning.evidence.symptom_constructs import (
 
 DEFAULT_OBO = Path("data/raw/hpo/hp.obo")
 DEFAULT_SIDER_SIDE_EFFECTS = Path("data/raw/sider_4.1/meddra_all_se.tsv.gz")
-DEFAULT_PAGE = Path("docs/fine_symptom_constructs.md")
+DEFAULT_PAGE = Path("docs/generated/fine_symptom_constructs.md")
 
 
 def meddra_preferred_terms(path: Path) -> list[str]:

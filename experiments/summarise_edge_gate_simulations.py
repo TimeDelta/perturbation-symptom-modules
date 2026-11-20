@@ -1,7 +1,7 @@
-"""The digest of the edge-gate simulations (decision 9.62) that docs/edge_gate_simulation.md and figures 15 and 16 read.
+"""The digest of the edge-gate simulations (decision 9.62) that docs/records/2026-10/edge_gate_simulation.md and figures 15 and 16 read.
 
 Reads runs/simulations/<name>.json for the runs named in RUNS (scripts/run_edge_gate_simulations.sh writes them; the
-directory is not tracked) and writes docs/edge_gate_simulation_results.json: per run, its settings and world, the
+directory is not tracked) and writes docs/generated/edge_gate_simulation_results.json: per run, its settings and world, the
 scores of the read-out, of the exact closure evidence and of stability selection, the held-out losses, and edge by edge
 the closed edges with their tier, prior, truth and evidence, the closing frequencies over refits and the first-order
 estimate beside the exact change. A run whose file is missing is left out and listed under "missing".
@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 
 RUN_DIRECTORY = Path("runs/simulations")
-OUTPUT_PATH = Path("docs/edge_gate_simulation_results.json")
+OUTPUT_PATH = Path("docs/generated/edge_gate_simulation_results.json")
 CONFIRMATORY_GRAPH_DIRECTORY = Path("data/processed/graph_full_neuronal_split_binders_drugs_v5")
 EVIDENCE_DIRECTORY = Path("data/processed/evidence_full_v5")
 EDGE_PRIOR_TIERS = Path("configs/edge_prior_tiers.csv")

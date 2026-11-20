@@ -20,9 +20,9 @@ The pairs no source reports are used as the negatives, as the study's main metri
 than known negatives, which is why the gap rather than the level is the reading.
 
 The training arm (train with a stratum admitted as positives, score on the kept metric) is a separate run and is
-specified in docs/set_aside_pair_sensitivity.md rather than started here.
+specified in docs/generated/set_aside_pair_sensitivity.md rather than started here.
 
-Writes docs/set_aside_pair_sensitivity.md. Reads no lockbox outcome: the runs it reads are development runs with the
+Writes docs/generated/set_aside_pair_sensitivity.md. Reads no lockbox outcome: the runs it reads are development runs with the
 lockbox perturbations removed. Idempotent.
 
 Usage:
@@ -47,7 +47,7 @@ ENDPOINT_BASELINES = ("popularity", "degree_popularity")
 BEST_ENDPOINT_BASELINE = "the better of popularity and degree_popularity"
 MINIMUM_POSITIVES_IN_A_STRATUM = 10
 MINIMUM_POSITIVES_FOR_A_SYMPTOM = 5
-OUTPUT_DOCUMENT = Path("docs/set_aside_pair_sensitivity.md")
+OUTPUT_DOCUMENT = Path("docs/generated/set_aside_pair_sensitivity.md")
 
 
 def reason_family(reason: str) -> str:

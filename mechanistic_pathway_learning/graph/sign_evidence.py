@@ -1,5 +1,5 @@
 """The evidence behind an edge's sign, as distinct from the evidence behind the pair (decision 9.70, the knowledge-graph
-practices review, `docs/knowledge_graph_practices_review.md` M1 and M2).
+practices review, `docs/records/2026-10/knowledge_graph_practices_review.md` M1 and M2).
 
 The edge evidence table (graph/edge_evidence.py) counts the distinct PubMed ids behind a pair of nodes. OmniPath keeps
 the support for an interaction's positive sign, its negative sign, its direction and its mere occurrence apart (the

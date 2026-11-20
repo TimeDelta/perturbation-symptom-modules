@@ -102,7 +102,7 @@ def main() -> None:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence"))
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--output", type=Path, default=Path("docs/fold_mechanism_sharing.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/fold_mechanism_sharing.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster")

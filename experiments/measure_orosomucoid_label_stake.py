@@ -14,7 +14,7 @@ Two questions, answered from the repository's own inputs and nothing else:
      training example only if HPO annotates it. This script reports the annotation count for every plasma binder,
      which is what decides whether ORM1 and ORM2 can enter at all.
 
-Writes docs/orosomucoid_label_stake.md. Reads no outcome of any lockbox run. Idempotent.
+Writes docs/generated/orosomucoid_label_stake.md. Reads no outcome of any lockbox run. Idempotent.
 
 Usage:
   python experiments/measure_orosomucoid_label_stake.py
@@ -30,7 +30,7 @@ from experiments.measure_fraction_unbound_coverage import measurement_rows, stud
 
 HPO_ANNOTATIONS = Path("data/raw/hpo/genes_to_phenotype.txt")
 LABEL_SELECTION = Path("data/processed/label_selection/better_v2_full_v2.parquet")
-OUTPUT_DOCUMENT = Path("docs/orosomucoid_label_stake.md")
+OUTPUT_DOCUMENT = Path("docs/generated/orosomucoid_label_stake.md")
 # every plasma binder the carriage table names (docs/plasma_protein_binding.md), orosomucoid's two genes first
 PLASMA_BINDER_GENES = ["ORM1", "ORM2", "ALB", "SERPINA6", "SERPINA7", "TTR", "AFP", "SHBG", "RBP4", "APOA1", "APOB"]
 

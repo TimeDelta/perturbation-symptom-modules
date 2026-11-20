@@ -7,7 +7,7 @@ until then.
 ## Why
 
 On the first family's full-graph pilots the noisy-OR leaks stayed at the raw base rate (0.061 against a loss-optimal
-constant of 0.204), and the modules supplied the difference (docs/best_epoch_zero.md). The slice shows the same at the
+constant of 0.204), and the modules supplied the difference (docs/records/2026-10/best_epoch_zero.md). The slice shows the same at the
 confirmatory leak learning rate of 0.0002: leaks of 0.193 to 0.194 against a raw rate of 0.191 and an optimum of 0.434.
 In b6_linear_response_gate_time_scales_cofactors no module varies across perturbations. Modules that add the same
 amount to every perturbation cannot be read as pathways.

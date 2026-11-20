@@ -57,7 +57,7 @@ class HardConcreteNodeGate(nn.Module):
         have converged to 0 or 1; with gates that stay fractional and a sum that pools thousands of them, the pooled sum
         concentrates at its expectation during training, so evaluation must use that expectation (at log_alpha -2.3 the
         expected training gate is 0.11 and the Louizos estimator 0.009). Runs recorded without a git commit, before
-        6 October 2026, evaluated with the Louizos estimator (docs/b6_module_diagnosis.md).
+        6 October 2026, evaluated with the Louizos estimator (docs/generated/b6_module_diagnosis.md).
 
         excluded_node_mask, [num_graph_nodes] boolean, True for a node no module may include: every gate on it is 0 in
         training, in evaluation and in the L0 count, so it can neither carry module support nor cost description length.
@@ -222,7 +222,7 @@ class NoisyOrPathwayModuleHead(nn.Module):
     def time_scale_parameter_groups(self) -> dict[str, list[nn.Parameter]]:
         """The parameters the noisy-OR reads directly as probabilities or offsets, by the time scale they may need:
         links have to travel from logit -3 towards 1 within the epochs early stopping allows, while a leak started at the
-        base rate should move slowly, or it absorbs the signal before the links can (docs/b6_module_diagnosis.md).
+        base rate should move slowly, or it absorbs the signal before the links can (docs/generated/b6_module_diagnosis.md).
         Gates have to travel too: a gate that no perturbation's field reaches gets only the sparsity penalty's gradient,
         which Adam turns into a full step down, so it closes at one learning rate per step; from log-alpha -1, closing
         to a probability of being nonzero near 0.01 (log-alpha about -6) takes some 2,500 steps at 0.002, and every

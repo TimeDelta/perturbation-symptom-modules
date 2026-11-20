@@ -21,7 +21,7 @@ holds for any field.
 
 Usage:
   python experiments/label_review/untrained_symptom_degeneracy.py
-  python experiments/label_review/untrained_symptom_degeneracy.py --json-output docs/untrained_symptom_degeneracy.json
+  python experiments/label_review/untrained_symptom_degeneracy.py --json-output docs/generated/untrained_symptom_degeneracy.json
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 #!/bin/bash
-# The edge-gate simulations of docs/edge_gate_simulation.md (decision 9.62), each written to runs/simulations/<name>.json,
-# then the digest docs/edge_gate_simulation_results.json that the record and figures 15 and 16 read.
+# The edge-gate simulations of docs/records/2026-10/edge_gate_simulation.md (decision 9.62), each written to runs/simulations/<name>.json,
+# then the digest docs/generated/edge_gate_simulation_results.json that the record and figures 15 and 16 read.
 # Seconds to minutes per run on two cores; about 40 minutes in all.
 #   bash scripts/run_edge_gate_simulations.sh            # every run
 #   bash scripts/run_edge_gate_simulations.sh b3_s0      # the named runs only

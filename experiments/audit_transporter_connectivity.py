@@ -11,7 +11,7 @@ the metabolites they move, so their substrates can be checked against what the p
 without any catalysing gene are counted too: they move metabolites, but no gene perturbation reaches them.
 
 Usage (the default graphs are the merged full graph and the v5 graph the registered models read):
-  python experiments/audit_transporter_connectivity.py --markdown-output docs/transporter_connectivity_audit.md
+  python experiments/audit_transporter_connectivity.py --markdown-output docs/generated/transporter_connectivity_audit.md
 """
 from __future__ import annotations
 

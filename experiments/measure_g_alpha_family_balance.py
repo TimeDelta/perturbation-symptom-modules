@@ -19,7 +19,7 @@ none for a receptor with both as primary.
 
 Usage:
   python experiments/measure_g_alpha_family_balance.py --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v5 \
-      --evidence-dir data/processed/evidence_full_v5 --output docs/g_alpha_family_balance_measured.json
+      --evidence-dir data/processed/evidence_full_v5 --output docs/generated/g_alpha_family_balance_measured.json
 """
 from __future__ import annotations
 

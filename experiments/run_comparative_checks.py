@@ -171,7 +171,7 @@ def main() -> int:
     parser.add_argument("--held-out-perturbations", type=Path, default=None,
                         help="a table with a perturbation_id column naming the held-out perturbations (membership only; never a prediction). Without it no check is assigned a side")
     parser.add_argument("--run-dirs", type=Path, nargs="*", default=[], help="finished runs of experiments/run_main_model.py whose folds are asked the checks")
-    parser.add_argument("--markdown-output", default="docs/comparative_checks.md", help="the structure report; none writes no file")
+    parser.add_argument("--markdown-output", default="docs/generated/comparative_checks.md", help="the structure report; none writes no file")
     arguments = parser.parse_args()
 
     checks = load_checks(arguments.checks)

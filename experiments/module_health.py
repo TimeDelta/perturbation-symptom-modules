@@ -1,5 +1,5 @@
 """Module health of noisy-OR runs: whether the pathway modules add to some perturbations only or add the same amount to
-every perturbation, a second leak (docs/best_epoch_zero.md; rule in docs/module_health.md, written before the module-fix
+every perturbation, a second leak (docs/records/2026-10/best_epoch_zero.md; rule in docs/module_health.md, written before the module-fix
 runs it reads). Reads each fold's results.json, test_module_activations.npy, test_predictions.npy and module_support.npy;
 trains nothing.
 
@@ -18,7 +18,7 @@ Usage:
   python experiments/module_health.py --run-root runs/module_fix \\
       --pairs b6_mechanistic_gate_time_scales_weighted_start:b6_mechanistic_gate_time_scales \\
               b6_linear_response_gate_time_scales_cofactors_weighted_start:b6_linear_response_gate_time_scales_cofactors \\
-      --markdown-output docs/module_health_results.md
+      --markdown-output docs/generated/module_health_results.md
 """
 from __future__ import annotations
 

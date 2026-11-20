@@ -116,7 +116,7 @@ def main() -> None:
     parser.add_argument("--genes-per-draw", type=int, default=154)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--pilot-runs", type=Path, nargs="*", default=[])
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/perturbation_type_offset.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/perturbation_type_offset.md"))
     parser.add_argument("--json-output", type=Path, default=Path("runs/perturbation_type_offset.json"))
     arguments = parser.parse_args()
 

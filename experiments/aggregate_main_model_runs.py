@@ -13,7 +13,7 @@ of every metric (ranking_and_calibration_metrics, mask), and a run trained on an
 
 Usage:
   python experiments/aggregate_main_model_runs.py --run-dirs runs/b6_default_disease_cluster runs/b3_sigmoid_disease_cluster \
-      --baseline-results runs/baselines_disease_cluster/results.json --markdown-output docs/phase3_main_model.md
+      --baseline-results runs/baselines_disease_cluster/results.json --markdown-output docs/generated/phase3_main_model.md
 """
 from __future__ import annotations
 
@@ -331,7 +331,7 @@ def main() -> None:
                              "a stored result equals the recomputed one (fixed bootstrap seeds)")
     parser.add_argument("--no-cache", action="store_true", help="recompute everything and store nothing")
     parser.add_argument("--title", default="Phase 3: proposed model and sigmoid-head baseline")
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/phase3_main_model.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/phase3_main_model.md"))
     parser.add_argument("--json-output", type=Path, default=Path("runs/phase3_aggregate.json"))
     arguments = parser.parse_args()
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by, label_selection=arguments.label_selection)

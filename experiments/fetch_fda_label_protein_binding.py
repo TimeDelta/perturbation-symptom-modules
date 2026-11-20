@@ -2,7 +2,7 @@
 
 Why this source. The carrier identity of a drug, which plasma protein holds it, reaches only 27 of this study's drugs
 through the pinned fraction-unbound database (docs/fraction_unbound_coverage.md), and the plasma carriage edges of
-docs/plasma_binder_graph.md need that identity per drug. A drug label states it when it matters clinically: methadone's
+docs/generated/plasma_binder_graph.md need that identity per drug. A drug label states it when it matters clinically: methadone's
 says "In plasma, methadone is predominantly bound to alpha-1-acid glycoprotein (85% to 90%)". Labels are a source
 family this study already uses, because OnSIDES is built from them, and openFDA serves them with a `set_id` and an
 `effective_time`, so the exact label version behind a sentence is recorded and the sentence can be quoted.

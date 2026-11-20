@@ -1,6 +1,6 @@
 """Read the carrier identity out of the cached FDA label sentences, and check it against the pinned measurements.
 
-The plasma carriage edges of docs/plasma_binder_graph.md need to know which plasma protein holds a drug. The pinned
+The plasma carriage edges of docs/generated/plasma_binder_graph.md need to know which plasma protein holds a drug. The pinned
 fraction-unbound database gives that for 27 of this study's drugs and names orosomucoid for 11 of them
 (docs/fraction_unbound_coverage.md). This script asks how much further the drug labels reach, and whether they agree
 with the database where both speak, which is the only check available on a new source of the same fact.
@@ -10,7 +10,7 @@ negation. Sentences that name both are reported as "both" rather than resolved, 
 sentence and the label's set_id so a reader can check the claim rather than take it.
 
 Reads the cache of experiments/fetch_fda_label_protein_binding.py and the pinned database. Writes
-docs/label_plasma_binders.md and configs/drug_plasma_carriers.csv, the same readings as a table a graph build can
+docs/generated/label_plasma_binders.md and configs/drug_plasma_carriers.csv, the same readings as a table a graph build can
 read (experiments/build_drug_entry_node_variant.py): one row per drug either source names a carrier for, with the
 carrier each source gives, the label version and the sentence. A drug the two sources disagree on is left out of the
 table and listed in the document, because no rule resolves a disagreement yet (docs/research_summary.md, 10 October
@@ -19,7 +19,7 @@ table and listed in the document, because no rule resolves a disagreement yet (d
 Usage:
   python experiments/scope_label_plasma_binder_coverage.py --evidence-dir data/processed/evidence_full_v3_parkinsonism
   python experiments/scope_label_plasma_binder_coverage.py --evidence-dir data/processed/evidence_full_v4 \
-      --carrier-table configs/drug_plasma_carriers_v4.csv --document docs/label_plasma_binders_v4.md
+      --carrier-table configs/drug_plasma_carriers_v4.csv --document docs/generated/label_plasma_binders_v4.md
 """
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ ANOTHER_DRUG_S_BINDING = ("affect the binding of", "affected the binding of", "a
 # primarily to albumin", which is naloxone's carrier (found on 11 October 2026 when labels were fetched for the
 # drugs with up to three targets)
 COMBINATION_PARTNERS = frozenset({"naloxone", "acetaminophen", "carbidopa", "butalbital", "samidorphan", "benazepril", "naproxen"})
-OUTPUT_DOCUMENT = Path("docs/label_plasma_binders.md")
+OUTPUT_DOCUMENT = Path("docs/generated/label_plasma_binders.md")
 CARRIER_TABLE = Path("configs/drug_plasma_carriers.csv")
 CARRIER_TABLE_COLUMNS = ["perturbation_id", "drug", "carrier", "source", "label_carrier", "database_carrier", "label_names_the_drug",
                          "label_set_id", "label_effective_time", "label_sentence"]

@@ -42,7 +42,7 @@ def main() -> int:
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v2.parquet"))
     parser.add_argument("--group-by", default="disease_cluster_and_targets")
     parser.add_argument("--lockbox", type=Path, default=Path("configs/lockbox_v2.json"))
-    parser.add_argument("--output", type=Path, default=Path("docs/plasma_binder_confirmatory_effect.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/plasma_binder_confirmatory_effect.md"))
     arguments = parser.parse_args()
 
     added = added_edge_rows(arguments.source_graph, arguments.variant_graph)

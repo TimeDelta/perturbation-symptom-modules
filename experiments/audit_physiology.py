@@ -2,7 +2,7 @@
 sources allow? (The owner, 15 October 2026: "The top priority should always be representing the underlying physiology
 as truly as possible.")
 
-Seven sections, each a function returning a dict, rendered to docs/physiology_audit.md (generated, stamped) and
+Seven sections, each a function returning a dict, rendered to docs/generated/physiology_audit.md (generated, stamped) and
 data/processed/audit/physiology_audit.json:
 
   1. graph integrity: duplicate edges, self-loops, dangling endpoints, contradictory signs, unsigned fractions,
@@ -473,7 +473,7 @@ def main() -> int:
     parser.add_argument("--sider-indications", type=Path, default=Path("data/raw/sider_4.1/meddra_all_indications.tsv.gz"))
     parser.add_argument("--hpo-obo", type=Path, default=Path("data/raw/hpo/hp.obo"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/audit"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/physiology_audit.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/physiology_audit.md"))
     parser.add_argument("--skip-balance", action="store_true", help="skip the cobra mass-balance pass (minutes)")
     arguments = parser.parse_args()
 

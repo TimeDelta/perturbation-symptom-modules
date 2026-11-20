@@ -372,7 +372,7 @@ if [ "$stage" = "brenda" ]; then
   echo "building the derived BRENDA table from $split_graph"
   PYTHONPATH=. python experiments/map_brenda_regulation_to_graph.py \
     --regulation-records "$processed/brenda_regulation_records.csv" --graph-dir "$split_graph" \
-    --output "$derived_table" --summary docs/brenda_regulation_mapping.json \
+    --output "$derived_table" --summary docs/generated/brenda_regulation_mapping.json \
     --no-inhibition-output configs/brenda_metabolite_enzyme_no_inhibition.csv \
     --no-activation-output configs/brenda_metabolite_enzyme_no_activation.csv \
     --compare-with "$table_before" > "$log_directory/brenda_metabolite_enzyme_regulation.log" 2>&1 || {
@@ -391,7 +391,7 @@ describe it. Delete them and rerun the graphs stage, which rebuilds them on the 
          $processed/graph_full_neuronal_split_binders_drugs_v4 $processed/graph_full_neuronal_split_binders_drugs_v4_enzymes
   bash scripts/rebuild_data_layer.sh
 Then commit the regenerated table, regenerate the generated pages and run the suite. Decision 9.88 owes the owner the
-count of absence rows that also exist as edges; docs/brenda_regulation_mapping.json holds it.
+count of absence rows that also exist as edges; docs/generated/brenda_regulation_mapping.json holds it.
 DOWNSTREAM
   fi
 fi

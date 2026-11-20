@@ -1,5 +1,5 @@
 """graph/sign_evidence.py: the PubMed ids behind an edge's sign rather than its pair, and CollecTRI's sign decisions
-(decision 9.70; docs/knowledge_graph_practices_review.md, M1 and M2)."""
+(decision 9.70; docs/records/2026-10/knowledge_graph_practices_review.md, M1 and M2)."""
 import json
 
 import numpy as np

@@ -139,7 +139,7 @@ def main() -> int:
     parser.add_argument("--tables-dir", type=Path, default=Path("data/raw/label_review/effect_site_tables"))
     parser.add_argument("--keyword-counts", type=Path, default=Path("data/processed/label_review/effect_site_keyword_counts.csv"))
     parser.add_argument("--output", type=Path, default=Path("data/processed/label_review/effect_site_coverage.csv"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/effect_site_data_coverage.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/effect_site_data_coverage.md"))
     arguments = parser.parse_args()
 
     drugs = pd.read_csv(arguments.drug_names).fillna("")

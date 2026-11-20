@@ -18,7 +18,7 @@ where each was read and experiments/exposure_sources/ holds the scripts that tra
   Benet et al. 2011        percent of the dose excreted unchanged in urine (four values corrected by Hosey et al. 2016)
   Paixao 2012, Uchimura 2010 and the EPA httk table    blood-to-plasma concentration ratio
   Schulz et al. 2020       therapeutic total plasma concentration (mg/L) and half-life
-  the brain-exposure tables of docs/effect_site_data_coverage.md    unbound brain-to-plasma ratio, Kp,uu,brain
+  the brain-exposure tables of docs/generated/effect_site_data_coverage.md    unbound brain-to-plasma ratio, Kp,uu,brain
   PubChem                  molecular weight of the study compound, for the molar conversion (by compound identifier, or
                            by name for a drug whose identifier is an RxNorm concept)
 
@@ -75,7 +75,7 @@ SPECIES_PREFERENCE = ("human", "non-human primate", "other animal", "not stated"
 NOT_WILD_TYPE = re.compile(r"knock|deficient|mdr1a|bcrp\(|\(-/-\)|-/-", re.IGNORECASE)
 # Every spelling the source tables use for an unbound BRAIN ratio. The first line is what this pattern matched until
 # 12 October 2026; the rest are the same quantity written otherwise, and each was read off the corpus rather than
-# guessed (docs/label_source_review.md 30.6, docs/kpuu_quantity_forms.md). The owner, 12 October 2026: "Yes keep
+# guessed (docs/label_source_review.md 30.6 lists them and 31.1 records the change). The owner, 12 October 2026: "Yes keep
 # additional kp,uu values". A fluid or regional spelling is excluded by FLUID_OR_REGIONAL_VALUE below, so widening this
 # pattern cannot let a CSF value in.
 BRAIN_NOT_CEREBROSPINAL_FLUID = re.compile(r"""kp,uu,(brain|bbb)|unbound\ brain
@@ -327,7 +327,7 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
         f"| percent excreted unchanged in urine | Benet et al. 2011 | {count(table, 'percent_excreted_unchanged_urine')} |",
         f"| blood-to-plasma ratio | Paixão 2012, Uchimura 2010, EPA httk | {count(table, 'blood_to_plasma_ratio')} |",
         f"| therapeutic total plasma concentration | Schulz et al. 2020 | {count(table, 'therapeutic_low_mg_per_l')} |",
-        f"| unbound brain-to-plasma ratio, Kp,uu,brain | the tables of `docs/effect_site_data_coverage.md` | {count(table, 'kpuu_brain')} |",
+        f"| unbound brain-to-plasma ratio, Kp,uu,brain | the tables of `docs/generated/effect_site_data_coverage.md` | {count(table, 'kpuu_brain')} |",
         f"| molecular weight | PubChem, by compound identifier ({int((table.molecular_weight_source == 'PubChem, by compound identifier').sum())}) or by name ({int((table.molecular_weight_source == 'PubChem, by name').sum())}) | {count(table, 'molecular_weight')} |",
         f"| **hepatic extraction ratio** (computed) | | **{len(with_extraction)}** |",
         f"| **unbound plasma concentration at therapeutic levels** (computed) | | **{count(table, 'unbound_plasma_low_micromolar')}** |",
@@ -385,7 +385,7 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
               "| Benet et al. 2011, [doi:10.1208/s12248-011-9290-9](https://doi.org/10.1208/s12248-011-9290-9); Hosey et al. 2016, [doi:10.1208/s12248-015-9845-2](https://doi.org/10.1208/s12248-015-9845-2) | not open access; copyright of the journal's society. Read from the free copies in PubMed Central | `docs/exposure_sources/benet2011_bddcs.md` and `hosey2016_bddcs.md` |",
               "| blood-to-plasma ratios | the EPA `httk` package (\"License: MIT\"); the EPA's typed copies of Paixão et al. 2012 and Uchimura et al. 2010, not checked against the articles | `docs/exposure_sources/blood_to_plasma.md` |",
               "| FDA drug labels through openFDA | \"Unless otherwise noted, the content, data, documentation, code, and related materials on openFDA is public domain\" (open.fda.gov/license, read 11 October 2026); \"we ask that proper credit be given\", with the example \"Data provided by the U.S. Food and Drug Administration (https://open.fda.gov)\" (open.fda.gov/terms, read 11 October 2026) | `configs/drug_label_protein_binding.csv`, with the label's set_id and effective_time per sentence |",
-              "| Kp,uu,brain | per table, in `docs/effect_site_data_coverage.md` | |", "",
+              "| Kp,uu,brain | per table, in `docs/generated/effect_site_data_coverage.md` | |", "",
               "Because two of these tables are not licensed for redistribution, the joined table stays out of git. The transcription scripts (`experiments/exposure_sources/`), "
               "the notes on each source with its addresses and checksums (`docs/exposure_sources/`) and this script reproduce it.", "",
               "## Not retrieved", "",

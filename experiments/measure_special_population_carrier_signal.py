@@ -260,7 +260,7 @@ def main() -> int:
         "So the leniency the special-population column affords is real but narrow: it supports reading the carrier "
         f"off a free-fraction pair when the population is known, and it does not reach the "
         f"{len(study_drug_labels) - len(with_a_labelled_carrier)} drugs this database does not hold at all. The per-drug carrier "
-        "identity those drugs need comes from a source that states it, which is what docs/label_plasma_binders.md "
+        "identity those drugs need comes from a source that states it, which is what docs/generated/label_plasma_binders.md "
         "measures.",
         "",
         "## Population attributes as inputs, which is a different proposal",

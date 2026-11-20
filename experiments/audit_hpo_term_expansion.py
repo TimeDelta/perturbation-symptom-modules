@@ -9,7 +9,7 @@ deficit hyperactivity disorder) or a construct other than the target symptom (Re
 Restlessness) are the diagnosis-proxy leak that assumption A7 warns about, and they are listed so
 the crosswalk can exclude them explicitly (column excluded_hpo_ids).
 
-Writes docs/hpo_term_audit.md and data/processed/hpo_term_audit.json.
+Writes docs/generated/hpo_term_audit.md and data/processed/hpo_term_audit.json.
 
 Usage:
   python experiments/audit_hpo_term_expansion.py
@@ -68,7 +68,7 @@ def main() -> None:
     parser.add_argument("--hpo-obo", type=Path, default=Path("data/raw/hpo/hp.obo"))
     parser.add_argument("--hpo-annotations", type=Path, default=Path("data/raw/hpo/genes_to_phenotype.txt"))
     parser.add_argument("--human-gem-genes", type=Path, default=Path("data/raw/Human-GEM/model/genes.tsv"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/hpo_term_audit.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/hpo_term_audit.md"))
     parser.add_argument("--json-output", type=Path, default=Path("data/processed/hpo_term_audit.json"))
     arguments = parser.parse_args()
 

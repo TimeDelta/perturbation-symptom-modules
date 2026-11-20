@@ -56,7 +56,7 @@ def main() -> None:
     parser.add_argument("--min-fold-size-for-macro", type=int, default=10)
     parser.add_argument("--num-bootstrap", type=int, default=200)
     parser.add_argument("--output-json", type=Path, default=Path("runs/rewiring_check/null_distribution.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/rewiring_null_distribution.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/rewiring_null_distribution.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by)

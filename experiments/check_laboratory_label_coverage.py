@@ -3,7 +3,7 @@ how many gene-term annotations of the slice and full-data genes name a metabolit
 the graph, by mapping route, direction and fluid. Decides whether the labels can supervise the perturbation field.
 
 Usage:
-  python experiments/check_laboratory_label_coverage.py --markdown-output docs/laboratory_label_coverage.md
+  python experiments/check_laboratory_label_coverage.py --markdown-output docs/generated/laboratory_label_coverage.md
 """
 from __future__ import annotations
 

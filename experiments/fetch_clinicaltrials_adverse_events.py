@@ -11,7 +11,7 @@ Outputs (default --output-dir data/processed/clinical_trials):
   clinical_trial_comparisons.parquet   every arm comparison on a target symptom, whatever its verdict, with its own
                                    statistic (decision 9.48, option 3)
   clinical_trial_summary.json      counts per drug and in total
-  docs/clinical_trial_arm_evidence.md (--markdown-output)   the generated summary, stamped
+  docs/generated/clinical_trial_arm_evidence.md (--markdown-output)   the generated summary, stamped
 
 Usage:
   python experiments/fetch_clinicaltrials_adverse_events.py --evidence-dir data/processed/evidence_full_v4
@@ -92,7 +92,7 @@ def main() -> int:
     parser.add_argument("--sider-dir", type=Path, default=Path("data/raw/sider_4.1"))
     parser.add_argument("--cache-dir", type=Path, default=Path("data/raw/clinicaltrials"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/clinical_trials"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/clinical_trial_arm_evidence.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/clinical_trial_arm_evidence.md"))
     parser.add_argument("--minimum-exposure-for-absence", type=int, default=DEFAULT_MINIMUM_EXPOSURE_FOR_ABSENCE)
     parser.add_argument("--absence-requires-systematic-assessment", action="store_true",
                         help="decision 9.92: a non-excess is an absence only where the term or another term of its symptom was systematically assessed in the trial")

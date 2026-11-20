@@ -60,7 +60,7 @@ def binder_nodes_on_split(graph_directory: Path, binder_genes) -> dict[str, list
 
 def carriage_report(summary: dict, graph_directory: Path, output_directory: Path, curated: pd.DataFrame,
                     other_outputs: list[Path] | None = None, inputs: list[str] | None = None) -> str:
-    """The markdown of docs/plasma_binder_graph.md: what this build added, by binder and by source.
+    """The markdown of docs/generated/plasma_binder_graph.md: what this build added, by binder and by source.
 
     The provenance stamp goes in the first five lines, where documentation.parse_stamp reads it, because the
     register makes that document generated and docs/documentation_process.md gives a generator without a stamp
@@ -102,7 +102,7 @@ def main() -> None:
     parser.add_argument("--curated-table", type=Path, default=Path("docs/curated_plasma_carriage.csv"))
     parser.add_argument("--chebi-obo", type=Path, default=Path("data/raw/chebi/chebi_core.obo.gz"))
     parser.add_argument("--human-gem-metabolites", type=Path, default=Path("data/raw/Human-GEM/model/metabolites.tsv"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/plasma_binder_graph.md"),
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/plasma_binder_graph.md"),
                         help="report of the first graph built; pass none to skip")
     arguments = parser.parse_args()
 

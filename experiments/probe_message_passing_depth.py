@@ -134,7 +134,7 @@ def main() -> None:
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v3_parkinsonism.parquet"))
     parser.add_argument("--perturbations-per-kind", type=int, default=8)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/message_passing_depth_probe.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/message_passing_depth_probe.md"))
     parser.add_argument("--document-only", action="store_true", help="rewrite the document from the measurements saved beside the graph")
     parser.add_argument("--held-perturbation-only", action="store_true",
                         help="measure only the probe of a held perturbation, add it to the saved measurements and rewrite the document")

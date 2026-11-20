@@ -391,7 +391,7 @@ class ComplexTargetNarrowing:
     subunits, and the target keeps its ChEMBL identifier and its one unit of magnitude, now spread over the subunits
     kept, each with the sign its own GtoPdb row states (an obligate subunit takes the ChEMBL target's sign). A GtoPdb
     target outside every ChEMBL row of the drug is not added: measured on 13 October the narrowing cost nothing in
-    leakage and the additions took the largest leakage block from 114 drugs to 200 (docs/gtopdb_leakage_cost.md), and
+    leakage and the additions took the largest leakage block from 114 drugs to 200 (docs/generated/gtopdb_leakage_cost.md), and
     whether they enter is the owner's to decide."""
 
     ligand_of_pubchem_cid: dict[int, int]

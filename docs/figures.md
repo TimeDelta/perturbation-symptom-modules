@@ -8,7 +8,7 @@ figures 5 and 6 (9 October 2026); a count or number quoted below is what the fig
 `graph_full_neuronal_split_binders_drugs_v5`. Figures 5 and 6 are the monogenic slice pilot's, drawn from its runs of
 8 October 2026, and are unchanged since; under decision 9.82 (21 October 2026) those slice readings are history and not
 evidence about the current graph or encoders. Figures 15 and 16 read the planted-truth simulations of the hard edge
-gates (`docs/edge_gate_simulation_results.json`). No figure reads a lockbox output, and no full-graph model has been
+gates (`docs/generated/edge_gate_simulation_results.json`). No figure reads a lockbox output, and no full-graph model has been
 scored.
 
 **Corrected 4 November 2026 (decision 9.106).** No graph or table under the `_v5` names that existed before November
@@ -106,8 +106,8 @@ exclude zero, about the 2.1 that 41 uncorrected intervals give by chance, and bo
 blocks: dropping the gene block scores below dropping the protein block, -0.025 [-0.040, -0.010], and dropping the
 gene-derived reaction block scores below it too, -0.030 [-0.046, -0.015]. Three within-strata intervals exclude zero (descriptors in message passing,
 -0.020; the same gene-against-protein pair, -0.022; the neuronal graph under the noisy-OR head, -0.019).
-docs/twin_comparisons.md has the numbers. The module-fix and gene-and-protein-split arms (runs/module_fix) are read in
-docs/module_health_results.md and docs/module_health_fast_leak_results.md; the split_slice job's comparison tables
+docs/generated/twin_comparisons.md has the numbers. The module-fix and gene-and-protein-split arms (runs/module_fix) are read in
+docs/generated/module_health_results.md and docs/generated/module_health_fast_leak_results.md; the split_slice job's comparison tables
 (docs/gene_protein_split.md, "Slice runs") are in no commit. These are readings of the slice pilot of 6 to 8 October
 2026 and are history under decision 9.82.
 
@@ -141,13 +141,13 @@ is drawn.
 
 ![plasma carriage](figures/plasma_carriage.png)
 
-The 27 `binds` edges of graph_full_neuronal_split_binders (docs/plasma_binder_graph.md), which carry an extracellular
+The 27 `binds` edges of graph_full_neuronal_split_binders (docs/generated/plasma_binder_graph.md), which carry an extracellular
 cargo metabolite to the plasma protein that binds it: 19 cargo metabolites over 11 binders, sign 0, from the curated
 carriage table (docs/curated_plasma_carriage.csv, each row with a PMID, a DOI and a quoted sentence) and from UniProt
 binding-site features. The carriage sits on the protein node, because binding is the protein's property, so no
 perturbation's own seed node is touched; a knockout of a binder gene reaches the carriage one `encodes` hop later,
 which is why three binder genes that are perturbations change strata degree and two of them, both development rows,
-move degree quintile (docs/plasma_binder_confirmatory_effect.md). The left panel takes the cargo with the most binders
+move degree quintile (docs/generated/plasma_binder_confirmatory_effect.md). The left panel takes the cargo with the most binders
 in the graph; the right panel counts the edges of each binder and names its cargo. Orosomucoid (ORM1, ORM2) gets one
 edge each, progesterone, and not because the rest was missed: its cargo is basic drugs, which this graph has no node
 for, so it enters through the fraction unbound of stage 2 (docs/plasma_protein_binding.md) rather than through these
@@ -177,7 +177,7 @@ and the allele's edges). `docs/graph_summary.md` gives the same counts as tables
 
 ![allele perturbations](figures/allele_perturbations.png)
 
-Decision 9.54 (d), built 16 October 2026 (`docs/allele_perturbations.md`). Left: HTT's recessive allele (OMIM:617435)
+Decision 9.54 (d), built 16 October 2026 (`docs/records/2026-10/allele_perturbations.md`). Left: HTT's recessive allele (OMIM:617435)
 is the perturbation HTT, seeded -1 at the gene; Huntington disease is the perturbation of the CAG expansion, seeded on
 its own node, whose four edges each carry a PubMed id and a quote; both are in one leakage group. Right: the 4,537
 (gene, disease) pairs behind the monogenic reports, by the step that typed each one's mechanism, in order: Orphanet's
@@ -231,7 +231,7 @@ goes from 1 to 0.
 ![gate simulation recovery](figures/gate_simulation_recovery.png)
 
 Five worlds of about 2,300 edges with the v5 graph's tier proportions, priors calibrated by construction, the
-encoder's true parameters and 800 perturbations (`docs/edge_gate_simulation.md`). Left: which closures to believe. The
+encoder's true parameters and 800 perturbations (`docs/records/2026-10/edge_gate_simulation.md`). Left: which closures to believe. The
 read-out closes about 47 edges per world, 64 percent of them false against 21 percent of all edges. The closures with
 exact evidence E of at least 1 nat number 13.4 per world at a precision of 0.91, and those with a posterior P(false) =
 sigmoid(E − logit π) of at least 0.7 number 11.6 at 0.93; the closing frequency over 20 refits (stability selection

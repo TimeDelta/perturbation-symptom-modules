@@ -1,6 +1,6 @@
 """The technology audit: is the code in a state the research can rest on? Correctness as the tests measure it,
 numerical hazards, reproducibility, device readiness for the runtime-limited GPU cluster, dependency hygiene and the
-shape of the code base. Generated to docs/technology_audit.md (stamped) and data/processed/audit/technology_audit.json.
+shape of the code base. Generated to docs/generated/technology_audit.md (stamped) and data/processed/audit/technology_audit.json.
 
 Every finding is a measured count with file and line examples; the judgement is left to the reader, which is why a
 heuristic that lists lines (a bare log, a division without a floor) says so.
@@ -308,7 +308,7 @@ def render(stamp: str, sections: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/audit"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/technology_audit.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/technology_audit.md"))
     parser.add_argument("--skip-tests", action="store_true")
     arguments = parser.parse_args()
     sections = {"tests": {"skipped_run": True} if arguments.skip_tests else run_tests(), "inventory": test_inventory(), "hazards": numerical_hazards(),

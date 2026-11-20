@@ -18,7 +18,7 @@ genes scored by average precision. A symptom with fewer than MINIMUM_TRAINING_PO
 training base rate. The labels never enter the features, so nothing leaks across folds; the inner folds are not
 grouped by disease cluster, which can only make the chosen strength optimistic, not the test score.
 
-Usage: python experiments/score_trained_diffusion_readout.py [--output docs/trained_diffusion_readout.md]
+Usage: python experiments/score_trained_diffusion_readout.py [--output docs/generated/trained_diffusion_readout.md]
 """
 from __future__ import annotations
 
@@ -79,7 +79,7 @@ def main() -> None:
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--num-bootstrap", type=int, default=1000)
-    parser.add_argument("--output", type=Path, default=Path("docs/trained_diffusion_readout.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/trained_diffusion_readout.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster")
@@ -115,7 +115,7 @@ def main() -> None:
         f"on each fold's training genes, standardised. Readout: per-symptom L2 logistic regression, strength chosen from "
         f"{list(REGULARISATION_GRID)} by {INNER_FOLDS}-fold inner cross-validation on average precision; symptoms with fewer than "
         f"{MINIMUM_TRAINING_POSITIVES} training positives get the training base rate. Differences are against the untrained walk "
-        "(B1) and are read three ways as in docs/twin_comparisons.md: per fold (t interval, 4 df), pooled (paired bootstrap over "
+        "(B1) and are read three ways as in docs/generated/twin_comparisons.md: per fold (t interval, 4 df), pooled (paired bootstrap over "
         f"perturbations, {arguments.num_bootstrap} resamples) and pooled within fold-by-degree strata; 95 percent intervals, not corrected.",
         "",
         "| model | pooled macro AUPRC | per-fold mean (SD) | minus B1, per fold [95% t] | minus B1, pooled | minus B1, within degree strata |",

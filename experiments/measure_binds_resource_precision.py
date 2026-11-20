@@ -40,7 +40,7 @@ import pandas as pd
 from mechanistic_pathway_learning.documentation import provenance_stamp
 from mechanistic_pathway_learning.graph import huri_tested_space as huri
 
-DEFAULT_OUTPUT = Path("docs/binds_resource_precision.md")
+DEFAULT_OUTPUT = Path("docs/generated/binds_resource_precision.md")
 MINIMUM_PAIRS_FOR_A_READING = 30
 
 

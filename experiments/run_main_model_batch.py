@@ -37,13 +37,13 @@ CONFIRMATORY_VALIDATION = ["--keep-large-groups-in-training", "--refit-on-valida
 # docs/gene_protein_split.md). The labels do not change with the graph, so the evidence table and the selection stay.
 # and on the plasma-binder variant of that graph (the user, 9 October 2026: "yes, include binder edges in confirmatory
 # graph"): 27 further binds edges, sign 0, from the extracellular copy of a cargo metabolite to its binder protein
-# (docs/plasma_binder_graph.md, docs/preregistration.md amendment of 9 October 2026 (fourth)). The variant is a strict
+# (docs/generated/plasma_binder_graph.md, docs/preregistration.md amendment of 9 October 2026 (fourth)). The variant is a strict
 # superset of the split graph: the same node ids, the same relation types and the same 279,757 edge rows, so the
 # descriptor table and the cell-class weights of the split graph are the ones it reads.
 FULL_GRAPH_ARGUMENTS_V2 = ["--graph-dir", "data/processed/graph_full_neuronal_split_binders", "--evidence-dir", "data/processed/evidence_full_v2",
                            "--label-selection", "data/processed/label_selection/better_v2_full_v2.parquet"]
 # the split descriptor table: the 64 protein components on the protein nodes, the brain region and cell-class expression
-# columns on the gene nodes, the metabolite and reaction blocks unchanged (docs/node_descriptor_columns.md, version 3)
+# columns on the gene nodes, the metabolite and reaction blocks unchanged (docs/generated/node_descriptor_columns.md, version 3)
 FULL_GRAPH_SPLIT_NODE_PROPERTIES = "data/processed/node_descriptors/full_neuronal_split_descriptors_brain_expression.parquet"
 FULL_GRAPH_SPLIT_CELL_CLASS_WEIGHTS = "data/processed/cell_class_weights/full_neuronal_split_cell_class_weights.parquet"
 # a perturbed gene node reaches its protein one hop later, so message passing gets one more layer (decision 9 of
@@ -61,14 +61,14 @@ SLICE_MODULE_FIX_LINEAR_RESPONSE = ["--head", "noisy_or", "--field", "difference
                                     "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02",
                                     "--leak-learning-rate", "0.0002", "--gate-learning-rate", "0.05", "--start-at-weighted-optimum"]
 # the module-fix twins without the weighted start, which emptied the modules of both encoders on the slice
-# (docs/module_health_results.md): the base of the gene and protein split arms
+# (docs/generated/module_health_results.md): the base of the gene and protein split arms
 SLICE_GATE_TIME_SCALES_MESSAGE_PASSING = [argument for argument in SLICE_MODULE_FIX_MESSAGE_PASSING if argument != "--start-at-weighted-optimum"]
 SLICE_GATE_TIME_SCALES_LINEAR_RESPONSE = [argument for argument in SLICE_MODULE_FIX_LINEAR_RESPONSE if argument != "--start-at-weighted-optimum"]
 
 # The registered v4 model as explicit flags (the owner, 13 October 2026: "all of the v4 stuff should be ON by default").
 # The trainer's defaults equal these (tests/test_registered_defaults.py), and a v4 configuration names them anyway, so a
 # later change of a default cannot change a registered model without a configuration saying so (the problem of
-# docs/confirmatory_architecture_review.md, row 8). No data path is here: the graph, evidence, label selection,
+# docs/records/2026-10/confirmatory_architecture_review.md, row 8). No data path is here: the graph, evidence, label selection,
 # descriptors, cell-class weights and combined perturbations are named per run and belong to the rebuild (item 23; the
 # v4 and v5 tables are built, and the rebuild of decision 1.2 is still owed).
 # Message passing (a robustness model since 22 October 2026, decision 9.77) is at its registered form: amendment item 8
@@ -143,12 +143,12 @@ CONFIGURATIONS: dict[str, list[str]] = {
     "b3_linear_response_cofactors_log": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum", "--encoder", "linear_response", "--cofactor-relations", "--response-scale", "signed_log"],
     "b6_linear_response_time_scales_cofactors_log": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--encoder", "linear_response", "--cofactor-relations", "--response-scale", "signed_log",
                                                      "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002"],
-    # gate time scale: unsupported gates close within the 200 to 400 steps early stopping allows (docs/b6_module_diagnosis.md)
+    # gate time scale: unsupported gates close within the 200 to 400 steps early stopping allows (docs/generated/b6_module_diagnosis.md)
     "b6_mechanistic_gate_time_scales": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--node-features", "typed", "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5",
                                         "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002", "--gate-learning-rate", "0.05"],
     "b6_linear_response_gate_time_scales_cofactors": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--encoder", "linear_response", "--cofactor-relations",
                                                       "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002", "--gate-learning-rate", "0.05"],
-    # the module fix (user, 8 October 2026: fix the modules before any second-family run; docs/best_epoch_zero.md): each
+    # the module fix (user, 8 October 2026: fix the modules before any second-family run; docs/records/2026-10/best_epoch_zero.md): each
     # twin above plus --start-at-weighted-optimum, the leak started at the loss-optimal constant instead of the raw base rate
     "b6_mechanistic_gate_time_scales_weighted_start": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--node-features", "typed", "--init-leak-from-base-rate",
                                                        "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002",
@@ -275,7 +275,7 @@ CONFIGURATIONS: dict[str, list[str]] = {
     "confirmatory_linear_response_noisy_or_without_descriptors": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", *LINEAR_RESPONSE_ENCODER,
                                                                   *FULL_GRAPH_ARGUMENTS, *NOISY_OR_SETTINGS, *CONFIRMATORY_VALIDATION],
     "confirmatory_linear_response_sigmoid_without_descriptors": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum", *LINEAR_RESPONSE_ENCODER, *FULL_GRAPH_ARGUMENTS, *CONFIRMATORY_VALIDATION],
-    # --start-at-weighted-optimum on the noisy-OR configurations and their ablations: the user's decision of 8 October 2026 (docs/best_epoch_zero.md)
+    # --start-at-weighted-optimum on the noisy-OR configurations and their ablations: the user's decision of 8 October 2026 (docs/records/2026-10/best_epoch_zero.md)
     "confirmatory_v2_message_passing_noisy_or": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", *MESSAGE_PASSING_ENCODER_V2,
                                                  *FULL_GRAPH_ARGUMENTS_V2, "--node-descriptors", FULL_GRAPH_SPLIT_NODE_PROPERTIES, *NOISY_OR_SETTINGS, "--start-at-weighted-optimum", *CONFIRMATORY_VALIDATION_V2],
     "confirmatory_v2_message_passing_sigmoid": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum", *MESSAGE_PASSING_ENCODER_V2,

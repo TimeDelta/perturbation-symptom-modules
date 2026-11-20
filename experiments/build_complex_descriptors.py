@@ -7,7 +7,7 @@ embedding coefficients. The sign of a direction is not fixed by the fit, so each
 protein table's, as the per-entry descriptors do, and the refit must reproduce that table before anything is written.
 
 Outputs: data/processed/node_descriptors/complex_descriptors.parquet (node_id by rrr_1 ... rrr_k) and
-docs/complex_descriptors.md. Nothing else is changed; wiring the table into a graph's node_descriptors.parquet is
+docs/generated/complex_descriptors.md. Nothing else is changed; wiring the table into a graph's node_descriptors.parquet is
 experiments/build_node_descriptors.py --complex-descriptors.
 
     OMP_NUM_THREADS=2 PYTHONPATH=. python experiments/build_complex_descriptors.py
@@ -120,7 +120,7 @@ def main() -> None:
     parser.add_argument("--graph-dirs", type=Path, nargs="+",
                         default=[Path("data/processed/graph_full_neuronal"), Path("data/processed/graph_full_neuronal_split")])
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/node_descriptors"))
-    parser.add_argument("--report", type=Path, default=Path("docs/complex_descriptors.md"))
+    parser.add_argument("--report", type=Path, default=Path("docs/generated/complex_descriptors.md"))
     arguments = parser.parse_args()
 
     recorded = json.loads((arguments.output_dir / "protein_descriptor_fit.json").read_text())

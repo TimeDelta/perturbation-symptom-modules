@@ -45,7 +45,7 @@ import pandas as pd
 from scipy import sparse
 
 GTEX_MEDIAN_TPM = Path("data/raw/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz")
-OUTPUT_DOCUMENT = Path("docs/tissue_saturation.md")
+OUTPUT_DOCUMENT = Path("docs/generated/tissue_saturation.md")
 OUTPUT_CURVES = Path("data/processed/tissue_saturation/curves.csv")
 RULE_TOKEN = re.compile(r"[A-Za-z0-9_.-]+")
 # History: every run before 12 October 2026 propagated a fixed 8 steps. Since commit 02cc15b the registered encoder

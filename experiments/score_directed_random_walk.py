@@ -24,7 +24,7 @@ outgoing edge returns to the restart distribution (the usual convention for pers
 products dead-end is not scored lower for it. Restart probability and iteration count are B1's. B1 itself, with its
 own readout, is reproduced from its saved predictions and listed for reference.
 
-Usage: python experiments/score_directed_random_walk.py [--output docs/directed_random_walk.md]
+Usage: python experiments/score_directed_random_walk.py [--output docs/generated/directed_random_walk.md]
 """
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ def main() -> None:
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--num-bootstrap", type=int, default=1000)
-    parser.add_argument("--output", type=Path, default=Path("docs/directed_random_walk.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/directed_random_walk.md"))
     parser.add_argument("--predictions-dir", type=Path, default=Path("runs/directed_random_walk"))
     arguments = parser.parse_args()
 
@@ -158,7 +158,7 @@ def main() -> None:
         "committed baseline with its own readout, is reproduced for reference "
         f"(largest difference from its saved predictions {b1_largest_difference:.1e}). Macro AUPRC over symptoms with at least "
         f"{MINIMUM_POSITIVES_TO_SCORE} positives; per-fold standard deviation with n - 1; paired differences against the undirected "
-        f"arm, read three ways as in docs/twin_comparisons.md: per fold (t interval, 4 df), pooled (bootstrap over perturbations, "
+        f"arm, read three ways as in docs/generated/twin_comparisons.md: per fold (t interval, 4 df), pooled (bootstrap over perturbations, "
         f"{arguments.num_bootstrap} resamples) and pooled within fold-by-degree strata ({len(np.unique(strata))} strata of the "
         "metabolic-graph degree, scores rank-normalised inside each stratum, so ordering genes by degree earns nothing).",
         "",

@@ -29,7 +29,7 @@ Measurement only; nothing is written to a graph, evidence table or configuration
 Usage:
   OMP_NUM_THREADS=4 python experiments/label_review/target_split_options.py \
       --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes \
-      --evidence-dir data/processed/evidence_full_v4 --markdown-output docs/target_split_options.md
+      --evidence-dir data/processed/evidence_full_v4 --markdown-output docs/generated/target_split_options.md
 """
 from __future__ import annotations
 

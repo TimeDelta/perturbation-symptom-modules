@@ -1,6 +1,6 @@
 """The planted-truth simulation of the hard edge gates (experiments/simulate_edge_gate_recovery.py, decision 9.62), its
 digest (experiments/summarise_edge_gate_simulations.py), the runner that reproduces it (scripts/run_edge_gate_simulations.sh)
-and the trainer's agreement with the settings it tested (docs/edge_gate_simulation.md, section 5)."""
+and the trainer's agreement with the settings it tested (docs/records/2026-10/edge_gate_simulation.md, section 5)."""
 from __future__ import annotations
 
 import json

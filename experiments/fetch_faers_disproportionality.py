@@ -13,7 +13,7 @@ as an upper bound. A connection the egress proxy drops is retried, since every r
 
 Outputs (default --output-dir data/processed/faers): faers_reports.parquet, faers_comparisons.parquet (every
 comparison of a drug on a target symptom, whatever its verdict, with its own statistic: decision 9.48, option 3),
-faers_summary.json, and the generated docs/faers_disproportionality_evidence.md.
+faers_summary.json, and the generated docs/generated/faers_disproportionality_evidence.md.
 
 Usage:
   python experiments/fetch_faers_disproportionality.py --evidence-dir data/processed/evidence_full_v4
@@ -107,7 +107,7 @@ def main() -> int:
     parser.add_argument("--crosswalk", type=Path, default=Path("docs/symptom_crosswalk.csv"))
     parser.add_argument("--cache-dir", type=Path, default=Path("data/raw/faers"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/faers"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/faers_disproportionality_evidence.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/faers_disproportionality_evidence.md"))
     parser.add_argument("--signal-prr", type=float, default=DEFAULT_SIGNAL_PRR)
     parser.add_argument("--signal-chi-square", type=float, default=DEFAULT_SIGNAL_CHI_SQUARE)
     parser.add_argument("--signal-minimum-reports", type=int, default=DEFAULT_SIGNAL_MINIMUM_REPORTS)

@@ -1575,7 +1575,7 @@ def weighted_constant_optimum(data, fit_indices: np.ndarray, label_mask, argumen
     loss's targets, sum(w t) / sum(w), with the loss's weights (a positive at its evidence weight, a negative at
     --negative-weight, a pair set aside by the selection at zero) and targets (--positive-target, or the frequency under
     --positive-target-from-frequency). With negatives at 0.2 it is about three times the raw base rate (0.204 against
-    0.064 on the full-graph development pool, docs/best_epoch_zero.md). Under the positive-unlabelled likelihood it is
+    0.064 on the full-graph development pool, docs/records/2026-10/best_epoch_zero.md). Under the positive-unlabelled likelihood it is
     the constant f that minimises the summed code length at the propensity's starting value (constant_optimum); under the
     derived propensity it is the weighted optimum for each type's most-labelled symptom and below it for the others."""
     if label_likelihood is not None:
@@ -1600,7 +1600,7 @@ def initialise_rates_at_weighted_optimum(head, data, fit_indices: np.ndarray, la
                                         label_likelihood: PositiveUnlabelledLabels | None = None) -> None:
     """--start-at-weighted-optimum: start each symptom's noisy-OR leak (in place of the raw base rate of
     --init-leak-from-base-rate) or the sigmoid head's output bias at the loss-optimal constant of weighted_constant_optimum,
-    so that the first epochs are not spent on calibration. Measured on the full-graph pilots (docs/best_epoch_zero.md): a
+    so that the first epochs are not spent on calibration. Measured on the full-graph pilots (docs/records/2026-10/best_epoch_zero.md): a
     leak started at the raw base rate stays there at --leak-learning-rate 0.0002, and the modules make up the gap to the
     optimum; a sigmoid head starts at P = 0.5 and reaches the optimum within the first epoch, which is then the best one."""
     if not getattr(arguments, "start_at_weighted_optimum", False):
@@ -2003,7 +2003,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--init-leak-from-base-rate", action="store_true", help="noisy-OR head: start each symptom's leak at its training base rate")
     parser.add_argument("--start-at-weighted-optimum", action=argparse.BooleanOptionalAction, default=True,
                         help="start the noisy-OR leaks (in place of --init-leak-from-base-rate) or the sigmoid head's output biases at each symptom's "
-                             "loss-optimal constant over the fitted perturbations, the weighted mean of the loss's targets (docs/best_epoch_zero.md)")
+                             "loss-optimal constant over the fitted perturbations, the weighted mean of the loss's targets (docs/records/2026-10/best_epoch_zero.md)")
     parser.add_argument("--module-bias-init", type=float, default=-3.0, help="noisy-OR head: initial readout bias of every module; negative values make modules off by default")
     parser.add_argument("--gate-init-noise", type=float, default=0.5, help="noisy-OR head: standard deviation of the per-gate noise added to the initial log-alpha (symmetry breaking between modules)")
     parser.add_argument("--link-learning-rate", type=float, default=0.02,
@@ -2109,12 +2109,12 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--edge-gate-binary-epochs", type=int, default=8,
                         help="hard gates: epochs of the binary pass after the fit, over the gates alone, with the read-out in the forward pass and the flips' "
                              "estimated effect as the proxy gradient (models/edge_gate_passes.py); 8 is the setting the simulations of "
-                             "docs/edge_gate_simulation.md tested (the pass had not settled by then: 2 to 5 flips in its last epoch, and 32 epochs at a "
+                             "docs/records/2026-10/edge_gate_simulation.md tested (the pass had not settled by then: 2 to 5 flips in its last epoch, and 32 epochs at a "
                              "constant rate did not settle it either); 0 skips it")
     parser.add_argument("--edge-gate-binary-learning-rate", type=float, default=0.1, help="hard gates: the binary pass's learning rate on the gates' logits")
     parser.add_argument("--edge-gate-binary-learning-rate-decay", type=float, default=1.0,
                         help="hard gates: the binary pass's learning rate is multiplied by this after each epoch; 1 keeps it, the setting the trainer has "
-                             "always had. In the simulations (docs/edge_gate_simulation.md, batch 4 of 17 October 2026) 0.8 over 32 epochs settled the "
+                             "always had. In the simulations (docs/records/2026-10/edge_gate_simulation.md, batch 4 of 17 October 2026) 0.8 over 32 epochs settled the "
                              "pass to no flips in all five worlds, while a constant rate left 2 to 9 flips an epoch; the closures' mean precision (0.637, "
                              "against 0.636 at a constant rate and 0.633 at 8 epochs) and the held-out loss (within 0.0006 nats in every world) barely "
                              "moved. A settled pass makes the closed set independent of the epoch it stops at")

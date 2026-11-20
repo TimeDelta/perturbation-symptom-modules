@@ -39,7 +39,7 @@ level (amendment item 18). The family is H2 and P1, the pathway test, whose per-
 from --pathway-test; with no such file the family is H2 alone and H2 faces the full level, which the output states
 because it decides the level. Under Holm the smaller of the two p-values faces alpha / 2 and the larger faces alpha
 once the smaller is rejected, so H2 needs p at or below 0.025 unless P1 clears 0.025 first (0.0125 until the alpha amendment of 22 October 2026). P1 is claimed only
-behind its stability and faithfulness gates G1 and G2 (docs/pathway_test_options.md), which are a conjunction on that
+behind its stability and faithfulness gates G1 and G2 (docs/records/2026-10/pathway_test_options.md), which are a conjunction on that
 claim and change no level. With a missing or refused run the scorer stops before writing anything, so the run can be
 resumed; with --allow-incomplete it scores and that model is not confirmed. No correction is made across the models,
 so with more than one tested model the chance that at least one is confirmed by luck is above --alpha: at most
@@ -138,13 +138,13 @@ def holm_rejections(p_value_of_hypothesis: dict[str, float], alpha: float) -> di
 def confirmatory_decisions(complete: bool, p_h1: float, p_h2: float, meets_minimum_differences: bool, alpha: float,
                            p_p1: float | None = None, pathway_gates_passed: bool = False) -> dict:
     """H1 first and, only once it is confirmed, H2 and P1 together by Holm at the same alpha (amendment item 18; the
-    user, 12 October 2026, on the three ways set out in docs/pathway_test_options.md: "Accepted"). The chance of a false
+    user, 12 October 2026, on the three ways set out in docs/records/2026-10/pathway_test_options.md: "Accepted"). The chance of a false
     claim stays at most alpha for the model: the first stage is a single test at alpha and the second is a Holm family
     whose level is alpha, entered only when the first rejects.
 
     With two hypotheses in the second stage H2 needs p at or below alpha / 2 unless P1's p-value is the smaller one and
     clears alpha / 2 itself, which is what item 18 states. P1 carries two preconditions besides its p-value, the
-    stability gate G1 and the faithfulness gate G2 of docs/pathway_test_options.md; they are a conjunction on the P1
+    stability gate G1 and the faithfulness gate G2 of docs/records/2026-10/pathway_test_options.md; they are a conjunction on the P1
     claim alone, so they can only lower the chance of claiming and do not change the level.
 
     p_p1 None means no pathway test was scored, so the second-stage family is H2 alone and H2 faces the full alpha.
@@ -328,7 +328,7 @@ def main() -> None:
     parser.add_argument("--minimum-micro-difference", type=float, default=0.043,
                         help="projected micro floor, as --minimum-macro-difference")
     parser.add_argument("--output-dir", type=Path, default=Path("runs/confirmatory"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/confirmatory_results.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/confirmatory_results.md"))
     parser.add_argument("--rescore", action="store_true", help="score again although a SCORED marker exists (the output lists every scoring)")
     parser.add_argument("--allow-runs-without-refit", action="store_true",
                         help="smoke tests on runs trained before 8 October 2026 only: accept runs without --refit-on-validation and --keep-large-groups-in-training")
@@ -557,7 +557,7 @@ def main() -> None:
               (f"Multiplicity (amendment item 18): H1 at {arguments.alpha} and, only once it is confirmed, H2 and P1 together by Holm at the same level, so "
                f"the smaller of the two p-values faces {arguments.alpha / 2:.4f} and the larger faces {arguments.alpha:.4f} once the smaller has been rejected. "
                "\"level H2 faced\" is the one Holm gave it, which depends on where P1's p-value fell. P1 carries the stability and faithfulness gates G1 and "
-               "G2 of docs/pathway_test_options.md besides its p-value; they are a conjunction on the P1 claim alone and do not change any level."
+               "G2 of docs/records/2026-10/pathway_test_options.md besides its p-value; they are a conjunction on the P1 claim alone and do not change any level."
                if any(model in pathway_test_results for model in entries) else
                f"Multiplicity (amendment item 18): H1 at {arguments.alpha} and, only once it is confirmed, its second-stage family at the same level. **No "
                f"pathway test was scored**, so that family is H2 alone and H2 faced the full {arguments.alpha:.4f} rather than the "

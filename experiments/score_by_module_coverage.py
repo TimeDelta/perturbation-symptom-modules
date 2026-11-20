@@ -2,7 +2,7 @@
 
 Without a degree offset the noisy-OR head gives two perturbations the same prediction only when their module activations
 agree, and with sparse support gates many held-out genes reach no module and all receive the bias-level prediction
-(docs/b6_module_diagnosis.md, held_out_within_tolerance_of_modal). The model makes no ranking among those genes. The
+(docs/generated/b6_module_diagnosis.md, held_out_within_tolerance_of_modal). The model makes no ranking among those genes. The
 main tables score every held-out gene; this script gives the reading of a classifier that may abstain: accuracy among
 the genes it decides, beside its coverage (the share it decides).
 
@@ -103,7 +103,7 @@ def main() -> None:
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--num-bootstrap", type=int, default=1000)
-    parser.add_argument("--output", type=Path, default=Path("docs/score_by_module_coverage.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/score_by_module_coverage.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster")

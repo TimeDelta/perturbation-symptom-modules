@@ -124,7 +124,7 @@ def estimated_closure_evidence(encoder, gates: HardConcreteEdgeGates, data_loss:
                                penalty_denominator: float) -> dict[int, dict]:
     """The first-order estimate of every closed edge's closure evidence, from one pass over the batches: per edge the
     data part of the estimated change of reopening it, times W, and the P(false) that estimate gives. It is what the
-    binary pass reads, at the gates as they end; on the planted worlds of docs/edge_gate_simulation.md it correlated
+    binary pass reads, at the gates as they end; on the planted worlds of docs/records/2026-10/edge_gate_simulation.md it correlated
     0.75 with the exact change over random edges and much less among the largest promised changes, so it ranks the
     closures for review and does not replace closure_evidence. Keyed by graph edge."""
     gates.set_phase("binary")
@@ -156,7 +156,7 @@ def closure_evidence(encoder, gates: HardConcreteEdgeGates, data_loss: Callable[
     code length. Under the weighted loss E is in units of label weight, a silent pair counting 0.2 and a label its
     evidence weight, and the reading is approximate in that measure.
 
-    Why it is reported (docs/edge_gate_simulation.md): in planted worlds the closures with E of 1 nat or more were false
+    Why it is reported (docs/records/2026-10/edge_gate_simulation.md): in planted worlds the closures with E of 1 nat or more were false
     far more often than the read-out's closures as a whole, so a closure's E says how far to believe it. Each closed edge
     costs one pass over the batches; with a budget, the closures against the strongest priors come first, since those
     are the ones a reader would most want checked. The gates are left as they were."""

@@ -30,7 +30,7 @@ evidence for expression of this isoform is given in the publication" (`ISOFORM_E
 canonical entry is the study's reference clone, so the record says no more about the gene pair than an isoform record
 does, and under the same rule of the curation manual it is set aside the same way. What runs before 4 November 2026
 counted every record between two canonical entries, 223 of them, of which 171 are Yang et al. 2016 and 164 carry the
-caution (`docs/edge_priors.md` section 14, measured on the file of 14 January 2026). The rule is the annotation, not the
+caution (`docs/records/2026-10/edge_priors.md` section 14, measured on the file of 14 January 2026). The rule is the annotation, not the
 study: the 7 records of that study between canonical entries without the caution still count, and a record of any
 other study that carries it is set aside. A record counts against a gene pair only when it is between two canonical
 entries and carries no such caution (`NegativePair.counts_against_gene_pair`).

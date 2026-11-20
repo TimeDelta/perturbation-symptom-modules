@@ -1,4 +1,4 @@
-"""Committed 7 November 2026 (decision 9.112; docs/bicarbonate_gaba_2026-11-07.md). Run: python experiments/derive_gaba_reversal_with_bicarbonate.py
+"""Committed 7 November 2026 (decision 9.112; docs/records/2026-11/bicarbonate_gaba_2026-11-07.md). Run: python experiments/derive_gaba_reversal_with_bicarbonate.py
 
 E_GABA and E_Gly by the GHK voltage equation at the registered constants of decision 9.112.
 

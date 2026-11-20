@@ -12,7 +12,7 @@ float noise rather than by anything about the perturbation).
 
 Usage:
   python experiments/diagnose_noisy_or_modules.py --run-dirs runs/b6_default_disease_cluster runs/b6_mechanistic_disease_cluster \
-      --markdown-output docs/b6_module_diagnosis.md
+      --markdown-output docs/generated/b6_module_diagnosis.md
 """
 from __future__ import annotations
 

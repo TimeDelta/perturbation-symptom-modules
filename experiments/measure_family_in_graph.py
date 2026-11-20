@@ -2,7 +2,7 @@
 grouping folds by family would remove the family confound or only hide it (the user's question of 9 October 2026: "is
 there any graph structure or attribute that corresponds to family? That might be another source of leakage.").
 
-The grouping question of docs/leakage_group_rules.md asks whether to keep a family's drugs in one fold. That only helps
+The grouping question of docs/generated/leakage_group_rules.md asks whether to keep a family's drugs in one fold. That only helps
 if the model cannot tell which family a target belongs to once its family's drugs are out of training. So this script
 asks the opposite question of each channel the model reads:
 
@@ -218,7 +218,7 @@ def reading_section(result: dict) -> list[str]:
               "changes which drugs share a fold, not whether the model can tell which family a held-out target belongs to. The "
               "confound is a property of the graph and of the descriptor block, so the registered grouping "
               "(disease_cluster_and_targets) leaves it available too: it is not an argument for or against the family rule of "
-              "docs/leakage_group_rules.md, it is a limit on what any grouping of drugs can buy.", "",
+              "docs/generated/leakage_group_rules.md, it is a limit on what any grouping of drugs can buy.", "",
               "## What this does not measure", "",
               "- Leave-one-out nearest neighbour says the information is present and easy to reach, not that a trained model uses "
               "it. It is an upper bound on the confound, not an estimate of its effect on a score.",
@@ -244,7 +244,7 @@ def main() -> None:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v2"))
     parser.add_argument("--minimum-family-size", type=int, default=2)
     parser.add_argument("--output", type=Path, default=Path("data/processed/off_target_scoping/family_in_graph.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/family_in_graph.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/family_in_graph.md"))
     arguments = parser.parse_args()
 
     nodes = pd.read_parquet(arguments.graph_dir / "nodes.parquet")

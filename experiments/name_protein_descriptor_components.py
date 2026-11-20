@@ -1,5 +1,5 @@
 """Give each protein_rrr component a readable name: the function annotations its values correlate with most, on each
-side (docs/node_descriptor_columns.md reads the result).
+side (docs/generated/node_descriptor_columns.md reads the result).
 
 A component of the reduced-rank regression (mechanistic_pathway_learning/graph/protein_descriptors.py) is a direction
 in the space of annotations best predicted from the ESM-2 embedding; it mixes many annotations, and its sign is the one

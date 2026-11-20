@@ -1,4 +1,4 @@
-"""Committed 7 November 2026 (decision 9.112; docs/anion_permeability_pdfs_2026-11-07.md). Run: python experiments/derive_gaba_reversal_from_permeability_tables.py
+"""Committed 7 November 2026 (decision 9.112; docs/records/2026-11/anion_permeability_pdfs_2026-11-07.md). Run: python experiments/derive_gaba_reversal_from_permeability_tables.py
 
 E_GABA and E_Gly at the registered constants, with the two PDFs' measured P_HCO3/P_Cl.
 

@@ -112,7 +112,7 @@ def test_eval_mode_gate_is_the_expected_training_gate_and_time_scale_groups_are_
 
 
 def test_gates_no_field_reaches_close_at_a_speed_set_by_the_learning_rate_not_the_penalty_coefficient() -> None:
-    """The mechanism behind the diffuse supports of docs/b6_module_diagnosis.md: with a zero field the only gradient on a
+    """The mechanism behind the diffuse supports of docs/generated/b6_module_diagnosis.md: with a zero field the only gradient on a
     gate is the sparsity penalty's, and Adam normalises it, so a coefficient 1000 times larger closes the gates no
     faster (while the gradient stays well above Adam's epsilon); at the main learning rate the gate travels about one learning rate per step, and a gate time scale 25 times
     faster moves it much further (less than 25 times, since the penalty gradient shrinks as the gate closes and Adam's

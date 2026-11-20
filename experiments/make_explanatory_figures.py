@@ -21,7 +21,7 @@
   15. gate_simulation_recovery: in planted worlds, which closures to believe, the calibration of the posterior from
       the exact evidence, and the first-order flip estimate against the exact change;
   16. gate_simulation_conditions: the same when the favourable assumptions are dropped one at a time, and how much
-      the labels say per edge in the worlds and on v5 (docs/edge_gate_simulation_results.json).
+      the labels say per edge in the worlds and on v5 (docs/generated/edge_gate_simulation_results.json).
 
 Figures whose inputs are missing are skipped with a message. Writes PNG files to docs/figures/. Idempotent.
 
@@ -669,7 +669,7 @@ def figure_plasma_carriage() -> None:
     draw_node_link_diagram(left_axis, worked_nodes, worked_edges)
     left_axis.text(0.5, 0.06, f"One cargo with the most binders in the graph: {worked_cargo_name}. Carriage sits on the protein node, because binding is\n"
                               "the protein's property; a knockout seeds the gene node and reaches the carriage one encodes hop later, which is what moves\n"
-                              "a binder gene's degree stratum (docs/plasma_binder_confirmatory_effect.md).", ha="center", va="bottom", fontsize=8)
+                              "a binder gene's degree stratum (docs/generated/plasma_binder_confirmatory_effect.md).", ha="center", va="bottom", fontsize=8)
     left_axis.set_title("How a carriage edge sits in the graph", fontsize=11, fontweight="bold")
 
     edges_per_binder = carriage.groupby("binder_name").size().sort_values()
@@ -879,7 +879,7 @@ def figure_allele_perturbations() -> None:
     figure.suptitle("The allele, not the gene, is the perturbation (decision 9.54)", fontsize=13, fontweight="bold")
     figure.text(0.5, 0.02, "Each step is consulted only where the ones before it typed nothing. A dominant-negative product counts as a loss of function, "
                 "because the gene's net activity falls. Untyped pairs keep -1, which is expected for recessive diseases\nand wrong for an unknown share "
-                "of dominant ones (docs/allele_perturbations.md, section 6). The allele's four edges each carry a PubMed id and a quote "
+                "of dominant ones (docs/records/2026-10/allele_perturbations.md, section 6). The allele's four edges each carry a PubMed id and a quote "
                 "(configs/neomorphic_alleles.csv).", ha="center", fontsize=8)
     save(figure, "allele_perturbations")
 
@@ -1159,7 +1159,7 @@ def figure_gate_share_reading() -> None:
     save(figure, "gate_share_reading")
 
 
-SIMULATION_DIGEST = Path("docs/edge_gate_simulation_results.json")
+SIMULATION_DIGEST = Path("docs/generated/edge_gate_simulation_results.json")
 CALIBRATED_WORLDS = tuple(f"b3_s{seed}" for seed in range(5))
 SELECTOR_COLOURS = {"read-out": "#111111", "exact evidence": "#2b6ca3", "posterior P(false)": "#8e44ad", "stability": "#e08e2b"}
 SELECTOR_LEGEND = {"read-out": "the read-out: every closed edge", "exact evidence": "closures with exact evidence E ≥ the value shown, nats",
@@ -1287,14 +1287,14 @@ def figure_gate_simulation_recovery() -> None:
     estimator_axis.spines[["top", "right"]].set_visible(False)
     worlds_text = runs[worlds[0]]["world"]
     figure.suptitle(f"Edge-gate recovery in planted worlds ({worlds_text['nodes']} nodes, about {worlds_text['edges']:,} edges, {worlds_text['perturbations']} perturbations, "
-                    f"{worlds_text['symptoms']} symptoms; docs/edge_gate_simulation.md)", fontsize=12, fontweight="bold")
+                    f"{worlds_text['symptoms']} symptoms; docs/records/2026-10/edge_gate_simulation.md)", fontsize=12, fontweight="bold")
     closed_rows = [row for world in worlds for row in runs[world].get("closed_edges", [])]
     below = sum(1 for row in closed_rows if row[4] is not None and row[4] < 0.5)
     figure.text(0.5, -0.04, "Every world is the most favourable case: priors calibrated by construction (each edge is real with its prior π) and the encoder's parameters "
                 "the truth's, so only the gates learn. E is the exact rise in the training data loss, times W, when the edge alone is reopened with every other\nedge "
                 f"as fitted. At a local optimum under single flips a closed edge has E > logit π, so P(false) > 1/2; {below} of the {len(closed_rows)} closures fell below one "
                 "half and are not binned. Stability: closing frequency over 20 refits on complementary halves of the training perturbations (Shah and Samworth 2013). "
-                "Drawn from docs/edge_gate_simulation_results.json.", ha="center", fontsize=8)
+                "Drawn from docs/generated/edge_gate_simulation_results.json.", ha="center", fontsize=8)
     figure.tight_layout()
     save(figure, "gate_simulation_recovery")
 
@@ -1401,14 +1401,14 @@ def figure_gate_simulation_conditions() -> None:
     density_axis.spines[["top", "right"]].set_visible(False)
     density_axis.set_xlabel("per gated edge (log scale); the worlds count their training rows")
     density_axis.set_title("How much the labels say per edge", fontsize=10.5, fontweight="bold")
-    figure.suptitle("Edge-gate recovery when the favourable assumptions are dropped one at a time (docs/edge_gate_simulation.md)", fontsize=12, fontweight="bold")
+    figure.suptitle("Edge-gate recovery when the favourable assumptions are dropped one at a time (docs/records/2026-10/edge_gate_simulation.md)", fontsize=12, fontweight="bold")
     figure.text(0.5, -0.08, "Each condition changes one thing from the calibrated world of figure 15; a world-0 condition is to be read against the world-0 row. Precision is "
                 "the share of closed edges that are false; the red mark is that share among all edges, what closing at random would give. A held-out gain share\nbelow 0 "
                 "means the fitted graph predicted the held-out perturbations worse than the database graph with every edge open; no bar where the true graph itself did not "
                 "predict better than every edge open (with half the positives observed, the true graph is not the best\npredictor of the observed labels). The share is "
                 "noisy: the attainable gain is 0.0013 to 0.0060 nats per held-out label, and over the five calibrated worlds the share ran from -1.20 (world 0) to +0.84. "
                 "Joint fits learn the encoder's parameters and the readout\nwith the gates, with AdamW and early stopping on an inner validation share, as the trainer "
-                "does. Drawn from docs/edge_gate_simulation_results.json.", ha="center", fontsize=8)
+                "does. Drawn from docs/generated/edge_gate_simulation_results.json.", ha="center", fontsize=8)
     figure.tight_layout()
     save(figure, "gate_simulation_conditions")
 

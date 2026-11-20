@@ -55,7 +55,7 @@ import pandas as pd
 LABEL_ENDPOINT = "https://api.fda.gov/drug/label.json"
 CACHE_DIRECTORY = Path("data/raw/label_review/openfda_central_action")
 OUTPUT_TABLE = Path("configs/label_central_action.csv")
-OUTPUT_DOCUMENT = Path("docs/label_central_action.md")
+OUTPUT_DOCUMENT = Path("docs/generated/label_central_action.md")
 USER_AGENT = "mechanistic-pathway-learning/0.1 (central action rule)"
 # The pharmacology sections only. Adverse reactions, warnings and indications are not read; see the module docstring.
 PHARMACOLOGY_FIELDS = ("mechanism_of_action", "clinical_pharmacology", "pharmacodynamics", "description")

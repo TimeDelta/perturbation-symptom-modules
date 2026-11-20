@@ -23,7 +23,7 @@ before the split) are allowed.
 
     OMP_NUM_THREADS=1 PYTHONPATH=. python experiments/evaluate_on_rewired_graph.py \\
       --run-dirs runs/encoder/b3_typed_nodes_descriptors_brain_disease_cluster runs/b3_typed_nodes_disease_cluster \\
-      --markdown-output docs/graph_reliance.md --json-output runs/graph_reliance.json
+      --markdown-output docs/generated/graph_reliance.md --json-output runs/graph_reliance.json
 """
 from __future__ import annotations
 

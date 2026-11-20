@@ -45,7 +45,7 @@ NUM_FOLDS = 5
 UNASSIGNED_FAMILY = "unassigned"
 # The measurement of experiments/measure_family_in_graph.py, which bounds what any grouping of drugs can remove.
 FAMILY_IS_IN_THE_GRAPH_CAVEAT = (
-    "the family is recoverable from what the model reads, so no grouping of drugs removes the family confound: docs/family_in_graph.md recovers a held-out mechanism target's family 0.90 of the time from the 64 protein components, 0.91 from its graph neighbours and 0.97 from its Reactome protein-entity memberships, against a chance rate of 0.09. Grouping changes which drugs share a fold, not what the graph tells the model about a held-out target.")
+    "the family is recoverable from what the model reads, so no grouping of drugs removes the family confound: docs/generated/family_in_graph.md recovers a held-out mechanism target's family 0.90 of the time from the 64 protein components, 0.91 from its graph neighbours and 0.97 from its Reactome protein-entity memberships, against a chance rate of 0.09. Grouping changes which drugs share a fold, not what the graph tells the model about a held-out target.")
 
 
 def target_families(path: Path) -> tuple[dict[str, str], dict[str, str]]:
@@ -311,7 +311,7 @@ def main() -> None:
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v3_max3_targets"))
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v3_max3_targets.parquet"))
     parser.add_argument("--json-output", type=Path, default=Path("data/processed/off_target_scoping/leakage_group_rules.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/leakage_group_rules.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/leakage_group_rules.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by="disease_cluster", label_selection=arguments.label_selection)

@@ -11,7 +11,7 @@ config with its source per row:
                                              the identifier the OnSIDES bridge unifies lithium carbonate with)
   configs/psychiatric_drug_additions_v4_draft.csv
                                              DrugCentral and Guide to PHARMACOLOGY targets of the 9.7 drugs
-                                             (docs/psychiatric_drug_additions.md); only its role "mechanism" rows are read,
+                                             (docs/records/2026-10/psychiatric_drug_additions.md); only its role "mechanism" rows are read,
                                              as that document requires ("Only the mechanism rows are candidates for a seed"),
                                              and only for a drug whose ChEMBL route yields no target; with it
                                              configs/curated_drug_targets.csv, the targets decision 9.121 C3 curated

@@ -180,8 +180,8 @@ def main() -> None:
     parser.add_argument("--num-bootstrap", type=int, default=1000)
     parser.add_argument("--lockbox", type=Path, default=None,
                         help="a drawn lockbox whose perturbations are excluded, so the calibration reads development rows only")
-    parser.add_argument("--json-output", type=Path, default=Path("docs/leakage_only_adversary.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/leakage_only_adversary.md"))
+    parser.add_argument("--json-output", type=Path, default=Path("docs/generated/leakage_only_adversary.json"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/leakage_only_adversary.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by,

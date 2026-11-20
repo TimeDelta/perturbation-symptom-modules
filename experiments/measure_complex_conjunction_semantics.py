@@ -19,7 +19,7 @@ The gene-to-protein split is reported beside them, because that is where the que
 several genes arises only where one reviewed UniProt entry lists them, which is redundancy and not a conjunction, so
 the split's additive reading is right there and the conjunctions are one level up, at the entities.
 
-Writes docs/complex_conjunction_semantics.md. Changes no graph. Idempotent.
+Writes docs/generated/complex_conjunction_semantics.md. Changes no graph. Idempotent.
 
 Usage:
   python experiments/measure_complex_conjunction_semantics.py
@@ -45,7 +45,7 @@ MEMBER_RELATION = "member_of"
 ENCODES_RELATION = "encodes"
 CONJUNCTION_KIND = "Complex"
 DISJUNCTION_KINDS = ("DefinedSet", "CandidateSet", "OpenSet")
-OUTPUT_DOCUMENT = Path("docs/complex_conjunction_semantics.md")
+OUTPUT_DOCUMENT = Path("docs/generated/complex_conjunction_semantics.md")
 
 
 def reactome_entity_kinds(reactome_directory: Path) -> dict[str, str]:

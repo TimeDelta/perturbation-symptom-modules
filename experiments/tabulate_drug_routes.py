@@ -86,7 +86,7 @@ def main() -> int:
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v3_parkinsonism.parquet"))
     parser.add_argument("--carrier-table", type=Path, default=Path("configs/drug_plasma_carriers.csv"))
     parser.add_argument("--cache-dir", type=Path, default=Path("data/raw/fda_labels/routes"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/drug_administration_routes.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/drug_administration_routes.md"))
     parser.add_argument("--table-output", type=Path, default=Path("configs/drug_administration_routes.csv"))
     parser.add_argument("--refetch", action="store_true")
     arguments = parser.parse_args()

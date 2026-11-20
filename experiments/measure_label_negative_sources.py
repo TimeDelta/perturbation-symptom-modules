@@ -1,5 +1,5 @@
 """Measure the three label-negative sources of decision 9.92 against an evidence table and its registered label selection,
-and write the generated record docs/label_negative_sources_measured.md.
+and write the generated record docs/generated/label_negative_sources_measured.md.
 
   1. Phenopacket Store (experiments/build_phenopacket_counts.py output): observed and excluded statements on the symptom
      set, the pairs, the evidenced negatives of use (a) under each exclusion rule, the contradictions with current
@@ -277,7 +277,7 @@ def main() -> None:
     parser.add_argument("--sider-dir", type=Path, default=Path("data/raw/sider_4.1"))
     parser.add_argument("--lockbox", type=Path, nargs="*", default=[Path("configs/lockbox_v1.json"), Path("configs/lockbox_v2.json")])
     parser.add_argument("--output-json", type=Path, default=None)
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/label_negative_sources_measured.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/label_negative_sources_measured.md"))
     arguments = parser.parse_args()
     records = pd.read_parquet(arguments.evidence_dir / "evidence_records.parquet")
     kept = kept_positive_pairs(arguments.label_selection)

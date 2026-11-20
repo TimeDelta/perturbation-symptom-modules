@@ -51,9 +51,9 @@ disease clusters, popularity and random-walk baselines, a resumable training har
 validation early stopping, a batch driver, an aggregator with paired bootstrap comparisons, a
 module-analysis script with the sufficiency test, and mechanism cards.
 
-Measured so far: docs/phase1_counts.md (counts), docs/hpo_term_audit.md (what each HPO term
-contributes to each symptom), docs/phase2_baselines.md and docs/phase2_baselines_disease_cluster.md
-(baselines under three splits with permutation controls), docs/phase3_main_model.md (B6 and B3).
+Measured so far: docs/generated/phase1_counts.md (counts), docs/generated/hpo_term_audit.md (what each HPO term
+contributes to each symptom), docs/generated/phase2_baselines.md and docs/generated/phase2_baselines_disease_cluster.md
+(baselines under three splits with permutation controls), docs/generated/phase3_main_model.md (B6 and B3).
 Two results shape the design: the gene-wise split leaks through genes that share a disease, so the
 disease-cluster grouping is the default; and the sixteen curated modules hold too few perturbations
 for a pathway-wise endpoint, so Human-GEM subsystems are proposed instead (design section 6.1). A
@@ -67,7 +67,7 @@ added once the environment's network policy allowed the SIDER, ChEMBL, UniChem a
 the full evidence table are the release tables counted in the block above (data/releases/v0.4/MANIFEST.json), and the
 later tables a rebuild produces (evidence v3, v3 with parkinsonism and v4; the neuronal, split, binder and drug-entry
 graph variants) are counted in docs/data_layer_rebuild.md. Baselines and model configurations on the full data run
-under runs/full; their results are docs/phase2_baselines_full_disease_cluster.md and docs/phase3_main_model.md, each
+under runs/full; their results are docs/generated/phase2_baselines_full_disease_cluster.md and docs/generated/phase3_main_model.md, each
 of which names the run it was generated from.
 
 The literature class E3 is in place (docs/literature_survey_spec.md): the symptom
@@ -75,7 +75,7 @@ crosswalk carries verified MeSH descriptors with a symptom, diagnosis or mixed-p
 NCBI Gene id through Human-GEM and HGNC (12,537 of the 12,627 gene nodes of data/releases/v0.4), and two fetch scripts filter the PubTator3 bulk
 relation file and the CTD chemical-disease file to graph genes and SIDER drugs on those descriptors (one SIDER drug per MeSH chemical), writing
 one report per (paper, relation) in the evidence_reports.parquet schema under data/processed/literature with the source named by extraction type (PubTator3-cause, CTD-curated). The
-rows are grade E soft priors and never labels or evaluation positives (the experiment loader refuses grades D and E). The appraisal half (experiments/fetch_pubtator_documents.py, experiments/survey_literature.py; docs/literature_survey.md) rates each report from publication types and species annotations, species first; the tables are in the data release and join the assembled table through --extra-reports. The component was reviewed adversarially on 6 October 2026 (docs/design_review_v04.md, third table); the fixes are in the code and were applied to the data the same day on the PubTator3 bulk file NCBI published then, and data/releases/v0.4 holds those tables (214,375 appraised reports over 134,747 papers).
+rows are grade E soft priors and never labels or evaluation positives (the experiment loader refuses grades D and E). The appraisal half (experiments/fetch_pubtator_documents.py, experiments/survey_literature.py; docs/generated/literature_survey.md) rates each report from publication types and species annotations, species first; the tables are in the data release and join the assembled table through --extra-reports. The component was reviewed adversarially on 6 October 2026 (docs/records/2026-10/design_review_v04.md, third table); the fixes are in the code and were applied to the data the same day on the PubTator3 bulk file NCBI published then, and data/releases/v0.4 holds those tables (214,375 appraised reports over 134,747 papers).
 
 A new container has no `data/raw`, `data/processed` or `runs/`. `bash scripts/rebuild_data_layer.sh` fetches the pinned sources and rebuilds the
 graphs, the evidence tables and the label selections in dependency order; docs/data_layer_rebuild.md records what that reproduced on 10 October 2026
@@ -98,10 +98,10 @@ curl -L -o data/raw/omnipath/small_molecule_protein.tsv "https://omnipathdb.org/
 python experiments/fetch_chembl_drug_targets.py          # UniChem and ChEMBL, cached, resumable
 OMP_NUM_THREADS=1 python experiments/fetch_pubtator_relations.py --fetch-publication-dates && OMP_NUM_THREADS=1 python experiments/fetch_ctd_chemical_disease.py --fetch-publication-dates   # literature class E3, cached, rate-limited; docs/literature_survey_spec.md
 python -m mechanistic_pathway_learning.graph.build_physiology_graph
-python experiments/audit_hpo_term_expansion.py            # docs/hpo_term_audit.md
+python experiments/audit_hpo_term_expansion.py            # docs/generated/hpo_term_audit.md
 python -m mechanistic_pathway_learning.evidence.assemble_evidence_table
 python experiments/run_phase1_counts.py
-python experiments/run_baselines.py --group-by disease_cluster --with-kg-embedding --output-dir runs/baselines_disease_cluster --markdown-output docs/phase2_baselines_disease_cluster.md
+python experiments/run_baselines.py --group-by disease_cluster --with-kg-embedding --output-dir runs/baselines_disease_cluster --markdown-output docs/generated/phase2_baselines_disease_cluster.md
 python experiments/run_main_model_batch.py --configuration b6_default --group-by disease_cluster     # five folds, resumable
 python experiments/run_main_model_batch.py --configuration b3_sigmoid --group-by disease_cluster
 python experiments/aggregate_main_model_runs.py --run-dirs runs/b6_default_disease_cluster runs/b3_sigmoid_disease_cluster --baseline-results runs/baselines_disease_cluster/results.json
@@ -120,7 +120,7 @@ configurations run under a wall-time budget per fold and resume from checkpoints
 ```bash
 python -m mechanistic_pathway_learning.graph.build_physiology_graph --output-dir data/processed/graph_full
 python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --graph-dir data/processed/graph_full --output-dir data/processed/evidence_full
-python experiments/run_baselines.py --graph-dir data/processed/graph_full --evidence-dir data/processed/evidence_full --group-by disease_cluster --with-kg-embedding --time-split-cutoff 2015-12-31 --output-dir runs/full/baselines_disease_cluster --markdown-output docs/phase2_baselines_full_disease_cluster.md
+python experiments/run_baselines.py --graph-dir data/processed/graph_full --evidence-dir data/processed/evidence_full --group-by disease_cluster --with-kg-embedding --time-split-cutoff 2015-12-31 --output-dir runs/full/baselines_disease_cluster --markdown-output docs/generated/phase2_baselines_full_disease_cluster.md
 python experiments/run_main_model_batch.py --configuration b6_mechanistic --group-by disease_cluster --run-root runs/full --extra --graph-dir data/processed/graph_full --evidence-dir data/processed/evidence_full --time-budget-seconds 10800 --max-epochs 40
 python experiments/fetch_onsides_identifier_bridge.py && python experiments/build_onsides_reports.py   # OnSIDES later label slice
 python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --graph-dir data/processed/graph_full --output-dir data/processed/evidence_full --extra-reports data/processed/onsides/onsides_reports.parquet   # OnSIDES statements join the report table and the reliability fit

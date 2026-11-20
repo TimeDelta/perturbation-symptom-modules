@@ -1,4 +1,4 @@
-"""Write docs/node_descriptor_columns.md: the name of every column of the final node descriptor table (the full neuronal
+"""Write docs/generated/node_descriptor_columns.md: the name of every column of the final node descriptor table (the full neuronal
 graph with brain expression), which node type fills it, and a name for each protein component.
 
 The column lists are read from the table itself, and a column is listed for a node type only when at least one node of
@@ -75,7 +75,7 @@ def meaning(column: str, component_names: dict | None = None) -> str:
         return "1 when the node's protein has an ESM-2 embedding; 0 leaves the components at 0"
     if column == "protein_has_complex_descriptors":
         return ("1 on a Reactome protein entity whose own annotation vector fills the components above, which is a different "
-                "quantity from a sequence's prediction and is flagged apart from it (docs/complex_descriptors.md); 0 elsewhere")
+                "quantity from a sequence's prediction and is flagged apart from it (docs/generated/complex_descriptors.md); 0 elsewhere")
     for prefix, owner in (("gene_brain_", "gene"), ("reaction_brain_", "reaction")):
         if column.startswith(prefix):
             name = column[len(prefix):]
@@ -136,10 +136,10 @@ def component_section(component_names: dict, names_file: dict) -> list[str]:
     lines = ["## Protein components", "",
              "`protein_rrr_1` to `protein_rrr_64` are the reduced-rank regression of ESM-2 (esm2_t12_35M_UR50D) embeddings onto EC, "
              "GO function, GO component, UniProt location and Pfam annotations (mechanistic_pathway_learning/graph/protein_descriptors.py, "
-             "docs/protein_descriptor_report.md), averaged over a gene's reviewed entries and standardised. Each is a direction in "
+             "docs/generated/protein_descriptor_report.md), averaged over a gene's reviewed entries and standardised. Each is a direction in "
              "annotation space and mixes many annotations; component 1 holds the most predicted annotation variance. On a Reactome "
              "protein entity the same columns hold the entity's own annotation vector projected onto the same directions, not a "
-             "sequence prediction, and `protein_has_complex_descriptors` marks those rows (docs/complex_descriptors.md). The name gives the "
+             "sequence prediction, and `protein_has_complex_descriptors` marks those rows (docs/generated/complex_descriptors.md). The name gives the "
              "annotation with the largest positive correlation (high) and the most negative correlation (low) with the component over the "
              f"{names_file['proteins_correlated']:,} proteins of the fit, and each pole lists up to four annotations (one of any group whose "
              "proteins nearly coincide, as with a GO term and its parent). A high value means the protein looks like the positive pole, a "
@@ -174,7 +174,7 @@ def placement_section(table_path: str, graph_dir: str, use: str) -> list[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--output", type=Path, default=Path("docs/node_descriptor_columns.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/node_descriptor_columns.md"))
     arguments = parser.parse_args()
 
     table = read_descriptor_table(FINAL_TABLE)

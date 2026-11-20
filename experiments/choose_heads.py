@@ -15,7 +15,7 @@ Rule (written before any of the runs it reads exists; docs/preregistration.md):
   choose the noisy-OR head, the design's mechanistic head.
 - A missing fold for either head stops the script; no choice is made on part of the folds.
 The choice is a development reading: it spends nothing of the lockbox. Writes configs/head_choice.json and
-docs/head_choice.md.
+docs/generated/head_choice.md.
 
 Usage:
   python experiments/choose_heads.py --lockbox configs/lockbox_v2.json --pairs \\
@@ -78,7 +78,7 @@ def main() -> None:
     parser.add_argument("--minimum-macro-difference", type=float, default=0.032, help="the scorer's macro floor (docs/preregistration.md)")
     parser.add_argument("--minimum-micro-difference", type=float, default=0.043, help="the scorer's micro floor")
     parser.add_argument("--json-output", type=Path, default=Path("configs/head_choice.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/head_choice.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/head_choice.md"))
     arguments = parser.parse_args()
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by, label_selection=arguments.label_selection)

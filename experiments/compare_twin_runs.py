@@ -23,7 +23,7 @@ Usage:
   OMP_NUM_THREADS=1 python experiments/compare_twin_runs.py --graph-dir data/processed/graph_full_neuronal \
       --evidence-dir data/processed/evidence_full --label-selection data/processed/label_selection/better_v1_full.parquet \
       --pairs full_linear_response_properties:full_linear_response --cache-dir runs/twin_comparisons_full \
-      --markdown-output docs/twin_comparisons_full.md --json-output runs/twin_comparisons_full.json
+      --markdown-output docs/generated/twin_comparisons_full.md --json-output runs/twin_comparisons_full.json
 """
 from __future__ import annotations
 
@@ -271,7 +271,7 @@ def main() -> None:
     parser.add_argument("--lockbox", type=Path, default=None, help="the lockbox removed before the runs' folds were drawn (their directories end in _development)")
     parser.add_argument("--num-bootstrap", type=int, default=1000)
     parser.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE_DIRECTORY)
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/twin_comparisons.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/twin_comparisons.md"))
     parser.add_argument("--json-output", type=Path, default=Path("runs/twin_comparisons.json"))
     parser.add_argument("--run-root", type=Path, action="append", default=None,
                         help="read run directories from this root instead of the slice or full-graph defaults (repeatable, searched in order); "
@@ -327,7 +327,7 @@ def main() -> None:
                      f"{format_interval(entry['within_degree_strata_micro_auprc'])} |")
     lines += ["", "## Set aside", "",
               f"Run directories are read from {' and '.join(f'`{root}`' for root in RUN_ROOTS)}. A run that finished elsewhere reads as 0 folds "
-              "here: the module-fix and gene-protein-split arms live under `runs/module_fix` and are compared in docs/module_health_results.md "
+              "here: the module-fix and gene-protein-split arms live under `runs/module_fix` and are compared in docs/generated/module_health_results.md "
               "and docs/gene_protein_split_results.md, each with its own `--run-root`.", ""]
     for entry in entries:
         if "set_aside" in entry:

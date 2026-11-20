@@ -19,7 +19,7 @@ the graph is not free. It reports:
 Usage, on a rebuilt graph (v4 or later) with a cell-class weight table that covers every node:
   OMP_NUM_THREADS=4 python experiments/measure_limiting_step_rule.py \
       --graph-dir <the rebuilt v4 graph> --evidence-dir data/processed/evidence_full_v4 \
-      --cell-class-weights <its weight table> --markdown-output docs/limiting_step_rule_cost.md
+      --cell-class-weights <its weight table> --markdown-output docs/generated/limiting_step_rule_cost.md
 """
 from __future__ import annotations
 

@@ -5,7 +5,7 @@ Usage:
   python experiments/survey_literature.py
 Reads data/processed/literature/{pubtator_relations_filtered,ctd_relations_filtered,documents}.parquet; writes
 literature_reports.parquet (evidence_reports columns first, then the literature extras, study_design, species and the
-rubric columns), literature_summary.json and docs/literature_survey.md. The loader's evidence_code (the extraction
+rubric columns), literature_summary.json and docs/generated/literature_survey.md. The loader's evidence_code (the extraction
 type) is kept; the appraised study design goes to its own column and is prefixed to model_description.
 
 Literature reports are grade E soft priors (design section 4.2). Under the design they would enter training only for
@@ -105,7 +105,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--literature-dir", type=Path, default=Path("data/processed/literature"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/literature_survey.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/literature_survey.md"))
     arguments = parser.parse_args()
     tables = [pd.read_parquet(path) for path in (arguments.literature_dir / "pubtator_relations_filtered.parquet", arguments.literature_dir / "ctd_relations_filtered.parquet") if path.exists()]
     reports = pd.concat(tables, ignore_index=True, sort=False)

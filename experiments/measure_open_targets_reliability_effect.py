@@ -59,7 +59,7 @@ def main() -> None:
                         default=Path("data/processed/off_target_scoping/open_targets_symptom_rows.parquet"))
     parser.add_argument("--selection", type=Path, default=Path("data/processed/label_selection/better_v2_full_v4.parquet"))
     parser.add_argument("--implicit-negative-weight", type=float, default=0.1)
-    parser.add_argument("--output", type=Path, default=Path("docs/open_targets_reliability_effect.json"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/open_targets_reliability_effect.json"))
     arguments = parser.parse_args()
 
     existing_reports = pd.read_parquet(arguments.evidence_dir / "evidence_reports.parquet")

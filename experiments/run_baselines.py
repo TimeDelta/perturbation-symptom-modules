@@ -1,7 +1,7 @@
 """Phase 2: baselines B0 (popularity, degree-scaled popularity), B1 (random walk with restart) and,
 with --with-kg-embedding, B2 (TransE knowledge-graph embedding over the graph plus training evidence
 triples) and, with --with-type-popularity, popularity and degree_popularity fitted per perturbation type
-(type_popularity, type_degree_popularity; docs/perturbation_type_offset.md) under the grouped perturbation-wise split and the pathway-wise splits (design sections 5.6
+(type_popularity, type_degree_popularity; docs/generated/perturbation_type_offset.md) under the grouped perturbation-wise split and the pathway-wise splits (design sections 5.6
 and 6.1), with the label-permutation negative control (section 6.3). B2 is trained once per split
 (seconds to a minute on CPU) and, unless --kg-embedding-all-splits is given, only for the grouped
 split, its permutation control and the time split.
@@ -47,7 +47,7 @@ development set and scores the lockbox (split "lockbox", with its label-permutat
 pathway-wise splits and the time split are not run then. The labels are permuted within the lockbox and within the
 development set apart, so no lockbox label reaches the fit.
 
-Writes runs/baselines/results.json and docs/phase2_baselines.md.
+Writes runs/baselines/results.json and docs/generated/phase2_baselines.md.
 """
 from __future__ import annotations
 
@@ -421,7 +421,7 @@ def main() -> None:
     parser.add_argument("--skip-permutation-control", action="store_true")
     parser.add_argument("--rewiring-swaps-per-edge", type=int, default=50,
                         help="degree-preserving rewiring control for the random walk; 0 skips it. The default was 2 until 7 October 2026, "
-                             "which left the slice graph under-mixed (docs/graph_content_null_results.md); 50 matches "
+                             "which left the slice graph under-mixed (docs/records/2026-10/graph_content_null_results.md); 50 matches "
                              "experiments/run_rewiring_null_distribution.py. Documents generated before then say 2 in their rewiring heading")
     parser.add_argument("--rewiring-method", choices=["pair_sampling", "integer_draws", "walk_graph"], default="pair_sampling",
                         help="pair_sampling: degree_preserving_rewiring, O(edges) per swap, behind every rewiring result before 7 October 2026; "
@@ -444,11 +444,11 @@ def main() -> None:
                              "(the control for the input-size objection, docs/label_source_review.md 13.1)")
     parser.add_argument("--with-type-popularity", action="store_true",
                         help="also run popularity and degree_popularity fitted per perturbation type (drug or gene), the graph-free reading of the type offset "
-                             "(docs/perturbation_type_offset.md); off by default, so the confirmatory baseline set is unchanged unless the scorer is given these names")
+                             "(docs/generated/perturbation_type_offset.md); off by default, so the confirmatory baseline set is unchanged unless the scorer is given these names")
     parser.add_argument("--kg-embedding-all-splits", action="store_true", help="run B2 on the pathway hold-outs too (many fits)")
     parser.add_argument("--metabolic-layer-only", action="store_true")
     parser.add_argument("--output-dir", type=Path, default=Path("runs/baselines"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/phase2_baselines.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/phase2_baselines.md"))
     arguments = parser.parse_args()
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, metabolic_layer_only=arguments.metabolic_layer_only, group_by=arguments.group_by, label_grades=tuple(arguments.label_grades) if arguments.label_grades else None,
                                 label_selection=arguments.label_selection)

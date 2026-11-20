@@ -21,7 +21,7 @@ Usage:
       --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes \
       --evidence-dir data/processed/evidence_full_v4 \
       --label-selection data/processed/label_selection/better_v2_full_v4.parquet \
-      --markdown-output docs/gtopdb_leakage_cost.md
+      --markdown-output docs/generated/gtopdb_leakage_cost.md
 """
 from __future__ import annotations
 

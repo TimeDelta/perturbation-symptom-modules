@@ -28,7 +28,7 @@ Usage:
       --permuted-run-dirs runs/confirmatory/<model>/<split>_permuted ... \\
       --evidence-dir data/processed/evidence_full_v4 \\
       --label-selection data/processed/label_selection/better_v2_full_v4.parquet \\
-      --markdown-output docs/nosology_readout.md
+      --markdown-output docs/generated/nosology_readout.md
 """
 from __future__ import annotations
 

@@ -18,7 +18,7 @@ compared here. Untrained gains are used on purpose: the question is what the div
 
 Usage:
   python experiments/measure_forward_cone_divisor.py --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v5 \
-      --evidence-dir data/processed/evidence_full_v5 --output docs/forward_cone_divisor_measured.json
+      --evidence-dir data/processed/evidence_full_v5 --output docs/generated/forward_cone_divisor_measured.json
 """
 from __future__ import annotations
 

@@ -40,7 +40,7 @@ def main() -> None:
     parser.add_argument("--label-verdicts", type=Path, default=Path("configs/label_central_action.csv"))
     parser.add_argument("--psychiatric-additions", type=Path, default=Path("configs/psychiatric_drug_additions_v4_draft.csv"))
     parser.add_argument("--output", type=Path, default=Path("configs/ema_assessment_reports.csv"))
-    parser.add_argument("--summary", type=Path, default=Path("docs/ema_assessment_report_coverage.json"))
+    parser.add_argument("--summary", type=Path, default=Path("docs/generated/ema_assessment_report_coverage.json"))
     arguments = parser.parse_args()
 
     ema = pd.read_excel(arguments.ema_table, skiprows=EMA_TABLE_HEADER_ROWS_TO_SKIP)

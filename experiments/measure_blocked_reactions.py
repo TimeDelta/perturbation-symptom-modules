@@ -11,7 +11,7 @@ before it is made.
 The blocked set is cached in runs/paring/blocked_reactions.json, so a rerun reads it instead of repeating the
 analysis.
 
-Usage: python experiments/measure_blocked_reactions.py [--output docs/blocked_reactions.md]
+Usage: python experiments/measure_blocked_reactions.py [--output docs/generated/blocked_reactions.md]
 """
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ def main() -> None:
     parser.add_argument("--graph-dir", type=Path, default=Path("data/processed/graph"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence"))
     parser.add_argument("--cache", type=Path, default=Path("runs/paring/blocked_reactions.json"))
-    parser.add_argument("--output", type=Path, default=Path("docs/blocked_reactions.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/blocked_reactions.md"))
     arguments = parser.parse_args()
 
     blocked = set(blocked_reactions(arguments.model, arguments.cache))

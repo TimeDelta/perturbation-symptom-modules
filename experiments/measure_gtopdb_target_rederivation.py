@@ -17,7 +17,7 @@ Measurement only: no graph, evidence table or configuration is written. It repor
 Usage:
   OMP_NUM_THREADS=4 python experiments/measure_gtopdb_target_rederivation.py \
       --graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes \
-      --evidence-dir data/processed/evidence_full_v4 --markdown-output docs/gtopdb_target_rederivation.md
+      --evidence-dir data/processed/evidence_full_v4 --markdown-output docs/generated/gtopdb_target_rederivation.md
 """
 from __future__ import annotations
 

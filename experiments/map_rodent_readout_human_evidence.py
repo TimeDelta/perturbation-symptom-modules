@@ -2,14 +2,14 @@
 
 The Open Targets target safety curation records 58 (symptom, direction, target) claims only through rodent behavioural
 readouts (locomotor activity, catalepsy, stereotypy), which are not symptoms people report. A sub-agent searched the
-human literature for each claim; docs/rodent_readout_human_evidence_prompt.txt holds the prompt it was given verbatim
-and docs/rodent_readout_human_evidence.json holds what it returned. This script does three things:
+human literature for each claim; docs/generated/rodent_readout_human_evidence_prompt.txt holds the prompt it was given verbatim
+and docs/generated/rodent_readout_human_evidence.json holds what it returned. This script does three things:
 
   1. checks the returned references against PubMed metadata (every cited article exists, the DOI matches the PMID and
-     each quote is verbatim in the abstract), writing the outcome to docs/rodent_readout_human_evidence_checks.json;
+     each quote is verbatim in the abstract), writing the outcome to docs/generated/rodent_readout_human_evidence_checks.json;
   2. maps each kept or relabelled claim onto the study's symptoms with the same regular expressions that read the
      curation itself (experiments/scope_open_targets_symptom_labels.py), so the mapping is not done by hand;
-  3. writes docs/rodent_readout_human_evidence.md.
+  3. writes docs/generated/rodent_readout_human_evidence.md.
 
 Pass --pubmed-metadata to redo step 1 against a file of PubMed records (the tool result of get_article_metadata, which
 carries the abstracts); without it the committed check outcome is reused and no abstract is read or stored.
@@ -21,11 +21,11 @@ import re
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-EVIDENCE_FILE = REPOSITORY_ROOT / "docs/rodent_readout_human_evidence.json"
-REFERENCE_FILE = REPOSITORY_ROOT / "docs/rodent_readout_human_evidence_references.json"
-CHECKS_FILE = REPOSITORY_ROOT / "docs/rodent_readout_human_evidence_checks.json"
-PROMPT_FILE = REPOSITORY_ROOT / "docs/rodent_readout_human_evidence_prompt.txt"
-DOCUMENT_FILE = REPOSITORY_ROOT / "docs/rodent_readout_human_evidence.md"
+EVIDENCE_FILE = REPOSITORY_ROOT / "docs/generated/rodent_readout_human_evidence.json"
+REFERENCE_FILE = REPOSITORY_ROOT / "docs/generated/rodent_readout_human_evidence_references.json"
+CHECKS_FILE = REPOSITORY_ROOT / "docs/generated/rodent_readout_human_evidence_checks.json"
+PROMPT_FILE = REPOSITORY_ROOT / "docs/generated/rodent_readout_human_evidence_prompt.txt"
+DOCUMENT_FILE = REPOSITORY_ROOT / "docs/generated/rodent_readout_human_evidence.md"
 SCOPING_SCRIPT = REPOSITORY_ROOT / "experiments/scope_open_targets_symptom_labels.py"
 # The sub-agent's verdict sentences name the symptom the human data support and then, in several cases, the symptom they
 # do not support ("somnolence and fatigue, not psychomotor retardation"). Matching the study's patterns against the

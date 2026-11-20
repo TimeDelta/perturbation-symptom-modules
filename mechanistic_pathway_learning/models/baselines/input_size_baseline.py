@@ -2,7 +2,7 @@
 
 Why it exists. A drug enters the model with magnitude 1 at each of its mechanism targets, so a drug with three targets
 carries a total input of 3 and the size of its input follows the number of targets curated for it (the user's decision
-of 11 October 2026, docs/confirmatory_architecture_review.md question 6, and docs/label_source_review.md section 13.1).
+of 11 October 2026, docs/records/2026-10/confirmatory_architecture_review.md question 6, and docs/label_source_review.md section 13.1).
 The objection that answers is: a model could score well by reading input size rather than what the targets do. This
 baseline is the control for that objection. It is given the two numbers that describe input size, the number of seeds
 and the total absolute magnitude, and no graph, no node identity and no target identity. Whatever it scores is the

@@ -150,7 +150,7 @@ RELATION_GAINS = ("per_relation", "shared")
 # How the messages of the relations feeding a node are combined into one. "mean" is the original
 # behaviour: each relation's normalised message is multiplied by its gain and the results are summed,
 # with the per-node divisor relations_feeding_node making that sum a mean. It annihilates a node that
-# receives both signs, which is 36% of destinations (docs/membrane_potential_reach.md): a metabolite
+# receives both signs, which is 36% of destinations (docs/records/2026-10/membrane_potential_reach.md): a metabolite
 # both produced and consumed gets product_of at mean +1 and depletes_substrate at mean -1, and their
 # mean is zero. "softmax_mixture" drops that divisor and combines the feeding relations through a
 # weighted mixture of the statistics below (weighted by sparsemax by default, despite the option's historical
@@ -333,7 +333,7 @@ FIXED_POINT_NORM_EPSILON = 1e-12
 # spectral radius of the unsigned aggregate, which contracts just as surely without the per-node divisor.
 # The per-node divisor is what discards the stoichiometric counts that decide direction at a metabolite: five
 # producing reactions against one consuming reaction become one mean against another, and 92% of metabolites
-# end up with an aggregate row sum of zero (docs/membrane_potential_reach.md). The spectral arm keeps those
+# end up with an aggregate row sum of zero (docs/records/2026-10/membrane_potential_reach.md). The spectral arm keeps those
 # counts. Against it, that constant is 36.3 on the neuronal graph while the in-degree divisor is below it at
 # 98.8 percent of destinations, so it divides harder nearly everywhere and the field reaching the membrane
 # potential fell to 0.7 of its in-degree value; magnitude is not the same question as direction, so the arm is
