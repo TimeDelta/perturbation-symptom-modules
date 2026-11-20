@@ -4,7 +4,8 @@ docs landing page in the repository? A README.md under that directory").
 What it holds. What to read first (READ_FIRST, in the order of CLAUDE.md's Start-here list) and the reference
 documents (REFERENCE, which since 20 November 2026 also holds the exploration queue and the owner's study sheet, linked
 at its Claude Docs address as configs/study_sheet_diagrams.json gives it, with its Markdown copy beside it); where each
-class of document lives (docs/documentation_process.md, "Where documents live");
+class of document lives (docs/documentation_process.md, "Where documents live") and where a new document goes
+(NEW_DOCUMENT_RULE);
 a contents table with one row per topic, counting its documents by class; then every registered document
 (configs/documentation_registry.json) under its topic, each with its title (the document's first heading), its class
 and, where the register states one, what it is. Within a topic the living documents come first, then the records,
@@ -99,6 +100,19 @@ WHERE_DOCUMENTS_LIVE = (
     ("docs/records/<YYYY-MM>/", "dated records, in the month the register says each was recorded, with their attachments"),
     ("docs/drafts/", "text awaiting the owner"),
     ("docs/figures/, docs/study_sheet_figures/", "the figures that figures.md and study_sheet.md show"),
+)
+# Where a new document goes, the rule docs/documentation_process.md states under "Where documents live". The owner,
+# asked on 20 November 2026 whether CLAUDE.md should say where a new document goes, answered "either there or the
+# readme"; the session chose this page, so the rule is stated here and in the process document, and CLAUDE.md is not
+# edited. Its places are the class directories of mechanistic_pathway_learning/documentation.py.
+NEW_DOCUMENT_RULE = (
+    "**A new document** goes where its class puts it from the start: a living document at the top of `docs/`, a record in "
+    "`docs/records/<YYYY-MM>/` for the month it is recorded, a page or data file a script writes in `docs/generated/`, a draft in "
+    "`docs/drafts/`, and a table the graph or evidence build reads in `configs/`. `python experiments/register_documents.py "
+    "--add-missing` prints the place, and `tests/test_documentation_process.py` fails for a document anywhere else. The owner chose "
+    "folders by class on 20 November 2026 (\"1 class\") and, asked whether `CLAUDE.md` should say where a new document goes, "
+    "answered \"either there or the readme\": the rule is stated here and in the "
+    "[documentation process](documentation_process.md#where-documents-live-20-november-2026)."
 )
 # (topic, file-name patterns relative to the repository); first match wins
 TOPICS = (
@@ -270,6 +284,7 @@ def render_index(stamp: str, root: Path = REPOSITORY_ROOT) -> str:
               "([documentation process](documentation_process.md#where-documents-live-20-november-2026)). A file keeps its name when it moves.", ""]
     for place, what in WHERE_DOCUMENTS_LIVE:
         lines.append(f"- `{place}`: {what}.")
+    lines += ["", NEW_DOCUMENT_RULE]
     planned = moved.get("planned", [])
     waiting = (f"{len(planned)} files have not moved yet: phase 2 waits until no work in flight, and nothing awaiting the owner, holds a "
                "file the move must edit, phase 3 (the build inputs) waits for the next data-layer rebuild, and `configs/moved_paths.json` "

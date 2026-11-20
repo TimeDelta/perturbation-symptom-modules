@@ -63,6 +63,13 @@ what is kept current:
 | `docs/drafts/` | every draft |
 | `configs/` | a data file the graph or evidence build reads, beside the other build tables (phase 3 below) |
 
+The owner settled the layout the same day, answering five questions about it in turn ("1 class / 2 yes / 3 yes / 4 sure
+/ 5 either there or the readme"): folders by class rather than by topic; a session may change the paths the owner's
+Claude Docs study sheet names, when the files they name move; the build inputs move to `configs/` at the next
+data-layer rebuild; the exploration queue and the study sheet join the reference list of the landing page,
+`docs/README.md`; and the rule on where a new document goes is stated in this document and on the landing page (the last
+point below).
+
 - `expected_location` in `mechanistic_pathway_learning/documentation.py` is the rule. It is read from the register's
   class, so no file needs a judgement of its own. A file keeps its name when it moves, and a folder moves whole under
   its own name: `docs/mechanism_cards/<run>/` goes to `docs/generated/mechanism_cards/<run>/`, and
@@ -78,7 +85,8 @@ what is kept current:
 - `configs/moved_paths.json` lists the moves made, with the date, and the moves planned, with their phase. Phase 1 is
   every move that needs no edit to a file other work is changing. Phase 2 waits: for work in flight on another branch
   or in another checkout that changes a file the move must edit, until it lands, so that no branch meets a conflict;
-  and for the owner where the move would change their study sheet in Claude Docs or their rulings draft. Phase 3 holds
+  and for the owner where the move would change their rulings draft. A move that changes a path the study sheet names
+  changes it in the doc first, then in its Markdown copy (the owner's answer of 20 November 2026). Phase 3 holds
   the build inputs, moved to `configs/` just before a data-layer rebuild and when no job is running, because a moved
   file has a new modification time on every checkout and `experiments/check_rebuild_inputs.py` would report the builds
   there as stale. What a planned move waits for is worked out on the day, not stored.
@@ -94,9 +102,14 @@ what is kept current:
   (`content_change_commits`), so a page generated before the stamp keeps its date, a record moved and edited in one
   commit is still compared with its old text, and `--review` does not call a living document due because a file it
   names moved.
-- A new document goes where its class puts it from the start. `python experiments/register_documents.py --add-missing`
-  prints the place, and `tests/test_documentation_process.py` fails for a document outside it that is not a planned
-  move, and for code or a YAML config that still names a moved path.
+- **Where a new document goes.** Where its class puts it, from the start: a living document at the top of `docs/`, a
+  record in `docs/records/<YYYY-MM>/` for the month the register says it was recorded, a page or data file a script
+  writes in `docs/generated/`, a draft in `docs/drafts/`, and a table the graph or evidence build reads in `configs/`.
+  `python experiments/register_documents.py --add-missing` prints the place, and `tests/test_documentation_process.py`
+  fails for a document outside it that is not a planned move, and for code or a YAML config that still names a moved
+  path. Asked on 20 November 2026 whether `CLAUDE.md` should say where a new document goes, the owner answered "either
+  there or the readme"; the session chose the landing page, so the rule is stated there and here, and `CLAUDE.md` is
+  not edited.
 
 ## What is current
 

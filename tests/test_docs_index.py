@@ -173,3 +173,18 @@ def test_the_reference_list_holds_the_exploration_queue_and_the_study_sheet_at_i
     assert sum(line.startswith("- [Exploration queue](exploration_queue.md): ") for line in reference) == 1
     sheet = [line for line in reference if line.startswith(f"- [Study sheet]({address}): ")]
     assert len(sheet) == 1 and "](study_sheet.md)" in sheet[0], reference
+
+
+def test_the_page_says_where_a_new_document_goes():
+    """The owner, 20 November 2026, asked whether CLAUDE.md should say where a new document goes: "either there or the
+    readme". The rule is on this page, under "Where documents live", and names each class directory of the placement
+    rule (mechanistic_pathway_learning/documentation.py), so a change of directory shows here too."""
+    from mechanistic_pathway_learning.documentation import DRAFTS_DIRECTORY, GENERATED_DIRECTORY, RECORDS_DIRECTORY
+
+    lines = rendered_lines()
+    section = lines[lines.index("## Where documents live") + 1:lines.index("## Contents")]
+    rule = [line for line in section if line.startswith("**A new document**")]
+    assert len(rule) == 1, section
+    for directory in (GENERATED_DIRECTORY, RECORDS_DIRECTORY, DRAFTS_DIRECTORY):
+        assert f"`{directory}/" in rule[0], directory
+    assert '"either there or the readme"' in rule[0] and "20 November 2026" in rule[0]
