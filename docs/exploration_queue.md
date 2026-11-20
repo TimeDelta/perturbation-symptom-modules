@@ -44,8 +44,9 @@ ordering. you can just overwrite existing order").
    since 20 November 2026 (27 conflicts off the v5 drug set wait), and the amendment found further cases by hand
    (methylphenidate's enantiomers, cocaine's transporters). Its first step is a query over the ChEMBL_37 cache
    through the corrected readers, which needs no rebuild (run 20 November 2026: 90 of the 260 v5 drugs fall in a
-   category; six get sign 0 from a plain MODULATOR row and four have only an "Unknown" row, all queued for Fable
-   curation on 21 November 2026); the count of affected edges waits on the rebuild.
+   category; six get sign 0 from a plain MODULATOR row with no curated override, queued for Fable curation on 21
+   November 2026; the five with a targetless "Unknown" row need none, being curated already or carrying real
+   mechanism rows beside it); the count of affected edges waits on the rebuild.
 3. **Item 7, endosomal pH.** A monogenic gene with psychiatric phenotypes is absent from the graph, so its labels
    are lost. The measurement was taken on 7 November 2026 (below); what remains is design (an endosome
    compartment, the import of `R-HSA-425986`, how its proton pools connect), then the owner's ruling, then a build.
