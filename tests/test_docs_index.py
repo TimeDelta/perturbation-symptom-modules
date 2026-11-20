@@ -158,3 +158,18 @@ def test_the_page_reads_first_in_the_order_of_the_start_here_list():
     order = sorted(named, key=start_here.index)
     expected = [path.replace("configs/registered_rules.json", "docs/registered_core.md") for path in order]
     assert [path for path, _, _ in READ_FIRST] == expected
+
+
+def test_the_reference_list_holds_the_exploration_queue_and_the_study_sheet_at_its_address():
+    """The owner, 20 November 2026, asked whether the exploration queue and the study sheet should join the reference
+    list: "sure". The study sheet is kept current in Claude Docs, so its line links the doc at the address
+    configs/study_sheet_diagrams.json records, then the registered Markdown copy."""
+    import json
+
+    lines = rendered_lines()
+    reference = lines[lines.index("## Reference") + 1:lines.index("## Where documents live")]
+    address = json.loads((REPOSITORY_ROOT / "configs" / "study_sheet_diagrams.json").read_text(encoding="utf-8"))["doc"]
+    assert address.startswith("https://claude.ai/")
+    assert sum(line.startswith("- [Exploration queue](exploration_queue.md): ") for line in reference) == 1
+    sheet = [line for line in reference if line.startswith(f"- [Study sheet]({address}): ")]
+    assert len(sheet) == 1 and "](study_sheet.md)" in sheet[0], reference
