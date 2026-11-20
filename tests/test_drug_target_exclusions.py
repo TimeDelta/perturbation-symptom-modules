@@ -110,3 +110,31 @@ def test_the_committed_table_reads_and_removes_scn7a_from_the_sodium_channel_fam
     assert any((row.drug_chembl_id, row.target_chembl_id, row.gene_symbol) == ("", SODIUM_FAMILY, "SCN7A") for row in exclusions)
     kept = mechanism_targets(["CHEMBL_DRUG_A"], BY_MOLECULE, TARGETS)  # the default reads the committed table
     assert "SCN7A" not in kept[0].gene_symbols
+
+
+CHEMBL_DIRECTORY = DRUG_TARGET_EXCLUSIONS_PATH.parents[1] / "data/raw/chembl"
+pinned_chembl = pytest.mark.skipif(not (CHEMBL_DIRECTORY / "mechanisms.json").exists() or not (CHEMBL_DIRECTORY / "targets.json").exists(),
+                                   reason="the pinned ChEMBL caches are not present (experiments/fetch_chembl_drug_targets.py)")
+
+
+@pinned_chembl
+def test_on_the_pinned_cache_acamprosate_keeps_its_nmda_row_and_loses_the_gaba_a_complex():
+    """Item 37 rulings draft, section 14: "remove acamprosate edges" (its 13 GABA-A edges, a sourced negative)."""
+    from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import load_chembl_caches
+
+    caches = load_chembl_caches(CHEMBL_DIRECTORY)
+    chembl_ids = caches.pubchem_to_chembl.get("71158", [])  # acamprosate, CID 71158
+    kept = mechanism_targets(chembl_ids, caches.mechanisms_by_molecule, caches.targets)
+    assert {target.target_chembl_id for target in kept} == {"CHEMBL2094124"}
+    before = mechanism_targets(chembl_ids, caches.mechanisms_by_molecule, caches.targets, exclusions=())
+    assert {target.target_chembl_id for target in before} == {"CHEMBL2094124", "CHEMBL2093872"}
+
+
+@pinned_chembl
+def test_on_the_pinned_cache_scn7a_sits_in_one_target_only():
+    """The SCN7A row removes the member from CHEMBL2331043 alone, which holds for every drug only while no other target
+    of the pinned cache lists SCN7A (ChEMBL's single-protein target for Nax, CHEMBL3585, carries no mechanism)."""
+    import json
+
+    targets = json.loads((CHEMBL_DIRECTORY / "targets.json").read_text())
+    assert [target_id for target_id, record in targets.items() if "SCN7A" in (record.get("gene_symbols") or [])] == [SODIUM_FAMILY]
