@@ -66,6 +66,17 @@ def test_a_human_check_is_recognised_and_an_ordinary_page_is_not():
     assert not read_public_page.looks_like_challenge(200, "<html><body>Release 24.0, 16 March 2026.</body></html>")
 
 
+def test_a_busy_or_unavailable_service_is_not_a_refusal():
+    """429 and 503 say the service is busy or down, which is no statement about permission (the owner, 17 November
+    2026: "429 and 503 status codes should not count as refusals"). A challenge marker in the body is still a
+    refusal whatever the status."""
+    assert not read_public_page.looks_like_challenge(429, "Too Many Requests")
+    assert not read_public_page.looks_like_challenge(503, "Service Unavailable")
+    assert read_public_page.TRANSIENT_STATUS_CODES == frozenset({429, 503})
+    assert not read_public_page.TRANSIENT_STATUS_CODES & read_public_page.CHALLENGE_STATUS_CODES
+    assert read_public_page.looks_like_challenge(503, "<html><body>Checking your browser before accessing the site.</body></html>")
+
+
 def test_a_refused_address_makes_no_request(tmp_path):
     reader = read_public_page.PublicPageReader(tmp_path)
     record = reader.read("http://example.org/page")
@@ -124,6 +135,45 @@ def test_the_exemption_is_the_one_host_and_every_other_robots_rule_still_refuses
     record = reader.read(address)
     assert record["read"] is False and "robots file disallows" in record["reason"], record
     assert len(requested) == 1 and requested[0].endswith("/robots.txt")
+
+
+PUBCHEM_PKA_LISTING = ("https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/annotations/heading/JSON"
+                       "?heading=Dissociation+Constants&page=3")
+PUBCHEM_PKA_RECORD = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5743/JSON?heading=Dissociation%20Constants"
+
+
+def test_pubchem_pka_records_are_read_past_its_robots_rule_on_the_owners_ruling(tmp_path, monkeypatch):
+    """The owner, 19 November 2026, extended the exception to PubChem's measured pKa records ("yes"), and accepted on
+    20 November 2026 the scope of the "Dissociation Constants" heading of /rest/pug_view (item 37, ruling I1)."""
+    for address in (PUBCHEM_PKA_LISTING, PUBCHEM_PKA_RECORD):
+        reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+        record = reader.read(address)
+        assert record["read"] is True, record
+        assert "19 November 2026" in record["robots_file"] and "disallows" in record["robots_file"]
+        assert requested == ["https://pubchem.ncbi.nlm.nih.gov/robots.txt", address]
+
+
+@pytest.mark.parametrize("address", [
+    "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/lithium/cids/JSON",  # the refused service itself
+    "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5743/JSON",  # a whole record, not the heading
+    "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5743/JSON?heading=Toxicity",  # another heading
+    "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/5743/JSON?heading=Dissociation+Constants&heading=Toxicity",
+    "https://pubchem.ncbi.nlm.nih.gov/compound/Lithium",  # the website
+])
+def test_pubchem_outside_its_pka_records_is_not_requested_at_all(tmp_path, monkeypatch, address):
+    assert "measured pKa records only" in read_public_page.reason_address_is_not_requested(address)
+    reader, requested = reader_answered_by(tmp_path, monkeypatch, ROBOTS_FILE_THAT_CLOSES_EVERYTHING)
+    assert reader.read(address)["read"] is False
+    assert requested == []
+
+
+def test_pubchems_robots_file_is_still_requested():
+    assert read_public_page.reason_address_is_not_requested("https://pubchem.ncbi.nlm.nih.gov/robots.txt") is None
+
+
+def test_the_pubchem_scope_is_the_one_host():
+    assert read_public_page.robots_rule_exemption(PUBCHEM_PKA_RECORD.replace("pubchem.ncbi.nlm.nih.gov", "pubchem.example.org")) is None
+    assert read_public_page.robots_rule_exemption(PUBCHEM_PKA_RECORD.replace("pubchem.", "www.")) is None
 
 
 def test_the_other_limits_still_hold_on_the_exempt_host(tmp_path, monkeypatch):
@@ -206,3 +256,14 @@ def test_a_challenge_page_padded_past_the_raw_size_limit_is_still_a_refusal():
     assert read_public_page.looks_like_challenge(200, padded_interstitial)
     long_article_that_mentions_a_captcha = "<html><body>" + "A study of captcha design. " * 2000 + "</body></html>"
     assert not read_public_page.looks_like_challenge(200, long_article_that_mentions_a_captcha)
+
+
+def test_a_host_the_owner_ruled_a_requested_block_is_not_requested_except_its_robots_file():
+    """The owner, 16 November 2026: the whole-address Disallow line naming api.cellxgene.cziscience.com in
+    cellxgene.cziscience.com's robots file is "to be treated as a requested block". The API host's own robots file is
+    still read, so that its answer can be recorded."""
+    blocked = "https://api.cellxgene.cziscience.com/curation/v1/collections/283d65eb-dd53-496d-adb7-7570c7caa443"
+    assert "requested block" in read_public_page.reason_address_is_not_requested(blocked)
+    assert read_public_page.reason_address_is_not_requested("https://api.cellxgene.cziscience.com/robots.txt") is None
+    assert read_public_page.reason_address_is_not_requested("https://datasets.cellxgene.cziscience.com/x.h5ad") is None
+    assert read_public_page.reason_address_is_not_requested("https://cellxgene.cziscience.com/collections/x") is None

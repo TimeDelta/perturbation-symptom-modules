@@ -100,8 +100,21 @@ against them before it is acted on.
 - **A refusal by the site is respected.** A page behind a robots rule or a check that the visitor is human is not
   read through a cache, a mirror or a solved challenge. Record the refusal and use the provider's other
   publications.
-- **Two hosts are exceptions to the robots rule, each on its own ruling.** The second is `dblp.org`, the computer
-  science bibliography: its search interface refused `experiments/read_public_page.py` on 27 October 2026 during the
+- **Three hosts are exceptions to the robots rule, each on its own ruling.** The third is `pubchem.ncbi.nlm.nih.gov`,
+  **for its measured pKa records only** (the owner, 19 November 2026, answering "yes" to extending the exception to
+  them). PubChem's programmatic service refused `experiments/read_public_page.py` on 18 and 19 November 2026 during
+  the ion-state passes of item 37, where it holds most of the measured acid dissociation constants the carrier-share
+  class needs and no other source answers for 35 of 95 drugs. As with the two below, the exception is that exact host
+  name, over https, the robots file is still read and its answer recorded beside the page, and the reader's other
+  limits hold. It covers the pKa records and not the rest of the site, and because PubChem serves each depositor's own
+  terms, **a record's licence is verified before its value is relied on** ("A licence is verified", above). The
+  refusal was met under `pubchem.ncbi.nlm.nih.gov/rest/pug`, its programmatic service, but the measured records are
+  served by PUG-View under `/rest/pug_view`, and **the scope is the "Dissociation Constants" heading of
+  `/rest/pug_view`** (the owner, 20 November 2026, accepting ruling I1 of item 37); `experiments/read_public_page.py`
+  holds it in code (`is_in_pubchem_pka_scope`) and requests no other PubChem address but the robots file. An HSDB line
+  in those records counts as a source by the work it cites, not as a source in itself, and DrugBank's deposits stay
+  unread, since DrugBank refused automated reading and is not used as a source. The second is `dblp.org`,
+  the computer science bibliography: its search interface refused `experiments/read_public_page.py` on 27 October 2026 during the
   bibliography sweep of decision 9.101, where it was the one route that would have settled whether two entries
   claiming ICLR are peer-reviewed conference papers, ICLR registering no DOIs. The pass reported the refusal rather
   than assuming an exception; asked whether to extend it, the owner answered "Yes" (27 October 2026). As with EBI, the
@@ -204,6 +217,21 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   and is not stated here**: whether a waived pass still needs a later Fable recheck before it is relied on, and
   whether a waiver covers one turn or a session, are both open. Until they are settled, a waived pass is flagged where
   it is recorded, as 9.68 is.
+
+## Research passes keep their work on disk (18 November 2026)
+
+The owner, 18 November 2026, after a Fable pass stopped mid-work with nothing saved: "please make it so that the
+subagents don't lose their work again". A subagent stops when the turn of the session that started it is interrupted,
+and a stopped subagent cannot be resumed, so its work survives only what it has written to disk. So every pass or agent
+a session starts works this way, and its brief says so:
+
+- **A progress log from the first step.** Beside its report, the pass keeps `<report name>.progress.md` and appends to
+  it after every source read or measurement taken: what was read (address or identifier, and where the saved copy is),
+  what it showed, and the next step. A finding not yet in the log is a finding that can be lost.
+- **The report is written as it goes**, section by section, not at the end.
+- **A restarted pass reads its predecessor's progress log, report and saved pages first** and continues from the last
+  logged step, re-reading a source only to check it. The session that restarts it also passes on what the stopped
+  pass's transcript holds that the log does not.
 
 ## Documents (15 October 2026)
 
@@ -320,6 +348,12 @@ The table of licences is `docs/data_sources.md`. The quotes and where each was r
   under it). Edit a copy, or wait for `bash scripts/resume_jobs.sh --status` to show the job finished, then relaunch.
 - **Commit code before starting a job that depends on it.** A container can be replaced without warning; the disk
   of the earlier container stays with the owner, but a new session starts from the repository.
+- **Free disk by deleting only what a script can fetch again unattended** (the owner, 20 November 2026: "Only ok to
+  delete the stuff that can be easily fetched via script without my intervention"). A provider's download, an
+  extracted copy beside its archive, or a byte-identical duplicate may go. A file the owner supplied, a page saved as
+  the provenance of a quotation or a licence, and anything whose source needs a login, a check that the visitor is
+  human or a library request stay, as does anything a script cannot fetch without the owner. The volume reached 99%
+  full on 20 November 2026, when this was first applied to the session's scratch downloads.
 
 ## The owner (16 October 2026)
 

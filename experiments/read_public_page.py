@@ -8,21 +8,33 @@ This script is that fallback with its limits written into code, so that a resear
   1. the site's robots file is read first, and a page it disallows for automated readers is left unread. A site
      that serves no robots file places no restriction, which is what the protocol says, so that is read;
      --treat-missing-robots-as-refusal restores the stricter behaviour this script started with;
-  2. a page that answers with a check that the visitor is human is reported as refused and not saved;
+  2. a page that answers with a check that the visitor is human is reported as refused and not saved. A status that
+     says the service is busy or down rather than closed to this reader (429, 503) is reported as transient and not
+     as a refusal, so the caller may wait and request the same address on the same host again (the owner, 17 November
+     2026: "429 and 503 status codes should not count as refusals");
   3. an address that carries a personal identifier (an e-mail address) is not requested;
   4. every page read is saved with its address, time and SHA-256, in a directory that holds nothing else.
 
 It does not log in, solve challenges, or use caches and mirrors of a page that refused it.
 
-Two hosts are read past their robots file, each on a ruling of the owner's, over https only; the robots file is still
-read and its answer recorded beside the page, and limits 2 to 4 hold there as everywhere else. Each exception is the
-exact host name and no other host of the same organisation:
+Three hosts are read past their robots file, each on a ruling of the owner's, over https only; the robots file is
+still read and its answer recorded beside the page, and limits 2 to 4 hold there as everywhere else. Each exception is
+the exact host name and no other host of the same organisation:
 
-  ftp.ebi.ac.uk   EMBL-EBI's FTP host, whose robots file disallows every path for every reader (22 October 2026,
-                  "don't refuse FTP from EBI");
-  dblp.org        the computer science bibliography, whose search interface refused the reader on 27 October 2026
-                  while two entries of docs/references.bib claiming ICLR could not otherwise be verified (the owner,
-                  27 October 2026, asked whether to extend the exception to it: "Yes").
+  ftp.ebi.ac.uk             EMBL-EBI's FTP host, whose robots file disallows every path for every reader (22 October
+                            2026, "don't refuse FTP from EBI");
+  dblp.org                  the computer science bibliography, whose search interface refused the reader on 27 October
+                            2026 while two entries of docs/references.bib claiming ICLR could not otherwise be verified
+                            (the owner, 27 October 2026, asked whether to extend the exception to it: "Yes");
+  pubchem.ncbi.nlm.nih.gov  for its measured pKa records only: an address under /rest/pug_view/ whose heading is
+                            "Dissociation Constants" (PUBCHEM_PKA_SCOPE). Every other PubChem address, robots file
+                            aside, is not requested at all. The owner extended the exception on 19 November 2026 and
+                            set its scope on 20 November 2026 (item 37, ruling I1).
+
+One host is not requested at all, other than its robots file, on a ruling of the owner's (REQUESTED_BLOCK_HOSTS):
+
+  api.cellxgene.cziscience.com   named by a whole-address Disallow line in cellxgene.cziscience.com's robots file
+                                 (16 November 2026, "yes it should be treated as a requested block").
 
 Usage:
   python experiments/read_public_page.py https://example.org/page.html
@@ -50,7 +62,17 @@ USER_AGENT = "mechanistic-pathway-learning/0.1 (research reading of public pages
 ROBOTS_USER_AGENTS_CHECKED = ("mechanistic-pathway-learning", "*", "Claude-User", "ClaudeBot", "anthropic-ai")
 REQUEST_TIMEOUT_SECONDS = 60
 SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST = 2.0
-CHALLENGE_STATUS_CODES = frozenset({401, 403, 407, 429, 503})
+CHALLENGE_STATUS_CODES = frozenset({401, 403, 407})
+# 429 (too many requests) and 503 (service unavailable) were in this set until 17 November 2026. They say the service
+# is busy or down, which is no statement about permission, unlike a robots rule, a login or a human check: three
+# research passes of 17 November 2026 met them from Europe PMC while sending several requests at once, and the same
+# addresses on the same host answered 200 a few minutes later, one at a time. Counting them as refusals wrote "the
+# site refused the reader" into records where the reader had only been throttled, and the rule that a refused page is
+# not read elsewhere then closed off routes the site had not closed. The owner, 17 November 2026: "429 and 503 status
+# codes should not count as refusals". A page that carries a challenge marker in its body is still a refusal at any
+# status, and the throttling is still obeyed: the caller waits and retries the same address on the same host rather
+# than going to a cache, a mirror or another host.
+TRANSIENT_STATUS_CODES = frozenset({429, 503})
 CHALLENGE_MARKERS = (
     "verify you are a human", "verify you are human", "are you a robot", "captcha", "altcha-widget", "cf-chl",
     "challenge-platform", "enable javascript and cookies to continue", "unusual traffic", "access denied",
@@ -88,12 +110,54 @@ ROBOTS_RULE_EXEMPT_HOSTS = {
     "ftp.ebi.ac.uk": "the owner, 22 October 2026: \"don't refuse FTP from EBI\"",
     "dblp.org": "the owner, 27 October 2026, asked whether to extend the exception to dblp.org: \"Yes\"",
 }
+# PubChem is exempt for one kind of record, not as a host. Its programmatic service refused this reader on 18 and 19
+# November 2026 during the ion-state passes of item 37, where it holds most of the measured acid dissociation constants
+# the carrier-share class needs; the owner answered "yes" to extending the exception to its measured pKa records (19
+# November 2026). The refusal was met under /rest/pug, but the records are served by PUG-View under /rest/pug_view,
+# and the scope the owner accepted on 20 November 2026 (ruling I1) is the "Dissociation Constants" heading of
+# /rest/pug_view. A depositor's licence is still verified before a value is relied on, since PubChem serves each
+# depositor's own terms, and DrugBank's deposits stay unread under the project's DrugBank ruling; neither is something
+# this reader can check.
+PUBCHEM_HOST = "pubchem.ncbi.nlm.nih.gov"
+PUBCHEM_PKA_SCOPE_PATH_PREFIX = "/rest/pug_view/"
+PUBCHEM_PKA_SCOPE_HEADING = "dissociation constants"
+PUBCHEM_PKA_RULING = ("the owner, 19 November 2026, extending the exception to PubChem's measured pKa records (\"yes\"), "
+                      "scoped on 20 November 2026 to the \"Dissociation Constants\" heading of /rest/pug_view")
+
+
+def is_in_pubchem_pka_scope(address: str) -> bool:
+    """True for a PUG-View address whose heading is "Dissociation Constants", given as a heading= query parameter or
+    as the last path segment of /rest/pug_view/data/.../JSON?heading=..."""
+    parsed_address = urllib.parse.urlsplit(address)
+    if (parsed_address.hostname or "").lower() != PUBCHEM_HOST:
+        return False
+    if not parsed_address.path.startswith(PUBCHEM_PKA_SCOPE_PATH_PREFIX):
+        return False
+    headings = urllib.parse.parse_qs(parsed_address.query).get("heading", [])
+    return bool(headings) and all(heading.strip().lower() == PUBCHEM_PKA_SCOPE_HEADING for heading in headings)
 
 
 def robots_rule_exemption(address: str) -> str | None:
     """The ruling under which this address is read past its robots rule, or None when the rule applies."""
     host = (urllib.parse.urlsplit(address).hostname or "").lower()
+    if host == PUBCHEM_HOST:
+        return PUBCHEM_PKA_RULING if is_in_pubchem_pka_scope(address) else None
     return ROBOTS_RULE_EXEMPT_HOSTS.get(host)
+
+
+# Hosts not requested at all, each on a ruling of the owner's, because another host of the same site asks for it in a
+# form the host's own robots file cannot express. Only the host's robots file itself is read, so that its answer can be
+# recorded.
+#   api.cellxgene.cziscience.com: the robots file of cellxgene.cziscience.com carries the line
+#     "Disallow: https://api.cellxgene.cziscience.com/*", a whole address where the protocol expects a path, so a
+#     reader that checks only the API host's own robots file is let through, as a Fable pass was on 16 November 2026.
+#     Asked whether that line is a refusal, the owner answered "yes it should be treated as a requested block"
+#     (16 November 2026).
+REQUESTED_BLOCK_HOSTS = {
+    "api.cellxgene.cziscience.com": "the owner, 16 November 2026, on the line \"Disallow: "
+                                    "https://api.cellxgene.cziscience.com/*\" in cellxgene.cziscience.com's robots "
+                                    "file: \"yes it should be treated as a requested block\"",
+}
 
 
 def reason_address_is_not_requested(address: str) -> str | None:
@@ -103,6 +167,13 @@ def reason_address_is_not_requested(address: str) -> str | None:
         return "only https addresses are read"
     if not parsed_address.hostname or "." not in parsed_address.hostname:
         return "the address has no public host name"
+    blocking_ruling = REQUESTED_BLOCK_HOSTS.get(parsed_address.hostname.lower())
+    if blocking_ruling and parsed_address.path != "/robots.txt":
+        return f"the host is treated as a requested block ({blocking_ruling})"
+    if (parsed_address.hostname.lower() == PUBCHEM_HOST and parsed_address.path != "/robots.txt"
+            and not is_in_pubchem_pka_scope(address)):
+        return ("PubChem is read for its measured pKa records only, the \"Dissociation Constants\" heading of "
+                "/rest/pug_view (" + PUBCHEM_PKA_RULING + ")")
     if parsed_address.username or parsed_address.password:
         return "the address carries credentials"
     decoded_address = urllib.parse.unquote(address)
@@ -225,6 +296,11 @@ class PublicPageReader:
         record |= {"status_code": status_code, "content_type": content_type, "bytes": len(body)}
         if looks_like_challenge(status_code, response_text):
             return record | {"reason": f"the site answered with a refusal or a check that the visitor is human (HTTP {status_code})"}
+        if status_code in TRANSIENT_STATUS_CODES:
+            return record | {"reason": f"the service was busy or unavailable, which is not a refusal (HTTP {status_code}); "
+                                       f"wait and request this same address on this same host again, rather than a cache, "
+                                       f"a mirror or another host",
+                             "transient": True}
         if status_code != 200:
             return record | {"reason": f"HTTP {status_code}"}
         digest = hashlib.sha256(body).hexdigest()
