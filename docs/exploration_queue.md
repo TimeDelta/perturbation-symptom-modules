@@ -398,6 +398,28 @@ history and are not compared with these. The first limit listed above is dischar
 were re-read through PubMed on Fable on 6 November 2026 and every quote and use held (the timescale record's dated
 addition of that day). What remains is the owner's: whether to split `coproduct_of`.
 
+**Design pass of 20 November 2026 (on Opus at the owner's request; unconfirmed; needs verification on Fable and the
+owner's ruling before it is relied on).** Measured on `data/processed/graph_full_neuronal_split_binders_drugs_v5`, files
+dated 12 November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings, at commit `8eccf472`; the 7 November counts above reproduce
+exactly. Of the 62 "de novo" carrier `product_of` edges, about 11 raise a cofactor pool (SPR's three into
+tetrahydrobiopterin, CoQ synthesis, thioredoxin assembly, B6 phosphorylation, holo-[ACP]); about 50 are redistributions
+misread because a form is off the carrier list: all 14 folate edges (plain THF, folate and the polyglutamates are not
+on it), 29 acyl carrier edges (acyl-[ACP] thioesters) and 7 lipoamide edges (S-acyl-dihydrolipoamides). With THF, folate
+and the polyglutamates added, every folate carrier edge is redistribution. So the split is computable from the
+stoichiometry once a moiety's family is given, but the family is not: Haraldsdóttir and Fleming 2016 (PLoS Comput Biol
+12:e1004999, abstract only) state that identifying conserved moieties "requires data on reaction atom mappings in
+addition to stoichiometry", which the graph does not hold. The THF question is therefore related to the split (the
+folate half depends on it) and stays its own decision. On the drain side every biopterin edge that lowers the total is
+a pseudo-reaction. In the encoder's fractional coordinates the conserved-moiety constraint needs each form's resting
+share of the total, so it does need sourcing, contrary to "needs no literature sourcing" above; a projection inside the
+loop breaks the max-norm contraction for moieties of three or more forms, and under the amendment of `docs/item37_rulings_draft_2026-11-13.md`'s root-finder an exact
+conservation law gives non-isolated roots and a zero eigenvalue, so the pass proposes reduced coordinates with a total
+node per moiety, fed by the split's total-changing edges, designed with the amendment of `docs/item37_rulings_draft_2026-11-13.md`'s root-finder. Once several stable roots
+are kept, rates re-enter through the stability check, which the partition can supply by membership. The pass recommends
+(its own view, not a ruling) extending the families by hand on two sources before any split, and puts nine questions to
+the owner. Report: the session scratchpad's `item6_design_2026-11-20.md`; nothing in the repository was changed.
+Record: `docs/exploration_item6_design_2026-11-20.md`.
+
 ---
 
 ## 7. Endosomal pH: SLC9A6 (NHE6), SLC9A9 (NHE9) and the endolysosome node
@@ -492,6 +514,31 @@ that the literature above makes the mechanism would reach nothing. Representing 
 fetch: an endosome compartment letter of its own in the importer, a non-currency endosomal proton (or pH) node, and
 sourced edges from it to what luminal pH governs (TrkB signalling, lysosomal proteolysis). Whether the pH node joins
 the compartment pH weight of `linear_response_encoder.py`, which is still uncalibrated (9.75), is a further question.
+
+**Added 20 November 2026: design (on Opus at the owner's request; unconfirmed; needs verification on Fable and the
+owner's ruling before it is relied on).** Graph facts on `graph_full_neuronal_split_binders_drugs_v5`, files of 12
+November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings (Q4's H+ merge, the in-loop pH ceiling, 9.81's saturation), so they
+are history once those are built. Fetching `R-HSA-425986` as the importer stands (option A) gives SLC9A6 a node, but
+`compartment_letter` sends every endosomal species to `l`, luminal H+ and Na+ are currency, and Reactome's cytosolic
+Na+ is the propagating pool `NEURON_MAM02519c`; so an NHE6 or NHE9 loss would reach the graph only through bulk
+cytosolic Na+, not through the lumen. The import would also double `MAR05430` and `MAR07695`, and puts SLC9A7 on the
+early-endosome exchanger through Reactome's CandidateSet "SLC9A6,7". Separating the endosome from `l` (option B) also
+moves CLCN3 and CLCN4/5/6, both labelled genes, and finds no endosomal V-ATPase pump: the graph's only pump reaction,
+`MAR00080`, is lysosomal. The pH weight would cover a new letter automatically but would gate only transporter
+entities, and it is still uncalibrated in every run (9.75). Option C adds a propagating endosomal proton pool on 9.75's
+store pattern and sourced edges out of it. The best-supported edge is pool to `PROTEIN:NTRK2` at -1 (three labs).
+Cathepsin D needs two signs on one node, tau is an aggregation finding against a protein level, and GLAST is an
+astrocyte finding in a neuronal graph. The direction of the on-disk Reactome CLC reactions has to be checked first. D
+(the pH weight only) changes almost nothing on the current code; E (direct gene edges) skips the mediator.
+**Labels**: SLC9A6's 113 HPO rows reach five fine symptoms, `intellectual_disability` (Christianson),
+`cognitive_impairment`, `parkinsonism`, `bradykinesia` and `resting_tremor`. The last four come only from OMIM:301142
+(female-restricted, denominators 1/1 to 2/3). SLC9A9 has no HPO row. Resting endosomal pH: 6.3 early, 6.5 recycling,
+5.5 late (Casey et al. 2010 via BioNumbers 115761, licence unverified) against a generic 5.7 (`kondapalli2014endosomalnhe`).
+The session's recommendation is C with a single endosome letter: drop SLC9A9 from `MAR05430`, import only the two
+endosomal reactions with the hash pinned, add the pool with the TrkB edge alone, and have a Fable pass source the pump
+and the CLC direction first. It is the session's and not a ruling. Thirteen questions for the owner, and the full
+record, are in the pass's report (`item7_design_2026-11-20.md`, session scratchpad); none has a decision id.
+Record: `docs/exploration_item7_design_2026-11-20.md`.
 
 ---
 
@@ -601,6 +648,41 @@ reduction state", so it needs a ruling of its own, separate from any NADH edge. 
 DLAT as sources; DLD, OGDH and PDHA1 as targets) are flagged where the evidence is complex-level or rests on a single
 source. The pass read the oxoacid-dehydrogenase sources and targets in brain and mammalian mitochondria; one source
 set (T-6) is a single group, and one (S-5) has no brain preparation.
+
+**Added 20 November 2026 (design pass on Opus at the owner's request; unconfirmed, needs verification on Fable and
+the owner's ruling before it is relied on).** Counts are on `graph_full_neuronal_split_binders_drugs_v5`, files of 12
+November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings. The pass proposes giving the metabolite-driven edge to the redox
+state of the carrier pools, not to succinate or 2-oxoglutarate as substrates. A succinate -> superoxide edge gives the
+wrong sign for SDH inhibition. Succinate piles up, yet reverse electron transport stops: malonate inhibits it
+(Korshunov 1997, PMID 9369223), and "Stepwise oxidation of the QH(2)/Q pool by increasing malonate concentration
+slowed" complex I superoxide (Treberg 2011, PMID 21659507).
+Proposed: a relation of its own (working name `redox_state_drives_oxidant`, signed, with its own gain) from:
+- a new matrix NADH pool `REDOX_NADH_m`, built as `redox_pools.py` builds `REDOX_NADPH_m` (190 NAD+-reducing and 28
+  NADH-oxidising reactions), to superoxide at site IF, +1 (Treberg 2011; Kussmaul & Hirst 2006, PMID 16682634; brain:
+  Starkov & Fiskum 2003, PMID 12911618);
+- the same pool to H2O2 at the 2-oxoacid dehydrogenases, contested (Tretter 2004 against Quinlan 2014), so a 9.122
+  gate;
+- the non-currency ubiquinol nodes (`MAM03102m`, Reactome's `CHEBI64183m`) to superoxide at site IQ, +1 (Treberg
+  2011; Robb 2018, PMID 29743240);
+- optionally ubiquinone at -1, and 2-oxoglutarate to H2O2 (+1).
+No Q-pool edge to complex III: its superoxide is "primarily promoted by a partially oxidized rather than by a fully
+reduced ubiquinone pool" (Dröse & Brandt 2008, PMID 18522938).
+Found on the way, each for its own decision:
+- the existing NDUFV1 -> superoxide row (+1) makes a complex I loss lower superoxide, while patient fibroblasts show an
+  increase "inversely related" to complex I activity (Verkaart 2007, PMID 17289351; Pitkanen & Robinson 1996,
+  PMID 8755643);
+- Human-GEM writes SDH (`MAR04652`) and MDH2 (`MAR04141`) against the cycle, so on that route an SDH loss raises
+  ubiquinol;
+- the Human-GEM and Reactome Q pools are separate nodes;
+- all 34 `oxidatively_modifies` edges start from cytosolic oxidants, because the target table has no compartment
+  column;
+- no mitochondrial membrane-potential node exists, so the site IQ edge asserts the high-protonmotive-force regime.
+36 of 2,802 labelled perturbations in `evidence_full_v5` are cycle or chain genes, and no admitted drug targets one.
+Cost: about a day of code in `redox_pools.py` and `oxidative_regulation.py`, a third curated table, no encoder change,
+riding on the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rebuild. Five new sources need Fable verification and BibTeX entries.
+The design pass (`item9_design_2026-11-20.md` in that session's scratchpad) holds the rows, the limits and nine
+questions for the owner.
+Record: `docs/exploration_item9_design_2026-11-20.md`.
 
 ## 10. The shunt: inhibition by conductance that no edge into `VM_c` carries
 
@@ -841,6 +923,8 @@ another database or from a review, counted as an independent source).
   it needs a stated justification where it replaces a sourced value.
 - Some bias cannot be corrected from the project's data at all: a value never measured for any member of a class leaves
   nothing to calibrate against.
+
+**Added 20 November 2026: a literature pass (on Opus at the owner's request; unconfirmed; needs verification on Fable before it is relied on).** Record: `docs/literature_bias_2026-11-20.md`. Four families of method fit here in part: a sensitivity analysis for values missing not at random (a one-sided shift of each fallback value), weighting the sourced rows toward rows like the unsourced ones, network study-bias corrections, and censored-value (Tobit) handling, the one method that can correct rather than bound, since 5,676 ChEMBL cells hold only a censored value. Heckman selection models do not fit: no credible exclusion variable and too few rows. Measured bias read: the 16% of genes reported by 1991 hold 49% of the 2015 literature; the share of records labelled active is 2.8% in PubChem, 23.3% in ChEMBL and 79.8% in GtoPdb; whether a compound was tested against a target is predictable from ChEMBL itself. Its recommendations for the amendment of `docs/item37_rulings_draft_2026-11-13.md`: score held-out error weighted toward rows resembling the unsourced ones, report a one-sided sensitivity per fallback value, and stratify the held-out split on those covariates before it is fixed, which cannot be added afterwards. A class with no sourced member is not correctable by any method. Four papers were read in full; the rest as abstracts and six as bibliographic records only; its bibliography drafts are not in `docs/references.bib`, building an entry being research on Fable.
 
 ---
 

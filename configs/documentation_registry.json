@@ -1002,6 +1002,36 @@
       "class": "draft",
       "recorded": "2026-11-13",
       "what": "the owner's rulings of 13 November 2026 on the open parts of decision 9.129 and the questions that came out of them, kept until they are entered in docs/open_decisions.md"
+    },
+    "docs/design_review_2026-11-20.md": {
+      "class": "record",
+      "recorded": "2026-11-20",
+      "append_only": true,
+      "what": "a critical review of the experimental design (construct, internal, statistical and external validity; registered against built) and of five framings of the experiment, run on Opus at the owner's request on 20 November 2026; unconfirmed, needs verification on Fable and the owner's reading"
+    },
+    "docs/exploration_item6_design_2026-11-20.md": {
+      "class": "record",
+      "recorded": "2026-11-20",
+      "append_only": true,
+      "what": "exploration item 6 (the fast/slow partition and the conserved-moiety constraint): design options and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
+    },
+    "docs/exploration_item7_design_2026-11-20.md": {
+      "class": "record",
+      "recorded": "2026-11-20",
+      "append_only": true,
+      "what": "exploration item 7 (endosomal pH, SLC9A6 and SLC9A9): design options and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
+    },
+    "docs/exploration_item9_design_2026-11-20.md": {
+      "class": "record",
+      "recorded": "2026-11-20",
+      "append_only": true,
+      "what": "exploration item 9 (the Krebs cycle and oxidative burden): design of a redox-state-driven oxidant source and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
+    },
+    "docs/literature_bias_2026-11-20.md": {
+      "class": "record",
+      "recorded": "2026-11-20",
+      "append_only": true,
+      "what": "exploration item 15 (literature bias in the curated sources): correction methods, measured bias and their fit to the fallbacks of the amendment of 13 November 2026, run on Opus at the owner's request on 20 November 2026; unconfirmed, needs verification on Fable"
     }
   }
 }
