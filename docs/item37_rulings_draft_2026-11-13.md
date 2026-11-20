@@ -819,7 +819,7 @@ commit. Graph counts are on the build directory `graph_full_neuronal_split_binde
   same class in log space, with a per-drug offset shrunk toward the class value and a soft clamp to the class's
   sourced range whose strength is set by the evidence prior. What a class is here is open, as it is for the occupancy
   split, and carries the same guard against circular reasoning.
-- **A monkey Kp,uu is accepted.** The owner: "kp,uu: accept monkey".
+- **A monkey Kp,uu is accepted.** The owner: "kp,uu: accept monkey also".
 - **A compound that is both a study drug and another drug's active metabolite is treated as both.** The owner: "joint
   drugs/metabolites: treat as both".
 - **TPM and single-nucleus counts per million are not interchangeable without the per-gene confounds.** The build
@@ -1801,9 +1801,10 @@ ninetieth range), **and S3b**, whether the centring error, an optimum fixed at e
 - **Q5d is a decision of its own, to be made by a Fable pass** (NAAA's compartment).
 - **The steady-state search goes to a decision outside item 37.**
 - **S4 goes to a decision outside item 37.** The owner: "s4 is separate decision". S4 is the anchor on the
-  module-to-symptom links (`anchored_link_prior_penalty`, disabled in config, with a hard-coded strength and no sourced
-  prior), found by the soft-prior-clamp check the owner asked for under M2; it sits on the readout side, which item 37
-  does not build.
+  module-to-symptom links (`anchored_link_prior_penalty`, written for those links but not wired to them; the model
+  config's entry for it, `link_anchor` in `configs/model_noisy_or_pathway_modules.yaml`, disabled with a hand-set
+  strength of 0.99, is read by no code; and there is no sourced prior), found by the soft-prior-clamp check the owner
+  asked for under M2; it sits on the readout side, which item 37 does not build.
 - **Q5d: MAR20093 moves to the lysosome; NAAA's other reactions are decided one by one.** The owner: "Q5d just
   MAR20093: start fable pass now for the other NAAA reactions to each be decided individually". A Fable pass of 20
   November 2026 (`hgem_q5d_2026-11-20.md` in the session scratchpad) found NAAA active only at acid pH (optimum 4.5)
