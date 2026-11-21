@@ -578,3 +578,38 @@ Stating finding 17's reference charge corrects a recorded measurement and goes t
 | 3a (H2) permuted-target control | CONFIRMED | permute the drug nodes' mechanism edges; 5 seeds per model in the job | amendment of the run plan (fifteen runs per model) |
 | 3b (H2) 25c not in the scorer | CONFIRMED, wider (item 4's readings too) | 25c, input-size and target-count readings in `score_confirmatory.py`, before the draw | none |
 | 3c (H3) membrane-potential sign | CONFIRMED in substance, reproduced on the 12 Nov graphs; figure is four-ion, "not built" is graphs only, 9.138 does not exist | land `pores_and_clamped_pools`, register it, rebuild | amendment the amendment of docs/item37_rulings_draft_2026-11-13.md; an owner ruling to register it ahead of the rest of the amendment of docs/item37_rulings_draft_2026-11-13.md |
+
+## Added 21 November 2026: the Fable check of this record, and a mechanical replacement that corrupted two quotations
+
+The record and its addition of 20 November 2026 were written on Opus while Fable was at its usage limit and committed
+as unconfirmed, on the owner's standing condition ("you can commit each one's results as unconfirmed"). A Fable pass of
+21 November 2026 checked them (`unconfirmed_records_fable_check_2026-11-21.md` in that session's scratchpad): 174
+claims across the two, of which four failed. **No finding of the record is overturned.** The four, with the correction:
+
+- **A mechanical replacement corrupted two quotations, and should not have been made at all.** The session's commit
+  `92ac24cd` replaced the phrase "item 37" with "the amendment of docs/item37_rulings_draft_2026-11-13.md" throughout
+  the addition, to satisfy `tests/test_documentation_process.py::test_item_references_in_living_documents_resolve_to_registration_items`,
+  which fails on an item number `docs/preregistration.md` does not yet hold. That test reads **living** documents only
+  (`:277`), and this file is registered as a record, so it never applied here. The replacement changed eight lines, two
+  of them inside quotation marks, where it misstates what the quoted file says:
+  - **Line 508** quotes `runs/rebuild/rebuild_v5_november_12.sh`. The script's words are "It does NOT build amendment
+    item 37: both calls to build_neuronal_graph_variant.py in scripts/rebuild_data_layer.sh keep --membrane-potential
+    computed_from_the_pools, the registered value." The quotation in the record has "amendment the amendment of
+    docs/item37_rulings_draft_2026-11-13.md" where the script has "amendment item 37".
+  - **Line 506** quotes decision 9.112's status cell in `docs/open_decisions.md`, and the same substitution runs
+    through it twice, for "item 37's draft amended under 9.129" and "registering item 37 and the rebuild".
+  The other six lines read awkwardly but state nothing false. This record is append-only, so the lines stand as
+  committed and this note is the correction; a session may restore the two quotations in place once item 37 is
+  registered, after which the phrase passes the test everywhere.
+- **`mechanistic_pathway_learning/evaluation/leakage_only_adversary.py` is not an importer of `target_held_out_split`**,
+  as claim 3b's list of importers says. It names the module once, in prose in its own docstring (`:21`). The importers
+  are `experiments/label_review/off_targets_under_the_target_split.py`, `experiments/measure_leakage_only_adversary.py`
+  and the two tests. The claim the list supports, that the helper has no consumer in the scorer, is unaffected.
+- **The call site of `mechanisms_never_trained` in its test is not line 72.** Claim 3b cites
+  `tests/test_target_held_out_split.py:72`; the calls are at `:34`, `:74` and `:77`, with the import at `:8`.
+- **"9.138 (the sink requirement)" names no decision**, which this record's own addition already states at `:553`;
+  the Fable pass reports it against the review proper at `:125`, where it stands uncorrected. The highest id on any
+  branch is 9.131, measured 21 November 2026.
+
+Left by the Fable pass as it found them: two quotations it could not verify behind a check that the visitor is human,
+which it recorded and respected, and three full texts that answered with transient errors twice.
