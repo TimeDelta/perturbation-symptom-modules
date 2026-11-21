@@ -63,12 +63,13 @@ what is kept current:
 | `docs/drafts/` | every draft |
 | `configs/` | a data file the graph or evidence build reads, beside the other build tables (phase 3 below) |
 
-The owner settled the layout the same day, answering five questions about it in turn ("1 class / 2 yes / 3 yes / 4 sure
-/ 5 either there or the readme"): folders by class rather than by topic; a session may change the paths the owner's
-Claude Docs study sheet names, when the files they name move; the build inputs move to `configs/` at the next
+The owner settled the layout the same day, answering five questions about it in turn ("1 class / 2 yes / 3 yes / 4
+sure / 5 either there or the readme"): folders by class rather than by topic; a session may change the three paths the
+owner's Claude Docs study sheet names for files that move (`module_names.md`, `physiological_adherence_review.md`,
+`curated_pathway_modules.csv`) in the doc and export it again; the build inputs move to `configs/` at the next
 data-layer rebuild; the exploration queue and the study sheet join the reference list of the landing page,
-`docs/README.md`; and the rule on where a new document goes is stated in this document and on the landing page (the last
-point below).
+`docs/README.md`; and the rule on where a new document goes is stated in this document and on the landing page (the
+last point below).
 
 - `expected_location` in `mechanistic_pathway_learning/documentation.py` is the rule. It is read from the register's
   class, so no file needs a judgement of its own. A file keeps its name when it moves, and a folder moves whole under
@@ -85,10 +86,11 @@ point below).
 - `configs/moved_paths.json` lists the moves made, with the date, and the moves planned, with their phase. Phase 1 is
   every move that needs no edit to a file other work is changing. Phase 2 waits: for work in flight on another branch
   or in another checkout that changes a file the move must edit, until it lands, so that no branch meets a conflict;
-  and for the owner where the move would change their rulings draft. A move that changes a path the study sheet names
-  changes it in the doc first, then in its Markdown copy (the owner's answer of 20 November 2026). Phase 3 holds
-  the build inputs, moved to `configs/` just before a data-layer rebuild and when no job is running, because a moved
-  file has a new modification time on every checkout and `experiments/check_rebuild_inputs.py` would report the builds
+  and for the owner where the move would change their rulings draft. Where a move changes one of the three paths the
+  study sheet names (above), the session changes it in the doc first, then in the doc's Markdown copy, and exports the
+  doc again: that is what the owner's answer of 20 November 2026 allowed, for those three paths. Phase 3 holds the
+  build inputs, moved to `configs/` just before a data-layer rebuild and when no job is running, because a moved file
+  has a new modification time on every checkout and `experiments/check_rebuild_inputs.py` would report the builds
   there as stale. What a planned move waits for is worked out on the day, not stored.
 - `PYTHONPATH=. python experiments/move_documents.py --phase N` applies a phase, as a dry run until it is given
   `--apply`. It renames each file with `git mv`, rewrites the old path in code, scripts, tests, YAML configs, living
