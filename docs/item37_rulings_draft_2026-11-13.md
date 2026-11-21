@@ -257,7 +257,12 @@ towards the version with the stabilizing nonlinearities inside the fixed point l
 
 The session pointed out that the damping sets the transient only (the encoder's docstring: "damping sets the
 transient only"), so removing it changes no steady state; the owner: "the .9 gain clamp is what i meant by removing
-the damping". On the row normalisation: "keep forward cone norm". The session described a root-finder in place of the
+the damping". On the row normalisation: "keep forward cone norm" (16 November 2026, 18:24 UTC; **superseded on 20 November
+2026**, when the owner withdrew the registered `normalisation` rule and the divisor with it: "R7 I'm just saying
+it's no longer needed so unregister it", 21:37 UTC, after asking on 17 November whether the normalisation was
+"potentially at risk". The rule and its test leave `configs/registered_rules.json` in the commit that builds the
+root-finder, since the damped iteration in use needs the divisor to converge until then). The session described a
+root-finder in place of the
 damped iteration (Anderson acceleration forward, the implicit function theorem backward; Bai, Kolter and Koltun 2019
 and Walker and Ni 2011, from the session's own knowledge and to be checked by a Fable pass before they are cited).
 Asked "what about when multiple steps have saturation?", the session proposed soft saturation (Michaelis-Menten or
