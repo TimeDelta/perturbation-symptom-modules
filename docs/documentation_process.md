@@ -128,6 +128,20 @@ markers, so the README restates no number by hand; a test asserts that no releas
 prose outside that block. It also writes `docs/README.md`, the index of every registered document by topic, through
 `experiments/generate_docs_index.py` (added 17 October 2026).
 
+**Which member of a family of versions is current (21 November 2026).** Six families of generated documents exist in
+several versions: the Phase 2 baseline tables, the label plasma binders, the drug administration routes, the leakage
+group rules, the module health results and the rewiring null distribution. Asked which member of each is current, the
+owner answered "6 yes" and then, asked which question 6, "Version families": the current member is the one generated
+on the tables the registered model reads, v5. `"current": true` on that member's entry in
+`configs/documentation_registry.json`, beside the `family` field that groups the members, names it, and
+`experiments/generate_docs_index.py` prints it on the family's line of `docs/README.md`. A family with no v5 member
+has no current member until one is regenerated, and its members are listed as history. None of the six has one: every
+member was last written between 3 and 11 October 2026 (the dates `content_change_commits` reads through the renames),
+before any v5 table existed - `evidence_full_v5` is first named in this repository on 16 October 2026 and
+`graph_full_neuronal_split_binders_drugs_v5` on 17 October - and no member names a v5 table: the two leakage pages
+name `data/processed/evidence_full_v3_max3_targets` and `data/processed/evidence_full_v2`, the two newest Phase 2
+tables the v2 label selection, and the two rewiring pages `data/processed/graph` and `data/processed/evidence`.
+
 What is deliberately absent from every living document: the state of a container, a session or a running job. That
 state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --status`). A dated record may say
 "the container of 15 October did not hold the rebuild" because the date scopes it; a living document may not.
@@ -172,8 +186,7 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
 Line 204 of the decision log (three rows behind literal `\n`) was split into its rows, and the opening row of 9.5 was
 merged with the closing row that had been appended below it, so the id names one row (the owner, 15 October:
 "Whatever you think is best for the 9.5 duplicate ... Just make it honest"); the tests fail on any literal `\n` or
-on an id that names two rows. The six families of
-generated documents that exist in several versions (the Phase 2 baseline tables, the label plasma binders, the drug
-administration routes, the leakage group rules, the module health results, the rewiring null distribution) have no
-member marked current; `docs/status.md` lists the oldest unstamped documents, and the register's `family` field is
-where a current member is named once they decide.
+on an id that names two rows. The six families of generated documents that exist in several versions are settled by
+the owner's answer of 21 November 2026, under "What is current" above: the member generated on the v5 tables is the
+current one, the register names it, and none of the six has such a member, so every version of each is history.
+`docs/status.md` lists the oldest unstamped documents.

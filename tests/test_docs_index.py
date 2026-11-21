@@ -107,6 +107,10 @@ def test_records_carry_their_date_and_pages_before_the_stamp_are_marked():
 
 
 def test_a_family_of_versions_is_one_line_linking_every_member():
+    """One line per family, linking every member, and it names the one member the register marks current or says no
+    member is on the v5 tables. Asked on 21 November 2026 which member of each family is current, the owner answered
+    "6 yes" and then, asked which question 6, "Version families": the one generated on the tables the registered model
+    reads, v5. So at most one member of a family carries `"current": true`."""
     registry = load_registry()
     lines = rendered_lines()
     families: dict[str, list[str]] = {}
@@ -117,7 +121,9 @@ def test_a_family_of_versions_is_one_line_linking_every_member():
     for family, members in families.items():
         holding = [line for line in lines if all(f"]({link(member)})" in line for member in members)]
         assert len(holding) == 1, f"family {family}: one line links all of {members}"
-        assert f"{len(members)} versions" in holding[0] and ("none marked current" in holding[0] or "current: " in holding[0])
+        assert f"{len(members)} versions" in holding[0] and ("no member on the v5 tables" in holding[0] or "current: " in holding[0])
+        current = [member for member in members if registry[member].fields.get("current")]
+        assert len(current) <= 1, f"family {family}: the v5 member is the current one, so at most one is marked: {current}"
         topics = lines[lines.index("## Contents"):]
         assert all(sum(f"]({link(member)})" in line for line in topics if line.startswith("- ")) == 1 for member in members)
 
