@@ -103,9 +103,11 @@ WHERE_DOCUMENTS_LIVE = (
 )
 # Where a new document goes, the rule docs/documentation_process.md states under "Where documents live". The owner,
 # asked on 20 November 2026 whether CLAUDE.md should say where a new document goes, answered "either there or the
-# readme"; the session chose this page, so the rule is stated here and in the process document, and CLAUDE.md is not
-# edited. Three of its places are the class directories of mechanistic_pathway_learning/documentation.py, which the
-# test reads from that module; the top of docs/ and configs/ are not class directories.
+# readme" and, asked on 21 November 2026 which of the two "the readme" meant, "Whichever makes more sense to you"; the
+# choice is this page, where a person goes to find or add a document, so the rule is stated here and in the process
+# document, and CLAUDE.md is not edited. Three of its places are the class directories of
+# mechanistic_pathway_learning/documentation.py, which the test reads from that module; the top of docs/ and configs/
+# are not class directories.
 NEW_DOCUMENT_RULE = (
     "**A new document** goes where its class puts it from the start: a living document at the top of `docs/`, a record in "
     "`docs/records/<YYYY-MM>/` for the month it is recorded, a page or data file a script writes in `docs/generated/`, a draft in "
@@ -113,7 +115,8 @@ NEW_DOCUMENT_RULE = (
     "--add-missing` prints the place for a new Markdown document, and `tests/test_documentation_process.py` fails for a registered "
     "document anywhere else, and for a file left at the top of `docs/`. The owner chose "
     "folders by class on 20 November 2026 (\"1 class\") and, asked whether `CLAUDE.md` should say where a new document goes, "
-    "answered \"either there or the readme\": the rule is stated here and in the "
+    "answered \"either there or the readme\" and then, asked on 21 November 2026 which of the two, \"Whichever makes more "
+    "sense to you\": it is this page, where a person goes to find or add a document, so the rule is stated here and in the "
     "[documentation process](documentation_process.md#where-documents-live-20-november-2026)."
 )
 # (topic, file-name patterns relative to the repository); first match wins

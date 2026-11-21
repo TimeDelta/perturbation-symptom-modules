@@ -177,8 +177,9 @@ def test_the_reference_list_holds_the_exploration_queue_and_the_study_sheet_at_i
 
 def test_the_page_says_where_a_new_document_goes():
     """Asked on 20 November 2026 whether CLAUDE.md should say where a new document goes, the owner answered "either
-    there or the readme". The rule is on this page, under "Where documents live", and names each class directory of
-    the placement rule (mechanistic_pathway_learning/documentation.py), so a change of directory shows here too."""
+    there or the readme", and on 21 November 2026, asked which of the two, "Whichever makes more sense to you": the
+    choice is this page. The rule is on it, under "Where documents live", and names each class directory of the
+    placement rule (mechanistic_pathway_learning/documentation.py), so a change of directory shows here too."""
     from mechanistic_pathway_learning.documentation import DRAFTS_DIRECTORY, GENERATED_DIRECTORY, RECORDS_DIRECTORY
 
     lines = rendered_lines()

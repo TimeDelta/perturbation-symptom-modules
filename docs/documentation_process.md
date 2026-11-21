@@ -109,9 +109,11 @@ last point below).
   writes in `docs/generated/`, a draft in `docs/drafts/`, and a table the graph or evidence build reads in `configs/`.
   `python experiments/register_documents.py --add-missing` prints the place for a new Markdown document, and
   `tests/test_documentation_process.py` fails for a registered document outside it that is not a planned move, for a
-  file left at the top of `docs/`, and for code or a YAML config that still names a moved path. Asked on 20 November 2026 whether `CLAUDE.md` should say where a new document goes, the owner answered "either
-  there or the readme"; the session chose the landing page, so the rule is stated there and here, and `CLAUDE.md` is
-  not edited.
+  file left at the top of `docs/`, and for code or a YAML config that still names a moved path. Asked on 20 November
+  2026 whether `CLAUDE.md` should say where a new document goes, the owner answered "either there or the readme", and
+  on 21 November 2026, asked which of the two "the readme" meant, `docs/README.md` or the top-level `README.md`, they
+  answered "Whichever makes more sense to you". It is the docs landing page, `docs/README.md`, because that is where a
+  person goes to find or add a document; so the rule is stated there and here, and `CLAUDE.md` is not edited.
 
 ## What is current
 
