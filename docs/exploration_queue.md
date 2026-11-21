@@ -64,7 +64,10 @@ ordering. you can just overwrite existing order").
 14. **Item 24, the clearing-enzyme table** (new, 21 November 2026, at the owner's request): placed here by the
     session because it is sourcing, not design, and because the drug-interaction framing the project is for
     rests on it; it has no dependency on the rebuild.
-15. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
+15. **Item 25, competition for a shared clearing enzyme** (new, 21 November 2026, at the owner's request):
+    straight after item 24, which it depends on, and ahead of the rest because it is the drug-interaction
+    mechanism the project is for; its design half needs no sourcing to begin.
+16. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
     on a drug's input size.
 15. **Item 10, the shunt.** 16. **Item 4, phosphorylation.** 17. **Item 2, CollecTRI signs.**
 18. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
@@ -1383,3 +1386,39 @@ interaction representable, rather than per-drug saturation, which reaches one dr
 clearance framing, and the single clearance node of `docs/item37_rulings_draft_2026-11-13.md`, section 12.
 
 **Not started.** The sourcing is research and runs on Fable.
+
+## 25. Competition for a shared clearing enzyme: the drug interaction the project is for
+
+Tagged 2026-11-21 at the owner's request ("Can you please add an item to investigate that valproate lamotrigine
+gap?"), after they pointed out that the saturation finding of the clearance pass was too narrow: "But other things can
+saturate if given together, right? Like valproate and limotrigine".
+
+**The mechanism.** Two co-prescribed drugs cleared by one enzyme compete for it, so each raises the other's exposure.
+This happens well below the concentration at which either drug alone would saturate that enzyme, which is why the
+clearance pass of 21 November 2026 finding only phenytoin self-saturating understates the effect. It is also the
+mechanism the project exists to predict (the owner, 12 November 2026: "I meant for my qual by 'that framing' as
+predicting these types of drug interactions").
+
+**The named example, to be sourced before it is relied on.** The session's background knowledge is that valproate
+inhibits lamotrigine's glucuronidation and that lamotrigine's dose is reduced when the two are co-prescribed; nothing
+in the repository holds this, no source for it was read, and it is recorded here as a lead for a Fable pass, not as a
+fact.
+
+**What the graph has and lacks.** It has the shape: one universal clearance node with an edge from each clearing
+enzyme per substrate (`docs/item37_rulings_draft_2026-11-13.md`, section 12). What it lacks is any meaning for an
+enzyme's capacity being shared, so adding a second substrate changes nothing for the first. Today the pair above
+cannot be represented at all, for the reasons item 24 records: neither drug has a metabolic clearance edge and the
+glucuronidation route is absent from the table's four enzymes.
+
+**What the item is.** Decide how an enzyme's capacity is shared among its substrates, so that a second substrate
+lowers the first's clearance: competitive inhibition through a sourced Ki, a shared capacity through Km and the
+substrate load, or another form, with the physiological version preferred and any simpler choice justified
+(`CLAUDE.md`, "Modelling"). Then what it needs: the Ki or Km of each drug at each enzyme it is cleared by, which is
+sourcing, and a reading of how the coupling behaves in the steady-state solver, since unlike every other edge this one
+couples two perturbations rather than describing one.
+
+**Depends on item 24**, which must give the right enzyme per drug first; a competition model over the current four
+enzymes would be competition over the wrong set. **Related:** item 13, co-prescription in FAERS, which is parked by the
+owner's ruling and is where the pairs that actually occur together would come from.
+
+**Not started.**
