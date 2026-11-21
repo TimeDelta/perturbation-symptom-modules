@@ -381,7 +381,9 @@ def read_drug_target_additions(path: Path | None = DRUG_TARGET_ADDITIONS_PATH) -
     know, a row that names no ruling or no source (a curated row names its sources), an affinity that is not a positive
     number, an affinity without its quantity type or a quantity type without an affinity, a quantity type outside
     AFFINITY_MEASURES, a row given twice, and two rows of one drug and target that give different actions (one drug, one
-    target, one action)."""
+    target, one action). Here one drug means one drug_chembl_id string; two ids of the one drug (a salt and its parent)
+    are the same drug to mechanism_targets but not to this reader, so added_targets refuses that pair when it groups the
+    rows by target."""
     if path is None or not Path(path).exists():
         return ()
     additions: list[DrugTargetAddition] = []
@@ -447,7 +449,10 @@ def added_targets(drug_chembl_ids: set[str], named_target_ids: set[str], targets
     Refuses, rather than drops, an addition that cannot stand: a target among named_target_ids (the targets the drug's
     ChEMBL rows name, kept or not), a target or gene exclusions remove for this drug, a target the cache's targets hold
     no record of (its genes and organism come from the record), a gene the record does not list, and, with human_only,
-    a target in another organism. A ruled row that silently did nothing is what this table exists to prevent."""
+    a target in another organism. It also refuses rows of one target that disagree on the action, or that name one gene
+    twice, which the reader cannot catch when they are keyed by two of the drug's own ids (a salt and its parent): the
+    reader compares only rows whose drug_chembl_id is the same string, while drug_chembl_ids here holds every id of the
+    one drug. A ruled row that silently did nothing is what this table exists to prevent."""
     rows_by_target: dict[str, list[DrugTargetAddition]] = {}
     for addition in additions:
         if addition.drug_chembl_id in drug_chembl_ids:
@@ -469,7 +474,17 @@ def added_targets(drug_chembl_ids: set[str], named_target_ids: set[str], targets
         missing = [row.gene_symbol for row in rows if row.gene_symbol not in (record.get("gene_symbols") or [])]
         if missing:
             raise ValueError(f"{where}: the cache's record of the target lists {record.get('gene_symbols')}, not {missing}")
-        added.append(DrugTarget(target_id, rows[0].action_type, [row.gene_symbol for row in rows], record.get("target_type"),
+        drugs_of_rows = tuple(dict.fromkeys(row.drug_chembl_id for row in rows))
+        actions = {row.action_type for row in rows}
+        if len(actions) > 1:
+            raise ValueError(f"{where}: the rows under {list(drugs_of_rows)}, which are ids of the one drug, give the actions "
+                             f"{sorted(actions)}; one drug, one target, one action")
+        genes = [row.gene_symbol for row in rows]
+        repeated = sorted({gene for gene in genes if genes.count(gene) > 1})
+        if repeated:
+            raise ValueError(f"{where}: the rows under {list(drugs_of_rows)}, which are ids of the one drug, name {repeated} twice; "
+                             "a gene added twice would seed its node twice at half the magnitude")
+        added.append(DrugTarget(target_id, rows[0].action_type, genes, record.get("target_type"),
                                 record.get("pref_name"), record.get("accessions", [])))
     return added
 

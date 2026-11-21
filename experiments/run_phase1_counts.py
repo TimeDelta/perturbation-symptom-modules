@@ -5,6 +5,13 @@ Human-GEM gene table. Evidence class E2 (pharmacological) is computed from SIDER
 joined to ChEMBL mechanisms (experiments/fetch_chembl_drug_targets.py) when those caches
 exist. Writes data/processed/phase1_counts.json, docs/generated/phase1_counts.md and prints the table.
 
+E2 keeps the version-1 dominant-target rule (has_dominant_target's default of one target), and a ruled addition of
+configs/drug_target_additions.csv counts as a mechanism target like any other, so a drug the additions give a second
+target leaves these counts. One drug does today: cocaine (PubChem 2826, ATC N01BC01, 23 rows of meddra_all_se)
+passed with its single ChEMBL sodium-channel family target and does not pass with the three transporters added on
+20 November 2026 (map_drug_targets_to_graph_nodes, "A ruled addition"). The committed counts were taken before that
+table existed; whether they are re-taken is the owner's.
+
 Usage:
   python experiments/run_phase1_counts.py \
       --crosswalk docs/symptom_crosswalk.csv \

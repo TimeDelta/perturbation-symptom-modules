@@ -162,6 +162,25 @@ def test_the_reader_refuses_a_row_given_twice_two_actions_for_one_target_and_oth
     assert read_drug_target_additions(tmp_path / "absent.csv") == ()
 
 
+def test_two_ids_of_one_drug_cannot_smuggle_a_second_action_or_a_repeated_gene_past_the_reader(tmp_path):
+    """The reader compares rows by their drug_chembl_id string, so rows keyed by a salt and by its parent look like two
+    drugs to it; added_targets, which holds every id of the one drug, refuses the pair rather than letting rows[0] win
+    (the action) or the gene be seeded twice at half the magnitude."""
+    path = tmp_path / "additions.csv"
+    write_additions(path, [row(drug_chembl_id="CHEMBL_DRUG"), row(drug_chembl_id="CHEMBL_DRUG_SALT", action_type="agonist")])
+    rows = read_drug_target_additions(path)
+    assert [(read.drug_chembl_id, read.action_type) for read in rows] == [("CHEMBL_DRUG", "INHIBITOR"), ("CHEMBL_DRUG_SALT", "AGONIST")]
+    for drug_ids in (["CHEMBL_DRUG"], ["CHEMBL_DRUG_SALT"]):
+        with pytest.raises(ValueError, match="one drug, one target, one action"):
+            mechanism_targets(drug_ids, BY_MOLECULE, TARGETS, exclusions=(), additions=rows)
+    same_action = (addition(drug="CHEMBL_DRUG"), addition(drug="CHEMBL_DRUG_SALT"))
+    with pytest.raises(ValueError, match="name \\['SLC6A3'\\] twice"):
+        mechanism_targets(["CHEMBL_DRUG"], BY_MOLECULE, TARGETS, exclusions=(), additions=same_action)
+    two_genes = (addition(drug="CHEMBL_DRUG", target="CHEMBL_PAIR", gene="GENE1"), addition(drug="CHEMBL_DRUG_SALT", target="CHEMBL_PAIR", gene="GENE2"))
+    kept = mechanism_targets(["CHEMBL_DRUG"], BY_MOLECULE, TARGETS, exclusions=(), additions=two_genes)
+    assert [(target.target_chembl_id, target.gene_symbols) for target in kept[1:]] == [("CHEMBL_PAIR", ["GENE1", "GENE2"])]
+
+
 COCAINE = "CHEMBL370805"
 # item 37 rulings draft, section 19: "SLC6A3 0.23, SLC6A4 0.74 and SLC6A2 0.48 micromolar, all inhibition so sign -1"
 RULED_COCAINE_ROWS = {("CHEMBL238", "SLC6A3"): 0.23, ("CHEMBL228", "SLC6A4"): 0.74, ("CHEMBL222", "SLC6A2"): 0.48}
@@ -189,7 +208,10 @@ pinned_chembl = pytest.mark.skipif(not (CHEMBL_DIRECTORY / "mechanisms.json").ex
 def test_on_the_pinned_cache_cocaine_carries_its_sodium_channel_family_and_the_three_transporters():
     """The SIDER route of cocaine (CID 2826) goes through mechanism_targets, so the committed additions reach it; the
     sodium-channel family keeps its nine voltage-gated members (SCN7A removed by configs/drug_target_exclusions.csv)
-    until P8's class-level annotation is built."""
+    until the family row's own resolution is built. That resolution is the rulings draft's P8, which takes its form
+    from P5, and P5's class-level annotation became one yes-or-no gate per Nav subtype in the addition of 20 November
+    2026; whether cocaine is one of the "similar cases" that gate covers is not settled, so the form is left open here.
+    """
     from mechanistic_pathway_learning.perturbation.map_drug_targets_to_graph_nodes import drug_targets_for_pubchem_cid, load_chembl_caches
 
     caches = load_chembl_caches(CHEMBL_DIRECTORY)
@@ -203,6 +225,9 @@ def test_on_the_pinned_cache_cocaine_carries_its_sodium_channel_family_and_the_t
     # without the table cocaine carries the family alone, as every build until 20 November 2026 did
     before = mechanism_targets(caches.pubchem_to_chembl["2826"], caches.mechanisms_by_molecule, caches.targets, additions=())
     assert [target.target_chembl_id for target in before] == [SODIUM_FAMILY]
+    # so the version-1 dominant-target rule no longer admits cocaine: experiments/run_phase1_counts.py keeps that rule
+    # at its default of one target, and its E2 counts were recorded when cocaine passed (that script's docstring)
+    assert has_dominant_target(before) and not has_dominant_target(kept)
 
 
 @pinned_chembl

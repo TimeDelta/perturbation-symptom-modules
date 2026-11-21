@@ -16,7 +16,7 @@ def test_each_edge_source_names_one_layer():
         "BRENDA CC BY 4.0 (1 references, accession stated by BRENDA)": "enzyme regulation (BRENDA)",
         "net charge across the plasma membrane (Reactome)": "electrical (ions and charge)",
         "ion moved across the plasma membrane (Human-GEM)": "electrical (ions and charge)",
-        "drug mechanism (ChEMBL), moved from the perturbation's seeds": "drug mechanism (ChEMBL)",
+        "drug mechanism (ChEMBL or a ruled addition), moved from the perturbation's seeds": "drug mechanism (ChEMBL)",
         "plasma carrier of the drug (both; label)": "drug plasma sequestration",
         "curated plasma carriage": "plasma carriage of metabolites",
         "neomorphic allele mechanism (PMID 11264541)": "neomorphic allele mechanism",
