@@ -72,7 +72,7 @@ REFERENCE = (
                                            "the quantities, the equations, the concepts and a critique, with the diagrams"),
     ("docs/experiment_design.md", "Experiment design", "the design (version 0.4) the registration rests on"),
     ("docs/exploration_queue.md", "Exploration queue", "the ideas parked for later and the order to explore them in; nothing in it is "
-                                                       "registered or started"),
+                                                       "registered"),
     ("docs/figures.md", "Explanatory figures", "the model, the graph, the labels and the edge gates in pictures"),
     ("docs/graph_summary.md", "The physiology graph", "its node types, relations and layers, read from its tables"),
     ("docs/data_sources.md", "Data sources", "every source with its version and verified licence"),
