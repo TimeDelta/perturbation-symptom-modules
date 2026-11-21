@@ -61,7 +61,10 @@ ordering. you can just overwrite existing order").
     root-finder.
 13. **Item 5, occupancy as the drug seed magnitude.** Partly taken up by the amendment, which carries a target weighted
     by occupancy (R3); what remains is to be re-read against that ruling.
-14. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
+14. **Item 24, the clearing-enzyme table** (new, 21 November 2026, at the owner's request): placed here by the
+    session because it is sourcing, not design, and because the drug-interaction framing the project is for
+    rests on it; it has no dependency on the rebuild.
+15. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
     on a drug's input size.
 15. **Item 10, the shunt.** 16. **Item 4, phosphorylation.** 17. **Item 2, CollecTRI signs.**
 18. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
@@ -1346,3 +1349,37 @@ ruling.
 **Status.** Not started. Waits on the root-finder of the amendment.
 
 ---
+
+## 24. The clearing-enzyme table answers a different question than the graph asks
+
+Tagged 2026-11-21 at the owner's request ("Yes to the enzyme gap"), after the Fable pass of 21 November 2026 on
+clearance beyond the clearing enzyme (`clearance_beyond_the_enzyme_2026-11-21.md` in that session's scratchpad) found
+that the `clears` edges "often miss the main enzyme (CYP3A4, CYP1A2)".
+
+**What the table is.** `configs/drug_clearing_enzymes.csv`, measured 21 November 2026: 44 rows, of which 23 give an
+edge, over 22 drugs and four enzymes (CYP2D6 on 16 drugs, CYP2C19 on 4, CYP2C9 on 2, NAT2 on 1). Every row's `source`
+is one page, the FDA's Table of Pharmacogenetic Associations.
+
+**Why that is the wrong source for this purpose.** That table lists gene-drug pairs where genetic variation affects
+response; it is not a table of which enzyme clears which drug. So the column is a pharmacogenomic biomarker, and the
+graph reads it as a clearance route. Three consequences, measured on the same table: no UGT and no CYP3A4 appears
+anywhere, though CYP3A4 clears more drugs than any other enzyme; lamotrigine's only row is HLA-B, an immune gene about
+hypersensitivity, correctly excluded, so lamotrigine has no clearing enzyme at all; and valproate is not in the table.
+
+**Why it matters more than the clearance equation.** The owner, 21 November 2026, on the finding that only phenytoin
+saturates its enzyme at therapeutic concentrations: "But other things can saturate if given together, right? Like
+valproate and limotrigine". That is the broader and more important mechanism: two co-prescribed drugs cleared by one
+enzyme compete for it, each raising the other's exposure, well below either drug's own saturating concentration. It is
+also the mechanism the project exists to predict (the owner, 12 November 2026: "I meant for my qual by 'that framing'
+as predicting these types of drug interactions"). The valproate-lamotrigine pair is the clean example and the graph
+cannot represent it today: neither drug has a metabolic clearance edge, and the glucuronidation route that the
+interaction runs through is absent from the table's four enzymes.
+
+**What the item is.** Source which enzymes clear each study drug, from documents that answer that question (the label's
+clinical pharmacology section, the EMA assessment reports already in `configs/ema_assessment_reports.csv`, and the
+primary pharmacokinetic literature), with two sources per drug where possible and the fractional contribution where it
+is stated; then decide how enzyme capacity is shared among the substrates of one enzyme, which is what makes the
+interaction representable, rather than per-drug saturation, which reaches one drug. Related: decision [R 11]'s
+clearance framing, and the single clearance node of `docs/item37_rulings_draft_2026-11-13.md`, section 12.
+
+**Not started.** The sourcing is research and runs on Fable.
