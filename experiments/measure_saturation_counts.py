@@ -23,7 +23,10 @@ What is counted:
    the state is below -1, and the sourced upward headroom per node, firing where the state is above the node's
    headroom; a node without a headroom has no ceiling ("none where no ceiling exists"). Pairs are split into those at
    a seed, those at a direct mechanism target of a drug or allele seed, and those beyond both, since the review named
-   the floor as a candidate amendment "if it fires beyond the seeds". The encoder is the registered propagation that
+   the floor as a candidate amendment "if it fires beyond the seeds". Each operator's pairs are also counted at a
+   ladder of margins (FIRING_MARGINS and the loop's own fixed_point_tolerance), with the largest excess: a pair
+   firing by less than the loop's tolerance is firing by no more than the loop's own error, which a bare count at the
+   limit does not show. Which margin a record should be read at is a question for the owner. The encoder is the registered propagation that
    experiments/measure_forward_cone_divisor.py builds (build_encoder: forward_cone, cofactor relations, reversible
    reactions, drug entry nodes, edge weights; no cell-class weights, edge gates or descriptors), one channel.
 3. **Not counted: the labelled contrasts.** Neither 9.81 nor the rulings draft says which pair or set of labelled
@@ -48,8 +51,10 @@ What it leaves to the caller, because no ruling settles it, each a required argu
   as registered; or "fixed:G", every signed relation's gain and the entry gain set to G (below the encoder's
   contraction bound), and the unsigned relations' gains to 0. Which gains the record is taken at is the owner's.
 - **--ceiling**, the headroom per node: the path of a table with columns node_id and headroom, a headroom being
-  (maximum - rest) / rest, the rulings' form; or "none", which counts the floor alone. The headroom tables are
-  item 37's [P 13] and are not sourced yet.
+  (maximum - rest) / rest, the rulings' form; "uniform:H", the headroom H on every node, a stand-in that is not
+  sourced and is recorded as one (the scratch measurement of 16 November 2026 counted the ceiling that way, at +1 and
+  +3, while the tables are missing); or "none", which counts the floor alone, leaving count 2 with no figure for the
+  second of 37f's two operators. The sourced headroom tables are item 37's [P 13] and do not exist yet.
 - **--cycle-edges**, the signed graph of count 5: "stored", the stored edges with currency nodes' outgoing edges dropped
   as the encoder drops them; or "encoder", the encoder's own entries (expanded_adjacency_entries: the derived
   depletes_substrate and product_opposes edges and the carrier relations, currency out-edges dropped).
@@ -85,6 +90,10 @@ CYCLE_EDGE_SETS = ("stored", "encoder")
 DRUG_ENTRY_MODES = ("targets", "nodes")
 FIRING_DRUG_ENTRY = "nodes"  # the trainer's default on a graph with drug entry nodes (experiments/run_main_model.py)
 FLOOR = -1.0  # item 37 rulings draft, section 9: "a floor at -1 for every node"
+# the margins each operator's firing is also counted at; main() adds the loop's own fixed_point_tolerance
+FIRING_MARGINS = (0.0, 1e-6, 1e-4, 1e-2)
+# node_flags and edge_flags together, one bit each in the int64 word signed_cycle_counts carries along a path
+FLAG_LIMIT = 63
 
 
 # ---------------------------------------------------------------- count 1
@@ -127,18 +136,30 @@ def read_headroom_table(path: Path, node_ids: list[str]) -> dict[int, float]:
     return headroom
 
 
-def new_firing_tally() -> dict:
+def new_firing_tally(margins: tuple[float, ...] = FIRING_MARGINS) -> dict:
+    """An empty tally, counting firing pairs at each margin of margins as well as at the operator's limit."""
     return {"pairs": 0, "pairs_at_seeds": 0, "pairs_at_mechanism_targets": 0, "pairs_beyond_seeds_and_targets": 0,
             "perturbations_with_any": 0, "perturbations_with_any_beyond_seeds_and_targets": 0,
             "by_node_type_beyond_seeds_and_targets": collections.Counter(), "nodes_beyond_seeds_and_targets": collections.Counter(),
-            "perturbations_firing_beyond_seeds_and_targets": []}
+            "perturbations_firing_beyond_seeds_and_targets": [],
+            "margins": tuple(sorted(margins)), "pairs_above_margin": {f"{margin:g}": 0 for margin in sorted(margins)},
+            "largest_excess": 0.0}
 
 
-def tally_firing(tally: dict, fires: np.ndarray, seed_mask: np.ndarray, target_mask: np.ndarray, node_types: np.ndarray,
+def tally_firing(tally: dict, excess: np.ndarray, seed_mask: np.ndarray, target_mask: np.ndarray, node_types: np.ndarray,
                  perturbation_ids: list[str]) -> None:
-    """Add one batch's firing to tally. fires, seed_mask and target_mask are [batch, nodes] booleans; a pair at a seed
-    counts as at a seed even when it is also a target, and target_mask is the direct mechanism targets of the seeds."""
-    fires, seed_mask, target_mask = (np.asarray(array, dtype=bool) for array in (fires, seed_mask, target_mask))
+    """Add one batch's firing to tally. excess is operator_excess's [batch, nodes] floats (the operator fires where it
+    is above 0), seed_mask and target_mask are [batch, nodes] booleans; a pair at a seed counts as at a seed even when
+    it is also a target, and target_mask is the direct mechanism targets of the seeds. The pairs above each margin of
+    tally["margins"] and the largest excess are kept beside the count at the limit, so a record shows how much of a
+    count lies inside the loop's own error."""
+    excess = np.asarray(excess, dtype=float)
+    fires = excess > 0
+    seed_mask, target_mask = (np.asarray(array, dtype=bool) for array in (seed_mask, target_mask))
+    for margin in tally["margins"]:
+        tally["pairs_above_margin"][f"{margin:g}"] += int((excess > margin).sum())
+    if fires.any():
+        tally["largest_excess"] = max(tally["largest_excess"], float(excess[fires].max()))
     at_targets = fires & ~seed_mask & target_mask
     beyond = fires & ~seed_mask & ~target_mask
     tally["pairs"] += int(fires.sum())
@@ -154,21 +175,26 @@ def tally_firing(tally: dict, fires: np.ndarray, seed_mask: np.ndarray, target_m
         tally["perturbations_firing_beyond_seeds_and_targets"].append([perturbation_ids[row], int(beyond[row].sum())])
 
 
-def operator_firing(state: np.ndarray, headroom: dict[int, float] | None) -> dict[str, np.ndarray]:
-    """operator name -> [batch, nodes] booleans: the floor where the state is below FLOOR, and, with a headroom table,
-    the ceiling where the state is above the node's headroom (a node the table does not name has none)."""
+def operator_excess(state: np.ndarray, headroom: dict[int, float] | None) -> dict[str, np.ndarray]:
+    """operator name -> [batch, nodes] floats, how far the state is past the operator's limit: FLOOR - state for the
+    floor and, with a headroom per node, state - the node's headroom for the ceiling (a node the headroom does not
+    name has none, so its excess is -inf). An operator fires where its excess is above 0; the amount lets the count be
+    read at a margin, since a pair firing by less than the loop's fixed_point_tolerance fires by no more than the
+    loop's own error."""
     state = np.asarray(state, dtype=float)
-    fired = {"floor": state < FLOOR}
+    excess = {"floor": FLOOR - state}
     if headroom is not None:
         ceiling = np.full(state.shape[1], np.inf)
         for node, value in headroom.items():
             ceiling[node] = value
-        fired["ceiling"] = state > ceiling[None, :]
-    return fired
+        excess["ceiling"] = state - ceiling[None, :]
+    return excess
 
 
 def finished_tally(tally: dict, node_ids: list[str]) -> dict:
+    """The tally as it is recorded: the counters resolved to names and counts, the margins as a list."""
     result = {key: value for key, value in tally.items() if key not in ("by_node_type_beyond_seeds_and_targets", "nodes_beyond_seeds_and_targets")}
+    result["margins"] = list(tally["margins"])
     result["by_node_type_beyond_seeds_and_targets"] = dict(sorted(tally["by_node_type_beyond_seeds_and_targets"].items()))
     result["distinct_nodes_beyond_seeds_and_targets"] = len(tally["nodes_beyond_seeds_and_targets"])
     result["most_frequent_nodes_beyond_seeds_and_targets"] = [[node_ids[node], count] for node, count in tally["nodes_beyond_seeds_and_targets"].most_common(12)]
@@ -238,6 +264,8 @@ def signed_cycle_counts(num_nodes: int, source, target, sign, max_length: int, n
     node_flags = node_flags or {}
     edge_flags = edge_flags or {}
     names = list(node_flags) + list(edge_flags)
+    if len(names) > FLAG_LIMIT:  # one bit per flag in an int64 node or edge word
+        raise ValueError(f"{len(names)} flags is more than the {FLAG_LIMIT} one int64 word holds: {names}")
     node_bits = np.zeros(num_nodes, dtype=np.int64)
     for bit, nodes in enumerate(node_flags.values()):
         node_bits[list(nodes)] |= 1 << bit
@@ -348,11 +376,20 @@ def sha256_of(path: Path) -> str:
 
 def refuse_output_under_data(output: Path) -> None:
     """This script writes nothing into data/ (module docstring): refused under the repository's data/ as written, as
-    resolved, and under the target of any link inside it (a worktree links data/raw and data/processed to the main
-    checkout's)."""
+    resolved, under the target of any link inside it, and under the data/ directory that target sits in.
+
+    A worktree links data/raw and data/processed to the main checkout's data/, so without that last root the main
+    checkout's data/ itself, and the children it does not link (data/brenda, data/releases), stay writable from a
+    worktree, which is the directory a run from a worktree would most easily land in."""
     roots = {Path(os.path.abspath(DATA_DIRECTORY)), DATA_DIRECTORY.resolve()}
     if DATA_DIRECTORY.is_dir():
-        roots |= {child.resolve() for child in DATA_DIRECTORY.iterdir() if child.is_symlink()}
+        for child in DATA_DIRECTORY.iterdir():
+            if not child.is_symlink():
+                continue
+            target = child.resolve()
+            roots.add(target)
+            if target.parent.name == DATA_DIRECTORY.name:  # another checkout's data/, of which the link names one child
+                roots.add(target.parent)
     for path in {Path(os.path.abspath(output)), Path(output).resolve()}:
         if any(path == root or root in path.parents for root in roots):
             raise ValueError(f"{output} is under {DATA_DIRECTORY}; the counts are written outside data/")
@@ -369,12 +406,29 @@ def parse_gains(text: str) -> tuple[str, float | None]:
     raise argparse.ArgumentTypeError(f"--gains is init or fixed:G, not {text!r}")
 
 
+def parse_ceiling(text: str) -> tuple[str, float | Path | None]:
+    """--ceiling as (kind, value): ("none", None) counts the floor alone, ("uniform", H) puts the headroom H on every
+    node as a stand-in, ("table", path) reads a sourced table (module docstring, --ceiling)."""
+    if text == "none":
+        return "none", None
+    if text.startswith("uniform:"):
+        value = float(text.removeprefix("uniform:"))
+        if not math.isfinite(value) or value <= 0:
+            raise argparse.ArgumentTypeError(f"a uniform headroom is a positive number, not {value}")
+        return "uniform", value
+    path = Path(text)
+    if not path.is_file():
+        raise argparse.ArgumentTypeError(f"--ceiling is none, uniform:H or the path of a headroom table; {text!r} is no such file")
+    return "table", path
+
+
 def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--graph-dir", type=Path, required=True)
     parser.add_argument("--evidence-dir", type=Path, required=True)
     parser.add_argument("--gains", type=parse_gains, required=True, help="init or fixed:G (module docstring); no default, the choice is the owner's")
-    parser.add_argument("--ceiling", required=True, help="a headroom table (node_id, headroom) or none (module docstring); no default")
+    parser.add_argument("--ceiling", type=parse_ceiling, required=True,
+                        help="a headroom table (node_id, headroom), uniform:H as a stand-in, or none (module docstring); no default")
     parser.add_argument("--cycle-edges", choices=CYCLE_EDGE_SETS, required=True, help="the signed graph of the cycle count; no default")
     parser.add_argument("--max-cycle-length", type=int, required=True, help="the bound of the cycle enumeration; no default")
     parser.add_argument("--batch-size", type=int, default=64, help="perturbations per propagation batch (memory only)")
@@ -400,7 +454,8 @@ def main(argv: list[str] | None = None) -> None:
     started = time.time()
     record: dict = {"what": "decision 9.81's counts 1, 2 and 4 and the positive-feedback cycles (experiments/measure_saturation_counts.py); count 3 not taken",
                     "date": time.strftime("%Y-%m-%d"), "graph_dir": str(arguments.graph_dir), "evidence_dir": str(arguments.evidence_dir),
-                    "inputs_sha256": {}, "choices": {"gains": list(arguments.gains), "ceiling": arguments.ceiling, "cycle_edges": arguments.cycle_edges,
+                    "inputs_sha256": {}, "choices": {"gains": list(arguments.gains), "ceiling": [arguments.ceiling[0], str(arguments.ceiling[1])],
+                                                     "cycle_edges": arguments.cycle_edges,
                                                      "max_cycle_length": arguments.max_cycle_length}}
     for path in sorted(list(arguments.graph_dir.glob("*.parquet")) + list(arguments.evidence_dir.glob("evidence_records.parquet"))):
         record["inputs_sha256"][str(path)] = sha256_of(path)
@@ -438,7 +493,14 @@ def main(argv: list[str] | None = None) -> None:
                 encoder.entry_gain_logit.fill_(math.log(gain / (1.0 - gain)))
     if arguments.max_rounds is not None:
         encoder.max_propagation_steps = arguments.max_rounds
-    headroom = None if arguments.ceiling == "none" else read_headroom_table(Path(arguments.ceiling), node_ids)
+    ceiling_kind, ceiling_value = arguments.ceiling
+    if ceiling_kind == "none":
+        headroom = None  # count 2 then has no figure for the ceiling, the second of 37f's two operators
+    elif ceiling_kind == "uniform":
+        headroom = {index: float(ceiling_value) for index in range(len(node_ids))}
+    else:
+        headroom = read_headroom_table(Path(ceiling_value), node_ids)
+    margins = tuple(sorted({*FIRING_MARGINS, float(encoder.fixed_point_tolerance)}))
     tallies: dict[str, dict] = {}
     rounds_taken: list[int] = []
     extremes = [math.inf, -math.inf]
@@ -473,8 +535,8 @@ def main(argv: list[str] | None = None) -> None:
                 for seed in seeds:
                     target_mask[row, encoder.entry_edge_target[encoder.entry_edge_source == int(seed)].numpy()] = True
         ids = [data.perturbation_ids[perturbation] for perturbation in batch]
-        for name, fires in operator_firing(state, headroom).items():
-            tally_firing(tallies.setdefault(name, new_firing_tally()), fires, seed_mask, target_mask, node_types, ids)
+        for name, excess in operator_excess(state, headroom).items():
+            tally_firing(tallies.setdefault(name, new_firing_tally(margins)), excess, seed_mask, target_mask, node_types, ids)
     record["count2_firing"] = {"drug_entry": FIRING_DRUG_ENTRY, "perturbations": int(len(rows)), "pairs_total": int(len(rows) * len(node_ids)),
                                "relation_gains": {name: round(float(value), 6) for name, value in zip(encoder.relation_names, encoder.relation_gain().detach()[:, 0])},
                                "entry_gains": [] if encoder.entry_gain_logit is None else [round(float(value), 6) for value in torch.sigmoid(encoder.entry_gain_logit.detach()[:, 0])],
@@ -483,7 +545,8 @@ def main(argv: list[str] | None = None) -> None:
                                         "rounds_taken_per_batch": {"minimum": min(rounds_taken), "maximum": max(rounds_taken)},
                                         "every_batch_settled": bool(max(rounds_taken) < encoder.max_propagation_steps)},
                                "state_minimum": extremes[0], "state_maximum": extremes[1],
-                               "headroom_nodes": 0 if headroom is None else len(headroom),
+                               "headroom": {"kind": ceiling_kind, "nodes": 0 if headroom is None else len(headroom), "sourced": ceiling_kind == "table",
+                                            "value": None if ceiling_kind != "uniform" else float(ceiling_value)},
                                "operators": {name: finished_tally(tally, node_ids) for name, tally in tallies.items()}}
     record["count3_labelled_contrasts"] = "not taken: neither decision 9.81 nor the item 37 rulings draft defines the contrast (module docstring, count 3)"
     record["count4_cones"] = cone_summary(np.concatenate(cone_sizes), {name: np.concatenate(parts) for name, parts in cone_reaches.items()},

@@ -19,7 +19,9 @@ dependencies = [
 [project.optional-dependencies]
 descriptors = ["rdkit>=2024.3", "fair-esm>=2.0"]
 graph = ["cobra>=0.29", "omnipath>=1.0", "decoupler>=1.5", "chembl_webresource_client>=0.10", "networkx>=3.0", "pyarrow>=14"]
-dev = ["pytest>=7.4", "ruff>=0.4", "ijson>=3.2"]  # ijson: experiments/extract_brenda_enzyme_regulation.py, imported by the regex audit test
+# ijson: the BRENDA scripts, which stream the release rather than hold it in memory (extract_brenda_kinetics.py,
+# extract_brenda_enzyme_regulation.py, make_brenda_human_subset.py), imported by the regex audit test
+dev = ["pytest>=7.4", "ruff>=0.4", "ijson>=3.2"]
 # the experiment scripts' own imports, which the technology audit of 16 October 2026 found declared in no extra:
 # scipy (the measurement scripts), h5py (build_dopaminergic_expression.py, the descriptors stage), matplotlib (the
 # figures), beautifulsoup4, openpyxl and pdfplumber (the exposure-source transcriptions)

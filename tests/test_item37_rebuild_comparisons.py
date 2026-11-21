@@ -67,8 +67,18 @@ def test_a_gene_flag_change_is_counted_in_each_direction_with_unknown_read_as_no
 def test_pores_are_reactions_with_an_edge_into_vm_c_and_catalysts_the_sources_of_catalysis():
     edges, nodes = membrane_graph()
     edges = pd.concat([edges, pd.DataFrame({"source_id": ["PROTEIN:SCN1A"], "target_id": ["MAR_NAV"], "relation_type": ["catalyzed_by"], "weight": [1.0]})])
-    pores, catalysts = pores_and_catalysts(edges, nodes)
+    pores, catalysts, into = pores_and_catalysts(edges, nodes)
     assert pores == {"MAR_NAV", "MAR_KIR"} and catalysts == {"PROTEIN:SCN1A"}
+    assert into == {"activates from gene": 1, "driving_force from metabolite": 2, "driving_force from reaction": 2}
+
+
+def test_a_build_whose_conductance_edges_come_from_the_pools_is_not_recorded_as_a_build_with_no_edge():
+    """graph_full_neuronal_split_binders_drugs_v5 has 0 pores by this rule: its 6 edges into VM_c are driving_force
+    from metabolite pool nodes, which the breakdown says and the pore count alone would not."""
+    edges, nodes = membrane_graph()
+    pools_only = edges[~edges.source_id.isin(["MAR_NAV", "MAR_KIR"])]
+    pores, _, into = pores_and_catalysts(pools_only, nodes)
+    assert pores == set() and into == {"activates from gene": 1, "driving_force from metabolite": 2}
 
 
 def test_a_target_moves_from_plasma_to_brain_when_its_gene_turns_brain_expressed():
@@ -98,3 +108,20 @@ def test_the_comparison_of_two_builds_reads_their_tables(tmp_path):
     assert result["genes_whose_flag_changes"]["counts"] == {"turned_expressed": 2, "turned_not_expressed": 0, "unknown_became_known": 1}
     assert result["catalysts"]["added"] == ["PROTEIN:KCNK1"] and result["pores"]["before"] == result["pores"]["after"] == 1
     assert result["drug_target_sites"]["plasma_to_brain"] == [["CID1", "PROTEIN:SLC6A4", "SLC6A4"]]
+    assert result["edges_into_membrane_potential"] == {"before": {"driving_force from reaction": 1}, "after": {"driving_force from reaction": 1}}
+
+
+def test_a_catalyst_with_no_gene_symbol_is_counted_apart_from_the_flag_changes_it_cannot_show(tmp_path):
+    """A protein_entity catalyst (a complex) has no gene_symbol, and the flag-change rule matches a catalyst by its
+    own symbol, so 316 of the 12 November build's 3,181 catalysts can never be reported; the record says how many."""
+    for name, flags in (("before", {"KCNK1": False}), ("after", {"KCNK1": True})):
+        directory = tmp_path / name
+        directory.mkdir()
+        nodes_table(flags, [("PROTEIN:KCNK1", "protein", "KCNK1"), ("COMPLEX:1", "protein_entity", None),
+                            ("MAR_K", "reaction", None), ("VM_c", "membrane_potential", None)]).to_parquet(directory / "nodes.parquet")
+        pd.DataFrame({"source_id": ["PROTEIN:KCNK1", "COMPLEX:1", "MAR_K"], "target_id": ["MAR_K", "MAR_K", "VM_c"],
+                      "relation_type": ["catalyzed_by", "catalyzed_by", "driving_force"]}).to_parquet(directory / "edges.parquet")
+    result = compare(tmp_path / "before", tmp_path / "after")
+    assert result["catalysts_whose_gene_flag_changes"] == ["PROTEIN:KCNK1"]
+    assert result["catalysts_a_flag_change_cannot_reach"] == {"count": 1, "by_node_type": {"protein_entity": 1}, "catalysts": ["COMPLEX:1"]}
+    assert result["drug_target_sites"].startswith("not compared")

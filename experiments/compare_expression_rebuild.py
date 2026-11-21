@@ -12,7 +12,12 @@ owner once the rebuild has run". This script takes those counts from the build b
   one build only, counted apart.
 - **Pores and catalysts.** The pores of each build, a reaction with an edge into VM_c (a conductive pore's
   conductance edge), and the catalysts, the sources of `catalyzed_by` edges, with those added and removed, and the
-  catalysts whose gene's flag changes.
+  catalysts whose gene's flag changes. The edges into VM_c are also counted by their source's node type, because a
+  build whose conductance edges come from the neuronal pools rather than from reactions has no pores by this rule and
+  would otherwise be recorded as a build with none: on graph_full_neuronal_split_binders_drugs_v5 (12 November 2026)
+  all 6 edges into VM_c are `driving_force` from metabolite pool nodes, so its pore count is 0. The catalysts a flag
+  change cannot reach are counted apart: the rule matches a catalyst by its own gene_symbol, and 316 of that build's
+  3,181 catalysts are `protein_entity` nodes (complexes) with no symbol, so no flag change is ever reported for them.
 - **Drug targets moving from a plasma to a brain site.** A drug's mechanism target (the target_node_id of
   `drug_entry_nodes.parquet`) is at a brain site when its gene symbol is brain-expressed and at a plasma site
   otherwise, the site rule of experiments/measure_target_occupancy.py (brain_expressed_genes), which reads the flag
@@ -28,6 +33,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import time
 from pathlib import Path
@@ -60,13 +66,18 @@ def flag_changes(before: pd.DataFrame, after: pd.DataFrame) -> dict:
             "genes_only_before": int(len(old.index.difference(new.index))), "genes_only_after": int(len(new.index.difference(old.index)))}
 
 
-def pores_and_catalysts(edges: pd.DataFrame, nodes: pd.DataFrame) -> tuple[set[str], set[str]]:
-    """(pores: reactions with an edge into VM_c, catalysts: sources of catalyzed_by edges) of one build."""
+def pores_and_catalysts(edges: pd.DataFrame, nodes: pd.DataFrame) -> tuple[set[str], set[str], dict[str, int]]:
+    """(pores: reactions with an edge into VM_c, catalysts: sources of catalyzed_by edges, the edges into VM_c by
+    "<relation> from <source node type>") of one build.
+
+    The third tells a build with no pore from a build whose conductance edges enter VM_c from somewhere else (module
+    docstring, "Pores and catalysts")."""
     type_of = dict(zip(nodes.node_id, nodes.node_type))
     into = edges[edges.target_id == MEMBRANE_POTENTIAL_NODE]
     pores = {source for source in into.source_id if type_of.get(source) == "reaction"}
     catalysts = set(edges.source_id[edges.relation_type == CATALYSIS_RELATION])
-    return pores, catalysts
+    by_source = collections.Counter(f"{relation} from {type_of.get(source)}" for source, relation in zip(into.source_id, into.relation_type))
+    return pores, catalysts, dict(sorted(by_source.items()))
 
 
 def set_change(before: set[str], after: set[str]) -> dict:
@@ -100,14 +111,23 @@ def compare(before: Path, after: Path) -> dict:
     nodes_after = pd.read_parquet(after / "nodes.parquet", columns=["node_id", "node_type", "gene_symbol", "brain_expressed"])
     edges_before = pd.read_parquet(before / "edges.parquet", columns=["source_id", "target_id", "relation_type"])
     edges_after = pd.read_parquet(after / "edges.parquet", columns=["source_id", "target_id", "relation_type"])
-    pores_before, catalysts_before = pores_and_catalysts(edges_before, nodes_before)
-    pores_after, catalysts_after = pores_and_catalysts(edges_after, nodes_after)
+    pores_before, catalysts_before, into_before = pores_and_catalysts(edges_before, nodes_before)
+    pores_after, catalysts_after, into_after = pores_and_catalysts(edges_after, nodes_after)
     flags = flag_changes(nodes_before, nodes_after)
     symbol_after = dict(zip(nodes_after.node_id, nodes_after.gene_symbol))
-    gene_of_symbol_changed = {symbol_after.get(node) for node in flags["turned_expressed"] + flags["turned_not_expressed"]} - {None}
+    gene_of_symbol_changed = {symbol_after.get(node) for node in flags["turned_expressed"] + flags["turned_not_expressed"]}
+    gene_of_symbol_changed = {symbol for symbol in gene_of_symbol_changed if isinstance(symbol, str) and symbol}
+    type_after = dict(zip(nodes_after.node_id, nodes_after.node_type))
+    without_symbol = sorted(catalyst for catalyst in catalysts_before & catalysts_after
+                            if not isinstance(symbol_after.get(catalyst), str) or not symbol_after.get(catalyst))
     record = {"genes_whose_flag_changes": flags, "pores": set_change(pores_before, pores_after), "catalysts": set_change(catalysts_before, catalysts_after),
+              "edges_into_membrane_potential": {"before": into_before, "after": into_after},
               "catalysts_whose_gene_flag_changes": sorted(catalyst for catalyst in catalysts_before & catalysts_after
-                                                          if symbol_after.get(catalyst) in gene_of_symbol_changed)}
+                                                          if symbol_after.get(catalyst) in gene_of_symbol_changed),
+              # the rule above matches a catalyst by its own gene_symbol, so a catalyst without one is outside it
+              "catalysts_a_flag_change_cannot_reach": {"count": len(without_symbol),
+                                                       "by_node_type": dict(sorted(collections.Counter(type_after.get(catalyst) for catalyst in without_symbol).items())),
+                                                       "catalysts": without_symbol}}
     if (before / DRUG_ENTRY_FILE).exists() and (after / DRUG_ENTRY_FILE).exists():
         record["drug_target_sites"] = target_site_changes(
             pd.read_parquet(before / DRUG_ENTRY_FILE), pd.read_parquet(after / DRUG_ENTRY_FILE),
