@@ -13,7 +13,7 @@ newest first and each with the date the register says it was recorded, then draf
 that carry the provenance stamp, and last the generated pages written before the stamp existed (16 October 2026),
 marked as history. A family of versions (the register's `family` field: several pages one script wrote for different
 runs) is one line that links every member, as the mechanism cards of a run are; the line names the member the register
-marks current, which is the one generated on the v5 tables (the owner, 21 November 2026), or says no member is on them.
+marks current, which is the one generated on the v5 tables (the owner, 20 November 2026), or says no member is on them.
 
 Nothing on the page is remembered: the titles, the classes, the dates and the list come from the register and the
 documents when the page is written, so a document added, retitled or reclassed shows the next time the status
@@ -244,7 +244,7 @@ def family_line(name: str, members: list[str], entries: dict, kinds: dict, title
     """One line for a family of versions: the members' shared title, how many there are, which one (if any) the
     register marks current (`"current": true` on that member's entry, beside its `family`), and a link to each.
 
-    The current member is the one generated on the tables the registered model reads, v5 (the owner, 21 November 2026,
+    The current member is the one generated on the tables the registered model reads, v5 (the owner, 20 November 2026,
     "Version families"), so a family the register marks none in has no member on those tables, and every version of it
     is history until one is regenerated."""
     members = sorted(members)
@@ -313,7 +313,7 @@ def render_index(stamp: str, root: Path = REPOSITORY_ROOT) -> str:
               f"and last the generated pages written before the stamp existed ({STAMP_POLICY_DATE.day} {STAMP_POLICY_DATE:%B %Y}), which are history: read them as the "
               "state of their date, not as the current graph or model.", "",
               "A script that wrote the same page for several runs has its versions on one line. The current member of such a family is the "
-              "one generated on the tables the registered model reads, v5 (the owner, 21 November 2026, \"Version families\"); the register "
+              "one generated on the tables the registered model reads, v5 (the owner, 20 November 2026, \"Version families\"); the register "
               "marks it, and a family whose line says no member is on those tables has no current member, every version of it being history "
               "until one is regenerated.", "",
               "| topic | " + " | ".join(LISTING_LABELS[kind] for kind in LISTING_ORDER) + " | all |",

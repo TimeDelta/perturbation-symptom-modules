@@ -108,7 +108,7 @@ def test_records_carry_their_date_and_pages_before_the_stamp_are_marked():
 
 def test_a_family_of_versions_is_one_line_linking_every_member():
     """One line per family, linking every member, and it names the one member the register marks current or says no
-    member is on the v5 tables. Asked on 21 November 2026 which member of each family is current, the owner answered
+    member is on the v5 tables. Asked on 20 November 2026 which member of each family is current, the owner answered
     "6 yes" and then, asked which question 6, "Version families": the one generated on the tables the registered model
     reads, v5. So at most one member of a family carries `"current": true`."""
     registry = load_registry()

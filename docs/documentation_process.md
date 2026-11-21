@@ -128,7 +128,7 @@ markers, so the README restates no number by hand; a test asserts that no releas
 prose outside that block. It also writes `docs/README.md`, the index of every registered document by topic, through
 `experiments/generate_docs_index.py` (added 17 October 2026).
 
-**Which member of a family of versions is current (21 November 2026).** Six families of generated documents exist in
+**Which member of a family of versions is current (20 November 2026).** Six families of generated documents exist in
 several versions: the Phase 2 baseline tables, the label plasma binders, the drug administration routes, the leakage
 group rules, the module health results and the rewiring null distribution. Asked which member of each is current, the
 owner answered "6 yes" and then, asked which question 6, "Version families": the current member is the one generated
@@ -187,6 +187,6 @@ Line 204 of the decision log (three rows behind literal `\n`) was split into its
 merged with the closing row that had been appended below it, so the id names one row (the owner, 15 October:
 "Whatever you think is best for the 9.5 duplicate ... Just make it honest"); the tests fail on any literal `\n` or
 on an id that names two rows. The six families of generated documents that exist in several versions are settled by
-the owner's answer of 21 November 2026, under "What is current" above: the member generated on the v5 tables is the
+the owner's answer of 20 November 2026, under "What is current" above: the member generated on the v5 tables is the
 current one, the register names it, and none of the six has such a member, so every version of each is history.
 `docs/status.md` lists the oldest unstamped documents.
