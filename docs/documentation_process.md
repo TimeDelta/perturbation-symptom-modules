@@ -107,9 +107,9 @@ last point below).
 - **Where a new document goes.** Where its class puts it, from the start: a living document at the top of `docs/`, a
   record in `docs/records/<YYYY-MM>/` for the month the register says it was recorded, a page or data file a script
   writes in `docs/generated/`, a draft in `docs/drafts/`, and a table the graph or evidence build reads in `configs/`.
-  `python experiments/register_documents.py --add-missing` prints the place, and `tests/test_documentation_process.py`
-  fails for a document outside it that is not a planned move, and for code or a YAML config that still names a moved
-  path. Asked on 20 November 2026 whether `CLAUDE.md` should say where a new document goes, the owner answered "either
+  `python experiments/register_documents.py --add-missing` prints the place for a new Markdown document, and
+  `tests/test_documentation_process.py` fails for a registered document outside it that is not a planned move, for a
+  file left at the top of `docs/`, and for code or a YAML config that still names a moved path. Asked on 20 November 2026 whether `CLAUDE.md` should say where a new document goes, the owner answered "either
   there or the readme"; the session chose the landing page, so the rule is stated there and here, and `CLAUDE.md` is
   not edited.
 

@@ -161,9 +161,9 @@ def test_the_page_reads_first_in_the_order_of_the_start_here_list():
 
 
 def test_the_reference_list_holds_the_exploration_queue_and_the_study_sheet_at_its_address():
-    """The owner, 20 November 2026, asked whether the exploration queue and the study sheet should join the reference
-    list: "sure". The study sheet is kept current in Claude Docs, so its line links the doc at the address
-    configs/study_sheet_diagrams.json records, then the registered Markdown copy."""
+    """Asked on 20 November 2026 whether the exploration queue and the study sheet should join the reference list,
+    the owner answered "sure". The study sheet is kept current in Claude Docs, so its line links the doc at the
+    address configs/study_sheet_diagrams.json records, then the registered Markdown copy."""
     import json
 
     lines = rendered_lines()
@@ -176,9 +176,9 @@ def test_the_reference_list_holds_the_exploration_queue_and_the_study_sheet_at_i
 
 
 def test_the_page_says_where_a_new_document_goes():
-    """The owner, 20 November 2026, asked whether CLAUDE.md should say where a new document goes: "either there or the
-    readme". The rule is on this page, under "Where documents live", and names each class directory of the placement
-    rule (mechanistic_pathway_learning/documentation.py), so a change of directory shows here too."""
+    """Asked on 20 November 2026 whether CLAUDE.md should say where a new document goes, the owner answered "either
+    there or the readme". The rule is on this page, under "Where documents live", and names each class directory of
+    the placement rule (mechanistic_pathway_learning/documentation.py), so a change of directory shows here too."""
     from mechanistic_pathway_learning.documentation import DRAFTS_DIRECTORY, GENERATED_DIRECTORY, RECORDS_DIRECTORY
 
     lines = rendered_lines()

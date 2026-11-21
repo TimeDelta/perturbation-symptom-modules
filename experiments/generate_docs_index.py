@@ -104,12 +104,14 @@ WHERE_DOCUMENTS_LIVE = (
 # Where a new document goes, the rule docs/documentation_process.md states under "Where documents live". The owner,
 # asked on 20 November 2026 whether CLAUDE.md should say where a new document goes, answered "either there or the
 # readme"; the session chose this page, so the rule is stated here and in the process document, and CLAUDE.md is not
-# edited. Its places are the class directories of mechanistic_pathway_learning/documentation.py.
+# edited. Three of its places are the class directories of mechanistic_pathway_learning/documentation.py, which the
+# test reads from that module; the top of docs/ and configs/ are not class directories.
 NEW_DOCUMENT_RULE = (
     "**A new document** goes where its class puts it from the start: a living document at the top of `docs/`, a record in "
     "`docs/records/<YYYY-MM>/` for the month it is recorded, a page or data file a script writes in `docs/generated/`, a draft in "
     "`docs/drafts/`, and a table the graph or evidence build reads in `configs/`. `python experiments/register_documents.py "
-    "--add-missing` prints the place, and `tests/test_documentation_process.py` fails for a document anywhere else. The owner chose "
+    "--add-missing` prints the place for a new Markdown document, and `tests/test_documentation_process.py` fails for a registered "
+    "document anywhere else, and for a file left at the top of `docs/`. The owner chose "
     "folders by class on 20 November 2026 (\"1 class\") and, asked whether `CLAUDE.md` should say where a new document goes, "
     "answered \"either there or the readme\": the rule is stated here and in the "
     "[documentation process](documentation_process.md#where-documents-live-20-november-2026)."
