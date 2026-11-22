@@ -69,11 +69,18 @@ ordering. you can just overwrite existing order").
     mechanism the project is for; its design half needs no sourcing to begin.
 16. **Item 17, the plasma free fraction as a modulated quantity** (new, unconfirmed): next to item 5, the other item
     on a drug's input size.
-15. **Item 10, the shunt.** 16. **Item 4, phosphorylation.** 17. **Item 2, CollecTRI signs.**
-18. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
-19. **Item 1, sensitivity-matrix rank**, after the rebuild. 20. **Item 8, the VAMP1 share.**
-21. **Item 22, protein isoforms inside one UniProt entry** (new, unconfirmed): a large structural change.
-22. **Item 3, protein electrostatics**, the largest change.
+17. **Item 10, the shunt.** 18. **Item 4, phosphorylation.** 19. **Item 2, CollecTRI signs.**
+20. **Item 16, DNA methylation.** The reaction exists and leads nowhere; it needs a design before sourcing.
+21. **Item 1, sensitivity-matrix rank**, after the rebuild. 22. **Item 8, the VAMP1 share.**
+23. **Item 22, protein isoforms inside one UniProt entry** (new, unconfirmed): a large structural change.
+24. **Item 26, the barrier as a structure** (new, 22 November 2026, at the owner's request): placed here by the
+    session because the exposure concern it might have raised is already answered by Kp,uu,brain, so what remains is
+    a structural change of the size of items 22 and 3, with no claim waiting on it.
+25. **Item 3, protein electrostatics**, the largest change.
+
+The numbers above restart at 17 where they once restarted at 15: inserting items 24 and 25 on 21 November 2026 bumped
+the entries after them by two and only the first was renumbered, so the list carried two 15s and two 16s until this was
+corrected on 22 November 2026.
 
 Item 13 (co-prescription in FAERS) stays parked by the owner's ruling and is not placed.
 
@@ -1422,3 +1429,45 @@ enzymes would be competition over the wrong set. **Related:** item 13, co-prescr
 owner's ruling and is where the pairs that actually occur together would come from.
 
 **Not started.**
+
+## 26. The barrier as a structure, not a per-drug constant
+
+Tagged 2026-11-22, from the owner's question "We essentially ignore the BBB, right?", the session's answer that the
+barrier does two load-bearing jobs as a measured number, and the owner's reply: "Oh wait. We use kp,uu,brain which
+addresses my concern", then "Add to queue". Nothing here is started and no source has been read for it. The state below
+was read from the repository at `9ca95471` on 22 November 2026; the reasoning about what it costs is the session's own
+and is not sourced.
+
+**What the barrier already does, so that this item does not re-open it.** Two things, both as a measured per-drug
+number rather than a mechanism. It decides which drugs are in the study at all: `experiments/apply_central_action_rule.py`
+admits a drug only when a mechanism target of it is a graph node GTEx calls brain-expressed **and** the drug has a
+measured unbound brain-to-plasma ratio at or above 0.1, a threshold read off the beta blockers' measured distribution
+rather than chosen. And it scales a registered model input: the occupancy anchor of `docs/preregistration.md` item 5
+turns fraction unbound and Kp,uu,brain into an unbound brain concentration at a target, so the ratio multiplies the
+exposure behind occupancy and is not merely a gate.
+
+**The idea.** The barrier is not a structure in the graph. The compartments are Human-GEM's cellular set (`c`, `e`,
+`l`, `m`, `n`, `r`, `x`, `g`, `i`, `v`) with no vascular or barrier compartment, and `ABCB1`, `ABCG2`, `SLC2A1` and
+`CLDN5` are ordinary gene and protein nodes. So nothing computes penetration from the expression or the state of the
+proteins that cause it. Three consequences follow:
+
+- **A perturbation of the barrier cannot propagate as one.** A loss of function at `ABCB1` changes that node's own
+  metabolic and signalling edges and changes no drug's brain concentration, because Kp,uu,brain is a fixed input per
+  drug. For a project whose subject is a perturbation reaching a symptom, that is a route the model cannot represent
+  at all, rather than one it represents badly.
+- **Admission is a hard filter on the study population**, so the coverage of Kp,uu measurements partly determines which
+  drugs exist in the study. A drug with no measured value is turned away for want of a measurement, which is not the
+  same as being turned away for not penetrating.
+- **The values are species-mixed.** `configs/centrally_acting_drugs.csv` carries a `kpuu_brain_species` column whose
+  rows include "other animal", so rodent measurements stand in for human ones.
+
+**A first step that costs little**, before any structural work: count, among the admitted drugs, how many have a
+mechanism or transport relation to `ABCB1` or `ABCG2` in the graph, which bounds how many drugs a modelled efflux
+could re-route; and split the drugs the central-action rule turns away into those below the threshold and those with no
+measured value at all, which says how much of the filter is pharmacology and how much is missing data. Both read tables
+already in the repository and need no rebuild.
+
+**What the structural version would cost.** A barrier compartment with its own endothelial transport edges is a change
+to the graph's compartment model, of the size of item 22 and item 3, and it would need a source for every transport
+edge it adds. It is placed last but one for that reason, and because no claim the project makes is waiting on it: the
+exposure question that would have motivated it is already answered by Kp,uu,brain.
