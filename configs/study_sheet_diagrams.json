@@ -55,11 +55,11 @@
         "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
         "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
         "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
-        "file:experiments/run_main_model.py": "15702b3c2709b577c9436f8793c8f8adae3f97a0c38b4c391cdbc3564a4f1fa9",
+        "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
         "file:docs/preregistration.md": "8ea38b6d524c9762f988b4fe6eb01b3f6998b77e618987e702529d57a08ce68b"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-22",
+      "checked_at_commit": "dda4b362"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
@@ -212,11 +212,11 @@
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "ae498e72abbd1831f4365b79e0e2f5d9335913694678259e955321cabea07494",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-22",
+      "checked_at_commit": "dda4b362"
     },
     "012dc8f5-8ee9": {
       "title": "A module is a learned set of nodes",
@@ -254,12 +254,12 @@
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "ae498e72abbd1831f4365b79e0e2f5d9335913694678259e955321cabea07494",
-        "file:experiments/run_main_model.py": "15702b3c2709b577c9436f8793c8f8adae3f97a0c38b4c391cdbc3564a4f1fa9",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
+        "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
         "file:experiments/run_main_model_batch.py": "c2b559762bfb9ed763df6e467e55d7bb3673c8ad3ee334e9025c7a0e115b5ba1"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-22",
+      "checked_at_commit": "dda4b362"
     },
     "682dd4a6-8d52": {
       "title": "The labels see far fewer directions than there are parameters",
@@ -279,13 +279,13 @@
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "ae498e72abbd1831f4365b79e0e2f5d9335913694678259e955321cabea07494",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
-        "file:experiments/run_main_model.py": "15702b3c2709b577c9436f8793c8f8adae3f97a0c38b4c391cdbc3564a4f1fa9",
+        "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
         "file:experiments/run_main_model_batch.py": "c2b559762bfb9ed763df6e467e55d7bb3673c8ad3ee334e9025c7a0e115b5ba1"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-22",
+      "checked_at_commit": "dda4b362"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
@@ -351,10 +351,10 @@
       },
       "fingerprints": {
         "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "ae498e72abbd1831f4365b79e0e2f5d9335913694678259e955321cabea07494"
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-22",
+      "checked_at_commit": "dda4b362"
     },
     "64d7b2e6-81e2": {
       "title": "Seven stages, as decided (9.117, 9.121)",
