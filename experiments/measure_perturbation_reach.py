@@ -41,6 +41,8 @@ from scipy.sparse.csgraph import breadth_first_order
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from mechanistic_pathway_learning.models.support_reach import walkable_adjacency  # noqa: E402 - one definition, shared with the module-support reach rule
+
 DEFAULT_DEAD_END_REACH = 2  # a gene perturbation's own gene and the protein it encodes
 
 REASON_NO_EDGE_IN_FILE = "no edge out in the graph file"
@@ -49,17 +51,6 @@ REASON_ENCODER_DOES_NOT_WALK = "edges the encoder does not walk"
 REASON_ONLY_INTO_DRUG_NODES = "edges only into drug nodes"
 REASON_INTO_WEIGHTLESS_NODES = "edges into nodes without class weight"
 REASON_SEED_WITHOUT_WEIGHT = "the seed has no class weight"
-
-
-def walkable_adjacency(num_nodes: int, walked_edge_source: np.ndarray, walked_edge_target: np.ndarray,
-                       node_carries_class_weight: np.ndarray, entry_node_mask: np.ndarray) -> sparse.csr_matrix:
-    """The edges a route can take: walked by the bottleneck, both ends with a class weight above 0 in some class, and
-    not into an entry node, since an entry node is present only in the perturbation that seeds it."""
-    route_can_take_edge = (node_carries_class_weight[walked_edge_source] & node_carries_class_weight[walked_edge_target]
-                           & ~entry_node_mask[walked_edge_target])
-    return sparse.csr_matrix((np.ones(int(route_can_take_edge.sum()), dtype=np.int8),
-                              (walked_edge_source[route_can_take_edge], walked_edge_target[route_can_take_edge])),
-                             shape=(num_nodes, num_nodes))
 
 
 def reachable_nodes(adjacency: sparse.csr_matrix, seed_nodes: list[int], node_carries_class_weight: np.ndarray) -> set[int]:

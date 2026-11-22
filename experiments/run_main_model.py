@@ -169,6 +169,7 @@ from mechanistic_pathway_learning.models.linear_response_encoder import (
     entmax_exponent_for_epoch,
 )
 from mechanistic_pathway_learning.models.minimum_description_length_selection import candidate_description_length
+from mechanistic_pathway_learning.models.support_reach import nodes_below_minimum_reach
 from mechanistic_pathway_learning.models.noisy_or_pathway_module_model import NoisyOrPathwayModuleHead
 from mechanistic_pathway_learning.models.positive_unlabelled_likelihood import (
     DERIVED_PROPENSITY,
@@ -699,9 +700,14 @@ def calcium_store_encoder_inputs(data) -> dict:
     return {name: torch.as_tensor(value, dtype=torch.long) if isinstance(value, np.ndarray) else value for name, value in calcium_store_inputs(data).items()}
 
 
-def build_models(data, arguments, device):
+def build_models(data, arguments, device, support_reach_rows: np.ndarray | None = None):
     """The encoder and the head. With edge priors on the data (build_edge_priors), the linear-response encoder takes its
-    edge gates here; the message-passing encoder takes them once its adjacencies exist (attach_edge_gates)."""
+    edge gates here; the message-passing encoder takes them once its adjacencies exist (attach_edge_gates).
+
+    With --module-support-minimum-reach, support_reach_rows are the perturbations whose seeds the reach rule counts
+    (models/support_reach.py): the trainer passes its training rows, the refit its refit rows. A rebuild of a finished
+    run passes none, so every row of its data is counted, and the checkpoint it then loads replaces that mask with the
+    one the run was trained under (HardConcreteNodeGate keeps it as a saved buffer)."""
     resolve_registered_defaults(arguments)
     if getattr(data, "edge_prior_gated", None) is not None and arguments.encoder not in EDGE_GATED_ENCODERS:
         raise ValueError(f"the edge priors gate the edges an encoder propagates along; the {arguments.encoder} encoder reads none (use one of {EDGE_GATED_ENCODERS})")
@@ -807,6 +813,21 @@ def build_models(data, arguments, device):
         else:
             print(f"conjunction relations: none of {', '.join(arguments.conjunction_relations)} is in this graph, "
                   "so every relation is aggregated by its in-degree mean")
+    reach_excluded_node_mask, support_reach_summary = None, None
+    if arguments.module_support_minimum_reach:
+        if arguments.module_support_minimum_reach < 0:
+            raise ValueError("--module-support-minimum-reach is a count of perturbation sources, 0 to leave the rule off")
+        if arguments.head == "sigmoid":
+            raise ValueError("--module-support-minimum-reach restricts the noisy-OR head's module supports; the sigmoid head has none")
+        rows = np.arange(len(data.perturbation_ids)) if support_reach_rows is None else np.asarray(support_reach_rows, dtype=int)
+        below, support_reach_summary = nodes_below_minimum_reach(encoder, len(data.node_ids), [data.perturbation_seeds[row] for row in rows],
+                                                                 arguments.module_support_minimum_reach, entry_node_mask=getattr(data, "entry_node_mask", None))
+        support_reach_summary["rows_counted"] = ("the rows given" if support_reach_rows is not None
+                                                 else "every row of the data, for a rebuild whose checkpoint then replaces the mask")
+        reach_excluded_node_mask = torch.as_tensor(below)
+        print(f"module support reach rule: {support_reach_summary['nodes_excluded']} of {support_reach_summary['nodes_eligible_before']} nodes "
+              f"have fewer than {arguments.module_support_minimum_reach} sources among {support_reach_summary['seed_nodes']} seed nodes of "
+              f"{support_reach_summary['perturbations_counted']} perturbations, and no module may include them")
     if arguments.head == "sigmoid":
         head = RelationalGnnSigmoidHead(arguments.node_state_dim, len(data.symptoms), hidden_dim=arguments.sigmoid_hidden_dim, pooling=arguments.pooling,
                                         degree_offset=arguments.degree_offset).to(device)
@@ -817,7 +838,10 @@ def build_models(data, arguments, device):
                                         degree_offset=arguments.degree_offset,
                                         # entry nodes (drug and allele) are never module support: the owner, 20 November 2026
                                         excluded_node_mask=(torch.as_tensor(data.entry_node_mask)
-                                                            if getattr(data, "entry_node_mask", None) is not None else None)).to(device)
+                                                            if getattr(data, "entry_node_mask", None) is not None else None),
+                                        # nodes too few perturbation sources reach (--module-support-minimum-reach, off at 0)
+                                        reach_excluded_node_mask=reach_excluded_node_mask).to(device)
+    head.support_reach_summary = support_reach_summary
     return encoder, head
 
 
@@ -2006,6 +2030,8 @@ def build_argument_parser() -> argparse.ArgumentParser:
                              "loss-optimal constant over the fitted perturbations, the weighted mean of the loss's targets (docs/records/2026-10/best_epoch_zero.md)")
     parser.add_argument("--module-bias-init", type=float, default=-3.0, help="noisy-OR head: initial readout bias of every module; negative values make modules off by default")
     parser.add_argument("--gate-init-noise", type=float, default=0.5, help="noisy-OR head: standard deviation of the per-gate noise added to the initial log-alpha (symmetry breaking between modules)")
+    parser.add_argument("--module-support-minimum-reach", type=int, default=0,
+                        help="noisy-OR head: no module may include a node that fewer than this many seed nodes of the training rows can reach, walking the linear-response encoder's edges (models/support_reach.py); 2 excludes every node one source or none can reach. 0, the default, leaves the rule off: it changes the registered model and waits for its amendment")
     parser.add_argument("--link-learning-rate", type=float, default=0.02,
                         help="noisy-OR head: learning rate of the module-to-symptom links (0 = the main rate); links start at logit -3 and Adam moves them about one rate per step, so at 0.002 they need about 1,500 steps to reach 0.5")
     parser.add_argument("--leak-learning-rate", type=float, default=0.0002, help="noisy-OR head: learning rate of the symptom leaks (0 = the main rate); slow, so a leak started at the base rate stays there")
@@ -2439,7 +2465,7 @@ def main() -> None:
         label_likelihood.propensity.to(device)
         print(f"label likelihood: positive-unlabelled, every pair counted once; {json.dumps(label_likelihood_summary['groups_on_the_fit_rows'])}; "
               f"propensity {label_likelihood.propensity.summary()}; evidenced-negative power {label_likelihood_summary['evidenced_negative_power']}")
-    encoder, head = build_models(data, arguments, device)
+    encoder, head = build_models(data, arguments, device, support_reach_rows=train_indices)
     initialise_leaks_from_base_rates(head, data, train_indices, label_mask, arguments, device)
     initialise_rates_at_weighted_optimum(head, data, train_indices, label_mask, arguments, device, label_likelihood)
     adjacencies = None  # the linear-response encoder builds its signed adjacency from the edges at construction
@@ -2766,7 +2792,7 @@ def main() -> None:
             edge_penalty_denominator = edge_penalty_denominators["refit"] = penalty_denominator(fitted["weights"].numpy(), refit_indices)
         refit_checkpoint_path = split_directory / "refit_checkpoint.pt"
         torch.manual_seed(arguments.seed)
-        encoder, head = build_models(data, arguments, device)
+        encoder, head = build_models(data, arguments, device, support_reach_rows=refit_indices)
         attach_edge_gates(encoder, data, adjacencies, arguments)  # fresh gates at the priors, as every other parameter starts again
         if label_likelihood is not None:  # and a fresh propensity, centred on the refit's rows
             refit_propensity, label_likelihood_summary["propensity_anchor_in_the_refit"] = labelling_propensity(data, label_mask, arguments, log_popularity,
@@ -2911,6 +2937,7 @@ def main() -> None:
         "mean_reciprocal_rank": mean_reciprocal_rank(predictions, test_outcomes, test_mask), "hits_at_3": hits_at_k(predictions, test_outcomes, 3, test_mask),
         "expected_calibration_error": expected_calibration_error(predictions, test_outcomes, mask=test_mask), "per_symptom": per_symptom, "symptoms": data.symptoms,
         "test_perturbation_ids": [data.perturbation_ids[i] for i in test_indices],
+        "module_support_reach": getattr(head, "support_reach_summary", None),  # None while --module-support-minimum-reach is 0
         "time_split": time_split_results,
         "code_provenance": state["code_provenance"],
         "graph_files_sha256": {name: file_sha256(Path(arguments.graph_dir) / f"{name}.parquet") for name in ("nodes", "edges")},

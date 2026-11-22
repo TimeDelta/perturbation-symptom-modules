@@ -51,6 +51,7 @@ class HardConcreteNodeGate(nn.Module):
         initial_log_alpha: float = -1.0,
         initial_log_alpha_noise: float = 0.01,
         excluded_node_mask: Tensor | None = None,
+        reach_excluded_node_mask: Tensor | None = None,
     ) -> None:
         """In eval mode the gate is the mean of the training gate distribution (expected_gate). The test-time
         estimator of Louizos et al., clamp(sigmoid(log_alpha) * (high - low) + low), matches training only once gates
@@ -66,7 +67,15 @@ class HardConcreteNodeGate(nn.Module):
         20 November 2026 that module growing excludes them ("make sure that the module growing excludes drug nodes",
         "Alleles too", "You can actually use that constant as the exclusion rule"). An entry node exists only in the
         perturbation seeded on it, so a module reading it would read the identity of a perturbation, not a pathway.
-        The mask is a buffer that is not saved, so a checkpoint's state dict is the one a gate without it writes."""
+        The mask is a buffer that is not saved, so a checkpoint's state dict is the one a gate without it writes.
+
+        reach_excluded_node_mask, [num_graph_nodes] boolean, True for a node fewer than the minimum number of perturbation
+        sources can reach (models/support_reach.py, experiments/run_main_model.py --module-support-minimum-reach), is
+        excluded the same way. Unlike the entry-node mask it is saved: it is computed from the training rows of one
+        run, so a model rebuilt on other rows (the lockbox scoring, a rewired graph) would compute another one, and the
+        trained gates are only the trained model under the mask they were trained with. Loading a checkpoint restores
+        it over whatever was computed at construction; without the rule no buffer exists, so earlier checkpoints load
+        as they did, and loading strictly refuses a checkpoint and a gate that disagree about whether the rule ran."""
         super().__init__()
         self.temperature = temperature
         initial_values = torch.full((num_pathway_modules, num_graph_nodes), initial_log_alpha)
@@ -79,9 +88,20 @@ class HardConcreteNodeGate(nn.Module):
             self.register_buffer("kept_node_weight", (~excluded_node_mask).to(initial_values.dtype), persistent=False)
         else:
             self.kept_node_weight = None
+        if reach_excluded_node_mask is not None:
+            reach_excluded_node_mask = torch.as_tensor(reach_excluded_node_mask, dtype=torch.bool)
+            if reach_excluded_node_mask.shape != (num_graph_nodes,):
+                raise ValueError(f"reach_excluded_node_mask has shape {tuple(reach_excluded_node_mask.shape)}, expected ({num_graph_nodes},)")
+            self.register_buffer("reach_excluded_node_mask", reach_excluded_node_mask.clone())
+        else:
+            self.register_buffer("reach_excluded_node_mask", None)
 
     def _without_excluded_nodes(self, gate: Tensor) -> Tensor:
-        return gate if self.kept_node_weight is None else gate * self.kept_node_weight[None, :]
+        if self.kept_node_weight is not None:
+            gate = gate * self.kept_node_weight[None, :]
+        if self.reach_excluded_node_mask is not None:  # read at each call, so a mask restored from a checkpoint takes effect
+            gate = gate * (~self.reach_excluded_node_mask).to(gate.dtype)[None, :]
+        return gate
 
     def forward(self) -> Tensor:
         """Return gate values of shape [num_pathway_modules, num_graph_nodes]."""
@@ -161,11 +181,13 @@ class NoisyOrPathwayModuleHead(nn.Module):
         initial_readout_bias: float = 0.0,
         degree_offset: bool = False,
         excluded_node_mask: Tensor | None = None,
+        reach_excluded_node_mask: Tensor | None = None,
     ) -> None:
         """gate_initial_log_alpha_noise breaks the symmetry between modules (all gates start at the same
         log-alpha otherwise, and identical modules stay identical); initial_readout_bias below zero makes a
         module silent unless the pooled perturbation signal drives it, the off-by-default reading of a pathway;
-        excluded_node_mask names the nodes no module may include (HardConcreteNodeGate), the graph's entry nodes."""
+        excluded_node_mask names the nodes no module may include (HardConcreteNodeGate), the graph's entry nodes;
+        reach_excluded_node_mask the nodes too few perturbation sources can reach, when the reach rule runs."""
         super().__init__()
         if pooling not in ("sum", "mean"):
             raise ValueError("pooling must be 'sum' or 'mean'")
@@ -181,6 +203,7 @@ class NoisyOrPathwayModuleHead(nn.Module):
             initial_log_alpha=gate_initial_log_alpha,
             initial_log_alpha_noise=gate_initial_log_alpha_noise,
             excluded_node_mask=excluded_node_mask,
+            reach_excluded_node_mask=reach_excluded_node_mask,
         )
         self.module_readout_weight = nn.Parameter(torch.randn(num_pathway_modules, node_state_dim) / math.sqrt(node_state_dim))
         self.module_readout_bias = nn.Parameter(torch.full((num_pathway_modules,), float(initial_readout_bias)))
