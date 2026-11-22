@@ -210,13 +210,13 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
+        "decision:9.119": "cfb4bb69f2c59e8fc018009d2e177982c34de774651296e13c8606e12bca9421",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569"
       },
       "checked": "2026-11-22",
-      "checked_at_commit": "dda4b362"
+      "checked_at_commit": "7844a0b4"
     },
     "012dc8f5-8ee9": {
       "title": "A module is a learned set of nodes",
@@ -230,11 +230,11 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
+        "decision:9.119": "cfb4bb69f2c59e8fc018009d2e177982c34de774651296e13c8606e12bca9421",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
       },
       "checked": "2026-11-22",
-      "checked_at_commit": "4fbe651b",
+      "checked_at_commit": "7844a0b4",
       "partner": "713638b8-497a"
     },
     "15448121-6479": {
@@ -252,21 +252,22 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
+        "decision:9.119": "cfb4bb69f2c59e8fc018009d2e177982c34de774651296e13c8606e12bca9421",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
         "file:experiments/run_main_model_batch.py": "c2b559762bfb9ed763df6e467e55d7bb3673c8ad3ee334e9025c7a0e115b5ba1"
       },
       "checked": "2026-11-22",
-      "checked_at_commit": "dda4b362"
+      "checked_at_commit": "7844a0b4"
     },
     "682dd4a6-8d52": {
       "title": "The labels see far fewer directions than there are parameters",
       "state": "built_and_decided",
       "depicts": {
         "decisions": [
-          "9.119"
+          "9.119",
+          "9.150"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py",
@@ -277,7 +278,8 @@
         ]
       },
       "fingerprints": {
-        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
+        "decision:9.119": "cfb4bb69f2c59e8fc018009d2e177982c34de774651296e13c8606e12bca9421",
+        "decision:9.150": "0ee38ff1ffa18573ba7d198ff298a39d5bf8fd261f4528bae14ceb86513b6984",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
@@ -285,7 +287,7 @@
         "file:experiments/run_main_model_batch.py": "c2b559762bfb9ed763df6e467e55d7bb3673c8ad3ee334e9025c7a0e115b5ba1"
       },
       "checked": "2026-11-22",
-      "checked_at_commit": "dda4b362"
+      "checked_at_commit": "7844a0b4"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
@@ -343,18 +345,22 @@
       "partner": "012dc8f5-8ee9",
       "depicts": {
         "decisions": [
-          "9.119"
+          "9.119",
+          "9.150"
         ],
         "files": [
-          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py"
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
+          "mechanistic_pathway_learning/models/support_reach.py"
         ]
       },
       "fingerprints": {
-        "decision:9.119": "8ddee32d335b24443f810f3f5c196b534f4d964e1b049494d60eae2c936e6f34",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
+        "decision:9.119": "cfb4bb69f2c59e8fc018009d2e177982c34de774651296e13c8606e12bca9421",
+        "decision:9.150": "0ee38ff1ffa18573ba7d198ff298a39d5bf8fd261f4528bae14ceb86513b6984",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
+        "file:mechanistic_pathway_learning/models/support_reach.py": "71144a5d389901c88dc8ac25e973dbe4025af8a79fe651f117dc47559013febc"
       },
       "checked": "2026-11-22",
-      "checked_at_commit": "dda4b362"
+      "checked_at_commit": "7844a0b4"
     },
     "64d7b2e6-81e2": {
       "title": "Seven stages, as decided (9.117, 9.121)",
