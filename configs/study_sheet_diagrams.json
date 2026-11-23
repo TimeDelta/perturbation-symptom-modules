@@ -137,7 +137,8 @@
       "state": "built_and_decided",
       "depicts": {
         "decisions": [
-          "9.16"
+          "9.16",
+          "9.81"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py"
@@ -145,14 +146,15 @@
       },
       "fingerprints": {
         "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
+        "decision:9.81": "fef5bf4223bca2dc7379ed5f2c10b9be5141b0305573e53f5809305905eb058e",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-23",
+      "checked_at_commit": "f40a1ea"
     },
     "c642a74c-b09e": {
       "title": "Propagation channels: one lane per cell class",
-      "state": "built_and_decided",
+      "state": "built",
       "depicts": {
         "decisions": [
           "9.76"
@@ -167,8 +169,34 @@
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-23",
+      "checked_at_commit": "f40a1ea",
+      "partner": "098c9a09-8f0f"
+    },
+    "098c9a09-8f0f": {
+      "title": "Propagation channels, as decided (items 37b, 37f, 37n)",
+      "state": "decided",
+      "partner": "c642a74c-b09e",
+      "depicts": {
+        "decisions": [
+          "9.76",
+          "9.81",
+          "9.136"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "experiments/build_cell_class_weights.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.76": "a1283a44c8f472efb472157de77ced366283fcc7882e45721feb7051892fe2c5",
+        "decision:9.81": "fef5bf4223bca2dc7379ed5f2c10b9be5141b0305573e53f5809305905eb058e",
+        "decision:9.136": "b0a817453d8b8b1dde4e663962d2387a84a229cb93bf0451a8208df2584cf6ed",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
+        "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
+      },
+      "checked": "2026-11-23",
+      "checked_at_commit": "f40a1ea"
     },
     "7d950678-d77c": {
       "title": "Membrane potential, as built",
