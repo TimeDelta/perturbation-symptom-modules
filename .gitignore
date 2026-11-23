@@ -20,4 +20,7 @@ slurm-*.out
 
 # personal permission grants, not team-wide
 .claude/settings.local.json
+# git worktrees this session and its agents create for parallel work (CLAUDE.md, "Pushing"): each is a working
+# directory with its own checkout, never project content, and committing one would nest a repository
+.claude/worktrees/
 session_archives/
