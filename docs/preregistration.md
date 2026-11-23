@@ -2799,6 +2799,602 @@ registered-rules change, so no `Amends:` trailer, and this was checked rather th
 free-fraction, Kp,uu or measurement-noise value, so no registered value is touched. The quotes, the routes, the
 refusals and the licence of each source are in `docs/label_source_review.md` section 38.
 
+Amendment, 23 November 2026, written before any lockbox run and before the held-out set has been drawn (decision 1.1
+is open).
+
+**37. The owner's rulings of 13 to 20 November 2026 on the open parts of decision 9.129, registered before they are
+built, as fifteen sub-items** (the owner, 13 November 2026: "Let's rule on the rest of it first", and, on clearance,
+18 November 2026: "just REGISTER it. i don't care how. no clearance, etc. is unacceptable for this project").
+Decision 9.129 ruled on 12 November 2026 that item 37's draft be amended rather than registered as drafted, and left
+four things owed: its three design questions, a second source for the carrier split, the carrier clause's figures,
+"then registering item 37". The rulings that answer them are kept with the owner's words in
+`docs/item37_rulings_draft_2026-11-13.md`, which is the authority for what this item registers; nothing of it is
+built. Decision 9.132 holds, in one place, what this registration leaves owed.
+
+**How to read the placeholders.** Much of item 37 is a rule whose number is not yet measured, and the registration
+says which is which rather than leaving a reader to work it out. A value a rule still needs is written `[P n]`; the
+owner's standing caveat covers these, item 37 being registered as ruled and not built (decision 9.129), so filling
+one needs no further ruling, only the measurement, its second source where the rule asks for one, and the graph
+version and date it was taken on (CLAUDE.md, Modelling). A rule still unsettled is written `[R n]`, and **only the
+owner's ruling fills it**: no session, pass or build may. The numbers already in use elsewhere are kept: `[R 7]` and
+`[R 8]` are the owner's own numbers of 20 November 2026, and `[P 13]` is the sourced headroom tables, which
+`experiments/measure_saturation_counts.py` already names that way. The rest are numbered by this registration, which
+is why the value placeholders do not run in sub-item order. The lettered codes the draft carries for the batches the
+owner answered (P1 to P8, C1 to C21, I1 to I7, T1 to T4, M1 to M6, Q1 to Q5, S1 to S4, A1, L to P, and R1 to R4 of
+the drug-target screen) are that draft's codes and are not these placeholders; where a sub-item names one it says so.
+
+**37a. A reaction's classes are what its catalysts assemble, a pore is one population per co-assembly, and a pore is
+added when it sits on any central cell class.** (i) The classes a reaction can contain are those whose defining
+subunits can assemble from its catalysts, which replaces the choice by the first catalyst gene in sorted order that
+`mechanistic_pathway_learning/graph/reactome_import.py` still makes. (ii) Where two classes can both assemble, the
+reaction is split into one node per class, each taking the catalysts that assemble it. (iii) A pore that sits on no
+central cell class is not added to the graph (the owner, 13 November 2026, on the muscle-type nicotinic receptor:
+"accepted"), and **"central cell class", not "central neuron", is the test** (the owner, 18 November 2026: "yes,
+that's the correct way: cell central class is the rule"), so glial classes count, and "ependymal choroid should be
+included because it feeds the glymphatic system. same for vascular, but only for central vasculature". The
+muscle-type receptor stays out and its subunits leave the neuronal entities; decisions 9.121 and 9.128 are unchanged
+by it. (iv) One weight per pore population, with a curated, sourced table of which reactions are the same pore,
+reaching the single-ion pores too, since overlapping catalysts are not proof of one pore (the owner: "D. yes", then
+"D2. yes"); the three nicotinic reactions share one unit, the calcium-written reactions taking the fractional calcium
+share and the sodium-written one the rest (the owner: "D1. fine. merge", and, asked which reading of "merge" they
+meant, "i meant option 1", the shared weight). (v) The populations the rulings set apart: alpha-7 homomeric nicotinic
+receptors are their own class and population, splitting `RCT_629595` (the owner: "A2. split"), with CHRNA7 restored
+by a curated override naming both sources against GTEx's outlying 0.36 TPM (the owner: "use A1."); the non-selective
+TRP reaction `RCT_3295579` is split into one node per co-assembled population (the owner: "that makes way more sense
+for c. confirm c split."), with TRPC1/4 and TRPC1/5 two populations rather than one (the owner: "split TRPC1/4/5")
+and TRPC4AP, a scaffold rather than a pore subunit, removed; the six Kir2, Kir4 and Kir5 genes that Reactome's GIRK
+complex holds and that neither UniProt nor the Concise Guide supports leave that entity; K_ATP's three reactions are
+two populations, Kir6.1 (KCNJ8) and Kir6.2 (KCNJ11), Kir6.1 kept as its own population weighted by class expression
+with its reason corrected to mostly non-neuronal; `RCT_2684901` keeps ANO1, ANO2 and ANO6 as three populations and
+loses ANO3, ANO4, ANO5, ANO7, ANO8, ANO9 and ANO10, those genes staying in the graph (the owner: "use corrected
+8b"); SCN7A (Nax) is split out of `MAR_SODIUM_LEAK` as its own population, a different pore from NALCN, with its
+conductance flagged; `MAR06534` is split into a pore node carrying chloride alone and a carrier node carrying the
+1 Cl- : 2 HCO3- stoichiometry, SLC26A8 being kept as a carrier and excluded from the pore test (the owner: "SLC26A8
+accepted."); and TRPA1 stays, on rodent functional evidence from three laboratories and human mRNA only (the owner:
+"keep TRPA1 with the stated rodent-only plus human mRNA note"). TRPV5 and TRPV6 stay out until a pass shows one of
+them on a central cell class, a pore with no such evidence not being added (the owner, 20 November 2026: "Yea").
+(vi) **A pore catalyst is classed by what TCDB's entry text and UniProt say it does, not by its TC class number** (the
+owner: "use functional description"), each disagreement between the two recorded beside its gene; the screen of the
+267 catalyst genes of the 56 pore reactions found one reaction mixing a channel and a carrier, which is the second
+source decision 9.129 (2) owed. (vii) **One counted unit per population is a stated interim and the reason is
+coverage, not preference**: a resting conductance in central neurons is well sourced for 2 to 4 of 47 populations,
+thin for 14 and absent for 29, and no conductance exists for either TRPC1 heteromer, so a scheme mixing sized and
+counted populations is not coherent at `VM_c` (the owner: "keep 1/4 and 1/5 as nodes since the proportions for
+splitting can't be sourced"). The same-pore table and the population list are `[P 1]`.
+
+**37b. A gene is brain-expressed when it reaches the threshold in any brain region, the classes that rule needs are
+added, and the expression values are attached after the last stage that adds gene nodes.** The owner, on genes whose
+mRNA sits in small nuclei GTEx does not sample: "i think region-restricted genes is better fix, no?", and on the
+rule: "that's fine but it needs to make sure to create those new cell types so their relative gene expression levels
+can be unique." So a gene counts as brain-expressed when it reaches the threshold in any brain region of GTEx or of
+HPA's regional bulk, which on the build of 12 November 2026 turns 1,420 genes brain-expressed, 15 of them drug
+targets of 88 of the 260 drugs. The classes ruled with it, each a cluster of the Siletti et al. 2023 atlas:
+serotonergic (397), Purkinje (314, on one source and kept because it matters for movement disorders), medial habenula
+(334) and histaminergic (432) (the owner, 14 November 2026: "Yes to purkinje even with one source because it's
+important for some movement disorders, habenula, histaminergic", and "Yes" for the serotonergic class); the forebrain
+cholinergic class becomes three, striatal, NGFR-negative basal forebrain and NGFR-positive basal forebrain (the
+owner: "accepted"); and the pituitary becomes six classes, one per HPA lineage (the owner, 19 November 2026: "use HPA
+directly", and, asked whether each lineage is a class, "separate classes"). The orexin neurons are not a class at
+cluster resolution, being about 9 per cent of one cluster, and the drugs that look like theirs act at HCRTR1 and
+HCRTR2 on the neurons orexin projects to. **The annotation order is a code defect, and its repair is not a change of
+what brain-expressed means** (the owner: "yes"): of 357 gene nodes whose brain expression is unknown on the
+12 November build, 182 are nodes a later build stage adds after `annotate_brain_expression` has run and are in the
+GTEx file by symbol, while every step that gates on `brain_expressed` reads unknown as not expressed. The values are
+attached after the last stage that adds gene nodes, built together with the region rule in one rebuild, with a test
+that fails while a gene node whose symbol is in the expression table carries no value. The before-and-after counts
+come only from that build and the code is committable before them (the owner, 20 November 2026: "oh. then i don't
+need the counts before it's committed for 8c"); they are `[P 2]`.
+
+**37c. A non-selective pore's calcium share is its own fractional calcium current, derived where none is measured by
+the raw constant-field solution with no calibration factor.** The owner, on the four-part reading of their "use
+option 3 with the individual potency factors": "yes and yes". (a) A non-selective pore class's calcium share is its
+own measured Pf, from two sources where possible, with any gap stated. (b) Its weight into `VM_c` stays on the
+registered monovalent law, the calcium share counted in full as inward current. (c) Its edge into the cytosolic
+calcium pool is Pf times the current its `VM_c` edge is built from, and a calcium-selective pore has Pf = 1.
+(d) Every input to that pool, pumps, exchangers and stores included, takes the same current unit. **The form of the
+derivation** (the owner, 16 November 2026: "for decision 3a, scuggestions accepted"): activities rather than
+concentrations, one convention in derivation and in prediction, each P_Ca/P_Na derived as the exact zero of the same
+current equation at the paper's own absolute reversal potential with no shortcut formula, each row read with its own
+solutions and temperature, no surface-charge term, and no model beyond the constant-field equations, none having
+usable per-channel parameters. **The measurement a population takes**, ranked (the owner, 16 November 2026: "yes,
+that captures it"): re-derivable under that form; subunit composition matching the population; a sodium-containing
+mixed solution with P_K = P_Na assumed where unmeasured, a sodium-free biionic recording being a flagged fallback
+(the owner, 16 November 2026: "yes"; the criterion keeps the wording ruled that day, its TRPV1 rationale withdrawn on
+17 November 2026 and the TRPC6 evidence standing - the owner: "for criterion 3: sure, keep it as previously ruled on
+16 Nov since TRPC6 still shows evidence"); native neurons, then mammalian cell lines; human; temperature nearest
+37 degrees C. Native measurements are preferred to recombinant, and a range is kept only where two measurements tie
+on every criterion and still disagree (the owner: "native over recombinant otherwise range accepted", and "but only
+use the range if we can't find a way to reduce it to a single scalar or a smaller range"). **A derived value uses the
+raw solution**: the owner, 17 November 2026, "1. raw GHK per previous decision that the model-based needed to beat
+it", the earlier ruling being that a model-based correction is used only where it beats the raw form, which the
+leave-one-out error does not, so the constant odds factor is dropped, the gap is recorded rather than fitted, and
+each derived value is flagged as an order-of-magnitude value and not a measurement. **NALCN takes Pf = 0** (the
+owner: "NALCN Pf = 0 for Ca accepted"), the complex a neuron carries passing no detectable calcium, with the
+disagreeing value from a preparation found non-functional recorded beside it; extracellular calcium's block of
+NALCN's sodium current is decision 9.114's and not this item's. **Where a channel's own activation states disagree,
+the value is the geometric mean of the Pf derived at each end, the ends kept as its interval, with a sensitivity run
+at both ends** (the owner, 16 November 2026: "a plus b for TRPV3 instead of d because the physiological state changes
+over time in a way that matters for Pf, geo mean will give middle of all measured states, and it would also mean
+carrying that expensive sourcing decision into other similar cases that might come up in the future"), and the same
+for any later case of the kind. Each population's Pf is `[P 3]`; the P_Ca/P_Na values and the re-derivation of the
+calibration rows under the form above are `[P 4]`.
+
+**37d. The potential and the pools: the pool edges in a conductance edge's unit, an ion-matched carrier test, two
+corrected permeability ratios, and the magnesium block modelled in full.** The two parts decision 9.129 ruled on
+12 November 2026 are registered here: each cytosolic pool edge carries a conductance edge's unit rather than a share
+of one, and a single-ion conductance edge is given only where a catalyst of the reaction carries the channel-activity
+term of the ion that reaction moves, descendants included. Both are coded in the `pores_and_clamped_pools` build
+alone, so no committed graph carries them and the registered build's weights are unchanged (decision 9.129). Two of
+the build's permeability ratios are corrected on the owner's rulings of 17 November 2026: the neuronal nicotinic
+P_K/P_Na is the native-neuron 1.23 rather than the oocyte 1.2 (the owner: "yes. native 1.23 instead of oocytes"), and
+NALCN's is 0.92 rather than a review's rounded 1.0 (the owner: "yes to 0.92"); each moves a weight by under 2 per
+cent. **The calcium pool keeps the per-open-channel basis, and that is a sourcing limit and not a numerical choice**:
+a pass of 17 November 2026 found no resting flux through any route measured in a central neuron, no measured pump or
+exchanger density, and clearance shares differing by cell type more than one reference set could carry (the owner:
+"sounds like there's no way around the per-open-channel version"), so the population basis is recorded as not
+sourceable on that date. **The NMDA receptor's magnesium block is modelled rather than left as the sign of a voltage
+gate** (the owner, told that nothing in the drug set perturbs magnesium: "it's worth it regardless of whether
+something perturbs Mg because it sets the base fraction blocked for NMDA"): extracellular magnesium is ionised
+0.8 mM with the range 0.66 to 1.15 mM, the ionised share of total recorded as open and total CSF magnesium of 1.13 to
+1.19 mmol/l recorded beside it as a separate quantity, with the sleep-wake swing of 0.11 to 0.13 mM (the owner, told
+that the 0.70 mM alternative is mouse cortical interstitium: "k accepted"); an `inhibits` edge runs from the
+extracellular magnesium node to the receptor; the voltage edge carries the slope of the block equation at rest; the
+block's constants take a second source; and the resting unblocked fraction enters the receptor's headroom and, once
+counted units give way to conductances, its resting conductance. **The block is carried per GluN2 class** (the owner:
+"m. one per GluN2 class unless you disagree"), so `RCT_432164` is split by the mechanism 37a (ii) already gives, each
+class node carrying its own agonist affinity as well as its own block, and each class's Pf and P_Ca/P_Na stated per
+class or stated as shared; recorded with it as a simplification, triheteromers are intermediate, so a two-class split
+puts them in one class or the other, and three classes would follow the sources more closely and are not registered
+here. The ionised share and the quantities recorded beside it are `[P 5]`; the per-class block constants, their
+second source and each class's permeability values are `[P 6]`.
+
+**37e. Headroom is (maximum - rest)/rest, read at one resting potential, with the ceiling cut to the share that can
+reach it and rest counting the openings that need no agonist; and one method per quantity across the populations it
+is compared over.** Each source's gating curve is evaluated at the registered -72.6 mV, the source's own resting
+potential recorded beside the row (the owner: "i accept the single registered -72.6mV. run the resting potentials
+fable pass to get the new column values please"). A ligand-gated population's Hill coefficient is sourced and not
+assumed to be 1 (the owner: "c. source them"), and a population whose coefficient cannot be sourced keeps 1 with that
+stated in its row. A ceiling is multiplied by the share of the population that can open without first
+hyperpolarising (the owner: "g. multiply by the share of the population that cannot open without first
+hyperpolarizing"), which is the physiological reading of a ceiling rather than "all channels open"; a population
+whose inactivated share is not sourced keeps the full ceiling with that stated. Rest is spontaneous plus
+agonist-driven openings for every population with measurable agonist-independent activity and not for the
+extrasynaptic GABA-A receptors alone (the owner: "yes to both d and l"), a denominator of agonist occupancy alone
+making the headroom too large. **Headroom stays one value per node and not one per region** (the owner: "i think
+i'll keep it this way for now", then correcting their own first reason: "actually, adding the true region structure
+mostly adds more gates than more params"), so the reason of record is compute and sourcing and not parameter count: a
+region group is a fixed expression gate on the shared adjacency, so run time grows with the group count, while most
+regional ambient and headroom values are unsourced. Each sourced headroom records the region it was measured in and
+why that region was taken. **The uniform-method rule** (the owner: "yes to both d and l"): where a quantity enters a
+comparison between populations the method is uniform across them, or the difference is recorded as method-dependent
+and not read as physiology; where a better-sourced value exists for only a few populations, both are recorded and the
+uniform one is used. Its cost is stated because the physiological version is otherwise the default: the uniform
+choice is sometimes the less physiological one, and the justification is that mixed methods put a false difference
+between two nodes, which is itself a physiological error and not a numerical convenience. **Amended the same day for
+a bias that is not a common monotone transform** (the owner, who raised it - "i was worried about nonlinearity for
+the uniform method rule" - and then: "accepted uniformity amendment"): the rule applies where the method's bias is
+plausibly a common monotone transform across the populations compared, which holds for temperature and for the
+liquid-junction potential and fails for quantitative microdialysis across transmitters, whose bias depends on each
+transmitter's uptake kinetics; where it is not, each population takes its best evidence, the method is recorded on
+its row, and cross-method comparisons are marked method-dependent. Applied to the preparation, a Hill coefficient or
+an EC50 comes from HEK cells rather than oocytes where the preparations differ (the owner: "6. use HEK over
+oocytes"), the oocyte values staying recorded beside the rows. The Hill coefficients are `[P 7]`, the
+non-inactivated and agonist-independent shares `[P 8]`, and the headroom of each node `[P 13]`. **`[R 1]`: whether
+the uniform-method rule is also recorded as a decision row of its own and a line in `CLAUDE.md`**, being general
+rather than particular to item 37; this registration does not assume it.
+
+**37f. Saturation goes inside the fixed point, the gain clamp goes, and the damped iteration gives way to a
+root-finder beside an unclamped iteration.** The owner, 21 October 2026 and again while the conductance edges were
+being sized: "saturation has to exist within the fixed point to properly represent physiology, right?", then
+"honestly, i think i'd rather just move towards the version with the stabilizing nonlinearities inside the fixed point
+loop and remove the damping", and, told that the damping sets the transient only, "the .9 gain clamp is what i meant
+by removing the damping"; on the three parts put to them, "yes to all three, root-finder and learned fallback". So,
+as the direction registered and not built (decision 9.81, which already records that changing the tested model goes
+through an amendment: "it's fine as an amendment"): (1) saturation inside the fixed-point loop, soft
+(Michaelis-Menten or Hill), so that a chain of saturated steps keeps a nonzero gradient; (2) a floor at -1 for every
+node, activity not being able to fall below zero; (3) a sourced upward headroom per node wherever one can be sourced,
+by 37e, which is `[P 13]`; (4) a learned headroom per relation type as the fallback where no value is sourced, and
+none where no ceiling exists (the owner, correcting the session's reading of their question: "sorry. i meant
+per-relation-type. and only for the unsourced values is good for that per-relation learned fallback"), so the nine
+populations sourced as unbounded get no ceiling, which is what their measurements say and what spends fewest
+parameters; (5) the 0.9 gain clamp removed; (6) the bottleneck and the pH ceiling inside the loop (the owner:
+"17. inside"); (7) the damped iteration replaced by a root-finder with implicit differentiation, started from rest,
+beside an unclamped iteration with saturation inside it for readings at each propagation round, both without the gain
+clamp, the root-finder searching for several steady states rather than only the one reached from rest (the owner:
+"i was thinking option a except that: instead of clamped gains for the root-finder, it will still allow unclamped
+gains and finding of multiple steady states"). **Only stable roots enter a prediction, and several stable states
+combine by noisy-OR** (the owner: "definitely option a", and "keep only stable roots"), the head's own combination
+rule, so a symptom is predicted if any stable state produces it, because "it could be the case that the symptoms show
+up for both steady states in the bistable switch"; a state the search misses takes its symptoms with it, so the
+search's incompleteness bears on the prediction and is stated, and the search is to be generous with its starting
+points. **What this leaves owed.** The method for finding several steady states is deferred to decision 9.138,
+outside item 37, "with item 37 written under the understanding that something will eventually be added to address it"
+(the owner, 19 November 2026); a round is not physical time while the relations carry no timescale; and the two-sided
+bound on `VM_c` in state units is computed from the built edges once item 37 is built (the owner: "13. sure. once
+item 37 is done being built"), the generic floor at -1 lying below E_K on every reading. Decision 9.81's four counts,
+a count of positive-feedback cycles and the scoping of which node kinds can take a sourced headroom come before the
+build. **`[R 7]` is withdrawn.** It asked whether the registered `normalisation` rule is kept; the owner withdrew the
+rule itself on 20 November 2026 ("R7 I'm just saying it's no longer needed so unregister it"), having kept it on
+16 November ("keep forward cone norm"). It is **not** unregistered by this amendment: the damped iteration in use
+needs the divisor to converge, so the rule and its test leave `configs/registered_rules.json` in the commit that
+builds the root-finder, under that commit's own `Amends:` trailer, and item 34a stands until then. **`[R 5]`: whether
+the per-round readings of the unclamped iteration enter a registered prediction, or stay a reading reported beside
+the tested model.** The owner ruled that both readouts exist; which one the confirmatory prediction uses is the
+noisy-OR across stable steady states above, and the place of the per-round readings is not ruled.
+
+**37g. A learned parameter is clamped to whatever bound its own evidence supplies, and one with no bound of any kind
+stays fixed.** The owner, 18 November 2026: "1a and 2a being the only depletion nulls for clamping is fine. it should
+probably apply to other param types too though for the clamped learning", and, on the two points left open with it:
+"i would say a param with no bound should stay fixed only because there's no data on its bounds and leaving it
+unbounded leaves the amount of error it absorbs unbounded. i think the bounded transform is better for training
+dynamics reasons (i.e. vanishing better than dead gradients)." So the bound is the published range where only a range
+exists, a depletion null where one exists, and a measured occupancy where one exists; a parameter with no bound of
+any kind stays fixed, with the owner's reason recorded as the justification the modelling rule asks for; and a clamp
+is enforced by a bounded transform rather than by projection after each step, on the ground that a saturating
+transform gives vanishing gradients at the bound while projection gives dead ones. **A bound read off a depletion
+experiment is hard only where the experiment is human in vivo and the depletion is complete** (the owner,
+18 November 2026: "i guess the nulls should hard bound only for human invivo complete depletion. where there are
+cases that don't have both together, it's a soft bound where the softness of the bound is scaled by the reliability
+of the evidence prior determined by the same method as the rest of the evidence prior reliability estimation", and
+"remember the other half of that depletion null that i ruled earlier too: it has to be human AND fully depleted to be
+a hard bound"); a bound resting on an incomplete depletion, on one whose completeness is unestablished, or on an
+animal experiment however complete its depletion, enters as a soft bound scaled by the evidence prior's reliability,
+which today is decision 9.59's calibrated regression
+(`mechanistic_pathway_learning/evidence/calibrated_reliability.py`). **The consequence is recorded rather than left
+to the build**: the one receptor the bound bites on, HTR1A, takes a soft bound and not a hard one, because the human
+depletions are partial and the near-complete ones are rodent, so the hard branch may have no members today. **The
+affinities are learned from the first build, inside their clamps, and no two-build screen is run** (the owner,
+18 November 2026: "i thought i ruled against doing the two-build screen version and sticking to learned params
+inside the soft/hard clamped bounds based on evidence prior since the 5-ht1a disbelief comment", with the ambiguity
+resolved in their next message: "i mean i ruled FOR sticking to learned params"), each initialised at the midpoint of
+its range, which makes the midpoint a starting point and not a claim. Where a published range lies wholly inside the
+region a depletion null contradicts, the clamp interval is widened to span the dispute rather than confining the
+learned value to the contradicted region (the owner: "so widen it"), so HTR1A's clamp runs from 0.2 nM to the null
+bound's 9 nM; elsewhere a learned affinity is clamped to its own published range. The owner's reason is recorded
+because it is the ground of the ruling: "i have a hard time believing that a 22x change of 5-HT1A will not move
+predictions". **D2 is learned inside its measured occupancy range the same way** (the owner: "For d2, do the same
+hard learning constraints"), a headroom of 8.1 with bounds 3.8 and 11.5 from the pooled human depletion studies, the
+lower bound soft because the depletion behind it was incomplete (the owner: "make the D2 bound soft since it's
+depletion was incomplete. that rule can extend to any other cases too") and the upper bound unchanged, since
+incomplete depletion biases a measured occupancy downwards and so weakens the floor it implies and not the ceiling.
+Recorded with it: the measurement is striatal and may not hold for D2 elsewhere, benzamide tracers see only the
+receptors they reach, and reading a headroom off an occupancy assumes a response proportional to occupancy, which a
+receptor reserve would break. Every clamp bound and seed this sub-item reaches is `[P 9]`.
+
+**37h. The occupancy split: four quantity types are admitted after sourcing is attempted, and what no source covers
+takes a learned fallback whose class is the protein's family crossed with the pair's mode of action.** The owner,
+18 November 2026: "i say that IC50 should be included just make sure to attempt sourcing values first", and "i don't
+see why EC50 would be treated any differently than IC50 in terms of inclusion for occupancy". So Ki, Kd, IC50 and
+EC50 enter, a positive modulator's potentiation EC50 among them with the receptor assembly it was measured on
+recorded beside it; no Cheng-Prusoff conversion is made, the conversion being conditionally defensible for part of
+the IC50 rows and not for the channel, transporter and allosteric ones; the quantity type stays on each row, and a
+drug whose shares mix types is marked method-dependent under 37e's rule. **The session's own "not-IC50 rule" is
+withdrawn**: the owner never gave one ("i never said gave a 'not-IC50 rule'") and a pass traced the phrase to a
+session's planning note. **There is no uniform fallback** (the owner: "no uniform fallback. it's too
+non-physiological"). Its replacement, whose shape the owner accepted and whose class definition they sent to a pass
+("yes but \"by class\" is doing a lot of work here and needs a strict definition that should be addressed by a fable
+pass") and then ruled ("1-4. go with recommendations"): a pair with no sourced value starts at the median of the
+sourced pairs of its class in log space, with a per-pair offset shrunk toward the class value and a soft clamp to the
+class's sourced range whose strength is set by the evidence prior. **Class** is the GtoPdb family of the protein,
+pinned release, crossed with the pair's mode of action, mode being the eight-value rule over the ChEMBL action type
+and protein class rather than the raw action type; below k = 3 sourced measurements the back-off is GtoPdb type by
+mode, then mode alone, and **never below mode**, so no global median is used, and a pair with no level holding at
+least k measurements is listed for sourcing. A class statistic is taken over sourced measurements of the class's
+expected quantity family where at least k exist and otherwise pooled with the mix recorded on the row (the owner:
+"go with b"), the fixed-factor alternative not being used. **The fallback is not used for receptor ligands at all**
+(the owner: "then don't use it for the receptor ligands", and "no value for receptor ligands: send to sourcing").
+**The ionotropic glutamate receptors split by ChEMBL protein class level 4 into AMPA, kainate and NMDA** (the owner:
+"they definitely need split", "yes, level 4", then "then ionotropic glutamate receptors only"), a split sourced twice
+by HGNC's gene groups and deliberately not generalised, since as a general depth level 4 would merge the five
+aminergic families and destroy the muscarinic result below. **The sibling-subtype centre is adopted for the
+muscarinic receptors only**, where the margin survives the within-paper inflation the ChEMBL harvest exposed; every
+other family keeps the class centre, the harvest having found 98.5 per cent of sibling pairs inside one paper and the
+across-paper sibling error about 0.25 log worse. Genes with no single-protein ChEMBL target stay out of any ChEMBL
+check and their pairs go to sourcing (the owner: "Yes"), a complex target not being able to give a subunit-specific
+value, and SCN7A stays in a family of its own pending its own check (the owner: "ok"). **Everything sourceable is
+sourced, and the fallback is what remains after sourcing rather than an alternative to it** (the owner,
+20 November 2026: "Not just topiramate. Everything sourcable should be sourced"), batched by family and placed in the
+queue before the damping measurements (the owner: "Batching by family makes sense but don't start yet. Just add it to
+the todo before the damping measurements"), and every sample drawn for that sourcing follows decision 9.134. **A pair
+whose ChEMBL action types conflict is withheld and flagged for curation rather than settled by the last row read**
+(the owner: "yes, always flag for curation instead"), the resolutions living in
+`configs/chembl_action_conflict_resolutions.csv`; varenicline's two pairs are resolved as partial agonist on both
+CHRNA4 and CHRNB2 (the owner: "accept"), with GtoPdb's "Agonist" coding recorded as a disagreement. Amisulpride's
+eleven serotonin pairs are curated before any fallback is applied, and acamprosate's thirteen GABA-A edges are
+removed, the sourced negative they carried recorded in the curation file rather than in the graph (the owner: "remove
+acamprosate edges"). The affinities and the pairs that have none are `[P 10]`; the class statistics the fallback
+needs are `[P 11]`.
+
+**37i. A mechanism row on a protein-family target becomes one class-level annotation at reduced weight, and for a
+drug whose mechanism is known only at family level that annotation is carried by one binary gate per drug, shared
+over the adult central sodium-channel isoforms.** The family-target artefact is the same in three places. SCN7A's
+edges are removed for all 26 drugs that carry them and not only the four examined: the ChEMBL family target lists
+SCN7A as a group member, Nax has its own single-protein target with none of these mechanisms on it, and no source
+shows any of them acting on Nax, while PROTEIN:SCN7A catalyses `MAR_SODIUM_LEAK`, so these edges were acting on the
+sodium leak. Primidone's ten sodium-channel edges are replaced by one class-level annotation at reduced weight,
+flagged as a class or batrachotoxin-site effect, with phenobarbital and PEMA getting none (the owner, after pushing
+back - "I thought primidone worked on sodium channels..." - "P5 accepted", the draft's ruling P5; the textbook claim
+behind primidone's mechanism row is not disputed, and what no source supports is a specific subtype). And cocaine's
+ten are replaced the same way, where the class-level action is the drug's own labelled mechanism, so it is well
+supported and only its resolution is at fault. **The gate, in full.** The owner, 20 November 2026: "Actually, maybe
+we make it a categorical edge", "I mean force it to choose one like the categorical gates", then, on a drug acting at
+several subtypes at once, "Actually it might hit more than one toe so need one binary gate per type" ("toe" read as
+"type"), and "Make them part of the registered model"; then, having given two claims and five sources of their own -
+that the classic anticonvulsants bind "a conserved local-anesthetic-like site in the pore-forming alpha-subunit",
+"giving them broad, state-dependent activity rather than isoform selectivity", and that the dominant neuronal sodium
+channels in the brain are Nav1.1, Nav1.2 and Nav1.6, "along with Nav1.3 during development" - and asked whether one
+gate per drug shared across the central isoforms should replace the per-isoform gates: "Yes", and again "1 yes".
+**So the registered form is one binary gate per drug**, a hard yes-or-no gate of the kind decisions 9.57 and 9.62 (e)
+build, shared over the adult central isoforms Nav1.1 (SCN1A), Nav1.2 (SCN2A) and Nav1.6 (SCN8A), each edge weighted
+by that isoform's expression on the central cell class, with Nav1.3 (SCN3A) dropped as developmental and the muscle,
+cardiac and peripheral isoforms dropped. **The gate starts at a weak prior**: it rests on class inference, no source
+showing primidone itself on a sodium current, and the priors the per-isoform form would have carried were equal and
+at the reduced weight a family-level annotation gets (the owner: "2 yes"). The gates enter the registered model with
+the gates of decision 9.122 and stay subject to its identifiability screen after the held-out draw; a gate that fails
+that screen keeps the class-level annotation at reduced weight in its place. The same form applies to similar cases
+only (the owner: "only similar cases"), read as a drug whose mechanism is known for a whole protein family with no
+source naming a member. The state dependence of the binding is a stated limit of a steady-state response.
+**The screen's other three rulings**, the draft's R2 to R4, all accepted on 20 November 2026: the affinity line is
+relative to each drug's own tightest carried target with a floor, no single absolute line serving both cocaine's
+transporters and the antipsychotics; a target that is real binding at a reachable concentration is carried, weighted
+by occupancy; and a mechanism row on a family target becomes one class-level annotation at reduced weight, which
+reaches 130 of the 260 drugs, 105 of them with every row of that kind. Of the 570 missing targets at the affinity
+line, 356 rest on one document and 262 on one record, so each takes a second source before it is curated onto a node
+(the owner: "Flag the thin tail for follow up"). **Two curations registered with it**: cocaine's drug node takes the
+dopamine, serotonin and noradrenaline transporters, all inhibition, on two independent sources each, with the label
+recorded as an omission rather than a contradiction, since it gives the sodium-channel action alone; and
+methamphetamine's transporter signs are inverted from a family-target inhibition to the releasing direction at SLC6A3
+and SLC6A2 with a weak one at SLC6A4, with VMAT2 reversal added (the owner: "please add VMAT2 reversal to
+methamphetamine"), which needs a new curated efflux reaction of the form the three plasma-membrane effluxes already
+take and either two mechanism edges or the learned per-relation gains, since one sign on the protein node would drive
+loading and reversal together, and whose sign is set against the five existing rows at that protein rather than in
+isolation. The reduced weight itself comes from a sourced within-family affinity spread, a sourcing effort the owner
+asked to start no earlier than 21 November 2026; it is `[P 12]`. **`[R 6]`: whether every drug whose mechanism is
+known only at family level takes a gate of this form, or only the cases already curated until each of the others is
+sourced.** The owner ruled the form, and "only similar cases"; which of the 130 are similar cases is not ruled.
+
+**37j. Plasma binding: a sequestration edge weighs the bound fraction times the carrier's share, and the share's
+class is the drug's ion state at the compartment's sourced in vivo pH.** The owner: "use option a for the per-carrier
+weighting with your suggested fallback order". So the weight is (1 - fu) times the carrier's share of the binding,
+with fu an attribute of the drug node, and a drug with no measured human fu takes the ranked fallbacks a pass of
+18 November 2026 set out (`sequesters_fu_2026-11-18.md`, that session's scratchpad). A share inside a named carrier
+set takes, in order, a published split, a conversion of isolated-protein percents, the acid/base class rule, protein
+concentrations with an affinity ratio, and a regression of fu on each protein; **the equal split that stood last is
+replaced by the occupancy split's learned fallback** (the owner: "this is fine but use the same replacement for the
+uniform fallback as the occupancy"), so an unsourced share is learned from the class median in log space with a
+per-drug offset and a soft clamp, as 37h has it, and carries the same guard against circular reasoning. **The class
+is ion state, and ion state is taken at the compartment's sourced in vivo pH and not at a fixed 7.4** (the owner:
+"the ion state should depend on a sourced invivo pH for the compartment"), plasma carriers at arterial pH 7.40 (the
+owner: "Arterial makes more sense"). **Membership is soft**: each drug carries its charged fractions by
+Henderson-Hasselbalch rather than a class label (the owner: "Yes to carrying the fraction"), and a sourced member
+counts toward every class in proportion to those fractions (the owner, on soft membership: "a"), so a class median is
+a weighted median, a clamp range a pair of weighted quantiles, and a fallback drug starts at the fraction-weighted
+mix of the class medians with nothing fitted; the regression on the fraction is not used. A fraction is computed from
+a constant corrected to body temperature, a direct 37 degrees C measurement first and the group median shift
+otherwise, at plasma ionic strength, the within-group range riding with the fraction; the justification under the
+modelling rule is that leaving a 25 degrees C constant as printed biases every base one way, toward more charge than
+it carries at body temperature, and the group median stands in because no 37 degrees C measurement was found for most
+drugs. Where a drug's sourced constants disagree the spread becomes bounds on a learned charged fraction or is
+propagated through the calculation (the owner: "The range shouldn't JUST be recorded. It needs to be included as
+either bounds on a learned param or propagated through a calculation"); where they merely differ, the median of the
+measured aqueous values is taken. A drug is classed by charged group and not by net charge, so an ampholyte is
+zwitterionic rather than neutral, a net-charge label hiding the ammonium. **A zwitterion or ampholyte stays one drug
+node, its carrier influence split across its microspecies by linkage** (the owner: "That might be solvable by keeping
+a single node and splitting its influence since drugs don't currently have node descriptors. Oh. That's what you
+suggest. Do that"), each microspecies entering by its measured fraction times its own affinity for the carrier, the
+equilibrium between forms shifting as one is bound, rather than at 1/n or at its resting fraction alone; the class
+statistic over forms replaces the four-way class, and at most three shared parameters carry how albumin's affinity
+differs between forms, started at zero and bounded at plus or minus one log unit on measured shifts. **Non-plasma
+carriers get sequestration edges confined to the compartments they occupy** (the owner: "they should get edges but
+make sure they are confined to compartments in which they appear"). **The reference concentrations** (the owner,
+20 November 2026): alpha-1-acid glycoprotein 0.75 g/L with the range 0.4 to 1.2 g/L (the owner: "use .75 with range
+.4-1.2"), stated in g/L because most binding experiments make the protein up by weight, so the assumed molecular mass
+cancels, with 37 kDa where a molar value is shown (the owner: "accept") and the smaller laboratory series recorded
+and not settled; albumin 42.5 g/L with the range 42 to 47 g/L and the starting point kept at 42.5 (the owner: "yes
+but extend range to 42-47", and "keep the starting point at 42.5 w/ extended range"); a healthy-adult reference with
+the disease multipliers recorded beside it (the owner: "yes, healthy reference"); ORM1 against ORM2 weighted by
+plasma abundance, about 2 to 3 against 1, and not equally; and where a paper reports both, the share is taken on
+albumin with fatty acids rather than on defatted albumin, as the form nearer plasma. A member resting on one source
+is accepted, flagged as single source, with the second sources tried listed beside the row; a value calculated from
+binding to isolated proteins counts as sourced at a lower evidence weight than a whole-plasma split (the owner:
+"count Table 3 with the lower weight"), marked as such; and a class with no sourced member gets no value, so its
+drugs are listed for sourcing. Every carrier identity, share, free fraction and acid dissociation constant still to
+be sourced is `[P 14]`. **`[R 2]`: whether either size of the temazepam free-fraction difference, the 44 per cent
+between arms or the 27 per cent within one arm, may be relied on.** The full text, read on 23 November 2026, leaves
+the heparin caveat standing, narrowed to addressed by the authors by citation and not excluded by their methods, and
+the reading reported is that the paper supports the direction and not a size free of that question. **`[R 3]`: the
+correction for a fraction-unbound measurement taken away from 37 degrees C**, to be ruled once the sourced values and
+binding enthalpies are in (the owner, 20 November 2026, "yes" to sourcing them). **`[R 4]`: whether a free fraction
+becomes a modulated quantity** rather than a constant, which is what temazepam's fatty-acid dependence argues for and
+which would reach every drug bound at the same albumin site; it is parked in `docs/exploration_queue.md` and is not
+registered here.
+
+**37k. Clearance is registered in the confirmatory model, on the dispersion model of hepatic clearance, through one
+universal clearance node.** The owner, 18 November 2026: "just REGISTER it. i don't care how. no clearance, etc. is
+unacceptable for this project", and "there will have to be a universal clearance node with a separate edge from
+clearing enzyme to the clearance node for each substrate that the enzyme clears". **The model is the dispersion
+form** (the owner, 22 November 2026: "3 clearance: dispersion form"), and the narrowed framing put to them on
+21 November 2026 is accepted ("5 ok"). Under CLAUDE.md's rule that the version closest to physiology is used the
+dispersion form needs no justification and the well-stirred form would have needed one, the group that set out the
+comparison calling the well-stirred form unphysiologic. The docstring of `experiments/tabulate_drug_routes.py`, which
+opened its reason with the well-stirred model, names the dispersion model from the commit that registers this item,
+keeping its citation and its three-row conclusion; **whether that narrowing's conclusions survive the dispersion form
+is research owed a pass, and no new reasoning about it is registered here or written into the code.** The seed split
+is the occupancy split of 37h with its learned class fallback (the owner, 20 November 2026, confirming that reading:
+"Yes"), the sourced-ratio version renormalised to 1 per drug; the uniform fallback it first carried is withdrawn
+("no uniform fallback. it's too non-physiological"). Dose enters through concentration rather than a
+therapeutic-index scale, labels not being dose-resolved, and a concentration sweep gives the multiple readouts.
+`configs/drug_clearing_enzymes.csv`, the 44 FDA pharmacogenetic rows, is applied in the next build, carrying out a
+ruling of 11 October 2026 that was never built: the build holds no `clears` edge, no drug-to-enzyme edge and no
+drug-to-metabolite edge, so no drug's metabolism is represented today, which is what the owner suspected when they
+asked for it to be checked. The quantities the split needs beyond those two are sourced first (the owner:
+"accepted. please start the sourcing pass") and are `[P 15]`. Decision 9.133 records the ruling and is closed with
+its build owed.
+
+**37l. The expression scales are reconciled by converting bulk TPM onto the nuclei nCPM scale with a measured
+per-gene term.** The owner, 18 November 2026: "for the TPM confounds, go with option D. record the numerical
+reasoning that it confines the confounds in that the measured values and makes more of the values accurate to within
+2x". So log2(nCPM / TPM) is the log of the collapsed-model transcript length plus the published per-gene
+nuclei-to-bulk log ratio plus a constant. **The justification under the modelling rule**: the per-gene term is a
+measured value, so the confounds it corrects are held in a published measurement rather than in a slope fitted on
+this project's data, and it brings the most genes within two-fold, 66 to 82 per cent against 30 to 35 for the single
+factor the build used; the per-class pre-mRNA version, which is the physiological one, is not used because it cannot
+be obtained, the authors' matrices answering 404. The conversion runs from TPM to nCPM and not the other way (the
+owner: "I thought that was the only direction that was viable"), because the reference scale and most columns are
+nCPM and converting those instead would move every threshold registered on that scale. **A gene the published table
+does not cover takes transcript length alone** (the owner, 19 November 2026: "go with transcript length alone for the
+fallback since it's at least mechanistic correction"), the fitted annotation fallback having shown no consistent gain
+on the genes outside that table, so nothing anywhere in the conversion is fitted on this project's data. **A gene
+whose canonical transcript lies at least half inside another annotation record, or which is pseudoautosomal, is
+treated as outside the table**, 292 genes, which is an annotation rule in place of the bound first proposed: the
+cause of the table's wrong upper tail is established as a read-through annotation artefact on the bulk side of the
+paper's own comparison, and a bound would cut long genes that are right and keep wrong genes beneath it. The
+threshold is a choice, justified by the measured dose-response of the overlap and by the cause being established, and
+the same rule applies in brain, the defect being in the table and not in the tissue. **The peripheral columns**: the
+pituitary is read from HPA's single-cell-type table and converts not at all; the pineal column is a full-length read
+CPM, which already carries transcript length, so its conversion drops the length term (the owner: "yes"); thyroid and
+the other bulk-converted classes take the per-gene term at slope 1 (the owner: "suggestions accepted") with the
+accuracy measured in eight non-brain tissues recorded as a limit, unmeasured in thyroid, and the over-correction
+outside brain recorded with it; and the islet class stays converted bulk rather than moving onto the nuclei it is
+calibrated against, those being three cultured, stress-marked, beta-rich donors of unverified licence. **Mitochondrial
+genes stay out of the normalisation that sets each tissue's constant, and each tissue's constant is set robustly
+against that tissue's own dominant genes where nuclei data exist**, rather than by dropping genes above a share of a
+bulk column, which would be a threshold needing its own justification; the earlier reasoning that treated
+mitochondrial genes as the special case was wrong, the real problem being any small set of genes that dominates a
+bulk column and that nuclei do not hold in proportion. **The islet hormone genes** take the islet's own measured
+nuclei-to-bulk ratio, a measured per-gene value in the right tissue, so it carries the same reason as the per-gene
+term: four are used as measured, a reconstructed floor stands and is recorded as "at least" (the owner: "L
+accepted"), insulin is recorded as a limit and not a value, no donor meeting the retention criterion, the donor whose
+sex contradicts the paper is recorded as an unsettled disagreement on which no ratio depends, and the raw reads are
+postponed rather than abandoned (the owner: "N-P accepted", and "M just postpone the read though until disk frees or
+a new session"). **An unpublished release is not evidence for any conversion** (the owner, 19 November 2026:
+"unpublished releases don't count"), and cancer-adjacent nuclei are out as too confounded ("cancer-adjacent nuclei
+are out: too much confound"). **The limits registered with the conversion**: the per-gene table is one study of ten
+donors in one cortical area and covers 9,894 of the 12,660 mapped gene nodes; the fit is worse in putamen; nothing is
+tested per cell class or in the endocrine tissues where the conversions are actually made; and the pre-mRNA share per
+class, ambient RNA and the composition of the bulk reference stay uncorrected. The per-gene terms, the per-tissue
+constants and the flagged-gene list are `[P 16]`.
+
+**37m. Drugs, prodrugs and metabolites as nodes: a drug the body makes seeds on the compound it already is, a
+metabolite with a profile of its own becomes a node weighted by its relative occupancy, and the module-growing phase
+excludes entry nodes.** The owner, 19 November 2026: "All endogenous drug perturbations should work that way",
+generalising melatonin's merge ("Yes but give the melatonin node the drug class type too so that it can be known in
+the module growing phase for the seed to sink requirement"). So an endogenous drug perturbation, one whose molecule
+the body makes and the graph already carries as a compound, seeds on that compound's own metabolite nodes, the merged
+node keeping the drug class type; the mechanism is in
+`mechanistic_pathway_learning/graph/drug_entry_nodes.py` and fires only where every seed is already a metabolite node
+of a compound listed in `configs/drugs_acting_as_graph_compounds.csv`, which holds one row and must be curated.
+**The set is three drugs and not the dozen the session guessed**: melatonin, whose compound-node receptor edges take
+the agonist sign inside the merge step, so that one code path handles every endogenous drug and a merge does not
+convert an agonist into a directionless interaction (the owner: "P1.1 a,b accepted"); and brexanolone and sodium
+oxybate, which merge only once their compound nodes carry their receptor edges, sourced, since merging now would lose
+the mechanism outright, as the prodrug pass warned and the session twice denied. Levodopa is a fourth case already
+ruled, seeded on the L-dopa compound node with its dopamine-receptor edge dropped, since the physiological route is
+built on the compound side and merely unreachable. Acetaminophen does not merge until its brain metabolite is a node
+of its own, formed from the parent and carrying the two edges that describe the metabolite and not the parent, with
+the hydrolase's sign corrected, that enzyme making the active species rather than being inhibited by the parent. A
+prodrug whose converting step has no natural graph node keeps the active species' targets on the parent, with the
+reason recorded: conversion is near-complete before the drug reaches the brain. **An active metabolite with a
+receptor profile of its own becomes a node formed from the parent by the enzyme that makes it, where both its brain
+exposure and its potency are sourced, and otherwise is not modelled; there is no threshold, and its edges are
+weighted by its relative occupancy instead** (the owner: "A1. No cut. Weight edges"), which is how every other
+fraction in item 37 is carried. **No flag marking a node as a drug is added** (the owner: "I agree p7 should be
+dropped"), there being no registered seed-to-sink requirement for such a flag to serve, while a readable drug marker
+would work against a drug node holding no identity and would leak the structure of a target-held-out split
+(`mechanistic_pathway_learning/evaluation/target_held_out_split.py`). **The module-growing phase excludes entry nodes
+by the constant that defines them, and this is built** (the owner: "make sure that the module growing excludes drug
+nodes", "Alleles too", "You can actually use that constant as the exclusion rule"): the rule is `node_type in
+ENTRY_NODE_TYPES` rather than a list of names, so a later entry node type is excluded by construction, and the module
+gate of `mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py` takes the mask
+`mechanistic_pathway_learning/evaluation/experiment_data.py` builds from that constant and holds those gates at zero.
+Whether a module must contain a seed at all is decision 9.137, ruled on 19 November 2026 to be a decision of its own,
+and item 37 is written so that the requirement can be dropped without reopening this sub-item. The duplicated edges
+of the drug and compound pairs are removed with their signs preserved, which on the built graph changes no result;
+methylphenidate is split into its two enantiomers on the escitalopram precedent, its enantiomer-specific values still
+to be sourced; and the audit rows marked for secondary verification take a second independent source before any is
+relied on, the two that rest on a label alone being named with the routes tried. The curated graph-compound set, the
+enantiomer values and the metabolite exposures are `[P 17]`.
+
+**37n. A minimal regional structure, with the regions the labels hold.** The owner, 18 November 2026, choosing among
+three forms: "i choose option C" - region-by-class channel groups for a few regions with projection edges, the
+regions chosen by the axes the labels hold - after agreeing to "minimal regional structure. we just need to rule on
+what form" and ruling that the parcellation comes from the atlas's own dissections and not from HPA's thirteen
+consensus regions (the owner: "use siletti"), which hold one basal ganglia region and so cannot separate dorsal from
+ventral striatum. **The regions, confirmed by the owner on 23 November 2026** ("Let's start with those regions"), as
+the list reads and as a starting set a later ruling may extend: dorsal striatum for the motor axis; ventral striatum
+and nucleus accumbens for the impulse and psychotic axes; prefrontal cortex for cognition and the psychotic axis;
+hypothalamus for sleep and appetite; the brainstem and midbrain source nuclei; and the histaminergic projection for
+somnolence. The tuberoinfundibular projection is left out because the label set holds no endocrine symptom, so it has
+nothing to fit. The structure is monoamine and histaminergic projection edges with regional copies of the
+fast-cleared pools, release at the terminal region, and the receptors shared. Costs recorded with it: region-by-class
+weights from the atlas's per-dissection files, a curated projection table with two sources per row, and a map from
+the primate parcellation onto these regions. Headroom stays one value per node under 37e, and the glycine value that
+took a cortical measurement for the whole forebrain splits per region once this is built (the owner: "go with cortex
+for glycine for now with a note to followup"). The fuller version - regional pools, a readout per region, and the
+connectivity even the pools need, since a projection neuron's mRNA sits at its somata and its release at its
+terminals - is decision 9.136, one decision outside item 37. The projection table and the region-by-class weights are
+`[P 18]`.
+
+**37o. Human-GEM's identifiers are repaired where the model is read, with guard tests, and the duplicate proton is
+merged into one node per compartment.** The owner: "Q1-4 suggestions accepted", and, on the duplicate: "i thought
+they NEEDED to be merged ... no other valid options exist". So: a corrections table applied where the metabolite
+table is read, rather than an edit of the pinned raw file, carrying the five identifier corrections and a blank for
+the one whose correct identifier would move three labels onto the wrong node; a guard test that fails when a
+metabolite's ChEBI identifier resolves to an isotopically labelled record or is absent from the pinned release, which
+would have caught all 23 affected metabolites; the 17 identifiers absent from that release taking upstream's
+replacements, each checked individually rather than as a batch, under the rule that related decisions are decided one
+by one; and a second guard test that fails when rows sharing one compartment-stripped identifier disagree on
+structure or on model name. **The duplicate proton is merged**: the model annotates H+ as proton where Reactome uses
+hydron, so the build carries a second H+ of seven nodes and 90 Reactome edges beside the first, with second nodes for
+3-methoxytyramine and coenzyme A as well; these become one node per compartment. **Two cross-compartment conflicts
+are repaired as one row filed under the wrong metabolite id, neither being a wrong ChEBI id** (the owner: "Q5 a-c
+accepted"): the cytosolic row of one entry is palmitoylethanolamide and moves to the node of that name, its three
+mis-assigned identifiers corrected, while the extracellular row keeps the C16:1 compound; and the other entry holds
+two unrelated compounds and is split, the mitochondrial row taking a new id unused in the pinned files and the
+nuclear row keeping its own. Both repairs need a species rename where the model is read and so change the graph
+version; no drug, binder, enzyme or Reactome edge touches the four nodes. **The amidase's compartment is the
+lysosome** (the owner: "Q5d just MAR20093: start fable pass now for the other NAAA reactions to each be decided
+individually"), on an acid pH optimum and two independent lines against upstream's cytosol, with its other reactions
+decided one by one and the five verdicts accepted (the owner: "accept the five NAAA verdicts"): two ethanolamide
+reactions move with the gene kept, two ceramide reactions move with a two-gene rule, and one loses the gene and is
+otherwise unchanged. The supply the move leaves missing is a reversible, gene-free cytosol-to-lysosome exchange,
+added because its sources passed the check the owner set ("yes, option 1 as long as it passes the check"), a form
+with a gene or with one direction having failed it. Pristanic acid takes the stereochemically specified structure
+with both identifiers kept, since one is how the reaction is named and the other is the only route the label mapper
+has (the owner: "Pristanic acid accept"); and one hydroperoxide reaction is rewritten as a glutathione-dependent
+reduction with the peroxidases as its genes (the owner: "15(R)-HEPE accept"), its two other compartment copies left
+as pinned and flagged for follow-up, those compartments carrying no oxidised glutathione in the model (the owner:
+"flagged for follow-up"). The corrections table, the renamed species and the counts the guard tests expect are
+`[P 19]`.
+
+**`[R 8]` keeps its number and stays open**: ambient serotonin, where microdialysis and voltammetry disagree by a
+factor this registration does not split, and the peptide receptor bands. Both were deferred by the owner on
+19 November 2026 and neither is filled here. The third deferral the owner made with them, how the calibrated
+regression scores a depletion study for a soft bound, is not item 37's and has moved to decision 9.59, where that
+regression lives.
+
+**What this amendment changes in the registration, and what it does not.** It registers the rules above before they
+are built, which is what decision 9.129 left owed and what the owner asked for; every number a rule still needs is a
+`[P n]` and every rule still unsettled is an `[R n]`, so no reader need infer which. It changes no registered rule:
+`configs/registered_rules.json` holds the same twelve rules it held before, which was checked and not assumed, so the
+commit that registers this item carries no `Amends:` trailer; the `normalisation` rule's withdrawal belongs to the
+commit that builds 37f's root-finder, as 37f says. It changes no model, head, threshold, split or level: items 25, 33
+and 34 stand word for word, the order H1 then H2 and P1 stands, and the tested model is unchanged until the amendment
+37f's build will need. It is outcome-blind: no lockbox has been drawn, decision 1.1 being open and waiting on the
+owner's go-ahead, so no confirmatory result existed to see. **Seven decisions are recorded with it and are not part of
+it**: 9.133, the clearance ruling of 37k, closed with its build owed; 9.134, how a sourcing sample is drawn once the
+held-out split is fixed, which is project-wide and which item 37's own sourcing does not wait on, being exhaustive and
+drawing no sample; 9.135, whether an enzyme's pH optimum centred on its compartment's resting pH is a defect to
+repair; 9.136, the fuller regional structure of 37n; 9.137, the module's seed requirement; 9.138, the search for
+several steady states of 37f; and 9.139, the anchored prior on the module-to-symptom links, which sits on the readout
+side item 37 does not build. **What it owes**, besides every placeholder: the rebuild of the dry run and the measured
+sensitivity rank, which the owner put after this registration ("should happen after item 37 is pushed remote"); the
+records decision 9.129 and the draft's own list leave owed, among them the reading rules of 17 to 20 November 2026 as
+rows of their own and lines in `CLAUDE.md`, the three committed Kp,uu values of decision 9.123, the GENCODE licence
+row and GTEx recorded as unverified in `docs/data_sources.md`, and that document's single-cell-type row; and the
+drug-target screen's identifier-cache repair. Decision 9.132 holds that list in one place.
+
+
 To fill in: Phase 1 counts per symptom and grade (docs/generated/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
 GWAS enrichment test; the open questions 8 to 10 of design section 11 (frequency as weight or target;

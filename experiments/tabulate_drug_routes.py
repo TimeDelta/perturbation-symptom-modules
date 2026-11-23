@@ -1,12 +1,18 @@
 """Tabulate the routes of administration of each study drug's FDA labels, against whether a plasma carrier is known.
 
 Why. A carrier's sequestration edge (docs/drug_entry_nodes.md) says that more carrier means less free drug and so less
-effect. Under the well-stirred model of hepatic clearance that holds for the unbound exposure of a drug only when the
-dose bypasses the liver's first pass and the liver extracts most of what reaches it: Benet 2018 (J Clin Pharmacol
-58:979, Table 1) gives "Orally dosed; hepatic elimination: No", "IV dosed; low ER: No", "IV dosed; high ER: Yes". So
-whether the edge can mean what it says depends on the route and the extraction ratio of each drug, and this script
-supplies the route half from the labels the study already reads. The extraction ratio is not in any source the
-repository holds and is not tabulated here.
+effect. That holds for the unbound exposure of a drug only when the dose bypasses the liver's first pass and the liver
+extracts most of what reaches it: Benet 2018 (J Clin Pharmacol 58:979, Table 1) gives "Orally dosed; hepatic
+elimination: No", "IV dosed; low ER: No", "IV dosed; high ER: Yes". So whether the edge can mean what it says depends
+on the route and the extraction ratio of each drug, and this script supplies the route half from the labels the study
+already reads. The extraction ratio is not in any source the repository holds and is not tabulated here.
+
+The model of hepatic clearance is the DISPERSION model (the owner, 22 November 2026: "3 clearance: dispersion form";
+decision 9.133, registered 23 November 2026 as amendment item 37k). Until that date this docstring opened the
+paragraph above with "Under the well-stirred model of hepatic clearance", which was the model the three rows were read
+under; the rows and the citation are kept as they were read. Whether their conclusion survives the dispersion form is
+research owed a Fable pass and is not reasoned about here: what this script tabulates, a count of label routes per
+drug, does not depend on it.
 
 What it reads. openFDA's count of the `openfda.route` field over every label of a generic name, one request per drug,
 cached under --cache-dir (raw downloaded data, in its own directory; no code is run from it). A count is over labels,

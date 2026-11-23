@@ -1394,8 +1394,10 @@ interaction runs through is absent from the table's four enzymes.
 clinical pharmacology section, the EMA assessment reports already in `configs/ema_assessment_reports.csv`, and the
 primary pharmacokinetic literature), with two sources per drug where possible and the fractional contribution where it
 is stated; then decide how enzyme capacity is shared among the substrates of one enzyme, which is what makes the
-interaction representable, rather than per-drug saturation, which reaches one drug. Related: decision [R 11]'s
-clearance framing, and the single clearance node of `docs/item37_rulings_draft_2026-11-13.md`, section 12.
+interaction representable, rather than per-drug saturation, which reaches one drug. Related: the clearance
+framing of decision 9.133 and its one universal clearance node, registered on 23 November 2026 as amendment
+item 37k (the placeholder this sentence carried until then, written while that decision had no id yet, was
+filled the same day).
 
 **Not started.** The sourcing is research and runs on Fable.
 

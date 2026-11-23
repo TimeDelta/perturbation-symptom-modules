@@ -1,4 +1,9 @@
-# Amendment item 37: the owner's rulings of 13 to 20 November 2026, before they are entered in the decision log
+# Amendment item 37: the owner's rulings of 13 to 20 November 2026, as registered on 23 November 2026
+
+**The title's closing clause was replaced on 23 November 2026, at the owner's request ("1 replace").** It read
+"before they are entered in the decision log", which registration made false: the rulings below are registered as
+sub-items 37a to 37o of `docs/preregistration.md`, with decisions 9.132 to 9.139 recorded beside them. The rest of
+this document is kept as it was written, and a correction to it goes in as a dated addition.
 
 A draft, for the owner to act on. It holds the owner's words of 13 to 20 November 2026 on the open parts of decision 9.129
 and on the questions that came out of them, each with the session's proposal it answered, so that they are kept in
@@ -758,7 +763,11 @@ Köhler et al. 1993), waits on a Fable reading of Köhler et al. 1993, which the
   affective, impulse, appetite and cognitive axes are present. The regions proposed with C, which the session reads
   the ruling as taking: dorsal striatum (motor), ventral striatum and nucleus accumbens (impulse, psychotic),
   prefrontal cortex (cognition, psychotic), hypothalamus (sleep, appetite) and the brainstem and midbrain source nuclei;
-  the histaminergic projection is added to the pass's monoamine list for somnolence. Costs recorded: region-by-class
+  the histaminergic projection is added to the pass's monoamine list for somnolence. **Added 23 November 2026: the
+  owner confirmed this list** ("Let's start with those regions"), as the list reads and as a starting set a later
+  ruling may extend, with the tuberoinfundibular projection staying out for want of an endocrine symptom; so the
+  sentence above is no longer the session's reading awaiting confirmation, and the regions are registered as amendment
+  item 37n. Costs recorded: region-by-class
   weights from the Siletti per-dissection files (their route under the CELLxGENE block to be checked), a curated
   projection table with two sources per row, and a map from the primate parcellation onto these regions. The owner,
   on the session's flag that pramipexole, ropinirole and pergolide carry parkinsonism labels while treating
@@ -2002,6 +2011,12 @@ Rewritten 19 November 2026, after the rulings of section 17.
   the three committed Kp,uu values of 9.123; the GENCODE licence row and GTEx recorded as unverified; `docs/data_sources.md`
   row 26 (HPA, 154 to 155 cell types); the ruled sections 4, 7 and 8 written into the record, with the TCDB second
   source of 9.129 (2) and 9.129's carrier clause figures; then registration of item 37.
+
+**Added 23 November 2026: item 37 is registered, and this list's last entry is done.** `docs/preregistration.md`
+carries the rulings as amendment item 37, sub-items 37a to 37o, with every unfilled value written `[P n]` and every
+unsettled rule `[R n]`; decisions 9.132 to 9.139 are recorded beside it, 9.129 closes with its builds owed, and 9.59
+takes the depletion-study question that was deferred with `[R 8]`. The other records above are still owed and are
+tracked in one place by decision 9.132. Nothing here is built.
 
 ## Appendix: the addition to 9.129 for section 1, as drafted by a Fable pass on 13 November 2026
 
