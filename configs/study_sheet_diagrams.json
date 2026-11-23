@@ -56,10 +56,10 @@
         "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
         "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
         "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
-        "file:docs/preregistration.md": "8ea38b6d524c9762f988b4fe6eb01b3f6998b77e618987e702529d57a08ce68b"
+        "file:docs/preregistration.md": "df67e7215f3ee027149e1e3334e5486d96b5276648ceccaede11fdd55c70b106"
       },
-      "checked": "2026-11-22",
-      "checked_at_commit": "dda4b362"
+      "checked": "2026-11-23",
+      "checked_at_commit": "953f38b"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
@@ -90,7 +90,7 @@
     },
     "081c3c6e-6907": {
       "title": "The encoder settles one linear field, then scales it",
-      "state": "built_and_decided",
+      "state": "built",
       "depicts": {
         "decisions": [
           "9.16",
@@ -103,12 +103,34 @@
       },
       "fingerprints": {
         "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
-        "decision:9.81": "04bed3faffa0dc71caa858a39f4392fb6dcbef4efa046ae7ad71c22d5ec7cd8e",
+        "decision:9.81": "fef5bf4223bca2dc7379ed5f2c10b9be5141b0305573e53f5809305905eb058e",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "e02143de"
+      "checked": "2026-11-23",
+      "checked_at_commit": "953f38b",
+      "partner": "20cf5467-e80b"
+    },
+    "20cf5467-e80b": {
+      "title": "The encoder, as decided (9.81, item 37f)",
+      "state": "decided",
+      "partner": "081c3c6e-6907",
+      "depicts": {
+        "decisions": [
+          "9.81",
+          "9.138"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.81": "fef5bf4223bca2dc7379ed5f2c10b9be5141b0305573e53f5809305905eb058e",
+        "decision:9.138": "fcb3bb1bbd1611b9e6020da3cfe57836a7061cebe21957f1eaafa3366e33a387",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d"
+      },
+      "checked": "2026-11-23",
+      "checked_at_commit": "953f38b"
     },
     "14499161-f021": {
       "title": "A knockout travels as signed shares to one fixed point",
@@ -181,7 +203,8 @@
         "decisions": [
           "9.112",
           "9.113",
-          "9.129"
+          "9.129",
+          "9.132"
         ],
         "files": [
           "mechanistic_pathway_learning/graph/membrane_potential.py"
@@ -190,11 +213,12 @@
       "fingerprints": {
         "decision:9.112": "95a655da10b2b252bd70cfff9c571610bc369febea7515d6eaba17bcc2d3700a",
         "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
-        "decision:9.129": "827263987a9377ac456e9d6f253f56158688851211bd69b13bf342ea69837100",
+        "decision:9.129": "ec3bd2a9d27933d543cfd9a238b6085d6e4fc82914095757f69514fa2630caaa",
+        "decision:9.132": "7bee617516456407238756697f8ebf4cc5a115fbadbeecc8bc9b428366578b76",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "c40d9db9d8f80dacb82d09963147302ab0f3cad71ad6af2b99ea30c916c325b5"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "92ac24cd"
+      "checked": "2026-11-23",
+      "checked_at_commit": "953f38b"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
