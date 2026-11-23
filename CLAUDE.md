@@ -100,6 +100,14 @@ against them before it is acted on.
 - **A refusal by the site is respected.** A page behind a robots rule or a check that the visitor is human is not
   read through a cache, a mirror or a solved challenge. Record the refusal and use the provider's other
   publications.
+- **A provider's documented API is paced by the provider's stated rate, not by a robots crawl delay** (the owner, 23
+  November 2026: "General rule is fine", on the proposal that for a provider's documented API the provider's stated
+  rate governs a search, not a robots crawl delay, which is a directive to crawlers). A search keeps a margin under
+  that rate and backs off when the service answers 429 or 503; the first case is Europe PMC's REST service on
+  `www.ebi.ac.uk`, run at one request a second, a tenth of the 10 a second its staff state (the owner: "1 a second
+  with backoff"; amendment item 38, `experiments/fetch_record_identifier_crosswalk.py`), with the host's crawl delay
+  of 10 seconds kept as the ceiling a backed-off pace slows to. Only the crawl delay gives way: a robots rule that
+  disallows a path, and a check that the visitor is human, stay refusals as the bullet above says.
 - **Three hosts are exceptions to the robots rule, each on its own ruling.** The third is `pubchem.ncbi.nlm.nih.gov`,
   **for its measured pKa records only** (the owner, 19 November 2026, answering "yes" to extending the exception to
   them). PubChem's programmatic service refused `experiments/read_public_page.py` on 18 and 19 November 2026 during
