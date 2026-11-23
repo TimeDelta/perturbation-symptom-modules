@@ -3563,7 +3563,17 @@ record's metadata, its identifier and its publication date. Requests to that ser
 the delay the robots file of `www.ebi.ac.uk` states for every reader (the owner, 23 November 2026: "10 second
 pace"). At that spacing, with the further counts `[P 23]` needs, the search is estimated at about 13 days of
 continuous running for about 68,700 cells; both figures are estimates, the current table not being built at the
-time of this amendment. The text-mined count of the released literature table
+time of this amendment. **Amended later on 23 November 2026, before any request was sent: the pace is one request a
+second, with backoff** (the owner: "1 a second with backoff", choosing it over four fifths of the service's limit).
+That is a tenth of the rate limit Europe PMC staff state for the service ("we can't increase the current rate limit
+of 10 requests per second (or 500 per minute)", Europe PMC Developer Forum, 1 October 2024, the source
+`experiments/fetch_record_identifier_crosswalk.py` quotes), which governs a documented API in place of the robots
+file's crawl delay, a directive to crawlers; a staff post in a forum is a weaker citation than a terms page, and no
+terms page states a limit. A request the service refuses with HTTP 429 or 503 is retried after the delay its
+Retry-After header gives, or else after 10 seconds doubling with each attempt, and the spacing then doubles for the
+rest of the run, up to the 10 seconds the crawl delay states; `experiments/fetch_record_identifier_crosswalk.py`
+carries the same rule. At one second the search is estimated at about a day and a half of continuous running, with
+the further counts `[P 23]` needs. The 10-second spacing and the 13 days above are superseded and kept as the record. The text-mined count of the released literature table
 (`data/releases/v0.4/literature/literature_reports.parquet`, distinct `pmid` per cell, as
 `experiments/rekey_literature_to_fine.py` re-keys it) is kept beside the search's count and does not replace it.
 

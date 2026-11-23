@@ -48,9 +48,9 @@ other than those provided by the original data owners", with attribution "expect
 scientific practice". So the binding restrictions on these identifiers are NLM's, above. No terms page or API
 document states a rate limit; Europe PMC staff state one in the Europe PMC Developer Forum on EBI's own domain ("we
 can't increase the current rate limit of 10 requests per second (or 500 per minute)", 1 October 2024), which is a
-weaker citation than a terms page. Since 23 November 2026 the script keeps to the robots file's crawl delay of 10
-seconds after each Europe PMC request, which is slower than that limit (`EUROPEPMC_PAUSE_SECONDS`). No API key and
-no registration are needed.
+weaker citation than a terms page. Since 23 November 2026 the script paces Europe PMC at one request a second, a
+tenth of that limit, and backs off when the service answers 429 or 503 (`EUROPEPMC_PAUSE_SECONDS`, `slowed_pause`).
+No API key and no registration are needed.
 
 Two measured limits that shape the batch sizes. A 200-id `EXT_ID:x OR EXT_ID:y` query is served; 500 ids answers HTTP
 414 (9 November 2026). And a 200-id query returned 208 records, because `EXT_ID` matches more than one record for some
@@ -68,6 +68,7 @@ import json
 import re
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -88,13 +89,15 @@ EUROPEPMC_BATCH_SIZE = 200
 # NCBI asks for no more than 3 requests a second without an API key, so one NCBI request per cycle with this pause
 # stays well under it.
 PAUSE_SECONDS = 1.0
-# Europe PMC is read on www.ebi.ac.uk, whose robots file sets "Crawl-Delay: 10" for every reader (read 9 and 23
-# November 2026). Every Europe PMC request is followed by this pause, the pace the owner ruled on 23 November 2026 for
-# the project's searches on that host ("10 second pace", amendment item 38). Until then this script paused 1 second
-# after each Europe PMC request too, pacing under the rate limit of 10 requests a second that Europe PMC staff state in
-# its Developer Forum (quoted in the docstring); that limit and the robots file's crawl delay are different things, and
-# the crawl delay is the slower and the one the robots file sets for this host.
-EUROPEPMC_PAUSE_SECONDS = 10.0
+# Europe PMC's REST service is paced at one request a second, a tenth of the rate limit Europe PMC staff state for it
+# in their Developer Forum (quoted in the docstring), with backoff when the service refuses: the owner, 23 November
+# 2026, "1 a second with backoff" (amendment item 38). The robots file of www.ebi.ac.uk sets "Crawl-Delay: 10", a
+# directive to crawlers that the owner's ruling does not apply to a documented API; it serves as the ceiling the pace
+# slows to under repeated refusals. Earlier the same day the pace was ten seconds on the crawl-delay reading.
+EUROPEPMC_PAUSE_SECONDS = 1.0
+MAXIMUM_EUROPEPMC_PAUSE_SECONDS = 10.0
+# The statuses a service sends to ask a client to slow down or wait: too many requests, and temporarily unavailable.
+THROTTLING_STATUSES = (429, 503)
 # NCBI asks that "any series of more than 100 requests" run at a weekend or between 9 pm and 5 am Eastern.
 NCBI_OFF_PEAK_REQUEST_THRESHOLD = 100
 NCBI_OFF_PEAK_ZONE = ZoneInfo("America/New_York")
@@ -173,15 +176,38 @@ def fetch_europepmc_identifiers(pubmed_ids: list[str]) -> dict[str, dict]:
     return identifiers
 
 
-def with_retries(fetch, batch: list[str], label: str) -> dict[str, dict] | None:
-    """Three attempts with a widening pause; None leaves the batch for the next run, as the iCite fetch does."""
+def retry_delay_seconds(error: Exception, attempt: int) -> float:
+    """The wait before the next attempt. A throttling answer (429 or 503) is honoured: its Retry-After in seconds when
+    it gives one, else 10 seconds doubling with each attempt. Any other failure waits 10 seconds more per attempt."""
+    if isinstance(error, urllib.error.HTTPError) and error.code in THROTTLING_STATUSES:
+        retry_after = (error.headers.get("Retry-After") or "").strip() if error.headers is not None else ""
+        if retry_after.isdigit():
+            return float(retry_after)
+        return 10.0 * 2 ** attempt
+    return 10.0 * (attempt + 1)
+
+
+def is_throttling(error: Exception) -> bool:
+    return isinstance(error, urllib.error.HTTPError) and error.code in THROTTLING_STATUSES
+
+
+def with_retries(fetch, batch: list[str], label: str, on_throttled=None) -> dict[str, dict] | None:
+    """Three attempts, waiting retry_delay_seconds between them; None leaves the batch for the next run, as the iCite
+    fetch does. on_throttled, when given, is called on each throttling answer, so the caller can slow its pace."""
     for attempt in range(3):
         try:
             return fetch(batch)
         except Exception as error:
             print(f"{label}: {error}; attempt {attempt + 1}", file=sys.stderr, flush=True)
-            time.sleep(10 * (attempt + 1))
+            if on_throttled is not None and is_throttling(error):
+                on_throttled()
+            time.sleep(retry_delay_seconds(error, attempt))
     return None
+
+
+def slowed_pause(pause: float) -> float:
+    """The Europe PMC pause after a throttling answer: doubled for the rest of the run, never above the ceiling."""
+    return min(pause * 2, MAXIMUM_EUROPEPMC_PAUSE_SECONDS)
 
 
 def ncbi_off_peak_now(moment: datetime | None = None) -> bool:
@@ -199,7 +225,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None, help="ask for at most this many missing ids")
     parser.add_argument("--pause", type=float, default=PAUSE_SECONDS, help="seconds after each NCBI batch")
     parser.add_argument("--europepmc-pause", type=float, default=EUROPEPMC_PAUSE_SECONDS,
-                        help="seconds after each Europe PMC request: www.ebi.ac.uk's robots crawl delay")
+                        help="seconds after each Europe PMC request; doubled after each throttling answer, up to "
+                             f"{MAXIMUM_EUROPEPMC_PAUSE_SECONDS:g}")
     parser.add_argument("--human-gem-only", action="store_true",
                         help="only the ids Human-GEM's reaction references name, which is a short enough series to "
                              "run outside NCBI's off-peak window")
@@ -242,7 +269,12 @@ def main() -> int:
         pubmed_answers.update(answered)
         for inner in range(0, len(batch), EUROPEPMC_BATCH_SIZE):
             smaller = batch[inner : inner + EUROPEPMC_BATCH_SIZE]
-            answered = with_retries(fetch_europepmc_identifiers, smaller, f"Europe PMC batch at {start + inner}")
+            def slow_down() -> None:
+                arguments.europepmc_pause = slowed_pause(arguments.europepmc_pause)
+                print(f"Europe PMC asked this client to slow down; pausing {arguments.europepmc_pause:g} s from now on",
+                      file=sys.stderr, flush=True)
+            answered = with_retries(fetch_europepmc_identifiers, smaller, f"Europe PMC batch at {start + inner}",
+                                    on_throttled=slow_down)
             if answered is not None:
                 europepmc_answers.update(answered)
             time.sleep(arguments.europepmc_pause)
