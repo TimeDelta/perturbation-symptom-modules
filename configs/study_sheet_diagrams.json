@@ -215,13 +215,13 @@
       },
       "fingerprints": {
         "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
-        "decision:9.112": "95a655da10b2b252bd70cfff9c571610bc369febea7515d6eaba17bcc2d3700a",
+        "decision:9.112": "1c9c8510bd9945cedde56c4c20c009966498a4b89fd54ac3149e6a4fc2a3cb67",
         "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "c40d9db9d8f80dacb82d09963147302ab0f3cad71ad6af2b99ea30c916c325b5",
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1",
         "file:mechanistic_pathway_learning/graph/reactome_import.py": "1000214957e12fb7d12bb2e2ada3c771ec1ce07ed977f61e3c118d7e6a658a78"
       },
-      "checked": "2026-11-20",
-      "checked_at_commit": "92ac24cd"
+      "checked": "2026-11-23",
+      "checked_at_commit": "d952275"
     },
     "88631e83-33d4": {
       "title": "Membrane potential, as decided (9.112, 9.113)",
@@ -239,14 +239,14 @@
         ]
       },
       "fingerprints": {
-        "decision:9.112": "95a655da10b2b252bd70cfff9c571610bc369febea7515d6eaba17bcc2d3700a",
+        "decision:9.112": "1c9c8510bd9945cedde56c4c20c009966498a4b89fd54ac3149e6a4fc2a3cb67",
         "decision:9.113": "6f01c9bde2b1a47707f7e4d34f8262d6ce93f56ee9088c51bc77423a9210a9c0",
         "decision:9.129": "ec3bd2a9d27933d543cfd9a238b6085d6e4fc82914095757f69514fa2630caaa",
         "decision:9.132": "7bee617516456407238756697f8ebf4cc5a115fbadbeecc8bc9b428366578b76",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "c40d9db9d8f80dacb82d09963147302ab0f3cad71ad6af2b99ea30c916c325b5"
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1"
       },
       "checked": "2026-11-23",
-      "checked_at_commit": "953f38b"
+      "checked_at_commit": "d952275"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
