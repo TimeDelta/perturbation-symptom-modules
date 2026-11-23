@@ -77,6 +77,9 @@ ordering. you can just overwrite existing order").
     session because the exposure concern it might have raised is already answered by Kp,uu,brain, so what remains is
     a structural change of the size of items 22 and 3, with no claim waiting on it.
 25. **Item 3, protein electrostatics**, the largest change.
+26. **Item 27, hypothesis mining as the objective** (new, 23 November 2026, at the owner's request): placed last because
+    it cannot start before the held-out draw of decision 1.1 and the localized-perturbation label harvest of decision
+    9.122 that follows it, and because what it needs beyond those labels is larger than any item above.
 
 The numbers above restart at 17 where they once restarted at 15: inserting items 24 and 25 on 21 November 2026 bumped
 the entries after them by two and only the first was renumbered, so the list carried two 15s and two 16s until this was
@@ -1478,3 +1481,54 @@ already in the repository and need no rebuild.
 to the graph's compartment model, of the size of item 22 and item 3, and it would need a source for every transport
 edge it adds. It is placed last but one for that reason, and because no claim the project makes is waiting on it: the
 exposure question that would have motivated it is already answered by Kp,uu,brain.
+
+## 27. Hypothesis mining as the objective, once the localized-perturbation labels are harvested
+
+Tagged 2026-11-23, from the owner's request: "Add hypothesis mining to the exploration queue though for after the post
+lockbox draw local label harvest in case that adds enough training data to make the objective feasible". Nothing here
+is started and no source has been read for it. The state below was read from the repository at `64d0ded` on
+23 November 2026; the reasoning about what the harvest can and cannot supply is the session's own and is not sourced.
+
+**Why it is here and not in the registration.** Decision 9.131 recorded on 13 November 2026 that the qualifying exam
+claims hypothesis mining, "by the recovery of untrained true causal hypotheses". On 23 November 2026 the owner judged
+that the current experiment cannot show it: "I like that framing but I think it requires a much higher burden of proof
+than current data can show", and, asked whether that held for hypothesis mining or for the recovery of held-out causal
+links as well, "I meant both". So the exam does not claim it, and this item keeps it as the objective to return to.
+
+**What such a test would validate.** The owner, 23 November 2026, ruling that decision 9.131's hypothesis-mining
+claim is "not claimed for now": it "will need separate experiment with different lockbox draw, etc and will only
+validate the method not the model". So it is an experiment of its own, with its own held-out draw and its own
+preregistration, and what it can show is that the method mines hypotheses, not that the model registered for the
+qualifying exam does: a model trained on what was recorded before a cutoff is a different fit from the registered one.
+
+**What would make it feasible, and what the harvest supplies.** The harvest of decision 9.122 adds labels for
+localized perturbations, a change at one graph property and the response at another with a path between them, drawn
+after the held-out split is fixed so that decision 9.134's order holds. More labels give the encoder more constraint
+and a time-split reading more power, which is the shortfall the owner names.
+
+**What the harvest does not supply, so that this item is not overstated.** Three things stand between the current
+design and a hypothesis-mining test, and label volume answers none of them:
+
+- **Dated pairs.** A test of hypothesis mining trains on what was recorded before a cutoff and scores what was recorded
+  after it. `configs/evaluation.yaml` carries a `time_split` for the gene side only (pairs dated by the cited
+  reference, Orphanet-only pairs excluded); its drug side is marked pending, and the evidence table holds no date for a
+  drug label.
+- **A graph restricted to the cutoff.** A model trained on labels to the cutoff that reads edges curated afterwards
+  has been told what was found later. No edge carries a date. Per-edge PubMed ids exist for the OmniPath, CollecTRI
+  and project-curated edges (`mechanistic_pathway_learning/graph/edge_evidence.py`), from which a year could be
+  derived; Human-GEM's and Reactome's edges have none.
+- **The harvested labels themselves.** A localized-perturbation label taken from a paper published after the cutoff
+  is later knowledge entering training. So the harvest helps a time-split test only if each harvested label keeps the
+  date of its source and is cut at the same cutoff as the symptom labels. Collecting that date at harvest time costs
+  little; recovering it afterwards may not be possible.
+
+**A first step that costs little, at harvest time.** Record the publication date of every harvested label's source.
+After the harvest: count the dated symptom pairs on each side and the harvested labels before a candidate cutoff, and
+derive a year for the OmniPath and CollecTRI edges from their PubMed ids to measure how much of the graph a cutoff
+would remove. Those counts say whether a time-split test has the power the owner wants before any design work.
+
+**Causal claims are a separate step.** Hypothesis mining as decision 9.131 framed it was of "true causal hypotheses".
+A time split shows that links are found before they are recorded, not that they are causal. A causal reading needs
+labels with a causal design behind them, which the gene side has in part (a pair is labelled only when a gene-disease
+association behind it is disease-causing, `docs/experiment_design.md` section 4.3) and the drug side lacks (adverse
+events "are confounded by indication", assumption A4).
