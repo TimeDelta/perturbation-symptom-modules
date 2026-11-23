@@ -1014,9 +1014,10 @@ drug carries a weight of (1 - fu) times the carrier's share (the carrier-share b
 session's engineering audit of 20 November 2026, a scratchpad report not in the repository). But for an albumin site
 II ligand the free fraction moves with the plasma's fatty acids and condition, not with albumin's concentration. The
 draft's own rows show it: temazepam's free fraction does not follow albumin in whole plasma (Chin et al. 2011, slope
-about 0; Divoll et al. 1981, r = -0.34, p = 0.06); it differed by 44 per cent between two sampling times 90 minutes
-apart after a meal, which van Steveninck et al. attribute to free fatty acids (ruling C1, "heparin artefact not
-excluded"); and the site's affinity falls to a tenth at an oleate ratio of 3:1 by a conformational change (Menke and
+about 0; Divoll et al. 1981, r = -0.34, p = 0.06); it differed by 44 per cent between the fast arm's sample at 30 minutes
+and the slow arm's at 120 minutes, so arm and sampling time are confounded; the authors read it as time, on a
+within-arm fall from 3.8 to 2.8 per cent over the same 90 minutes, and attribute it to free fatty acids (ruling C1,
+the heparin caveat narrowed and standing after the full text was read on 23 November 2026); and the site's affinity falls to a tenth at an oleate ratio of 3:1 by a conformational change (Menke and
 Rietbrock 1987, measured with a marker ligand, not temazepam), while concentration dependence is refuted (Morino and
 Sugiyama 1985, rat). A single fu per drug, which the amendment keeps "as an attribute of the drug node", is therefore
 the free fraction of one sampling condition. The idea is to carry what moves it, the site's occupancy by fatty acids
@@ -1052,8 +1053,12 @@ design decision of its own.
   population axis" (`docs/special_population_carrier_signal.md`, generated 22 October 2026 on `evidence_full_v3`). A
   modulated free fraction would be seen, if at all, in the comparative checks, which describe the model's behaviour
   and are not a test it passes or fails.
-- The evidence is for one drug. Its largest number, the 44 per cent, is from a meeting abstract with "heparin artefact
-  not excluded" (ruling C1), and Menke and Rietbrock's tenfold fall was measured with a marker ligand.
+- The evidence is for one drug. Its largest number, the 44 per cent, comes from the full paper (van Steveninck et al.
+  1994, all eleven pages read on Fable on 23 November 2026 from a PDF the owner supplied; `vansteveninck1994effects`
+  in `docs/references.bib`), in nine volunteers, and the heparin caveat of ruling C1 stands narrowed: addressed by
+  the authors by citation, not excluded by their methods. Menke and Rietbrock's tenfold fall was measured with a
+  marker ligand. *Corrected 23 November 2026*: this line read "is from a meeting abstract", which the full text
+  supersedes.
 - Which drugs bind site II is not in the repository: the site is the amendment's reading for temazepam (Fitos et al.
   1986, isolated albumin), not a count over the drug set.
 

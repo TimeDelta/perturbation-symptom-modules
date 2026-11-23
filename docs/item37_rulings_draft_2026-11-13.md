@@ -1346,6 +1346,24 @@ tissue pairs.
   were drawn or assayed. The concern is well founded in kind: Desmond 1980 has heparin raising oxazepam and diazepam
   free fraction by 150 to 250%, Brown 1981 calls the effect "to, a large extent, in vitro artifacts", and Naranjo 1980
   that "small doses of heparin, such as those in heparin locks, can affect drug binding".
+- **C1 after the full text, read 23 November 2026 on Fable from a PDF the owner supplied.** The heparin caveat above
+  **stands, narrowed to "addressed by the authors by citation, not excluded by their methods"**. The 44% is the fast
+  arm's sample at 30 minutes (3.6%) against the slow arm's at 120 minutes (1.9%), so arm and sampling time are
+  confounded by design, and the authors read it as time, on a within-arm fall this draft did not hold: 3.8% to 2.8%
+  over the same 90 minutes inside the fast arm (-27%, 95% CI -3% to -44%). Free fatty acids are reported only as a
+  difference of -54%, with no concentrations, and put down to the breakfast about 2.5 and 4 hours before the samples,
+  not "shortly after" as the meeting abstract has it. Blood went "into heparinized syringes ... by use of an
+  intravenous catheter" (p. 537): that syringe heparin was uniform across samples and so cannot make the difference,
+  but the catheter's flush, the time and temperature before centrifugation and any lipase inhibitor are unstated and no
+  control was run. **Two sentences above are superseded**: "nothing read says how the samples were drawn or assayed",
+  and the closing "van Steveninck's full text is fetched before that number is relied on". **And the draft conflates
+  two 1980 Naranjo papers**: the authors' reassuring citation is Br J Clin Pharmacol 9:103-5 (PMID 7356871, on diazepam,
+  still unread after four routes), not the Clin Pharmacol Ther 28:545-50 (PMID 7408415) quoted above for "small doses of
+  heparin, such as those in heparin locks, can affect drug binding". Quotations and provenance in
+  `vansteveninck1994effects`, `docs/references.bib`. **Open for the owner**: whether either size, the 44 or the 27 per
+  cent, may be relied on; the pass's reading is that the paper supports the direction, not a size free of the heparin
+  question. The PDF itself did not survive the container replacement of 23 November 2026.
+
 - **C2. There is no zwitterion class value.** Each member takes its own measured split, and a zwitterion with no
   measured split goes to sourcing, as receptor ligands do under the section 14 ruling. The session first recommended a
   class median with the spread as its quantile width and withdrew it when the owner's papers were read: of the
