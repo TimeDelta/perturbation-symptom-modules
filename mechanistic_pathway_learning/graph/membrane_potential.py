@@ -93,8 +93,10 @@ PUMP_CLAMPED_POOL_SENSITIVITY = {"Na+": 0.0995, "K+": 0.0035, "Cl-": 0.833}
 # because the alternative is a fitted model whose optimiser was never constrained at rest and whose own bounds allow
 # a factor of three either way; the choice moves the weight from 0.0120 to 0.0076 mV, two to three orders of
 # magnitude below the chloride term either way, so no result turns on it (decision 9.113).
-CALCIUM_RESTING_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE = 6.3e-3  # Dreyfus et al. 2010, a measured T-type
-# window conductance in a rat dorsal-horn interneuron. The alternative, Hay et al. 2011's data-fitted layer 5b
+CALCIUM_RESTING_CONDUCTANCE_MICROSIEMENS_PER_SQUARE_CENTIMETRE = 6.3e-3  # Wu et al. 2018 (wu2018celltype), a measured
+# T-type window conductance in a rat spinal lamina II (dorsal-horn) interneuron, as decision 9.113 records; Dreyfus et
+# al. 2010 (dreyfus2010selective) is the thalamic measurement of the exception below. Before 23 November 2026 this
+# comment credited the value to Dreyfus et al. 2010. The alternative, Hay et al. 2011's data-fitted layer 5b
 # cortical pyramidal model at 34 degrees Celsius, gives 4.0e-3 uS/cm2 and a weight of 0.0076 mV.
 # THE THALAMIC EXCEPTION IS STATED AND NOT BUILT: the T-type window conductance of a thalamic relay neuron is about
 # 1.7 uS/cm2, which would weigh about 3.3 mV, more than the whole chloride term, against the 0.012 mV this build

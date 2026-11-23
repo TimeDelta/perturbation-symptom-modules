@@ -48,7 +48,9 @@ other than those provided by the original data owners", with attribution "expect
 scientific practice". So the binding restrictions on these identifiers are NLM's, above. No terms page or API
 document states a rate limit; Europe PMC staff state one in the Europe PMC Developer Forum on EBI's own domain ("we
 can't increase the current rate limit of 10 requests per second (or 500 per minute)", 1 October 2024), which is a
-weaker citation than a terms page, so this script paces well under it. No API key and no registration are needed.
+weaker citation than a terms page. Since 23 November 2026 the script keeps to the robots file's crawl delay of 10
+seconds after each Europe PMC request, which is slower than that limit (`EUROPEPMC_PAUSE_SECONDS`). No API key and
+no registration are needed.
 
 Two measured limits that shape the batch sizes. A 200-id `EXT_ID:x OR EXT_ID:y` query is served; 500 ids answers HTTP
 414 (9 November 2026). And a 200-id query returned 208 records, because `EXT_ID` matches more than one record for some
@@ -83,9 +85,16 @@ EUROPEPMC_SEARCH_API = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
 PUBMED_BATCH_SIZE = 500
 # Measured: 200 ids in one EXT_ID query is served, 500 answers HTTP 414 (9 November 2026).
 EUROPEPMC_BATCH_SIZE = 200
-# NCBI asks for no more than 3 requests a second without an API key; Europe PMC staff state 10 a second. One request
-# of each per cycle with this pause stays well under both.
+# NCBI asks for no more than 3 requests a second without an API key, so one NCBI request per cycle with this pause
+# stays well under it.
 PAUSE_SECONDS = 1.0
+# Europe PMC is read on www.ebi.ac.uk, whose robots file sets "Crawl-Delay: 10" for every reader (read 9 and 23
+# November 2026). Every Europe PMC request is followed by this pause, the pace the owner ruled on 23 November 2026 for
+# the project's searches on that host ("10 second pace", amendment item 38). Until then this script paused 1 second
+# after each Europe PMC request too, pacing under the rate limit of 10 requests a second that Europe PMC staff state in
+# its Developer Forum (quoted in the docstring); that limit and the robots file's crawl delay are different things, and
+# the crawl delay is the slower and the one the robots file sets for this host.
+EUROPEPMC_PAUSE_SECONDS = 10.0
 # NCBI asks that "any series of more than 100 requests" run at a weekend or between 9 pm and 5 am Eastern.
 NCBI_OFF_PEAK_REQUEST_THRESHOLD = 100
 NCBI_OFF_PEAK_ZONE = ZoneInfo("America/New_York")
@@ -188,7 +197,9 @@ def main() -> int:
     parser.add_argument("--collectri", type=Path, default=DEFAULT_COLLECTRI)
     parser.add_argument("--cache", type=Path, default=CROSSWALK_PATH)
     parser.add_argument("--limit", type=int, default=None, help="ask for at most this many missing ids")
-    parser.add_argument("--pause", type=float, default=PAUSE_SECONDS)
+    parser.add_argument("--pause", type=float, default=PAUSE_SECONDS, help="seconds after each NCBI batch")
+    parser.add_argument("--europepmc-pause", type=float, default=EUROPEPMC_PAUSE_SECONDS,
+                        help="seconds after each Europe PMC request: www.ebi.ac.uk's robots crawl delay")
     parser.add_argument("--human-gem-only", action="store_true",
                         help="only the ids Human-GEM's reaction references name, which is a short enough series to "
                              "run outside NCBI's off-peak window")
@@ -234,7 +245,7 @@ def main() -> int:
             answered = with_retries(fetch_europepmc_identifiers, smaller, f"Europe PMC batch at {start + inner}")
             if answered is not None:
                 europepmc_answers.update(answered)
-            time.sleep(arguments.pause)
+            time.sleep(arguments.europepmc_pause)
         retrieved_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
         for pubmed_id in batch:
             from_pubmed = pubmed_answers.get(pubmed_id)
