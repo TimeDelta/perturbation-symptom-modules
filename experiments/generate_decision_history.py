@@ -65,7 +65,11 @@ class LogHistory:
 
 def commits_touching(path: str = LOG_RELATIVE_PATH, root: Path = REPOSITORY_ROOT) -> list[tuple[str, str]]:
     """(short sha, date) of every commit that touched the log, oldest first."""
-    lines = git_output("log", "--reverse", "--format=%h %ad", "--date=short", "--", path, cwd=root).splitlines()
+    # --abbrev=8 is pinned, not left to git: %h otherwise takes core.abbrev, which git scales with the repository's
+    # object count, so the same history abbreviates to 8 characters in one clone and 7 in another. That put every
+    # row of this page in the diff on a fresh clone of 23 November 2026, after a container was replaced, and failed
+    # test_the_decision_history_is_current against content that had not changed.
+    lines = git_output("log", "--reverse", "--abbrev=8", "--format=%h %ad", "--date=short", "--", path, cwd=root).splitlines()
     return [tuple(line.split()) for line in lines if line.strip()]
 
 
