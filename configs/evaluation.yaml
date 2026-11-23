@@ -6,7 +6,9 @@
 # turn: two tested models, not four (configs/head_choice.json), and from 22 October 2026 one, the linear-response
 # encoder, with message passing a robustness model (decision 9.77); no magnitude floor (the owner, 15 October 2026);
 # H2 and P1 by Holm once H1 is confirmed (amendment item 18), and the scorer's lockbox is configs/lockbox_v2.json.
-# configs/registered_rules.json holds the registered values.
+# configs/registered_rules.json holds the registered values. From 23 November 2026 (preregistration item 38) the primary
+# claim is held-out prediction given current curated physiology, the equifinality indices are descriptive, and no time
+# split is registered: the time_split block below describes the development reading only.
 splits:
   grouped_perturbation_wise:
     num_folds: 5

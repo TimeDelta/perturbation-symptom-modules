@@ -31,7 +31,10 @@ Inborn errors of metabolism and psychoactive drugs both perturb known molecular 
 symptoms. The project asks whether a model that routes a perturbation through a mechanistic graph (Human-GEM
 metabolism joined to receptor signaling and transcriptional regulation) and reads it through a small set of learned
 pathway modules with a noisy-OR output predicts which symptoms a held-out gene or drug produces better than models
-that use network proximity or node degree alone, and whether the learned modules match known mechanisms. The noisy-OR
+that use network proximity or node degree alone, and whether the learned modules match known mechanisms. Added 23
+November 2026: "produces" is the recorded association and not a causal claim; the registered claim is held-out
+prediction of labelled symptom associations given current curated physiology, with no causal and no discovery claim,
+and the module readings are descriptive (`docs/preregistration.md` item 38). The noisy-OR
 form encodes equifinality: any one sufficient module can produce a symptom. Design: docs/experiment_design.md;
 pre-registration skeleton: docs/preregistration.md.
 

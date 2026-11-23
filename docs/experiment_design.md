@@ -29,10 +29,10 @@ Given a typed, compartmentalized physiology graph G (metabolites, reactions, enz
 
 ### 1.3 Innovation
 
-1. Supervision from perturbations with known molecular entry points (monogenic enzyme defects, single-target drugs) rather than from literature co-mention. This turns the task from knowledge-graph completion into mechanism inference.
+1. Supervision from perturbations with known molecular entry points (monogenic enzyme defects, single-target drugs) rather than from literature co-mention. This turns the task from knowledge-graph completion into mechanism inference. Added 23 November 2026: what the registration claims is narrower, held-out prediction of labelled symptom associations given current curated physiology, with no causal and no discovery claim (`docs/preregistration.md` item 38).
 2. A heterogeneous graph that joins a genome-scale metabolic reconstruction (with organelle compartments) to receptor signaling and transcriptional regulation, with an optional mechanistic flux layer that encodes what moves downstream of an enzyme lesion.
 3. A noisy-OR output over learned sparse pathway modules. This encodes equifinality [6] directly: each module is a candidate sufficient cause and modules are not required to co-occur [7].
-4. Orthogonal validation on symptom-level GWAS and metabolomic associations that never enter training, plus a time split, so the test measures mechanism recovery rather than literature reproduction.
+4. Orthogonal validation on symptom-level GWAS and metabolomic associations that never enter training, plus a time split, so the test measures mechanism recovery rather than literature reproduction. Added 23 November 2026: the orthogonal validation is registered as P1; the time split never entered the registration, and item 38 of `docs/preregistration.md` registers none, reporting the held-out score by the date of a pair's earliest record instead, as a descriptive reading that is not a time split.
 5. An evaluation protocol with perturbation-wise and pathway-wise splits, degree-stratified reporting and negative controls, addressing the known failure modes of biomedical graph learning [8], [9].
 
 ## 2. Assumptions under challenge
@@ -47,7 +47,7 @@ A3. Strong mechanistic evidence in psychiatric papers justifies hard constraints
 
 A4. Symptom-level supervision is available. The literature is indexed by diagnosis. Symptom-level supervision exists in three places: phenotype ontologies attached to monogenic disorders, drug-label adverse events (MedDRA preferred terms such as anhedonia, insomnia or psychomotor agitation) and item-level questionnaire GWAS. Each has a confound. Drug-label events are not necessarily brain-mediated (fatigue on a beta blocker is cardiac output), are confounded by indication (antipsychotic labels list psychiatric events because of the treated population) and follow reporting conventions. Phenotype ontologies have their own confound: a symptom term's is_a closure can contain diagnoses and other constructs (section 3.1). Design response: restrict pharmacological evidence to CNS-penetrant drugs with a dominant target, model induction and relief as signed relations, run a peripheral-event negative control (section 6.3) and audit every ontology expansion term by term before it is used (docs/generated/hpo_term_audit.md).
 
-A5. Literature-derived training and literature-derived testing. This measures literature reproduction. Design response: orthogonal validation (section 6.4) and a time split (section 6.1) are mandatory parts of the primary analysis.
+A5. Literature-derived training and literature-derived testing. This measures literature reproduction. Design response: orthogonal validation (section 6.4) and a time split (section 6.1) are mandatory parts of the primary analysis. Added 23 November 2026: the confirmatory specification of 8 October 2026 carried no time split and no amendment dropped one; item 38 of `docs/preregistration.md` states this, registers none, and narrows the claim so that it does not depend on one (the claim is held-out prediction given current curated physiology).
 
 A6. Multiple independent pathways lead to the same symptom. Equifinality is plausible, but the competing hypothesis is a final common pathway: diverse upstream lesions converging on one downstream node set, as proposed for psychosis and striatal dopamine [12]. The two hypotheses produce different graph structures (disjoint supports versus converging supports). Design response: the noisy-OR model permits either outcome; section 6.5 defines an independence index and a convergence index and pre-registers both outcomes as findings.
 
@@ -244,7 +244,9 @@ Metabolomics. Predicted symptom-linked metabolites compared with published metab
 
 Prospective literature. Perturbation-symptom pairs predicted at high probability with no literature support at the training cutoff, checked against subsequent literature at analysis time.
 
-### 6.5 Equifinality test (primary hypothesis)
+### 6.5 Equifinality test (descriptive since 23 November 2026)
+
+Added 23 November 2026: this section was headed "(primary hypothesis)" until amendment item 38 of `docs/preregistration.md` made the independence and convergence indices and the sufficiency test descriptive only (the owner: "e yes. Make them descriptive only"). The primary claim is held-out prediction, tested by H1.
 
 For symptom s let M_s = {k : pi_{k,s} > theta} be the active modules.
 

@@ -3394,6 +3394,308 @@ rows of their own and lines in `CLAUDE.md`, the three committed Kp,uu values of 
 row and GTEx recorded as unverified in `docs/data_sources.md`, and that document's single-cell-type row; and the
 drug-target screen's identifier-cache repair. Decision 9.132 holds that list in one place.
 
+Amendment, 23 November 2026 (second), written before any lockbox run and before the held-out set has been drawn
+(decision 1.1 is open).
+
+**38. The primary claim is held-out prediction: the registered model predicts the labelled symptom associations of
+perturbations held out by leakage group better than the registered baselines, given current curated physiology.
+Hypothesis mining and causation are not claimed. The equifinality indices are descriptive only** (the owner, 23 November 2026, of this
+heading and of (a): "wording accepted"). Decision 9.131 recorded on 13 November 2026 that the exam claims hypothesis mining, by the recovery of
+untrained true causal hypotheses. That ruling never reached this document, and on 23 November 2026 the owner set it
+aside for the current experiment: "I like that framing but I think it requires a much higher burden of proof than
+current data can show"; asked whether the current experiment can show hypothesis mining or the recovery of held-out
+causal links, "I don't think the current experiment can truly show it", meaning "both"; and of the ruling itself,
+"Not claimed for now. Will need separate experiment with different lockbox draw, etc and will only validate the
+method not the model." Until today this document's opening still named the equifinality indices as the primary
+hypothesis.
+
+**a. The claim.** For perturbations held out of training whole (genes by the registered disease-cluster grouping,
+drugs by item 25's target rule), the registered model ranks the labelled perturbation-symptom pairs above the
+unlabelled ones, within each symptom (macro) and pooled (micro), better than the best of the six registered
+baselines. "Given current curated physiology" is part of the claim: the model reads a graph built from today's
+curated resources, (c). The claim is about labels. A label is a recorded association between a perturbation and a
+symptom: a symptom annotated to a disease a gene is recorded as causing, or an adverse event on a drug's label.
+**`induces` is the name of the relation those labels are filed under. It is not an assertion that the perturbation
+causes the symptom**, and nothing in this registration tests that it does. Nor is the claim that the model finds
+links before they are known: every held-out label was already recorded when the model was built.
+
+**b. The test is the confirmatory test already registered, unchanged.** H1 as it stands is the test of the claim:
+the macro, micro and both within-strata readings of the tested model minus the best registered baseline of each
+reading, above zero on the held-out set, decided by the paired interval with no magnitude floor at the registered
+level (`configs/registered_rules.json`; items 18, 25, 33 and 34). The baselines are the six
+`experiments/score_confirmatory.py` holds: popularity, degree_popularity, the two per-type baselines of item 32a,
+the random walk with restart and TransE. H2, read after H1 as item 18 registers, says whether the content of the
+graph carries the prediction, and not its degree sequence alone: the model on the real graph against the same model
+on a graph rewired within each relation. P1 follows as registered. This item adds no reading to the tested family,
+removes none, and changes no model, split, threshold or level.
+
+**c. What "held out" covers, and what it does not** (confirmed by the owner, 23 November 2026: "right"). It covers
+the labels: no label of a held-out perturbation enters training, and the leakage groups keep the same pair from
+arriving through a second label source or a drug sharing a target. It does not cover the graph. The graph is built
+from curated resources and this project's quoted rows over every perturbation, before the held-out set is drawn; no
+edge carries a date, and nothing restricts the graph to what was known before a pair was recorded. So a held-out
+pair can be predicted because the edges encode the research that established it. H2 says whether the graph's
+content carries the prediction; it does not say whether that content is independent of the pair.
+
+**d. Separate reporting by when a pair was first reported: a descriptive reading** (the owner, 23 November 2026: "I
+actually disagree that when it was established is irrelevant because that is highly correlated to the type and
+amount of research available for the pair"; on how it should enter: "I was just thinking separate reporting. Thin
+evidence but cheap to do"; and on what dates a pair: "Why not go by earlier if fda and first paper publish date?",
+of which the first-paper half is the rule, approved by the owner the same day, and the approval half is not used,
+for the reason given below). Decision 9.131 had recorded the owner on drug-relief hypotheses: "when the
+drug-indication pair was established is irrelevant"; this reverses it.
+
+*It is not a time split.* The model is the registered model, trained on the pairs of every era. The reading shows
+whether the model-minus-baseline difference on the held-out set sits mainly in pairs reported early. It cannot show
+that the model would have predicted a pair before it was reported: the model has seen pairs of the same era in
+training, and the graph it reads is today's, (c). `docs/experiment_design.md` A5 calls a time split one of the
+"mandatory parts of the primary analysis"; this registration carries none, registers none for later, and this
+reading is not one.
+
+*A pair's date is the publication year of the earliest record the search of (g) counts for its cell*, for genes
+and drugs alike, the year being read from that record's PubMed metadata. It is a by-product of the search of (g) and
+needs no curation. A cell for which the search counts no record has no date. The dates are hashed and committed
+with the counts of (g), before the draw.
+
+*Why a drug's approval year is not used.* An approval dates the events on the original label and not a pair, and
+papers on a drug's adverse effects mostly follow its approval, so the earlier of the two would nearly always be the
+approval year. No approval date is read, for the main reading or beside it.
+
+*Its weaknesses, stated.* First, the earliest record that names a perturbation and a symptom together is not
+necessarily a report that one is associated with the other: for a drug it is often a paper on the symptom as the
+drug's indication, or on the symptom in the treated disease, and for a gene it may be a record that names the
+symptom in passing. The date is therefore the earliest co-mention, and is at or before the first report, by an
+amount the read sample of (g) measures. Second, the further back a record lies the less of it can be searched, (g):
+nearly every PubMed record up to 1965 and most of those up to 1989 have no abstract, so an old record is found only
+if its title alone names both the perturbation and the symptom. An early pair is therefore dated too late, or not
+at all, and the earliest era of a type is thinner and later than the literature it stands for. Third, the National
+Library of Medicine states that "MEDLINE includes literature published from 1966 to present, and selected coverage
+of literature prior to that period" and holds nothing before 1946 (read 23 November 2026). The second and third
+bear on the older drugs more than on the genes.
+
+*What "early" means here* (the owner, 23 November 2026, to the proposal to say so and to run no full-text reading
+of any period: "Ok. Good."). An early pair is one whose earliest record found by title and abstract is early; it is
+not a pair known to have been reported early. Pairs of the early eras are undercounted and dated late, because most
+older records can match only on their titles: of PubMed's records, those with no abstract are 99 per cent of the
+ones published up to 1965 and 63 per cent for 1966 to 1989, against 25 per cent for 1990 to 2005, 16 per cent for
+2006 to 2015 and 12 per cent since (Europe PMC's search service, 23 November 2026). No full text is read for any
+period to correct this.
+
+*The registered gene date is reported beside it, not replaced.* The `time_split` rule of `configs/evaluation.yaml`
+(`publication_of_cited_reference_else_biocuration`) dates a gene pair by the publication the annotation cites and
+otherwise by the date of biocuration. Most dated gene pairs carry the biocuration date, which is when the pair was
+written into the ontology and not when it was reported, and none precedes 2009 (on release v0.4, 928 of the 1,180
+dated gene rows, with 1,854 of 3,034 gene rows undated). So that date mostly records the ontology's curation. The
+gene reading is given under both dates, and the first-record date is the one the eras below are cut on.
+
+*The eras.* Genes and drugs are read apart, each on its own cuts, because their literatures are of different ages.
+Within a type the eras are the thirds of the first-record year over that type's dated labelled pairs in the whole
+table, ties kept in the earlier third; the two boundary years are written with the hashed dates before the draw and
+no outcome enters them. Each type is also reported two-way at the end of 2015, the cut `configs/evaluation.yaml` has
+held since October 2026, so that one cut is common to both types and to the registered gene date. The cuts are not
+moved after the draw.
+
+*A cell with no record is a stratum of its own and is never dropped.* These are the cells for which the search counted
+no record, so among positives the undated stratum is the **none** stratum of (g): the
+two readings share that stratum and differ only in how they divide the rest.
+
+*How it is scored.* Only a labelled pair is read by its date here: an unlabelled cell may have a first record too,
+but a date says when a pair was reported, and an unlabelled pair was not. Each era's positives are scored against
+the same unlabelled cells of the held-out set, for the model and the baselines alike; the reading is the
+model-minus-best-baseline difference for that era's positives, and AUPRC values are not compared between eras, since
+they move with the number of positives alone (the owner, 23 November 2026: "within era makes sense"). `minimum_positives_to_score` applies to an era's
+positives per symptom. Intervals are the registered paired bootstrap over leakage groups, at 95 per cent.
+
+*It is reported beside (g) and not crossed with it.* A pair's first-record year and the number of records on it come
+from the same search and are correlated (on the released literature table: Spearman -0.62, release v0.4, measured 23
+November 2026), so the two readings overlap and are not two independent lines of evidence. They are not crossed,
+because the cells would be too thin to read.
+
+*It is descriptive and spends no alpha.* It enters neither H1 nor H2 nor P1, is reported in the section labelled
+descriptive beside (e), (g) and item 26, and no interval of it is compared with a level. A difference confined to
+the early eras would be what reproduction of long-reported pairs looks like, and also what small late strata look
+like; a difference present in the late eras would say the advantage is not confined to long-reported pairs, and
+would not say the model predicts ahead of the field.
+
+**e. The equifinality indices are descriptive only** (the owner, 23 November 2026: "e yes. Make them descriptive
+only"). The independence index, the convergence index and the sufficiency test by module ablation of
+`docs/experiment_design.md` section 6.5 are reported in their own section labelled descriptive, beside the nosology
+readout of item 26 and under the same bound: they enter neither H1 nor H2 nor P1 and take no part in the test
+sequence. The expectations section 6.5 states per symptom are kept as stated in advance and are compared with what
+is found; neither outcome is a test at a level (the owner, 23 November 2026: "good").
+
+**f. Relief is not trained and nothing is claimed for it.** The `relieves` relation is not trained by the
+registered model, and no route to predicting what a drug relieves is built or validated (decision 9.131). Nothing
+about it is registered here.
+
+**g. A descriptive reading by the research available on the pair: every cell is searched first** (the owner, 23
+November 2026, asked "Do you want the per-pair research stratum registered as a descriptive reading?": "2 yes"; on
+its measure: "research stratum: each cell has to first be exhaustively searched for first, which should help
+alleviate the drug vs gene split though it won't fix it"; and on what that search is: "I meant a fable pass
+instructed to be exhaustive"). It answers the owner's objection that when a pair was established "is highly
+correlated to the type and amount of research available for the pair", for the amount.
+
+*Who searches, and what.* A research pass on Fable, instructed to be exhaustive, searches every cell of the scored
+table, and every cell by the same rule (the owner, 23 November 2026: "I think it has to be for every cell to
+mitigate bias"): every perturbation of the evidence table against every scored symptom construct, labelled or not, held out
+or not. Under decision 9.134 a count or a date for a held-out cell may be collected; none, for any cell, enters
+training, a constraint, a loss, a prior or the label selection. They are read by this reading and by (d) alone. The
+search draws no sample. It runs after the evidence table is rebuilt and before the draw of decision 1.1, and its
+output is hashed and committed before the draw, so that neither the counts, the dates nor the strata can follow the
+held-out set or any score (the owner, 23 November 2026: "correct").
+
+*Where, and what counts* (the owner, 23 November 2026: "I guess I'd rather just do abstract and title only then").
+A record counts for a cell when its title or abstract names the perturbation and a term of the construct, both in
+that one text. No full text is searched, no copy of a paper is sought or read, and the rule is the same for every
+record of every period, so that no cell is searched more deeply than another. The records are journal records of
+PubMed and the preprints the next paragraph admits; a PubMed record that belongs to a book or a report, such as a
+book chapter or a study guide, is not counted (the owner, 23 November 2026, of this, of searching by text alone
+and of the one-service plan: "your 1,2,3 from the strata are accepted"). The filter that sets those records aside is
+fixed and verified before the first request `[P 24]`: on the one pair checked, Europe PMC's flag for a record that
+belongs to a book removed the two book records and nothing else, where its publication type "journal article"
+also removed two letters printed in journals, one of them a case report of the pair. Every record that matches
+counts, a label's own cited reference among them (the owner, 23 November 2026, asked whether to leave those out:
+"No I don't want that. Keep as is"); so a labelled gene pair whose cited reference names both terms starts with one
+record, which a drug pair, whose label cites no paper, has no counterpart for. The search is one request per cell
+to Europe PMC's REST search on `www.ebi.ac.uk`, over PubMed's records and the admitted preprints together, ordered
+by first publication date, which returns the count and the earliest record; PubMed supplies each counted PubMed
+record's metadata, its identifier and its publication date. Requests to that service are spaced 10 seconds apart,
+the delay the robots file of `www.ebi.ac.uk` states for every reader (the owner, 23 November 2026: "10 second
+pace"). At that spacing, with the further counts `[P 23]` needs, the search is estimated at about 13 days of
+continuous running for about 68,700 cells; both figures are estimates, the current table not being built at the
+time of this amendment. The text-mined count of the released literature table
+(`data/releases/v0.4/literature/literature_reports.parquet`, distinct `pmid` per cell, as
+`experiments/rekey_literature_to_fine.py` re-keys it) is kept beside the search's count and does not replace it.
+
+*Preprints follow the project's rule on papers with no peer review* (the owner, 23 November 2026: "follow my rule on
+preprints"; the rule, 27 October 2026: "No peer review means toss the paper unless it's recent then just mark it for
+follow up", recent being 18 months). A preprint has no PubMed record, so its metadata, its posting date and its
+link to a published version are read from Europe PMC's preprint records. A preprint counts for a cell only if it
+was posted within the 18 months before the search's last publication date `[P 20]` and Europe PMC links it to no
+published version; it is then flagged "not peer reviewed", and the share of a cell's counted records that are such
+preprints is reported with `[P 23]`. A preprint posted earlier than that with no published version is not
+counted. Where a published version exists, that record is counted, once, and the preprint is not. Europe PMC makes
+the link from Crossref metadata and by matching titles and authors, and says of it that "where authors and/or
+article titles change between preprint and journal publication, it may not be possible to make this connection"
+(Europe PMC in 2023, Nucleic Acids Research, doi 10.1093/nar/gkad1085); so a few published papers will be counted
+a second time as recent preprints, and a few old preprints with an unlinked published version will be left out.
+
+*One count.* A cell's count is the number of records counted for it under that rule, and it is the count the
+strata use. A cell is **none** when no record counts.
+
+*The limit of what a title and an abstract can show, stated and measured.* An abstract is not there for every
+record. Of PubMed's records as Europe PMC's search service returned them on 23 November 2026, those with no abstract
+were 99 per cent of the records published up to 1965, 63 per cent for 1966 to 1989, 25 per cent for 1990 to 2005, 16
+per cent for 2006 to 2015 and 12 per cent for 2016 onward. The National Library of Medicine says of its records for
+1946 through 1965 that "the absence of abstracts affects subject retrieval". A record without an abstract can match
+on its title alone. So a pair whose literature is old is found less often than one whose literature is recent: its
+count is lower, its earliest record is later, and some such pairs fall in the **none** stratum although papers on
+them exist. A match in the body of a paper, which no title or abstract repeats, is never found, for any period.
+This is not corrected. It is reported: for every research stratum and every era of (d), per type, the share of
+counted records that have no abstract, and the share that are preprints `[P 23]`.
+
+*How a query is built, per cell* (the owner, 23 November 2026: "yes", and, of leaving MeSH headings out, "your 1,2,3
+from the strata are accepted"). The perturbation's names AND the construct's terms, with a
+fixed last publication date `[P 20]` so a count can be reproduced. A gene: its HGNC approved symbol and approved
+name, from the HGNC set `scripts/fetch_raw_sources.sh` pins; a symbol that is also a common
+word, or is one or two characters long, is searched by its approved name alone, on a list written by rule before
+the run and not edited after counts are seen `[P 21]`. A drug: its name in the evidence table and the international
+nonproprietary and United States adopted names ChEMBL lists for it, with the corrections of
+`configs/sider_drug_name_corrections.csv`; trade names and research codes are not searched. A construct: the
+`hpo_names` and `meddra_preferred_terms` of its row in `docs/symptom_crosswalk_fine.csv`
+(`docs/symptom_crosswalk.csv` where a coarse construct is scored), each as a phrase.
+A construct is searched by that text alone: its MeSH headings are not searched, being an indexer's judgement of a
+record and not its authors' words, and the crosswalk holding one for only some constructs. How the query confines names and terms to the title
+and abstract in the service's syntax is fixed and verified before the first request `[P 22]`. The query string of every cell is written to the output
+with its counts, the time of each request and the first identifiers returned, so that any count can be checked by
+reading. A construct with no searchable term is left out of this reading and named.
+
+*The earliest record.* For every cell with a counted record, the search also keeps the identifier of the earliest
+one, whether it has an abstract, and its publication year from PubMed's metadata, or from Europe PMC's preprint
+record for a preprint, which is the date (d) reads. The search service returns the count and the earliest record in
+one request when the results are ordered by first publication date (checked on one query, 23 November 2026; ordered
+by print publication date it put records with no print date first, so that order is not used).
+
+*Being exhaustive.* A failed source is not a finished search: a request that fails or is refused is repeated and, if
+it still fails, the cell is recorded as not searched with the reason, never as zero. The pass reports the cells it
+could not search, and the reading is not run while any remain unexplained.
+
+*What a count and a date mean, checked by reading* (the owner, 23 November 2026: "20 per stratum is fine, classes
+and limit ok"). A count says a record names the perturbation and a term of the construct together; it does not say
+the record studied the pair, and the earliest such record is not necessarily a report of the association. So 20
+labelled cells per research stratum, per era and per type, drawn by a seeded rule from development perturbations
+only after the held-out set is fixed (decision 9.134), are read by the pass; where a stratum holds fewer than 20
+labelled development cells, all of them are read and the number is reported. For each cell the earliest counted
+record is read and put in one of three classes, defined here: **reports the
+association**, when the record states that the gene's variant or loss, or the drug, was observed with the symptom
+as its effect, in people or in an animal; **names both, otherwise**, when the symptom is the drug's indication,
+belongs to the treated or studied disease, is denied, or is mentioned in passing; **wrong entity**, when the name
+matched something that is not the perturbation or the term something that is not the construct. Where the earliest
+counted record is not of the first class, the later counted records are read in order of date, up to the fifth,
+until one is. Reported per stratum and per era: the number of cells read, the share in each class, and, where a
+later record was the first to report the association, by how many years the earliest record preceded it. The strata
+and the dates are not changed by what is read.
+
+*The strata* (the owner, 23 November 2026: "median split on nonzero cells makes sense"). Fixed here as a rule on the
+counts, which no outcome enters. Genes and drugs are binned apart, each over its own cells. Within a type: if no
+more than a third of its cells are **none**, three equal-count strata (tertiles), ties kept together in the lower
+stratum; otherwise **none**, and the remaining cells split at their median count into **fewer** (at or below it) and
+**more** (above it). Which form applied to each type, and the boundaries it gave, are written with the hashed counts
+before the draw. The two-stratum form, none against any, is reported beside it always. Every cell is binned by its
+own count, positive or unlabelled, so that a stratum holds its own positives and its own unlabelled cells and an
+AUPRC inside it is an AUPRC.
+
+*The scoring.* The reading for genes and for drugs apart is the main one; the pooled reading is given beside it.
+Inside each stratum of each type: the registered macro and micro AUPRC of the tested model and of every registered
+baseline on the held-out set, over the same seeds; the seed mean of the model minus the best baseline, the best
+baseline of a stratum being the one with the highest seed-mean score in that stratum, chosen without reference to
+any model (the owner, 23 November 2026: "favor baselines is right"); `minimum_positives_to_score` applied within the stratum; the symptoms that entered,
+listed, because the strata will not share one list; the 95 per cent interval of the registered paired bootstrap
+over leakage groups; and the number of positives and of cells.
+
+*What the search does and does not settle.* A cell of the released literature table with no co-mention was not
+thereby unresearched: a gene pair curated from a disease synopsis has a source the text mining did not link.
+Searching every cell by name and term reaches such papers where their title or abstract names both. It narrows
+the difference between genes and drugs and, in the owner's words, "won't fix it": drugs are named in far more
+records than most genes, a label reports an adverse event whether or not a paper studies it, and a count measures
+naming and not study. That is why genes and drugs are read apart.
+
+*It is descriptive.* It is reported in the section labelled descriptive, beside (d), (e) and item 26. It enters
+neither H1 nor H2 nor P1, spends no alpha, and no interval of it is compared with a level.
+
+*What each outcome would and would not show, stated before any is seen* (the owner, 23 November 2026: "agreed"). If the difference is
+above zero in the **none** stratum, its interval excluding zero, the model's advantage over the baselines is not
+confined to pairs the searched literature names together; that is evidence against "it reproduces well-studied
+links only", in the sense this count measures. It does not show that those pairs were unstudied, that the graph's
+edges were free of the research behind them, or that the model would have found a pair before it was recorded. If
+the difference is above zero in the highest stratum and its interval covers zero in **none**, that is what
+reproduction of well-studied links would look like, and also what a real advantage looks like in a stratum with too
+few positives to resolve it; the number of positives and the interval's width are reported so a reader can judge. A
+trend across strata is a description: the strata differ in their share of positives, so AUPRC values are not
+compared between strata, only the model-minus-baseline difference inside each. Neither outcome is a test at a
+level, and neither confirms nor withdraws H1.
+
+**h. Not claimed.** Hypothesis mining is not claimed (the owner, 23 November 2026: "Not claimed for now. Will need
+separate experiment with different lockbox draw, etc and will only validate the method not the model."). Causation
+is not claimed. Neither is registered here.
+
+**What this item supersedes in the opening of this file, which is kept as the record.** The line "Primary
+hypothesis: see experiment_design.md section 6.5 (equifinality independence and convergence indices; sufficiency
+test by module ablation)" is superseded by (a), (b) and (e). The "Primary endpoint" lines beneath it were already
+superseded and are named here so that the opening is read whole: the "pathway-wise split" by the confirmatory
+specification of 8 October 2026, under which it "becomes a secondary reading on the development set", and then by
+item 25; the "relational GNN with sigmoid head" as a comparator by the same specification, the sigmoid head being
+dropped afterwards and the tested family being one model since items 34b and 34c; "minimum difference 0.05" by the
+passage headed "Superseded on the decision rule"; and "five seeds by five folds" by the single held-out set scored
+once over seeds 0 to 4.
+
+**What this item changes in the registration, and what it does not.** It states the claim the registered test tests
+and what is not claimed, makes the equifinality indices descriptive only, and adds two descriptive readings, (d)
+and (g). It changes no registered rule: `configs/registered_rules.json` holds the same twelve rules, so the commit
+that registers this item carries no `Amends:` trailer. It is outcome-blind: no held-out set has been drawn, decision
+1.1 being open, so no confirmatory result existed to see. It leaves open the values `[P 20]` to `[P 24]`,
+and decision 5.2 (whether P1 is primary at all) as it was. No time split is registered or held open. The
+search of (g) is owed after the rebuild and before the draw.
 
 To fill in: Phase 1 counts per symptom and grade (docs/generated/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
