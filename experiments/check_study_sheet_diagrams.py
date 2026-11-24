@@ -18,6 +18,18 @@ not revised to match a later one.
 A fingerprint says that something changed, not that the diagram is wrong: a dated addition to a row changes its hash.
 Re-stamping is the record that a session looked and found the diagram right, or corrected it first.
 
+Since 24 November 2026 the guard has two more kinds of entry and one more kind of depicted thing, because the guard
+had missed the pipeline diagrams: they drew the encoder but declared none of the encoder's decisions, so item 37f
+changed what they show and nothing flagged them (the owner: "the first architecture diagram shows it so it's not
+just the prose and the existing test failed"). The guard checks only what an entry declares, so an entry lists
+everything its diagram or passage depicts.
+- "passages": prose of the study sheet that describes the architecture, keyed by the block id of its paragraph,
+  table or list, checked and stamped like a diagram (the owner, 24 November 2026, extending the rule to the prose:
+  "2 yes"). A passage has no state or partner: prose says in its own words which state it describes.
+- "items" in `depicts`: amendment items of docs/preregistration.md by id ("37f", "38"), fingerprinted by the
+  item's own text, so a diagram can depict one registered ruling without going stale at every amendment, as
+  depicting the whole file does.
+
 Usage:
   PYTHONPATH=. python experiments/check_study_sheet_diagrams.py               # report what is out of date
   PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp ID    # after checking diagram ID (widget id)
@@ -36,6 +48,13 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = REPOSITORY_ROOT / "configs" / "study_sheet_diagrams.json"
 DECISION_LOG_PATH = REPOSITORY_ROOT / "docs" / "open_decisions.md"
+REGISTRATION_PATH = REPOSITORY_ROOT / "docs" / "preregistration.md"
+ENTRY_SECTIONS = ("diagrams", "passages")
+# An amendment item's heading, `**37f. ...` or, for a sub-item added later inside a bullet, `- **23a. ...`, the form
+# mechanistic_pathway_learning.documentation.item_ids_in_registration reads.
+ITEM_HEADING = re.compile(r"^(?:- )?\*\*(?P<id>\d+[a-z]?)\.\s")
+# What ends an item besides the next item's heading: the next amendment's date line, or the file's closing paragraph.
+ITEM_END = re.compile(r"^(?:Amendment, |To fill in:)")
 STATES = ("built", "decided", "built_and_decided")
 
 
@@ -53,12 +72,33 @@ def decision_row_text(decision_id: str, log_text: str | None = None) -> str:
     return rows[0]
 
 
+def registration_item_text(item_id: str, registration_text: str | None = None) -> str:
+    """An amendment item's text, from its heading line to the next item's heading, the next amendment's date line or
+    the file's closing paragraph. Item 37's own text is its preamble; 37a to 37o are items of their own."""
+    registration_text = REGISTRATION_PATH.read_text(encoding="utf-8") if registration_text is None else registration_text
+    lines = registration_text.splitlines()
+    starts = [index for index, line in enumerate(lines) if (match := ITEM_HEADING.match(line)) and match.group("id") == item_id]
+    if len(starts) != 1:
+        raise ValueError(f"amendment item {item_id}: {len(starts)} headings in {REGISTRATION_PATH.name}, expected 1")
+    end = len(lines)
+    for index in range(starts[0] + 1, len(lines)):
+        if ITEM_HEADING.match(lines[index]) or ITEM_END.match(lines[index]):
+            end = index
+            break
+    return "\n".join(lines[starts[0]:end])
+
+
 def current_fingerprints(depicts: dict) -> dict[str, str]:
-    """{"decision:9.112": sha256, "file:path": sha256} for what a diagram depicts, as the working tree holds it."""
+    """{"decision:9.112": sha256, "item:37f": sha256, "file:path": sha256} for what a diagram or passage depicts, as
+    the working tree holds it."""
     log_text = DECISION_LOG_PATH.read_text(encoding="utf-8")
     fingerprints = {}
     for decision_id in depicts.get("decisions", []):
         fingerprints[f"decision:{decision_id}"] = sha256_of_text(decision_row_text(decision_id, log_text))
+    if depicts.get("items"):
+        registration_text = REGISTRATION_PATH.read_text(encoding="utf-8")
+        for item_id in depicts["items"]:
+            fingerprints[f"item:{item_id}"] = sha256_of_text(registration_item_text(item_id, registration_text))
     for relative_path in depicts.get("files", []):
         path = REPOSITORY_ROOT / relative_path
         if not path.is_file():
@@ -94,6 +134,13 @@ def registry_problems(registry: dict) -> list[str]:
                 problems.append(f"{widget_id}: partner {partner} does not name it back")
             if {state, other.get("state")} != {"built", "decided"}:
                 problems.append(f"{widget_id}: a pair is one built and one decided diagram, not {state} and {other.get('state')}")
+    for block_id, entry in registry.get("passages", {}).items():
+        if "state" in entry or "partner" in entry:
+            problems.append(f"{block_id}: a passage says in its own words which state it describes, so it has no state or partner")
+        if not any(entry.get("depicts", {}).get(kind) for kind in ("decisions", "items", "files")):
+            problems.append(f"{block_id}: a passage depicts at least one decision, amendment item or file")
+    shared = set(registry["diagrams"]) & set(registry.get("passages", {}))
+    problems += [f"{entry_id}: listed both as a diagram and as a passage" for entry_id in sorted(shared)]
     return problems
 
 
@@ -111,11 +158,20 @@ def head_commit() -> str:
     return completed.stdout.strip() or "unknown"
 
 
+def entries(registry: dict):
+    """(section, id, entry) for every checked diagram and passage."""
+    for section in ENTRY_SECTIONS:
+        for entry_id, entry in registry.get(section, {}).items():
+            yield section, entry_id, entry
+
+
 def stamp(widget_id: str) -> None:
+    """Record that the diagram (by widget id) or passage (by block id) was checked against what it depicts now."""
     registry = read_registry()
-    if widget_id not in registry["diagrams"]:
+    sections = [section for section in ENTRY_SECTIONS if widget_id in registry.get(section, {})]
+    if not sections:
         raise SystemExit(f"{widget_id} is not in {REGISTRY_PATH.relative_to(REPOSITORY_ROOT)}")
-    entry = registry["diagrams"][widget_id]
+    entry = registry[sections[0]][widget_id]
     entry["fingerprints"] = current_fingerprints(entry.get("depicts", {}))
     entry["checked"] = datetime.date.today().isoformat()
     entry["checked_at_commit"] = head_commit()
@@ -125,17 +181,18 @@ def stamp(widget_id: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--stamp", metavar="WIDGET_ID", help="record that this diagram was checked against what it depicts now")
+    parser.add_argument("--stamp", metavar="ID", help="record that this diagram (widget id) or passage (block id) was checked "
+                                                     "against what it depicts now")
     arguments = parser.parse_args()
     if arguments.stamp:
         stamp(arguments.stamp)
         return 0
     registry = read_registry()
     problems = registry_problems(registry)
-    for widget_id, entry in registry["diagrams"].items():
+    for section, entry_id, entry in entries(registry):
         for item in stale_items(entry):
-            problems.append(f"{widget_id} ({entry.get('title', '')}): {item} changed since it was checked")
-    print("\n".join(problems) if problems else "every study-sheet diagram is current with what it depicts")
+            problems.append(f"{entry_id} ({entry.get('title', '')}): {item} changed since it was checked")
+    print("\n".join(problems) if problems else "every study-sheet diagram and passage is current with what it depicts")
     return 1 if problems else 0
 
 

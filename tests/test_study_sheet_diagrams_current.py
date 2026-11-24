@@ -1,8 +1,9 @@
 """The study sheet's diagrams stay current with the decisions and code they depict (the owner, 5 November 2026).
 
-The guard of experiments/check_study_sheet_diagrams.py: a commit that changes a decision row or a code file a diagram
-depicts fails here until the diagram is checked and stamped again with
-`PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget id>`.
+The guard of experiments/check_study_sheet_diagrams.py: a commit that changes a decision row, an amendment item or a
+code file a diagram or a prose passage depicts fails here until it is checked and stamped again with
+`PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget or block id>`. Passages and amendment
+items were added on 24 November 2026, when the guard was found to have missed diagrams that declared too little.
 """
 from __future__ import annotations
 
@@ -52,3 +53,61 @@ def test_a_struck_row_is_still_found(tmp_path, monkeypatch):
     log.write_text("| ~~9.2~~ | closed text | closed |\n", encoding="utf-8")
     monkeypatch.setattr(diagrams, "DECISION_LOG_PATH", log)
     assert diagrams.decision_row_text("9.2").startswith("| ~~9.2~~")
+
+
+@pytest.mark.parametrize("block_id", sorted(REGISTRY.get("passages", {})))
+def test_the_passage_was_checked_against_what_it_depicts_now(block_id):
+    entry = REGISTRY["passages"][block_id]
+    stale = diagrams.stale_items(entry)
+    assert not stale, (f"study-sheet passage {block_id} ({entry.get('title', '')}) was checked before these changed: {stale}. "
+                       "Check it in the doc, correct it there if it is wrong, then run "
+                       f"PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp {block_id}")
+
+
+REGISTRATION_SAMPLE = """Amendment, 1 January 2026, first.
+
+**37. The parent item.** Its preamble.
+
+**37a. First sub-item.** Its text,
+on two lines.
+
+**37b. Second sub-item.** Other text.
+
+To fill in: the closing paragraph.
+"""
+
+
+def test_an_amendment_item_runs_to_the_next_heading(tmp_path, monkeypatch):
+    registration = tmp_path / "preregistration.md"
+    registration.write_text(REGISTRATION_SAMPLE, encoding="utf-8")
+    monkeypatch.setattr(diagrams, "REGISTRATION_PATH", registration)
+    assert diagrams.registration_item_text("37") == "**37. The parent item.** Its preamble.\n"
+    assert diagrams.registration_item_text("37a") == "**37a. First sub-item.** Its text,\non two lines.\n"
+    assert diagrams.registration_item_text("37b") == "**37b. Second sub-item.** Other text.\n"
+
+
+def test_a_changed_amendment_item_makes_its_diagram_stale_and_another_item_does_not(tmp_path, monkeypatch):
+    registration = tmp_path / "preregistration.md"
+    registration.write_text(REGISTRATION_SAMPLE, encoding="utf-8")
+    monkeypatch.setattr(diagrams, "REGISTRATION_PATH", registration)
+    entry = {"depicts": {"items": ["37a"]}}
+    entry["fingerprints"] = diagrams.current_fingerprints(entry["depicts"])
+    registration.write_text(REGISTRATION_SAMPLE.replace("Other text.", "Other text, amended."), encoding="utf-8")
+    assert not diagrams.stale_items(entry)
+    registration.write_text(REGISTRATION_SAMPLE.replace("on two lines.", "on two lines, amended."), encoding="utf-8")
+    assert diagrams.stale_items(entry) == ["item:37a"]
+
+
+def test_an_unknown_amendment_item_is_refused(tmp_path, monkeypatch):
+    registration = tmp_path / "preregistration.md"
+    registration.write_text(REGISTRATION_SAMPLE, encoding="utf-8")
+    monkeypatch.setattr(diagrams, "REGISTRATION_PATH", registration)
+    with pytest.raises(ValueError):
+        diagrams.registration_item_text("99")
+
+
+def test_a_passage_has_no_state_and_depicts_something():
+    registry = {"diagrams": {}, "passages": {"p.1": {"state": "built", "depicts": {}}}}
+    problems = diagrams.registry_problems(registry)
+    assert any("no state or partner" in problem for problem in problems)
+    assert any("depicts at least one" in problem for problem in problems)

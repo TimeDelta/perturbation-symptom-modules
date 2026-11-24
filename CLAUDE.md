@@ -260,6 +260,13 @@ a session starts works this way, and its brief says so:
   re-stamps them with `PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget id>`. A decision
   that changes the architecture and that no diagram depicts yet is added to a diagram, and to the registry, in the
   same turn.
+  **Extended on 24 November 2026 to the prose, and to everything an entry depicts** (the owner: "2 yes", after
+  the guard missed the pipeline diagrams, which drew the encoder but declared none of its decisions, so item 37f
+  changed them unflagged: "the existing test failed"). The sheet's prose passages that describe the architecture are
+  registered under `passages` by block id and checked and stamped like a diagram. Because the test checks only what
+  an entry declares, an entry lists every decision row, amendment item (`items`, by id such as "37f", fingerprinted
+  by the item's own text) and code file its diagram or passage depicts, and a diagram or passage that is added or
+  redrawn has its entry checked against what it shows in the same turn.
 - **A new decision id is the next one free on every branch, not only on the current one** (21 October 2026, after
   9.77 and 9.78 were given to different decisions on two open branches). Before taking an id, fetch and read the
   highest id any branch holds:
