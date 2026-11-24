@@ -13,6 +13,12 @@ most word stems with it; a term that matches none goes to the coarse row's names
 coarse name, else the first root); an override table (term -> fine construct) wins over both. The generated page
 lists every assignment so the owner can move any of them by adding an override.
 
+A MeSH descriptor is stated at the coarse level and stays with the coarse row's namesake unless the override table
+names it by its D-number, in which case it goes, with its level, to the fine construct the override names. The first
+such row (24 November 2026) sends Aggression D000374 from irritability, the namesake of irritability_or_aggression, to
+aggressive_behavior; the owner: "Shouldn't mesh aggression go to aggressive behavior fine constructs?". The questionnaire
+item has no override and stays with the namesake.
+
 The IMPC crosswalk is re-keyed the same way: a coarse row's proxy goes to the fine construct its MP term names match,
 else to the namesake; every other fine construct of that coarse row takes a row with validity "none", because a proxy
 stated for a coarse construct was not stated for its parts.
@@ -157,7 +163,7 @@ def read_rows(path: Path) -> list[dict[str, str]]:
 
 def fine_constructs_of(row: dict[str, str]) -> list[FineConstruct]:
     """One construct per HPO root of a coarse row; a single-root row keeps its coarse name. A row without an HPO root
-    (psychomotor_retardation, abnormal_dreams, catatonia) is one construct under its coarse name."""
+    (catatonia) is one construct under its coarse name."""
     coarse = row["target_symptom"]
     root_ids, root_names = split_cell(row.get("hpo_ids")), split_cell(row.get("hpo_names"))
     if len(root_ids) != len(root_names):
@@ -237,7 +243,8 @@ def annotate_extra_roots(fine_rows: list[dict[str, str]], extra_roots: list[dict
 
 
 def read_term_overrides(path: Path | None) -> dict[str, str]:
-    """term (lower case) -> fine construct; the file has columns term, fine_construct and an optional note."""
+    """term (lower case) -> fine construct; the file has columns term, fine_construct and an optional note. A term is a
+    MedDRA preferred term or a MeSH descriptor's D-number (lower case here as every key is: "d000374")."""
     if path is None or not Path(path).exists():
         return {}
     return {row["term"].strip().lower(): row["fine_construct"].strip() for row in read_rows(Path(path)) if row.get("term", "").strip()}
@@ -282,8 +289,35 @@ def assign_term(term: str, constructs: list[FineConstruct], overrides: dict[str,
     return namesake.name, "namesake"
 
 
+def share_out_mesh_descriptors(row: dict[str, str], constructs: list[FineConstruct], overrides: dict[str, str]) -> dict[str, list[tuple[str, str]]]:
+    """fine construct -> the (descriptor, level) pairs of the coarse row it carries, in the coarse row's order. A
+    descriptor goes to the construct an override names for its D-number, else to the namesake."""
+    descriptors, levels = split_cell(row.get("mesh_descriptors")), split_cell(row.get("mesh_descriptor_level"))
+    if len(descriptors) != len(levels):
+        raise ValueError(f"{row['target_symptom']}: {len(descriptors)} mesh descriptors but {len(levels)} levels")
+    names = {construct.name for construct in constructs}
+    namesake = next(construct for construct in constructs if construct.is_namesake)
+    shared: dict[str, list[tuple[str, str]]] = {construct.name: [] for construct in constructs}
+    for descriptor, level in zip(descriptors, levels):
+        override = overrides.get(descriptor.lower())
+        if override is not None and override not in names:
+            raise ValueError(f"override sends {descriptor} to {override!r}, which is not a construct of {row['target_symptom']}: {sorted(names)}")
+        shared[override or namesake.name].append((descriptor, level))
+    return shared
+
+
+def fine_construct_of_descriptor(coarse_rows: list[dict[str, str]], overrides: dict[str, str]) -> dict[str, str]:
+    """MeSH descriptor -> the fine construct that carries it, for every descriptor of the coarse crosswalk."""
+    carried = {}
+    for row in coarse_rows:
+        for name, pairs in share_out_mesh_descriptors(row, fine_constructs_of(row), overrides).items():
+            carried.update({descriptor: name for descriptor, _ in pairs})
+    return carried
+
+
 def fine_rows_of(row: dict[str, str], overrides: dict[str, str], vocabulary: HpoVocabulary | None = None) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
-    """The fine crosswalk rows of one coarse row and the term assignments made (term, construct, how)."""
+    """The fine crosswalk rows of one coarse row and the term assignments made (term, construct, how). The MeSH
+    descriptors moved by an override are listed among the assignments with kind "mesh"."""
     constructs = fine_constructs_of(row)
     assignments = []
     terms_by_construct: dict[str, list[str]] = {construct.name: [] for construct in constructs}
@@ -293,6 +327,10 @@ def fine_rows_of(row: dict[str, str], overrides: dict[str, str], vocabulary: Hpo
         terms_by_construct[name].append(term)
         assignments.append({"coarse_symptom": row["target_symptom"], "term": term, "kind": "meddra", "fine_construct": name, "how": how})
     namesake = next(construct for construct in constructs if construct.is_namesake)
+    descriptors_by_construct = share_out_mesh_descriptors(row, constructs, overrides)
+    for name, pairs in descriptors_by_construct.items():
+        assignments.extend({"coarse_symptom": row["target_symptom"], "term": descriptor, "kind": "mesh", "fine_construct": name, "how": "override"}
+                           for descriptor, _ in pairs if name != namesake.name)
     rows = []
     for construct in constructs:
         # a root that is an ancestor of a sibling construct's root would expand over the sibling's terms too; the sibling's root is excluded from it
@@ -305,10 +343,11 @@ def fine_rows_of(row: dict[str, str], overrides: dict[str, str], vocabulary: Hpo
             "rdoc_domain": row.get("rdoc_domain", ""), "identifier_status": row.get("identifier_status", ""),
             "notes": (row.get("notes", "") if len(constructs) == 1 else f"derived from {construct.coarse} (decision 9.58); the coarse row's notes: {row.get('notes', '')}".rstrip(": ")),
         })
-        if construct is namesake:  # the questionnaire item and the MeSH descriptors are stated at the coarse level and stay with its namesake
+        if construct is namesake:  # the questionnaire item is stated at the coarse level and stays with its namesake
             derived["questionnaire_item"] = row.get("questionnaire_item", "")
-            derived["mesh_descriptors"] = row.get("mesh_descriptors", "")
-            derived["mesh_descriptor_level"] = row.get("mesh_descriptor_level", "")
+        # the MeSH descriptors are stated at the coarse level too: each stays with the namesake unless an override names its D-number
+        derived["mesh_descriptors"] = ";".join(descriptor for descriptor, _ in descriptors_by_construct[construct.name])
+        derived["mesh_descriptor_level"] = ";".join(level for _, level in descriptors_by_construct[construct.name])
         rows.append(derived)
     return rows, assignments
 
@@ -339,7 +378,8 @@ def coarse_of_fine(fine_rows: list[dict[str, str]]) -> dict[str, str]:
 
 
 def namesake_of_coarse(coarse_rows: list[dict[str, str]]) -> dict[str, str]:
-    """coarse construct -> the fine construct that carries its MeSH descriptors and questionnaire item (its namesake)."""
+    """coarse construct -> its namesake, the fine construct that carries its questionnaire item and every MeSH descriptor
+    of it that no override moves (fine_construct_of_descriptor gives the carrier of each descriptor)."""
     return {row["target_symptom"]: next(construct.name for construct in fine_constructs_of(row) if construct.is_namesake) for row in coarse_rows}
 
 

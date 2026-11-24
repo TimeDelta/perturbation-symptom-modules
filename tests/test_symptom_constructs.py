@@ -24,6 +24,7 @@ from mechanistic_pathway_learning.evidence.symptom_constructs import (  # noqa: 
     read_rows,
     read_term_overrides,
     slug,
+    split_cell,
     stems,
     with_extra_roots,
     write_rows,
@@ -167,6 +168,24 @@ def test_the_fine_crosswalk_carries_terms_apart_keeps_mesh_with_the_namesake_and
         build_fine_crosswalk(coarse_rows() + [coarse_rows()[2]], [], {}, vocabulary)
 
 
+def test_an_override_moves_a_mesh_descriptor_with_its_level_from_the_namesake(vocabulary):
+    from mechanistic_pathway_learning.evidence.symptom_constructs import fine_construct_of_descriptor
+    coarse = coarse_rows()
+    coarse[0]["mesh_descriptors"], coarse[0]["mesh_descriptor_level"] = "D011618;D006212", "diagnosis;symptom"
+    rows, assignments = build_fine_crosswalk(coarse, [], {"d006212": "hallucinations"}, vocabulary)
+    by_name = {row["target_symptom"]: row for row in rows}
+    assert (by_name["psychosis"]["mesh_descriptors"], by_name["psychosis"]["mesh_descriptor_level"]) == ("D011618", "diagnosis")
+    assert (by_name["hallucinations"]["mesh_descriptors"], by_name["hallucinations"]["mesh_descriptor_level"]) == ("D006212", "symptom")
+    assert by_name["delusion"]["mesh_descriptors"] == "" and by_name["anxiety"]["mesh_descriptors"] == "D001007"
+    assert {"coarse_symptom": "psychosis", "term": "D006212", "kind": "mesh", "fine_construct": "hallucinations", "how": "override"} in assignments
+    assert fine_construct_of_descriptor(coarse, {"d006212": "hallucinations"}) == {"D011618": "psychosis", "D006212": "hallucinations", "D001007": "anxiety"}
+    page = render("stamp", rows, assignments, [])
+    assert "## MeSH descriptors moved from the namesake" in page and "| psychosis | D006212 | hallucinations |" in page
+    assert "## MeSH descriptors moved" not in render("stamp", *build_fine_crosswalk(coarse, [], {}, vocabulary), [])
+    with pytest.raises(ValueError, match="not a construct of psychosis"):
+        build_fine_crosswalk(coarse, [], {"d006212": "anxiety"}, vocabulary)
+
+
 def test_the_impc_crosswalk_is_rekeyed_to_the_fine_constructs():
     impc = [
         {"target_symptom": "psychosis", "relation": "induces", "mp_term_ids": "", "mp_term_names": "", "negative_procedure_codes": "", "validity": "endophenotype_only", "note": "never read"},
@@ -231,6 +250,29 @@ def test_the_literature_table_is_rekeyed_to_the_namesakes_without_a_row_moving()
     assert renamed.report_id[0] == "PubTator3|PMID:1|MESH:D011595|agitation|1" and renamed.report_id[1] == reports.report_id[1]
     with pytest.raises(ValueError, match="no coarse construct"):
         rekey(pd.DataFrame({"symptom": ["unknown"], "report_value": [1]}), namesake)
+    # a descriptor an override moved takes its rows with it; the others stay with the namesake
+    reports = pd.DataFrame({"report_id": ["CTD|PMID:3|MESH:D006212|psychosis|1", "CTD|PMID:4|MESH:D011618|psychosis|1"], "symptom": ["psychosis", "psychosis"],
+                            "mesh_descriptor": ["D006212", "D011618"], "report_value": [1, 1]})
+    moved = rekey(reports, namesake, {"D006212": "hallucinations", "D011618": "psychosis"})
+    assert list(moved.symptom) == ["hallucinations", "psychosis"] and list(moved.coarse_symptom) == ["psychosis", "psychosis"]
+    assert list(moved.report_id) == ["CTD|PMID:3|MESH:D006212|hallucinations|1", "CTD|PMID:4|MESH:D011618|psychosis|1"]
+    assert list(rekey(reports, namesake).symptom) == ["psychosis", "psychosis"], "without the descriptor table every row goes to the namesake"
+
+
+def test_the_committed_crosswalk_files_mesh_aggression_under_aggressive_behavior_and_agitation_under_one_construct():
+    """The owner's rulings of 24 November 2026: MeSH Aggression D000374 belongs to aggressive_behavior, Irritable Mood
+    D007508 stays with irritability, and MedDRA Agitation is a term of agitation alone. A preferred term listed under
+    two rows goes to whichever comes last in the file (read_preferred_term_to_target_symptom), so none may be."""
+    for name in ("docs/symptom_crosswalk.csv", "docs/symptom_crosswalk_fine.csv"):
+        holders: dict[str, list[str]] = {}
+        for row in read_rows(ROOT / name):
+            for term in split_cell(row["meddra_preferred_terms"]):
+                holders.setdefault(term.lower(), []).append(row["target_symptom"])
+        assert {term: rows for term, rows in holders.items() if len(rows) > 1} == {}, name
+    fine = {row["target_symptom"]: row for row in read_rows(ROOT / "docs/symptom_crosswalk_fine.csv")}
+    assert (fine["aggressive_behavior"]["mesh_descriptors"], fine["aggressive_behavior"]["mesh_descriptor_level"]) == ("D000374", "symptom")
+    assert (fine["irritability"]["mesh_descriptors"], fine["irritability"]["mesh_descriptor_level"]) == ("D007508", "symptom")
+    assert "Agitation" in split_cell(fine["agitation"]["meddra_preferred_terms"]) and fine["irritability"]["meddra_preferred_terms"] == "Irritability"
 
 
 AKATHISIA_STANZA = """

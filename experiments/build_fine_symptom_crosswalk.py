@@ -5,7 +5,8 @@ configs/fine_construct_extra_roots.csv, hp.obo and the SIDER MedDRA vocabulary; 
 and docs/generated/fine_symptom_constructs.md (generated, stamped). The rules are in evidence/symptom_constructs.py: a coarse
 row's terms are shared out among its HPO roots by the ontology's own vocabulary, an added construct takes the MedDRA
 preferred terms whose words the ontology uses for it, an extra root splits a construct out below a coarse row's roots
-without changing the coarse row, and every assignment is listed with how it was made.
+without changing the coarse row, a MeSH descriptor stays with the coarse row's namesake unless an override names its
+D-number, and every assignment is listed with how it was made.
 
 Usage:
   python experiments/build_fine_symptom_crosswalk.py
@@ -96,13 +97,22 @@ def render(stamp: str, fine_rows: list[dict[str, str]], assignments: list[dict[s
               "construct's HPO expansion; `stem match` means the term shares word stems with the root's own name or synonyms; `namesake` means nothing "
               "decided and the term went to the coarse construct's namesake root. Move any of them with an override.", "",
               "| coarse construct | term | fine construct | how |", "| --- | --- | --- | --- |"]
-    for assignment in assignments:
+    term_assignments = [assignment for assignment in assignments if assignment["kind"] == "meddra"]
+    for assignment in term_assignments:
         if assignment["how"] != "single construct":
             lines.append(f"| {assignment['coarse_symptom']} | {assignment['term']} | {assignment['fine_construct']} | {assignment['how']} |")
     by_how: dict[str, int] = {}
-    for assignment in assignments:
+    for assignment in term_assignments:
         by_how[assignment["how"]] = by_how.get(assignment["how"], 0) + 1
-    lines += ["", "Counts: " + ", ".join(f"{how} {count}" for how, count in sorted(by_how.items())) + ".", "",
+    lines += ["", "Counts: " + ", ".join(f"{how} {count}" for how, count in sorted(by_how.items())) + "."]
+    moved_descriptors = [assignment for assignment in assignments if assignment["kind"] == "mesh"]
+    if moved_descriptors:
+        lines += ["", "## MeSH descriptors moved from the namesake", "",
+                  "A coarse construct's MeSH descriptors stay with its namesake unless a row of configs/fine_construct_term_overrides.csv names a "
+                  "descriptor's D-number; the level travels with the descriptor.", "",
+                  "| coarse construct | descriptor | fine construct |", "| --- | --- | --- |"]
+        lines += [f"| {assignment['coarse_symptom']} | {assignment['term']} | {assignment['fine_construct']} |" for assignment in moved_descriptors]
+    lines += ["",
               "## The IMPC crosswalk at the fine level", "",
               "| fine construct | relation | MP terms | validity |", "| --- | --- | --- | --- |"]
     for row in impc_rows:

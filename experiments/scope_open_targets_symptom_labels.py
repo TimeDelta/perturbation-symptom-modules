@@ -67,7 +67,9 @@ SYMPTOM_PATTERNS = {
     # PARKINSONIAN_PATTERN for the wider wording and the gap between the two.
     "parkinsonism": r"parkinson|extrapyramidal|\bbradykine|hypokine|\bakinesi|cogwheel",
     # docs/symptom_crosswalk.csv defines this symptom by two MedDRA terms, "Psychomotor retardation" and
-    # "Bradyphrenia", both of which name slowed thought and action; it has no HPO term and no MeSH descriptor. Until
+    # "Bradyphrenia", both of which name slowed thought and action; it has no MeSH descriptor, and its HPO term is
+    # HP:0031843 "Abnormally slow thought process", of which Bradyphrenia is an exact synonym (added 24 November 2026;
+    # until then the crosswalk and this comment said it had no HPO term). Until
     # 9 October 2026 the pattern here was wider than that crosswalk and also took hypokinesia, bradykinesia and the
     # rodent open-field counts, so antipsychotic parkinsonism was scored as depressive slowing. See
     # PARKINSONIAN_PATTERN for where those rows went and why (the user's decision of 9 October 2026).

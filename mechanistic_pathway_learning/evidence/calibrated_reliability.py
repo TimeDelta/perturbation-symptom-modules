@@ -68,9 +68,11 @@ before, bit for bit (tested); under the default the same run now fits mouse apar
 
 A symptom with no label positives. A cell on a symptom that has no label positive on the fit rows of its perturbation
 kind (gene or drug) trains the regression toward 0 because the label table cannot state a positive there, not because
-the evidence is wrong: on v5 psychomotor_retardation has no gene label at all, because the human crosswalk maps it to
-no HPO term (docs/symptom_crosswalk_fine.csv, "HPO retired Psychomotor retardation (HP:0025356) into Global
-developmental delay"), so its 5,143 IMPC cells cannot be calibrated. fit_calibration reports such symptoms, with their
+the evidence is wrong: on v5 psychomotor_retardation has no gene label at all, because the human crosswalk v5 was built
+from mapped it to no HPO term (its note then: "HPO retired Psychomotor retardation (HP:0025356) into Global
+developmental delay"), so its 5,143 IMPC cells cannot be calibrated. That is v5's state and not the crosswalk's: since
+24 November 2026 docs/symptom_crosswalk_fine.csv gives the symptom HP:0031843 "Abnormally slow thought process"
+(7 genes in HPO release 2026-09-01), which no build has read yet. fit_calibration reports such symptoms, with their
 cells by source, in Calibration.symptoms_without_label_positives; exclude_symptoms_without_label_positives (off by
 default) leaves their cells out of the fit, and the prediction is still written on
 them.
