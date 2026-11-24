@@ -192,6 +192,34 @@ def test_the_labels_are_counted_once_under_the_positive_unlabelled_likelihood(re
     assert '"--negative-weight", "0.2",' in batch_source
 
 
+def test_the_module_support_minimum_reach_is_two_for_the_tested_model(registered_rules):
+    """Amendment item 39 (decision 9.150): no module of the tested model holds a node that fewer than 2 seed nodes of
+    the training rows can reach. Asserted against the trainer's resolved default, which is 2 for the linear-response
+    encoder with the noisy-OR head and 0 (the rule off) for the message-passing encoder and the sigmoid head, and
+    against the registered flag list."""
+    registered = registered_rules["module_support_minimum_reach"]["value"]
+    assert registered == 2
+    sys.path.insert(0, str(REPOSITORY_ROOT / "experiments"))
+    from run_main_model import build_argument_parser, resolve_registered_defaults
+
+    def resolved_minimum_reach(*flags: str) -> int:
+        arguments = build_argument_parser().parse_args(["--graph-dir", "graph", "--evidence-dir", "evidence", *flags])
+        resolve_registered_defaults(arguments)
+        return arguments.module_support_minimum_reach
+
+    assert resolved_minimum_reach("--encoder", "linear_response", "--head", "noisy_or") == registered
+    assert resolved_minimum_reach("--encoder", "message_passing", "--head", "noisy_or") == 0
+    assert resolved_minimum_reach("--encoder", "linear_response", "--head", "sigmoid") == 0
+    assert resolved_minimum_reach("--encoder", "linear_response", "--head", "noisy_or", "--module-support-minimum-reach", "0") == 0, \
+        "a run that names 0 keeps the rule off"
+    batch_source = (REPOSITORY_ROOT / "experiments" / "run_main_model_batch.py").read_text()
+    from run_main_model_batch import V4_LINEAR_RESPONSE_MODEL, V4_MESSAGE_PASSING_MODEL
+    position = V4_LINEAR_RESPONSE_MODEL.index("--module-support-minimum-reach")
+    assert V4_LINEAR_RESPONSE_MODEL[position + 1] == str(registered), "the v4 linear-response model states the registered minimum reach"
+    assert "--module-support-minimum-reach" not in V4_MESSAGE_PASSING_MODEL, "the robustness model runs without the rule (item 39 g)"
+    assert '"--module-support-minimum-reach", "2"' in batch_source
+
+
 def test_every_rule_names_code_that_exists(registered_rules):
     """`code_location` is the path a reader follows to see the value in force, so a location that names nothing is a
     dead end dressed as provenance. Added 27 October 2026 with docs/registered_core.md, which prints the same check."""

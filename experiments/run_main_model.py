@@ -509,6 +509,11 @@ def resolve_registered_defaults(arguments) -> None:
         arguments.reversible_reactions = linear_response
     if getattr(arguments, "extracellular_coupling", None) is None:
         arguments.extracellular_coupling = linear_response and bool(getattr(arguments, "cell_class_weights", None))
+    if getattr(arguments, "module_support_minimum_reach", 0) is None:
+        # amendment item 39 (decision 9.150, switched on 24 November 2026): the rule is registered for the tested model,
+        # the linear-response encoder with the noisy-OR head, at 2; the message-passing encoder walks no such edge list
+        # and the sigmoid head has no module supports, so both take 0, which leaves the rule off
+        arguments.module_support_minimum_reach = 2 if linear_response and getattr(arguments, "head", None) == "noisy_or" else 0
     if getattr(arguments, "refit_on_validation", None) is None:
         not_implemented = getattr(arguments, "laboratory_label_weight", 0) > 0 or getattr(arguments, "time_split_cutoff", None) is not None
         arguments.refit_on_validation = not not_implemented
@@ -854,7 +859,8 @@ def build_models(data, arguments, device, support_reach_rows: np.ndarray | None 
                                         # entry nodes (drug and allele) are never module support: the owner, 20 November 2026
                                         excluded_node_mask=(torch.as_tensor(data.entry_node_mask)
                                                             if getattr(data, "entry_node_mask", None) is not None else None),
-                                        # nodes too few perturbation sources reach (--module-support-minimum-reach, off at 0)
+                                        # nodes too few perturbation sources reach (--module-support-minimum-reach: 2 for the
+                                        # tested model since amendment item 39, 0 and so off for the other encoders and heads)
                                         reach_excluded_node_mask=reach_excluded_node_mask).to(device)
     head.support_reach_summary = support_reach_summary
     return encoder, head
@@ -2045,8 +2051,8 @@ def build_argument_parser() -> argparse.ArgumentParser:
                              "loss-optimal constant over the fitted perturbations, the weighted mean of the loss's targets (docs/records/2026-10/best_epoch_zero.md)")
     parser.add_argument("--module-bias-init", type=float, default=-3.0, help="noisy-OR head: initial readout bias of every module; negative values make modules off by default")
     parser.add_argument("--gate-init-noise", type=float, default=0.5, help="noisy-OR head: standard deviation of the per-gate noise added to the initial log-alpha (symmetry breaking between modules)")
-    parser.add_argument("--module-support-minimum-reach", type=int, default=0,
-                        help="noisy-OR head: no module may include a node that fewer than this many seed nodes of the training rows can reach, walking the linear-response encoder's edges (models/support_reach.py); 2 excludes every node one source or none can reach. 0, the default, leaves the rule off: it changes the registered model and waits for its amendment")
+    parser.add_argument("--module-support-minimum-reach", type=int, default=None,
+                        help="noisy-OR head: no module may include a node that fewer than this many seed nodes of the training rows can reach, walking the linear-response encoder's edges (models/support_reach.py); 2 excludes every node one source or none can reach, and 0 leaves the rule off. Default: 2 for the linear-response encoder with the noisy-OR head, the registered value (amendment item 39, decision 9.150; configs/registered_rules.json module_support_minimum_reach), and 0 for every other encoder and head")
     parser.add_argument("--link-learning-rate", type=float, default=0.02,
                         help="noisy-OR head: learning rate of the module-to-symptom links (0 = the main rate); links start at logit -3 and Adam moves them about one rate per step, so at 0.002 they need about 1,500 steps to reach 0.5")
     parser.add_argument("--leak-learning-rate", type=float, default=0.0002, help="noisy-OR head: learning rate of the symptom leaks (0 = the main rate); slow, so a leak started at the base rate stays there")
@@ -2957,7 +2963,7 @@ def main() -> None:
         "mean_reciprocal_rank": mean_reciprocal_rank(predictions, test_outcomes, test_mask), "hits_at_3": hits_at_k(predictions, test_outcomes, 3, test_mask),
         "expected_calibration_error": expected_calibration_error(predictions, test_outcomes, mask=test_mask), "per_symptom": per_symptom, "symptoms": data.symptoms,
         "test_perturbation_ids": [data.perturbation_ids[i] for i in test_indices],
-        "module_support_reach": getattr(head, "support_reach_summary", None),  # None while --module-support-minimum-reach is 0
+        "module_support_reach": getattr(head, "support_reach_summary", None),  # None when --module-support-minimum-reach is 0 (the rule off)
         "time_split": time_split_results,
         "code_provenance": state["code_provenance"],
         "graph_files_sha256": {name: file_sha256(Path(arguments.graph_dir) / f"{name}.parquet") for name in ("nodes", "edges")},

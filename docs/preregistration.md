@@ -3716,6 +3716,102 @@ that registers this item carries no `Amends:` trailer. It is outcome-blind: no h
 and decision 5.2 (whether P1 is primary at all) as it was. No time split is registered or held open. The
 search of (g) is owed after the rebuild and before the draw.
 
+Amendment, 24 November 2026, written before any lockbox run and before the held-out set has been drawn (decision 1.1
+is open).
+
+**39. No module of the tested model holds a node that fewer than two perturbation sources of a run's training rows
+can reach** (the owner, 22 November 2026: "yes build both and draft the amendment", and, on the three points of the
+reading recorded in decision 9.150, "1. Yes / 2 yes / 3 yes"; and on when, 24 November 2026: "I already told you
+twice not for 9.150 to do it before the draw"). Decision 9.150 holds the ruling and its measurements and is the
+authority for this item. The draft the owner asked for on 22 November 2026 was lost with a container on 23 November
+2026 before it was committed; this text was written again on 24 November 2026 from the decision row and the code.
+
+**a. Why.** On 22 November 2026 it was measured that a module can hold a node only one perturbation is able to move,
+and that such a module fires only for that perturbation: a lookup entry for its labels. The owner, on the narrow
+case of a perturbed gene with no incoming edge: "So limit it to only allowing incorporation of nodes with no incoming
+edges if it isn't also a perturbation source". The rule registered is the general form of that, which the owner
+ruled on the same day. The reason decision 9.150 gives, in the session's wording the owner ruled on, is
+physiological and not numerical: "a node only one perturbation can move cannot take part in convergence, so it
+cannot serve the equifinality hypothesis, and a node none can reach carries no field". On 23 November 2026 item 38
+made the equifinality indices descriptive only, so that hypothesis is no longer tested. The reason does not rest on
+its being tested: a module that holds such a node reads which perturbation was applied and not a mechanism two
+perturbations share, and a node none can reach carries no field under any parameters.
+
+**b. The rule.** A node's reach is the number of distinct seed nodes, among the seed nodes of the perturbations
+counted, from which a route reaches it. A route walks the edges the linear-response encoder propagates along: the
+stacked adjacency it propagates on, with the derived reverse relations in it and the edges out of non-propagating
+nodes left out, and with the drug mechanism edges appended. A route passes only through nodes that some cell class
+expresses, and never into an entry node. A seed node counts itself, and a seed node no cell class expresses starts
+no route. A node whose reach is below the minimum is never module support: it has no gate in training, in
+evaluation or in the gate count of the description length. The definition is
+`mechanistic_pathway_learning/models/support_reach.py`, and it is the one definition the reach measurement
+`experiments/measure_perturbation_reach.py` also uses.
+
+*The unit registered is the seed node, not the perturbation.* A gene's loss and its gain seed the same node and are
+one source. A perturbation that seeds two nodes is two sources. So "fewer than two perturbations", as decision 9.150
+is headed, is exact where each perturbation has one seed node, and where one has several the count is of its seed
+nodes: a node that only one perturbation reaches, through two of its seed nodes, is kept at a minimum of 2. How many
+training perturbations seed more than one node was not measured.
+
+**c. What the rule guarantees, and what it does not.** Reachability ignores the signs of edges, their gains, the
+in-degree divisor and the edge gates. It is therefore an upper bound on the set of nodes a perturbation's field can
+change: a node no route reaches has a field of exactly zero for that source under any parameters, and a node a
+route reaches may still carry no change, if the gains or gates along every route close. So the rule removes only
+nodes that cannot take part in convergence whatever the model learns, and it excludes no more than any measure of
+reach computed from the learned field would. The owner asked "For the reach rule, shouldn't we over exclude?"; the
+rule does not, for the reason decision 9.150 records: a reach read through the field depends on gains and edge
+gates the model is about to change, and excluding by it would leave modules mostly the nodes many perturbations
+reach strongly. The rule does not guarantee that a module is free of lookups: a node many sources can reach may
+still be read, after training, through one perturbation alone, (g).
+
+**d. The registered value is a minimum reach of 2.** At 2, no module holds a node that one source or none can
+reach. The value is set by this item and is not tuned: it is the smallest at which two sources can converge on a
+node, and it was fixed before any confirmatory result existed.
+
+**e. The sources counted are those of the training rows only** (the owner: "1. Yes"). The reach is computed from
+the rows a model is trained on: the training rows of the run, and the refit's rows when the model is refitted. It
+never counts a row of the validation or test fold of that fit, or of the held-out set. Under `--score-lockbox` the
+trainer's data still hold the held-out perturbations, and counting them would let membership of the held-out set
+shape the model before it is scored. The excluded set therefore belongs to a run: it is saved with each checkpoint,
+and a model rebuilt on other rows (the scoring of the held-out set, an evaluation on a rewired graph) restores the
+set it was trained under and does not compute another.
+
+**f. Under decision 9.119 the rule holds for seeds and members** (the owner: "2 yes"). When the module supports are
+grown from seed gates, as decision 9.119 rules and its own amendment will register, a node below the minimum reach
+is never a seed of a module and never a member of one, in the same way as the entry nodes excluded since 20
+November 2026 (commit `27fbeb4`). This clause is registered before it is built: no seed gate exists in the code
+yet, so it has nothing to assert against until 9.119's seed gates are built.
+
+**g. What it does not do, and what is not decided.** The near lookups of (c) are measured after training by
+`experiments/diagnose_module_supports.py` (for each support node, the share of its reading that comes from its
+largest training perturbation, beside its in-degree and its reach); that reading is descriptive, and whether any
+share of dominated support nodes would justify a tighter rule is open in decision 9.150 and would be a later
+amendment. The degree-weighted node cost the owner proposed with it is not decided and not registered. **A
+disclosed limitation: the rule covers the tested model only.** It is defined on the linear-response encoder, which
+is the tested model's (`tested_models`). The message-passing encoder of `robustness_models` has no such edge list
+and the trainer refuses the rule for it, so the robustness model runs without it, and a module of that model may
+hold a node one source or none can reach.
+
+**h. What was measured, as a dated measurement and not a registered quantity.** On
+`graph_full_neuronal_split_binders_drugs_v5` (built 12 November 2026) with `evidence_full_v5`, on 22 November 2026,
+through the trainer's own model construction with the v5 cell-class weights, fold 0 and seed 0, no held-out set
+drawn: at a minimum of 2 the rule excludes 8,791 of 49,603 eligible nodes (7,882 that no source reaches and 909 that
+one source reaches; 9 more lie in the band from 2 to 5 and are kept), from 1,526 seed nodes of 1,543 training
+perturbations. Counting all 2,490 rows instead excludes 8,781. That graph is not the graph of the confirmatory run,
+which waits on the rebuild of decision 1.2, and the training rows will change when the held-out set is drawn; the
+counts on the registered graph are reported with the run, with the graph and the date (the trainer writes them to
+each run's results under `module_support_reach`).
+
+**What this item changes in the registration, and what it does not.** It registers a rule of the tested model and
+its value, and the commit that registers it turns the rule on, before the draw as the owner ruled:
+`configs/registered_rules.json` gains a thirteenth rule, `module_support_minimum_reach`, value 2, asserted by
+`tests/test_registration_matches_the_code.py` against the trainer's resolved default for the linear-response
+encoder with the noisy-OR head and against the registered flag list (`V4_LINEAR_RESPONSE_MODEL` in
+`experiments/run_main_model_batch.py`); for the message-passing encoder and the sigmoid head the value stays 0. The
+commit carries `Amends: module_support_minimum_reach`. Every run before it was made without the rule. It changes no
+hypothesis, baseline, split, threshold or level: items 25, 33, 34 and 38 stand word for word. It is outcome-blind:
+no held-out set has been drawn, decision 1.1 being open, so no confirmatory result existed to see.
+
 To fill in: Phase 1 counts per symptom and grade (docs/generated/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
 GWAS enrichment test; the open questions 8 to 10 of design section 11 (frequency as weight or target;

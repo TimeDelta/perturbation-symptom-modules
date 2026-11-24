@@ -10,14 +10,20 @@ expresses, as the limiting-step rule requires (walkable_adjacency). Reachability
 divisor and edge gates, so it is an upper bound on the nodes a field can carry a nonzero change to: a rule that excludes
 by it excludes no more than any measure of reach that read those would.
 
-The rule (experiments/run_main_model.py --module-support-minimum-reach, 0 by default and so off): a node fewer than
+The rule (experiments/run_main_model.py --module-support-minimum-reach; amendment item 39 registers it at 2 for the
+tested model, the linear-response encoder with the noisy-OR head, and the trainer resolves its default to 2 there and to
+0, which leaves it off, for every other encoder and head): a node fewer than
 that many sources can reach is never module support. At 2 it excludes every node one source or none can reach. A node
 only one perturbation source can move cannot take part in convergence, so it cannot serve the equifinality hypothesis,
 and a module holding it reads the identity of that perturbation as a lookup entry; a node no source can reach carries no
 field and only adds a gate. The owner, 22 November 2026, on the version that excludes only a perturbed gene with no
 incoming edge: "So limit it to only allowing incorporation of nodes with no incoming edges if it isn't also a
 perturbation source"; and, offered the general version beside it and the dominance diagnostic: "yes build both and draft
-the amendment". The rule is built and not applied: it changes the registered model, so it waits for its amendment.
+the amendment". From 22 to 24 November 2026 the rule was built and off by default, waiting for its amendment; it was
+registered as amendment item 39 and switched on for the tested model on 24 November 2026 (the owner: "I already told you
+twice not for 9.150 to do it before the draw"), so every run before that date was made without it. The reason given
+above names the equifinality hypothesis, which item 38 made descriptive on 23 November 2026; the rule does not depend on
+it, since a module holding such a node reads which perturbation was applied and not a mechanism two share.
 
 The sources counted are the training rows only (the trainer passes train_indices, and the refit its refit rows), as the
 leaks are initialised from them: under --score-lockbox the data still hold the lockbox perturbations, and a reach that

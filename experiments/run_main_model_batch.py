@@ -88,7 +88,9 @@ V4_MESSAGE_PASSING_MODEL = [*V4_SHARED_MODEL, "--encoder", "message_passing", "-
 V4_LINEAR_RESPONSE_MODEL = [*V4_SHARED_MODEL, "--encoder", "linear_response", "--fixed-point-tolerance", "0.001",
                             "--normalisation", "forward_cone",
                             "--class-weight-rule", "limiting_step", "--input-weights", "positive", "--cofactor-relations",
-                            "--extracellular-coupling", "--compartment-ph", "--reversible-reactions", "--channels-per-cell-class", "1"]
+                            "--extracellular-coupling", "--compartment-ph", "--reversible-reactions", "--channels-per-cell-class", "1",
+                            # amendment item 39 (decision 9.150): no module holds a node fewer than 2 training sources reach
+                            "--module-support-minimum-reach", "2"]
 
 CONFIGURATIONS: dict[str, list[str]] = {
     "b6_default": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum"],

@@ -427,44 +427,6 @@
       "checked": "2026-11-24",
       "checked_at_commit": "ead5262"
     },
-    "682dd4a6-8d52": {
-      "title": "The labels see far fewer directions than there are parameters",
-      "state": "built_and_decided",
-      "depicts": {
-        "decisions": [
-          "9.119",
-          "9.150",
-          "9.81"
-        ],
-        "files": [
-          "mechanistic_pathway_learning/models/linear_response_encoder.py",
-          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
-          "mechanistic_pathway_learning/models/edge_gates.py",
-          "experiments/run_main_model.py",
-          "experiments/run_main_model_batch.py"
-        ],
-        "items": [
-          "37f",
-          "37g",
-          "37h"
-        ]
-      },
-      "fingerprints": {
-        "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
-        "decision:9.150": "34ad7b4ace29db3017f57e93cf6661253bf7b3b64bc4f6ccbedae4259af730b4",
-        "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
-        "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
-        "item:37h": "c2549846cedc442d3f02bf370e810ca6bde9b57872c2fe0b230f340052211407",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
-        "file:experiments/run_main_model.py": "4b4d3fd1425a4c3cab72291b486bf7bb009a3b5f2d358419363c8685b8ca6ea9",
-        "file:experiments/run_main_model_batch.py": "2c96f3b49d390a4a397cfea7b3560169609fef23d0e47cb11b5e08e250db8979"
-      },
-      "checked": "2026-11-24",
-      "checked_at_commit": "ead5262"
-    },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
       "state": "built",
@@ -540,6 +502,9 @@
         "files": [
           "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
           "mechanistic_pathway_learning/models/support_reach.py"
+        ],
+        "items": [
+          "39"
         ]
       },
       "fingerprints": {
@@ -954,29 +919,6 @@
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
-        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:experiments/run_main_model.py": "4b4d3fd1425a4c3cab72291b486bf7bb009a3b5f2d358419363c8685b8ca6ea9"
-      },
-      "checked": "2026-11-24",
-      "checked_at_commit": "ead5262"
-    },
-    "mtp7zsmsxgy.37586": {
-      "title": "directions the labels see",
-      "depicts": {
-        "decisions": [
-          "9.119",
-          "9.150"
-        ],
-        "files": [
-          "mechanistic_pathway_learning/models/linear_response_encoder.py",
-          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
-          "experiments/run_main_model.py"
-        ]
-      },
-      "fingerprints": {
-        "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
-        "decision:9.150": "34ad7b4ace29db3017f57e93cf6661253bf7b3b64bc4f6ccbedae4259af730b4",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:experiments/run_main_model.py": "4b4d3fd1425a4c3cab72291b486bf7bb009a3b5f2d358419363c8685b8ca6ea9"

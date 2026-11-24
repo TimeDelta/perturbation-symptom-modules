@@ -126,10 +126,19 @@ def trainer_arguments(tmp_path: Path, *extra: str):
                                                "--node-state-dim", "6", "--num-modules", "2", "--batch-size", "3", *extra])
 
 
-def test_the_trainer_leaves_the_rule_off_by_default(tmp_path: Path) -> None:
+def test_the_trainer_applies_the_rule_by_default_for_the_tested_model_only(tmp_path: Path) -> None:
+    """Amendment item 39 (decision 9.150, switched on 24 November 2026): the linear-response encoder with the noisy-OR
+    head resolves the minimum reach to 2; a run that names 0 leaves it off, and the sigmoid head resolves to 0."""
     data = toy_data(tmp_path)
-    _, head = build_models(data, trainer_arguments(tmp_path), torch.device("cpu"))
-    assert head.support_reach_summary is None and head.support_gate.reach_excluded_node_mask is None
+    arguments = trainer_arguments(tmp_path)
+    _, head = build_models(data, arguments, torch.device("cpu"))
+    assert arguments.module_support_minimum_reach == 2
+    assert head.support_reach_summary is not None and head.support_gate.reach_excluded_node_mask is not None
+    _, head_without_the_rule = build_models(data, trainer_arguments(tmp_path, "--module-support-minimum-reach", "0"), torch.device("cpu"))
+    assert head_without_the_rule.support_reach_summary is None and head_without_the_rule.support_gate.reach_excluded_node_mask is None
+    sigmoid_arguments = trainer_arguments(tmp_path, "--head", "sigmoid")
+    build_models(data, sigmoid_arguments, torch.device("cpu"))
+    assert sigmoid_arguments.module_support_minimum_reach == 0
 
 
 def test_the_trainer_counts_only_the_rows_it_is_given(tmp_path: Path) -> None:

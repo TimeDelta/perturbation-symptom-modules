@@ -80,6 +80,11 @@
    "value": "computed_from_the_pools",
    "means": "VM_c is computed from the six ion pools with the weights of the linearised parallel-conductance (Millman) equation, and the changes_membrane_potential edges from the charge-moving reactions are not made, so the divisor at VM_c is 1 and the law arrives whole. Amendment item 35, the owner's ruling of 26 October 2026 in decision 9.87; it replaces item 13's computed_beside_the_reactions, under which the law arrived at 1 / (1 + R) of itself.",
    "code_location": "scripts/rebuild_data_layer.sh --membrane-potential, on both build_neuronal_graph_variant.py calls"
+  },
+  "module_support_minimum_reach": {
+   "value": 2,
+   "means": "No module of the tested model holds a node that fewer than 2 distinct seed nodes of the run's training rows (the refit's rows in a refit) can reach, walking the edges the linear-response encoder propagates along, through nodes some cell class expresses and never into an entry node; a gene's loss and its gain are one source. Reachability ignores signs, gains, divisors and edge gates, so it is an upper bound on the nodes a field can change. 0 leaves the rule off, which is what every run before this entry did and what an encoder without walked edges and the sigmoid head take. Amendment item 39; decision 9.150, the owner's ruling of 22 November 2026.",
+   "code_location": "experiments/run_main_model.py --module-support-minimum-reach, resolved by resolve_registered_defaults to 2 for the linear-response encoder with the noisy-OR head and to 0 otherwise"
   }
  }
 }
