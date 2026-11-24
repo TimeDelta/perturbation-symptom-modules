@@ -629,6 +629,46 @@
       },
       "checked": "2026-11-24",
       "checked_at_commit": "d2e746d"
+    },
+    "682dd4a6-8d52": {
+      "title": "The labels see far fewer directions than there are parameters",
+      "state": "built_and_decided",
+      "depicts": {
+        "decisions": [
+          "9.119",
+          "9.150",
+          "9.81"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
+          "mechanistic_pathway_learning/models/edge_gates.py",
+          "experiments/run_main_model.py",
+          "experiments/run_main_model_batch.py"
+        ],
+        "items": [
+          "37f",
+          "37g",
+          "37h",
+          "39"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
+        "decision:9.150": "7c5809e9a0414cd8fdaf34d26bfe5d169308c13da6f21350724e9e73d11b9def",
+        "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
+        "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
+        "item:37h": "c2549846cedc442d3f02bf370e810ca6bde9b57872c2fe0b230f340052211407",
+        "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
+        "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
+        "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce",
+        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f"
+      },
+      "checked": "2026-11-24",
+      "checked_at_commit": "c14e84a"
     }
   },
   "records": {
