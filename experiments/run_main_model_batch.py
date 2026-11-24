@@ -300,7 +300,10 @@ CONFIGURATIONS: dict[str, list[str]] = {
                                                         "--init-leak-from-base-rate", "--module-bias-init", "-3", "--gate-init-noise", "0.5", "--link-learning-rate", "0.02", "--leak-learning-rate", "0.0002"],
     "b3_typed_nodes": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum", "--node-features", "typed"],
     # a frequency target and a soft prior have no place in the counted-once likelihood (decision 9.90), so their arms
-    # name the weighted loss they were built on
+    # name the weighted loss they were built on. The weighted loss is the one that reads the evidence weights, so these
+    # arms take the reliability-weighted table, the registered default (amendment item 12d), as --evidence-dir:
+    # evidence_full_v5_reliability (scripts/rebuild_data_layer.sh); the grade-weighted evidence_full_v5 is the
+    # fixed_grades arm. Each run records the weighting it read (evidence_weighting in its results).
     "b6_frequency_target": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--positive-target-from-frequency", "--label-likelihood", "weighted"],
     "b6_default_permuted": ["--head", "noisy_or", "--field", "difference", "--pooling", "sum", "--permute-labels"],
     "b3_sigmoid": ["--head", "sigmoid", "--field", "difference", "--pooling", "sum"],

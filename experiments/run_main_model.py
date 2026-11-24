@@ -677,6 +677,21 @@ def configuration_fingerprint(arguments, data, label_mask) -> dict:
     return fingerprint
 
 
+def evidence_weighting_of(evidence_dir) -> str | None:
+    """The weighting the evidence table was assembled with, "grade" or "reliability" (the assembler's --weighting, the
+    same on every row), or None for a table written before the column existed. Only --label-likelihood weighted reads
+    the weights (decision 9.90), and the registered default weighting is reliability (configs/evidence_assembly.yaml,
+    mode learned_reliability; amendment item 12d), which the rebuild writes to evidence_full_v5_reliability beside the
+    grade-weighted evidence_full_v5 of the fixed_grades arm (scripts/rebuild_data_layer.sh)."""
+    records = pd.read_parquet(Path(evidence_dir) / "evidence_records.parquet")
+    if "weighting" not in records.columns:
+        return None
+    weightings = sorted(set(records.weighting.dropna().astype(str)))
+    if len(weightings) != 1:
+        raise ValueError(f"{evidence_dir}: the weighting column holds {weightings}; the assembler writes one value on every row")
+    return weightings[0]
+
+
 def file_sha256(path) -> str | None:
     if not path:
         return None
@@ -2310,6 +2325,11 @@ def main() -> None:
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, metabolic_layer_only=arguments.metabolic_layer_only, group_by=arguments.group_by, label_grades=tuple(arguments.label_grades) if arguments.label_grades else None,
                                 label_selection=arguments.label_selection, drug_entry=arguments.drug_entry or "nodes",
                                 combined_perturbations=arguments.combined_perturbations)
+    evidence_weighting = evidence_weighting_of(arguments.evidence_dir)
+    if getattr(arguments, "label_likelihood", "weighted") != POSITIVE_UNLABELLED:
+        print(f"evidence weighting: {evidence_weighting or 'not recorded (a table written before the column)'}; "
+              + ("this weighted run is the fixed_grades arm, and the registered default weighting is reliability "
+                 "(evidence_full_v5_reliability)" if evidence_weighting == "grade" else "the weighted loss reads these weights"))
     if data.drug_entry == "nodes":
         if arguments.normalise_drug_input:
             raise ValueError("--normalise-drug-input rescales seed magnitudes, and a drug seeded on its entry node has one seed of magnitude 1; "
@@ -2942,6 +2962,7 @@ def main() -> None:
         "code_provenance": state["code_provenance"],
         "graph_files_sha256": {name: file_sha256(Path(arguments.graph_dir) / f"{name}.parquet") for name in ("nodes", "edges")},
         "evidence_records_sha256": file_sha256(Path(arguments.evidence_dir) / "evidence_records.parquet"),
+        "evidence_weighting": evidence_weighting,
         "permutation_source_rows_sha256": permutation_source_rows_sha256,
         "configuration_fingerprint": state.get("configuration_fingerprint"),
         "node_descriptors_sha256": file_sha256(getattr(arguments, "node_descriptors", None)),

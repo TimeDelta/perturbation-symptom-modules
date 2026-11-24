@@ -105,9 +105,10 @@ fi
 # label). The statements are keyword-matched from the curation's own wording and do not depend on the graph, which the
 # script reads only for a count in its summary. The v4 and v5 assembler calls below take the table as
 # --open-targets-scoped-rows. Until 24 November 2026 this script neither built the table nor passed the flag, so no
-# table it built carried the class. Every assembler call in this script takes the assembler's default --weighting
-# grade, under which the fit sets the reliability_posterior column and no observation's weight, so here the class
-# moves that column and adds its rows to evidence_reports.parquet. A statement joins the perturbation that moves its
+# table it built carried the class. Every assembler call in this script but one takes the assembler's default
+# --weighting grade, under which the fit sets the reliability_posterior column and no observation's weight, so there
+# the class moves that column and adds its rows to evidence_reports.parquet; the one is evidence_full_v5_reliability
+# (--weighting reliability, since 24 November 2026), where the fit also sets each pair's weight. A statement joins the perturbation that moves its
 # target the same way (since 24 November 2026), so on v4, which has no gain-of-function alleles, an activation
 # statement joins nothing. The two v3 tables are not passed it: they reproduce builds that predate the
 # decision of 13 October 2026, which the preregistration enters "at the v4 rebuild".

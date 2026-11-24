@@ -8,7 +8,13 @@
 # --combined-perturbations). Put them in MPL_DATA_ARGS; the report tables that become priors go in
 # MPL_SOFT_PRIOR_REPORTS (defaults below to the rebuild's outputs and the release's literature table).
 #
-#   MPL_DATA_ARGS="--graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v4 --evidence-dir data/processed/evidence_full_v4 ..." \
+# The soft-prior arms use the weighted loss, the one loss that reads the evidence weights (decision 9.90), so their
+# --evidence-dir is the reliability-weighted table, the registered default weighting (amendment item 12d):
+# evidence_full_v5_reliability, which scripts/rebuild_data_layer.sh writes beside the grade-weighted evidence_full_v5 of
+# the fixed_grades arm (decision 8.5, 24 November 2026). The run's results record the weighting it read
+# (evidence_weighting). Until 24 November 2026 the example below named evidence_full_v4.
+#
+#   MPL_DATA_ARGS="--graph-dir data/processed/graph_full_neuronal_split_binders_drugs_v5 --evidence-dir data/processed/evidence_full_v5_reliability ..." \
 #   bash scripts/soft_prior_grid.sh linear_response            # or message_passing
 #   bash scripts/soft_prior_grid.sh linear_response --permuted  # the control at one point: set MPL_GRID_STRENGTHS and MPL_GRID_EXPONENTS to it
 #   MPL_DRY_RUN=1 bash scripts/soft_prior_grid.sh linear_response  # print the commands and run nothing
