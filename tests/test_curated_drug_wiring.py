@@ -181,12 +181,15 @@ def test_an_override_naming_an_absent_ingredient_or_without_a_reason_is_refused(
 
 def test_the_committed_admitted_list_holds_group_n_and_the_rule_14_admissions_only() -> None:
     """Decision 3.2 admitted codeine, cyclobenzaprine, hydrocodone and metoclopramide under rule 14 as item 31 tightened
-    it, and 9.7b dextromethorphan, whose part (a) was read at a second medicines agency on 8 November 2026; item 31
-    dropped metoprolol and propranolol, so their codes must not be in the list (decision 9.117)."""
+    it, 9.7b dextromethorphan, whose part (a) was read at a second medicines agency on 8 November 2026, and 9.31
+    prazosin, whose silent US label was completed from Health Canada's monograph (the owner, 24 November 2026: "For
+    prazosin, yes"); item 31 dropped metoprolol and propranolol, so their codes must not be in the list (decision 9.117),
+    and prazosin's admission is the substance alone, not its diuretic combination C02LE01."""
     prefixes = read_admitted_atc_prefixes(ADMITTED_ATC_PREFIXES_PATH)
     assert prefixes[0] == "N"
-    assert set(prefixes) == {"N", "A03FA01", "R05DA04", "R05DA03", "M03BX08", "R05DA09"}
+    assert set(prefixes) == {"N", "A03FA01", "R05DA04", "R05DA03", "M03BX08", "R05DA09", "C02CA01"}
     assert not has_admitted_atc_code(["C07AB02"], prefixes) and not has_admitted_atc_code(["C07AA05"], prefixes)
+    assert has_admitted_atc_code(["C02CA01"], prefixes) and not has_admitted_atc_code(["C02LE01"], prefixes)
     with open(ADMITTED_ATC_PREFIXES_PATH, encoding="utf-8", newline="") as prefix_file:
         assert all(row["source"].strip() and row["reason"].strip() for row in csv.DictReader(prefix_file))
 

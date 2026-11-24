@@ -1136,6 +1136,12 @@
       "recorded": "2026-11-24",
       "append_only": true,
       "what": "decision 8.5: the proposed mapping of the 111 Open Targets target-safety statements to the fine constructs their curated wording names, checked against the crosswalk's terms and HPO, MeSH or SNOMED; the CSV beside it is the machine-readable proposal; not ruled, not built; read on Fable"
+    },
+    "docs/records/2026-11/prazosin_atc_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "decision 9.31: prazosin's WHO ATC code C02CA01, as SIDER 4.1 gives it, confirmed against the WHO ATC/DDD index and NLM RxNav before its admission row; its only other code is the diuretic combination C02LE01; read on Fable"
     }
   }
 }
