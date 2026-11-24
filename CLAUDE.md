@@ -181,6 +181,13 @@ against them before it is acted on.
   `8ad304c`: every field read from the paper's PubMed record and confirmed against Europe PMC, with a `note` that says
   what is held (the abstract only, or the full text and where it was read). Building an entry is research and is
   done on Fable ("Models").
+  **A work PubMed does not hold** (a classic statistics paper, a proceedings chapter, a journal outside MEDLINE) takes
+  its fields from Crossref, confirmed against OpenAlex, and its `note` names those two indexes (the owner, 24 November
+  2026, "Item 15: yes to all", on that proposal from the Fable verification of item 15's literature pass).
+- **The PubMed connector's full-text tool is a permitted route to an article's full text** (the owner, 24 November
+  2026, "Item 15: yes to all", answering whether it counts as one after NCBI's E-utilities refused
+  `experiments/read_public_page.py` by its robots file). The reader's other limits hold, and what is read is saved
+  and cited as any full text is.
 
 The table of licences is `docs/data_sources.md`. The quotes and where each was read are in
 `docs/label_source_review.md`, section 11.

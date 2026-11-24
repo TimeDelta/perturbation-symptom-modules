@@ -279,3 +279,54 @@ a sourced value.
 `literature_bias_pages/epmc/`); read Rubin 1976, Little 1993, Heckman 1979, Rosenbaum and Rubin 1983 and Shimodaira
 2000 for the assumptions attributed to them; retry the three full texts that failed; and look for a measured survey
 of AAG-specific binding coverage, which this pass did not find.
+
+---
+
+**Added 24 November 2026: verified on Fable, and corrected** (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`;
+the owner approved every correction on 24 November 2026: "Item 15: yes to all"). This record is append-only, so its text
+above stands as written on 20 November and the corrections are stated here. All 38 cited works exist, 33 of 34
+quotations are verbatim in their sources, and every literature number is in its source. The project's own numbers taken
+from the scratchpad reports of 18 November 2026 cannot be checked, those reports having been lost with the container on
+23 November 2026; they are not relied on until re-measured.
+
+- **C1, Tobit (section 1.5).** "so it is the one MNAR case that can be corrected rather than only bounded" is narrowed:
+  censored-value handling can correct a class statistic for values recorded only as a bound, given known thresholds and
+  an assumed distribution, but not for pairs never measured or deposited, nor the single cell that holds only a bound;
+  the Tobit estimate is not robust to a wrong distribution; and a class median needs no likelihood while fewer than half
+  its values are censored on one side. The count of 5,676 is the ChEMBL sibling harvest's of 19 November 2026
+  (ChEMBL_37, binding Ki, the harvested receptor and transporter families; `docs/item37_rulings_draft_2026-11-13.md`
+  section 19): molecule-subtype cells holding only censored values **where an exact sibling value exists**. It is not a
+  count over the project's drugs, and it cannot be reproduced today, the harvest's script and output not being on disk.
+- **C2, Svensson et al. 2025.** The quotation in section 2 is the arXiv preprint's wording (v1, 6 September 2024). The
+  journal's reads: "despite the partial information available in censored labels, they are essential to reliably
+  estimate uncertainties in real pharmaceutical settings where approximately one-third or more of experimental labels are
+  censored" (read in OpenAlex's index). With that, "No preprint is cited" holds.
+- **C3, the "active" shares (section 2.2).** The three figures are not on one scale. On one scale (log-value above 6):
+  23.3% in ChEMBL, 52.7% in BindingDB, 79.8% in GtoPdb and 47.1% in the part of PubChem that overlaps them (Isigkeit et
+  al. 2022). The 2.8% is a different measure, depositors' outcome labels over all PubChem assay results (An et al. 2025).
+  The like-for-like contrast is ChEMBL 23.3% against GtoPdb 79.8%, and the sentence contrasting "about 3% active" with
+  "about 80% active" compares two definitions and two populations.
+- **C4, Santos et al. 2017.** "667 human proteins for 1,578 FDA-approved drugs" reads: 893 human and pathogen-derived
+  biomolecules through which 1,578 US FDA-approved drugs act, 667 of them human-genome-derived proteins.
+- **C5, Schiebroek et al. 2026.** The 0.3 log units is an earlier estimate they cite and adopt, not their measurement:
+  the source cell reads "an earlier estimate, as cited by Schiebroek et al. 2026 (full text)".
+- **C6.** "Rubin's (1976) taxonomy" reads: the taxonomy that grew from Rubin (1976), who defined "missing at random" and
+  "observed at random"; the three names are the later standard ones.
+- **C7, Heckman.** It assumes, to be identified by more than its distributional assumption, an exclusion restriction;
+  "too few rows" refers to the allosteric and channel classes, not the aminergic harvest of 103,196 Ki values; and
+  membership of a fixed screening panel is a fourth candidate exclusion variable the record did not weigh.
+- **C8, Ingle et al. 2016.** "pharmaceutical training set covered 82 to 99% of their chemical space" reads: the two sets
+  "exhibit similarities in terms of chemical space (99-82% overlap)".
+- **C9, Shimodaira 2000.** Weighting is optimal only under model misspecification; under a correctly specified model
+  the unweighted estimate is asymptotically optimal.
+- **C10, Stoeger et al. 2018.** RNA and protein abundance is one of six leading feature categories, so "among the
+  leading features".
+- **C11, section 0.** "Europe PMC full text for five open-access papers" lists four; it reads four.
+- **Identifications.** "Copas and Shi 2000" is their Biostatistics paper (PMID 12933507), not the BMJ paper of the
+  same year; "Sugiyama et al. 2006" is the DAGM proceedings chapter; "Kouw et al. 2019" is, by the verifier's best
+  match, Kouw, Krijthe and Loog, IEEE MLSP 2019.
+- **Missing method families**, named by the verification and not appraised here: worst-case bounds (Horowitz and
+  Manski 2000), censoring without a distribution (Powell 1984, Turnbull 1976), Tobit's non-robustness (Arabmazar and
+  Schmidt 1982), publication selection on the value (Andrews and Kasy 2019), and noise when combining public
+  affinities (Landrum and Riniker 2024).
+
