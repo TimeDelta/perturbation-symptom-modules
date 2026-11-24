@@ -3812,6 +3812,84 @@ commit carries `Amends: module_support_minimum_reach`. Every run before it was m
 hypothesis, baseline, split, threshold or level: items 25, 33, 34 and 38 stand word for word. It is outcome-blind:
 no held-out set has been drawn, decision 1.1 being open, so no confirmatory result existed to see.
 
+Amendment, 24 November 2026 (second), written before any lockbox run and before the held-out set has been drawn
+(decision 1.1 is open).
+
+**40. The prediction is each symptom's highest logit along the steady states a perturbation passes through as its
+exposure rises from rest, not the noisy-OR over the stable steady states of the full perturbation (amends 37f (7);
+decision 9.153).** The owner, 24 November 2026, on replacing the fixed point: first "What about just solving for step
+of maximum activation for each module?"; then, of the two readings put to them, a head run at every point over a
+per-module peak ("3 ya I like a better"); then whether it "still read[s] only points that which the dynamics being
+read actually happen"; and, offered steady states solved along a slow rise of the exposure, which needs no
+timescales: "yes that matches".
+
+**Why the peak over iteration rounds is not used.** A round is not physical time while the relations carry no
+timescale (37f). Rest and the steady state are the only points of a trajectory that do not depend on timing; every
+point between them depends on three things the model does not hold: the relative response rates of the nodes, which it
+takes as equal; the step size of the iteration (the damping of 0.5 is a forward-Euler step of dh/dt = F(h) - h); and
+the time course of the input, which the model switches on as a step and holds. A peak over rounds would mostly read
+those three. This answers 37f's `[R 5]`: the per-round readings of the iteration are not a registered prediction.
+
+(1) **The exposure ramp.** A drug perturbation is raised from 0 to its full exposure in levels evenly spaced in the
+input's own units, their number set by (7). The full exposure is the drug's therapeutic input under items 37h and 37k
+once they are built, and until then the input it enters with today. At each level the steady state is solved from the
+previous level's steady state, so the states read are the branch continued from rest. A gene or allele perturbation is
+lifelong and has no ramp: it is read at its full level alone, the steady state of 37f reached from rest (the owner,
+24 November 2026: "Other three draft points confirmed", of this and of the stability and fold rules in (4)).
+
+(2) **The readout.** At each level the head maps the whole steady state to symptom logits, so every reading is of one
+state. Each symptom's prediction is its highest logit over the levels, taken hard, so the gradient flows through the
+level that attains it (the owner: "max symptom logit over the exposures"). The logit and the probability are monotone
+in each other, so the level chosen is the same in either.
+
+(3) **The assumption, a registered limitation.** The network is taken to settle quickly compared with how fast a
+drug's exposure changes, so the states physiology passes through during dosing are approximately these steady states.
+It is weakest where the graph holds slow nodes, such as transcriptional and adaptive ones, whose timescales are not
+sourced. Chronic adaptation (receptor up- or down-regulation over weeks) is represented only where the graph holds its
+edges.
+
+(4) **The solver.** At each level the unclamped relaxation with saturation inside (37f (1) to (6)) runs from the
+previous level's state, accelerated by Anderson mixing. The backward pass differentiates implicitly, with a matrix-free
+iterative solve, at the level where each symptom's maximum falls; symptoms can peak at different levels, so one
+perturbation needs as many solves as it has distinct peak levels, at most the smaller of the number of levels and the
+number of symptoms. **Stable** means the relaxation settles on the state; that is stability under equal response
+rates, which is the criterion registered, and its dependence on unequal rates is disclosed. **A fold**: where the
+branch from rest ends at a fold, the next level's relaxation lands on another stable state; the jump is what the
+dynamics do, and it is kept and flagged as 37f's bifurcation flag. **A level that does not settle** (a sustained
+oscillation) is read at the centre of the oscillation, each node halfway between the highest and the lowest value it
+takes over one cycle (the owner: "middle point of the oscillation", then "R10 you did it right"), and flagged as
+oscillating. The centre of a cycle is not a steady state, so implicit differentiation does not apply there: where a
+symptom's maximum falls on such a level, the gradient is taken by unrolling one cycle of the relaxation and
+backpropagating through its steps (the owner: "R12 i"), so it is the gradient of the value the model predicts. Its cost
+grows with the cycle's length.
+
+(5) **Several steady states: the branch from rest is read** (the owner: "R11 yes, a"). It replaces 37f's noisy-OR
+over every stable state found. A state the system does not reach from rest as the exposure rises does not enter the
+prediction, and decision 9.138's search, deferred, becomes a robustness reading when it is built. The owner's earlier
+ruling that "it could be the case that the symptoms show up for both steady states in the bistable switch" holds where
+the ramp visits both: a fold jump carries the branch to the other state, and the maximum over levels reads the levels
+after the jump in that state. Left out is a state only another history reaches, such as an earlier dose or a stressor,
+which the model does not hold; that is a registered limitation.
+
+(6) **What this replaces in 37f.** 37f (7)'s readout: the root-finder's search for several steady states of the full
+perturbation and the noisy-OR across the stable ones. 37f (1) to (6) stand: saturation, the floor, the headroom and its
+fallback, the clamp removed, and the bottleneck and pH ceiling inside the loop. The `forward_cone` rule still leaves
+`configs/registered_rules.json` in the commit that builds the solver, as 37f says.
+
+(7) **Before the build**, as for 37f: decision 9.81's four counts and the positive-feedback cycle count on the v5
+rebuild; the scoping of sourced headrooms; 37e's `[P 13]`; a pilot on a small planted network, with one branch of a
+bistable switch and one oscillating loop, checking that the ramp, the fold jump and the oscillation rule behave as
+written; and **the number of levels, set by measured time** (the owner: "depends on time complexity of solver", then
+"P25 yes, I meant measured time"). The pilot times one warm-started level and one unrolled cycle on the confirmatory
+graph and counts how spread out the peak levels are; the number of levels is then doubled from a small start until no
+symptom's maximum logit moves by more than a tolerance, or until a time budget is reached, whichever comes first. The
+tolerance and the budget are proposed with the pilot's measurements and registered before the build. This is a choice
+made on a numerical basis, and its justification is recorded: exposure is continuous and the levels only sample it,
+so once a finer sampling moves no maximum by more than the tolerance, more levels add compute and not physiology.
+
+It changes no label, split, baseline, threshold or level, and no code: the encoder of 37f is not built, and this item
+is built with it. It is outcome-blind: no held-out set has been drawn, decision 1.1 being open.
+
 To fill in: Phase 1 counts per symptom and grade (docs/generated/phase1_counts.md); final symptom set after
 go/no-go; B5 language model and prompt; power statement for the
 GWAS enrichment test; the open questions 8 to 10 of design section 11 (frequency as weight or target;

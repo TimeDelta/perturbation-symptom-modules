@@ -397,7 +397,8 @@
           "9.119",
           "9.16",
           "9.81",
-          "9.90"
+          "9.90",
+          "9.150"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py",
@@ -408,7 +409,8 @@
         "items": [
           "37f",
           "37g",
-          "37h"
+          "37h",
+          "39"
         ]
       },
       "fingerprints": {
@@ -530,7 +532,8 @@
           "9.106",
           "9.117",
           "9.121",
-          "9.138"
+          "9.138",
+          "9.153"
         ],
         "files": [
           "experiments/run_main_model_batch.py",
@@ -552,7 +555,8 @@
           "37j",
           "37k",
           "37m",
-          "37o"
+          "37o",
+          "40"
         ]
       },
       "fingerprints": {
@@ -902,11 +906,13 @@
       "depicts": {
         "decisions": [
           "9.119",
-          "9.81"
+          "9.81",
+          "9.150"
         ],
         "items": [
           "37f",
-          "37g"
+          "37g",
+          "39"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py",
@@ -1226,31 +1232,6 @@
       },
       "checked": "2026-11-24",
       "checked_at_commit": "571d1d1"
-    },
-    "mtp7zsmsxgy.1602": {
-      "title": "the registered model (lead and table .1944)",
-      "depicts": {
-        "decisions": [
-          "9.16",
-          "9.77",
-          "9.78",
-          "9.87",
-          "9.90"
-        ],
-        "files": [
-          "configs/registered_rules.json"
-        ]
-      },
-      "fingerprints": {
-        "decision:9.16": "56969743a48a3720ef9fac82a6e7fd7460b691145316a25ec64108be0fb5b41d",
-        "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
-        "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
-        "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
-        "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
-        "file:configs/registered_rules.json": "49d388d1ed746f96ecb99d1a83880f0cf328138dc835568bfe9cb2a9d084247e"
-      },
-      "checked": "2026-11-24",
-      "checked_at_commit": "1ae639d"
     },
     "mtp7zsmsxgy.31639": {
       "title": "resting input and forward_cone",
