@@ -1260,6 +1260,58 @@
       },
       "checked": "2026-11-24",
       "checked_at_commit": "1ae639d"
+    },
+    "mtp7zsmsxgy.37586": {
+      "title": "directions the labels see",
+      "depicts": {
+        "decisions": [
+          "9.119",
+          "9.150"
+        ],
+        "files": [
+          "mechanistic_pathway_learning/models/linear_response_encoder.py",
+          "mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py",
+          "experiments/run_main_model.py"
+        ],
+        "items": [
+          "39"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
+        "decision:9.150": "7c5809e9a0414cd8fdaf34d26bfe5d169308c13da6f21350724e9e73d11b9def",
+        "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
+        "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
+        "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce"
+      },
+      "checked": "2026-11-24",
+      "checked_at_commit": "826039b"
+    },
+    "mtp7zsmsxgy.1602": {
+      "title": "the registered model (lead and table .1944)",
+      "depicts": {
+        "decisions": [
+          "9.16",
+          "9.77",
+          "9.78",
+          "9.87",
+          "9.90"
+        ],
+        "files": [
+          "configs/registered_rules.json"
+        ]
+      },
+      "fingerprints": {
+        "decision:9.16": "56969743a48a3720ef9fac82a6e7fd7460b691145316a25ec64108be0fb5b41d",
+        "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
+        "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
+        "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
+        "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
+        "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
+      },
+      "checked": "2026-11-24",
+      "checked_at_commit": "826039b"
     }
   }
 }
