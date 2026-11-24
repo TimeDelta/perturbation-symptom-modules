@@ -168,6 +168,35 @@ def test_the_fine_crosswalk_carries_terms_apart_keeps_mesh_with_the_namesake_and
         build_fine_crosswalk(coarse_rows() + [coarse_rows()[2]], [], {}, vocabulary)
 
 
+def test_a_row_kept_together_stays_one_fine_construct_holding_every_root(vocabulary, tmp_path):
+    from mechanistic_pathway_learning.evidence.symptom_constructs import read_kept_together
+    agitation_row = coarse_rows()[1]
+    assert [construct.name for construct in fine_constructs_of(agitation_row, set())] == ["agitation", "restlessness"]
+    (kept,) = fine_constructs_of(agitation_row, {"psychomotor_agitation"})
+    assert (kept.name, kept.coarse, kept.hpo_id, kept.hpo_name, kept.is_namesake) == ("psychomotor_agitation", "psychomotor_agitation", "HP:0000713;HP:0000711", "Agitation;Restlessness", True)
+    assert [construct.name for construct in fine_constructs_of(agitation_row)] == ["agitation", "restlessness"], "the committed table does not name this row"
+    with open(tmp_path / "kept.csv", "w", newline="") as handle:
+        handle.write("coarse_symptom,date,note\npsychomotor_agitation,2026-11-24,one phenomenon\n")
+    assert [row["coarse_symptom"] for row in read_kept_together(tmp_path / "kept.csv")] == ["psychomotor_agitation"] and read_kept_together(tmp_path / "missing.csv") == []
+    with open(tmp_path / "unreasoned.csv", "w", newline="") as handle:
+        handle.write("coarse_symptom,date,note\npsychomotor_agitation,2026-11-24,\n")
+    with pytest.raises(ValueError, match="missing note"):
+        read_kept_together(tmp_path / "unreasoned.csv")
+    page = render("stamp", [{column: "" for column in FINE_COLUMNS} | {"target_symptom": "psychomotor_agitation", "coarse_symptom": "psychomotor_agitation",
+                                                                         "hpo_ids": "HP:0000713;HP:0000711", "hpo_names": "Agitation;Restlessness"}], [], [],
+                  kept_together=[{"coarse_symptom": "psychomotor_agitation", "date": "2026-11-24", "note": "one phenomenon"}])
+    assert "## Constructs whose roots are kept together" in page and "| psychomotor_agitation | HP:0000713; HP:0000711 Agitation; Restlessness | 2026-11-24 | one phenomenon |" in page
+    assert "## Constructs whose roots are kept together" not in render("stamp", [], [], [])
+
+
+def test_the_committed_crosswalk_keeps_both_dream_terms_in_abnormal_dreams():
+    """The owner, 24 November 2026, on leaving HP:0032938 out as a term defined by its cause: "why not map to nightmares?"."""
+    for name in ("docs/symptom_crosswalk.csv", "docs/symptom_crosswalk_fine.csv"):
+        row = {row["target_symptom"]: row for row in read_rows(ROOT / name)}["abnormal_dreams"]
+        assert row["hpo_ids"] == "HP:5200287;HP:0032938" and row["meddra_preferred_terms"] == "Abnormal dreams;Nightmare", name
+        assert row["hpo_names"] == "Recurrent distressing nightmares;Recurrent trauma-related distressing dreams", name
+
+
 def test_an_override_moves_a_mesh_descriptor_with_its_level_from_the_namesake(vocabulary):
     from mechanistic_pathway_learning.evidence.symptom_constructs import fine_construct_of_descriptor
     coarse = coarse_rows()
@@ -233,7 +262,10 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     extra_roots = read_rows(root / "configs/fine_construct_extra_roots.csv")
     additions = {row["target_symptom"] for row in read_rows(root / "configs/symptom_construct_additions.csv")}
     assert {"intellectual_disability", "tardive_dyskinesia", "orofacial_dyskinesia", "extrapyramidal_dyskinesia"} <= additions  # 9.58, 9.115, 9.116
-    assert len(fine) == sum(max(1, len([part for part in row["hpo_ids"].split(";") if part])) for row in coarse) + len(additions) + len(extra_roots)
+    kept_together = {row["coarse_symptom"] for row in read_rows(root / "configs/fine_construct_kept_together.csv")}
+    assert kept_together == {"abnormal_dreams"}, "a row here is an exception to one construct per root and needs the owner's ruling"
+    assert len(fine) == sum(1 if row["target_symptom"] in kept_together else max(1, len([part for part in row["hpo_ids"].split(";") if part]))
+                            for row in coarse) + len(additions) + len(extra_roots)
     assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | additions
 
 

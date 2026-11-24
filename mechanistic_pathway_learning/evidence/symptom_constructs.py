@@ -2,7 +2,8 @@
 
 Decision 9.58 (the owner, 16 October 2026): "Finely grained symptoms is the goal" and merging is to be an output of the
 model, not an input. The coarse crosswalk (docs/symptom_crosswalk.csv) fuses several HPO roots into one construct in
-seven rows. The fine level has one construct per HPO root, named by the root's own HPO name, so that no construct is
+seven rows (an eighth, abnormal_dreams, has two roots that are kept together; see the last paragraph). The fine level
+has one construct per HPO root, named by the root's own HPO name, so that no construct is
 authored here: psychosis's four roots become four constructs, parkinsonism's six become six, and a construct with one
 root keeps its coarse name. New constructs the coarse level never had (intellectual disability) come from an additions
 table with the same columns as the crosswalk.
@@ -28,6 +29,13 @@ names a coarse construct and an HPO term under one of its roots, which becomes a
 only (with_extra_roots). The coarse crosswalk as registered stays as it is, and so does what the coarse construct
 covers, because the added root is a descendant of a root it already has. Decision 9.74 split Akathisia out of
 Restlessness this way (the owner, 19 October 2026: "I think physiologically, it should be split out").
+
+The reverse case is configs/fine_construct_kept_together.csv: a coarse construct it names is not split at its roots and
+stays one fine construct under its coarse name, holding every root. It is for roots that HPO files apart by cause and
+not by phenomenon. The one row (24 November 2026) is abnormal_dreams, whose roots Recurrent distressing nightmares
+HP:5200287 and Recurrent trauma-related distressing dreams HP:0032938 are the same dream symptom with and without a
+trauma behind it; the owner, asked to leave the second out as a term defined by its cause: "why not map to
+nightmares?". Each row is an exception to one construct per root and carries its reason.
 """
 from __future__ import annotations
 
@@ -46,6 +54,7 @@ COARSE_CROSSWALK_PATH = Path("docs/symptom_crosswalk.csv")
 FINE_CROSSWALK_PATH = Path("docs/symptom_crosswalk_fine.csv")
 ADDITIONS_PATH = Path("configs/symptom_construct_additions.csv")
 TERM_OVERRIDES_PATH = Path("configs/fine_construct_term_overrides.csv")
+KEPT_TOGETHER_PATH = Path("configs/fine_construct_kept_together.csv")
 EXTRA_ROOTS_PATH = Path("configs/fine_construct_extra_roots.csv")
 EXTRA_ROOT_REQUIRED_COLUMNS = ("coarse_symptom", "hpo_id", "hpo_name", "decision")
 IMPC_COARSE_PATH = Path("configs/impc_symptom_crosswalk.csv")
@@ -161,15 +170,36 @@ def read_rows(path: Path) -> list[dict[str, str]]:
         return [dict(row) for row in csv.DictReader(handle)]
 
 
-def fine_constructs_of(row: dict[str, str]) -> list[FineConstruct]:
+def read_kept_together(path: Path | None = None) -> list[dict[str, str]]:
+    """The coarse constructs that stay one fine construct although they have several roots (columns coarse_symptom,
+    date, note; every one required, the note being the reason); an absent file names none. Without a path, the
+    committed table, read from the working directory as the other inputs are."""
+    path = KEPT_TOGETHER_PATH if path is None else Path(path)
+    if not path.exists():
+        return []
+    rows = read_rows(path)
+    for number, row in enumerate(rows, start=2):
+        missing = [column for column in ("coarse_symptom", "date", "note") if not (row.get(column) or "").strip()]
+        if missing:
+            raise ValueError(f"{path} line {number}: missing {', '.join(missing)}")
+    return rows
+
+
+def fine_constructs_of(row: dict[str, str], kept_together: set[str] | None = None) -> list[FineConstruct]:
     """One construct per HPO root of a coarse row; a single-root row keeps its coarse name. A row without an HPO root
-    (catatonia) is one construct under its coarse name."""
+    (catatonia) is one construct under its coarse name, and so is a row named in kept_together, whose construct holds
+    every root (hpo_id and hpo_name are then the row's semicolon lists). Without kept_together, the committed table
+    configs/fine_construct_kept_together.csv decides, so that every caller splits a row the same way."""
     coarse = row["target_symptom"]
     root_ids, root_names = split_cell(row.get("hpo_ids")), split_cell(row.get("hpo_names"))
     if len(root_ids) != len(root_names):
         raise ValueError(f"{coarse}: {len(root_ids)} hpo_ids but {len(root_names)} hpo_names")
     if len(root_ids) <= 1:
         return [FineConstruct(coarse, coarse, root_ids[0] if root_ids else "", root_names[0] if root_names else "", True)]
+    if kept_together is None:
+        kept_together = {kept["coarse_symptom"].strip() for kept in read_kept_together()}
+    if coarse in kept_together:
+        return [FineConstruct(coarse, coarse, ";".join(root_ids), ";".join(root_names), True)]
     names = [slug(name) for name in root_names]
     namesake_index = names.index(coarse) if coarse in names else 0
     constructs = []
