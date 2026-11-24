@@ -1088,6 +1088,30 @@
       "recorded": "2026-11-20",
       "append_only": true,
       "what": "exploration item 15 (literature bias in the curated sources): correction methods, measured bias and their fit to the fallbacks of the amendment of 13 November 2026, run on Opus at the owner's request on 20 November 2026; unconfirmed, needs verification on Fable"
+    },
+    "docs/records/2026-11/item14_drug_target_curation_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "exploration-queue item 14's curation of the six drugs whose ChEMBL row is a plain MODULATOR (gabapentin, pregabalin, levetiracetam, brivaracetam, cariprazine, pentazocine) and of bupropion's nicotinic antagonism, each finding with two independent sources and the config route the code allows; the source reading was on Fable, two write-up passes fell back to Opus and stopped, and the closing section was written on Fable from the log"
+    },
+    "docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "Fable verification of the Opus literature pass of 20 November 2026 (docs/literature_bias_2026-11-20.md) for exploration-queue item 15: citations, quotations, numbers and appraisals checked, corrections C1 to C11 proposed and not applied, references.bib additions proposed"
+    },
+    "docs/records/2026-11/item21_human_gem_sweep_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "exploration-queue item 21: the pinned Human-GEM v2.0.1 against upstream 2.1.1 and its open issues, every changed reaction and metabolite classified, and proposed correction rows for three glutathione-peroxidase reactions; read on Fable"
+    },
+    "docs/records/2026-11/study_sheet_audit_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "the Fable checks of the study sheet's diagrams and prose of 23 and 24 November 2026: lost-run decision ids found and replaced, the encoder and propagation-channel diagrams split into as-built and as-decided halves, every diagram's depicts list audited, and the 29 architecture passages registered"
     }
   }
 }
