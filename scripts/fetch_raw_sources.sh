@@ -180,6 +180,17 @@ fetch "$raw_directory/gene2phenotype/G2P_all_panels.csv" "https://www.ebi.ac.uk/
 # was replaced.
 fetch "$raw_directory/phenopacket_store/all_phenopackets.zip" "https://github.com/monarch-initiative/phenopacket-store/releases/download/0.1.27/all_phenopackets.zip" d0c70005bb09b87035087516252b6b539fbc0415be7c664b73c9cde7eedf205a
 
+# Open Targets target safety curation (github.com/opentargets/curation, directory target_safety, at commit
+# 1ddf04e7c998bf599746777a3c022b97e1c6888f of 17 September 2026, the commit docs/alternative_sources.md records as
+# 1ddf04e with adverse_effects.tsv at 4,939 rows and 668,163 bytes). Apache License 2.0, read in the LICENSE file at
+# that commit on 24 November 2026. experiments/scope_open_targets_symptom_labels.py reads both files and writes the
+# curated statements that scripts/rebuild_data_layer.sh passes to the evidence assembler as
+# --open-targets-scoped-rows (amendment item 12d, decision 8.5). Until 24 November 2026 no script fetched them, so a
+# new container could not build the class. An address by commit is fixed, so DRIFT here means the file changed under it.
+open_targets_curation_url="https://raw.githubusercontent.com/opentargets/curation/1ddf04e7c998bf599746777a3c022b97e1c6888f/target_safety"
+fetch "$raw_directory/opentargets_curation/adverse_effects.tsv" "$open_targets_curation_url/adverse_effects.tsv" 4dc79e2ede729feed3e913ee6a901a72ace55165ef903601bd45a8a09f821615
+fetch "$raw_directory/opentargets_curation/secondary_pharmacology.json" "$open_targets_curation_url/secondary_pharmacology.json" 4a6dcf6b9d12b9d25c854b55cdf83c0cf25723c23002c74cf745ae76ece01844
+
 # OnSIDES v3.1.1 release asset (84,862,297 bytes recorded in docs/alternative_sources.md). The builds read parquet
 # tables under data/raw/onsides/v3.1.1/parquet; scripts/convert_onsides_to_parquet.py makes them from this archive.
 fetch "$raw_directory/onsides/v3.1.1/onsides-v3.1.1.zip" "https://github.com/tatonetti-lab/onsides/releases/download/v3.1.1/onsides-v3.1.1.zip"

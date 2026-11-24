@@ -100,6 +100,20 @@ if [ "$stage" = "graphs" ]; then
 fi
 
 # --- evidence and label selection -----------------------------------------------------------------------------------
+# The Open Targets target-safety statements (amendment item 12d, decision 8.5 on option (a): the class enters the
+# Dawid-Skene reliability fit as reports on items that already carry a positive report, and reaches no grade and no
+# label). The statements are keyword-matched from the curation's own wording and do not depend on the graph, which the
+# script reads only for a count in its summary. The v4 and v5 assembler calls below take the table as
+# --open-targets-scoped-rows. Until 24 November 2026 this script neither built the table nor passed the flag, so no
+# table it built carried the class. Every assembler call in this script takes the assembler's default --weighting
+# grade, under which the fit sets the reliability_posterior column and no observation's weight, so here the class
+# moves that column and adds its rows to evidence_reports.parquet. The two v3 tables are not passed it: they reproduce builds that predate the
+# decision of 13 October 2026, which the preregistration enters "at the v4 rebuild".
+open_targets_rows="$processed/off_target_scoping/open_targets_symptom_rows.parquet"
+# the step names its output in full, not by the variable, so experiments/check_rebuild_inputs.py can resolve it
+step "$processed/off_target_scoping/open_targets_symptom_rows.parquet" "Open Targets target-safety statements" \
+  python experiments/scope_open_targets_symptom_labels.py --graph-dir "$processed/graph_full" \
+    --output "$processed/off_target_scoping/open_targets_symptom_labels.json" --rows-output "$open_targets_rows"
 # docs/symptom_crosswalk.csv holds parkinsonism, the 24th symptom, so these commands build the table with it. The table
 # docs/drug_targets_any_type.md calls v3 is the same build on the crosswalk of commit 821cef5.
 evidence_build() {
@@ -137,7 +151,8 @@ step "$processed/onsides_v4/onsides_reports.parquet" "OnSIDES reports v4" \
 step "$processed/evidence_full_v4/evidence_records.parquet" "evidence table v4" \
   python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk.csv --graph-dir "$processed/graph_full" \
     --output-dir "$processed/evidence_full_v4" --extra-reports "$processed/onsides_v4/onsides_reports.parquet" \
-    --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --seed-gain-of-function-genes-positive
+    --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --seed-gain-of-function-genes-positive \
+    --open-targets-scoped-rows "$open_targets_rows"
 step "$processed/label_selection/better_v2_full_v4.parquet" "label selection better_v2 on v4, never-above-placebo pairs set aside" \
   python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v4" --mask-grades C --mask-never-above-placebo \
     --output "$processed/label_selection/better_v2_full_v4.parquet"
@@ -276,11 +291,18 @@ if [ "$stage" = "fine" ]; then
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
       --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring
+  # --open-targets-scoped-rows (decision 8.5) joins a statement to the perturbation whose identifier is its target's
+  # gene symbol and to the construct that carries the statement's symptom name. On this table that is the gene's loss
+  # of function or untyped allele, never "<gene>|gain_of_function" or a neomorph, for a statement of either direction;
+  # and a statement whose coarse symptom has no namesake among the fine constructs (psychomotor_agitation,
+  # irritability_or_aggression, suicidality) joins nothing. Neither has been ruled on for alleles or fine constructs:
+  # 8.5 was built and measured on the v4 table of 14 October 2026. The assembler's log prints the count that lands.
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
       --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
-      --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv $drug_wiring
+      --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv \
+      --open-targets-scoped-rows "$open_targets_rows" $drug_wiring
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"

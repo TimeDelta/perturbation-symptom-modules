@@ -4,7 +4,11 @@ of the 23 target symptoms it reaches, through how many targets, and with which s
 Source (downloaded into its own directory under data/raw, which git ignores): the Open Targets target safety
 curation, adverse_effects.tsv (one row per curated effect: symptom, biologicalSystem, effect as direction and dosing,
 efoId, ensemblId, target, pmid, ref) and secondary_pharmacology.json (the secondary pharmacology panel of
-Brennan et al. 2024, JSON lines). Nothing is trained and no evidence table is changed.
+Brennan et al. 2024, JSON lines). scripts/fetch_raw_sources.sh fetches both at a pinned commit (since 24 November
+2026; before that no script did). Nothing is trained and this script changes no evidence table; since 24 November
+2026 scripts/rebuild_data_layer.sh runs it and passes the rows it writes to the evidence assembler as
+--open-targets-scoped-rows, where the human-worded statements join the reliability fit (amendment item 12d, decision
+8.5).
 
 The curation names a target, a direction (activation or inhibition) and a free-text effect, so a crosswalk is needed
 to reach the study's symptom vocabulary. This script uses keyword patterns per symptom, prints the rows each pattern

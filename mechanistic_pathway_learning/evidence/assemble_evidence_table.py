@@ -746,6 +746,11 @@ def assemble(
     is recorded), and a pair the two dispute is settled by its cited adjudication where one exists
     (mechanism_adjudications_path). It replaces seed_gain_of_function_genes_positive, and the two are not combined.
 
+    open_targets_scoped_rows_path (amendment item 12d, decision 8.5 on option (a)) is the table
+    experiments/scope_open_targets_symptom_labels.py writes: its human-worded statements join the reliability fit as
+    reports on items that already carry a positive report, and reach no grade and no label. None assembles without
+    the class; a path that does not exist raises before anything is read.
+
     complex_target_narrowing (perturbation/gtopdb_drug_targets.ComplexTargetNarrowing, decision 8.11) narrows each
     SIDER drug's ChEMBL complex targets to the subunits the Guide to PHARMACOLOGY names before the drug is seeded;
     None seeds every subunit of a complex, as every build before it did.
@@ -769,6 +774,11 @@ def assemble(
         raise ValueError("allele_perturbations replaces seed_gain_of_function_genes_positive; pass one of them")
     if weighting not in WEIGHTINGS:
         raise ValueError(f"unknown weighting {weighting!r}; choose from {WEIGHTINGS}")
+    if open_targets_scoped_rows_path is not None and not Path(open_targets_scoped_rows_path).exists():
+        # Checked before anything is read. Until 24 November 2026 a path that did not exist assembled without the
+        # class and printed nothing, so a build that asked for the class could not be told from one that had it.
+        raise FileNotFoundError(f"open_targets_scoped_rows_path {open_targets_scoped_rows_path} does not exist; "
+                                "experiments/scope_open_targets_symptom_labels.py writes it. Pass None to assemble without the class")
     rubric_weight_defaults = rubric_weight_defaults or RubricWeightDefaults()
     nodes = pd.read_parquet(graph_directory / "nodes.parquet")
     node_by_symbol = gene_node_lookup(nodes)
@@ -907,7 +917,7 @@ def assemble(
     # across the module boundary would have guarded those 4 items and changed nothing measurable, so option (a)
     # was taken and the inactive guard is recorded here rather than left to be discovered.
     open_targets_report_count = 0
-    if open_targets_scoped_rows_path is not None and Path(open_targets_scoped_rows_path).exists():
+    if open_targets_scoped_rows_path is not None:
         items_with_a_positive_report = {
             (row.perturbation_id, row.symptom, row.relation)
             for row in reports[reports.report_value == 1].itertuples()}
@@ -1065,7 +1075,7 @@ def main() -> None:
                              "of decision 8.11 for the owner to accept or refuse")
     parser.add_argument("--binding-sites", type=Path, default=DEFAULT_BINDING_SITES_PATH, help="the drugs' binding sites, which name the obligate subunits")
     parser.add_argument("--open-targets-scoped-rows", type=Path, default=None,
-                        help="data/processed/off_target_scoping/open_targets_symptom_rows.parquet (amendment item 12d, decision 8.5): the curated target-safety statements enter the Dawid-Skene reliability fit and reach no grade and no label. Omit the flag to assemble without the class")
+                        help="data/processed/off_target_scoping/open_targets_symptom_rows.parquet (amendment item 12d, decision 8.5): the curated target-safety statements enter the Dawid-Skene reliability fit and reach no grade and no label. Omit the flag to assemble without the class; a path that does not exist is an error")
     arguments = parser.parse_args()
     rubric_weight_defaults = load_rubric_weight_defaults(arguments.report_rubric_weights)
     assembled = assemble(arguments.crosswalk, arguments.hpo_obo, arguments.hpo_annotations, arguments.graph_dir, arguments.sider_dir, arguments.chembl_dir,
