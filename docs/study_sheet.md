@@ -1,12 +1,12 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 51, 9 November 2026; on 20 November 2026 the three lines naming the module-names page were changed in place to its path under `docs/generated/`, as revision 53 of the doc changed them). The text is the doc's own Markdown export; the 22 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 169, 24 November 2026). The text is the doc's own Markdown export; the 25 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. Each image is rendered from that diagram's own source in the doc, with a light palette that stands in for the doc's theme, so its colours can differ slightly from the doc while its text and shapes are the doc's. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
 ## Start here
 
-The project propagates gene and drug perturbations through a signed physiology graph (about 50,000 nodes and 270,000 edges) to a fixed point, then scores the predicted symptoms against public labels; its purpose is the basis for a data-defined psychiatric nosology. On `main` at `f54e3e9` (25 October 2026) there are no open pull requests, work is pushed straight to `main`, one model is registered and **80 decisions wait on you** (`docs/status.md`).
+The project propagates gene and drug perturbations through a signed physiology graph (about 50,000 nodes and 270,000 edges) to a steady state (as built, the fixed point of a damped linear operator; as decided in amendment item 37f, the stable steady states of a saturating update), then scores the predicted symptoms against public labels; its purpose is the basis for a data-defined psychiatric nosology. Work is pushed straight to `main` with no pull requests, and one model is tested. What is current, among it the registered rules and the decisions waiting on you, is in `docs/status.md`.
 
 Of those 80, only a few gate any work. Rule on these first:
 
@@ -19,17 +19,17 @@ The cheapest experiment nobody has run is **R0**, the rate-invariance check: min
 
 ## The pipeline
 
-A perturbation enters as a signed seed, settles through one damped linear operator and is read out per symptom; only stage 4 holds learned propagation, and the labels meet the predictions only at scoring.
+A perturbation enters as a signed seed, settles, as built, through one damped linear operator (as decided in amendment item 37f, registered 23 November 2026 and not built, through a root-finder for the stable steady states of a saturating update) and is read out per symptom; only stage 4 holds learned propagation, and the labels meet the predictions only at scoring.
 
 ![registered pipeline, as built · 7 stages · from registered_rules.json and the rebuild chain; v5 graph of 5 Nov 2026, before decisions 9.112 and 9.117](study_sheet_figures/01_pipeline.png)
 
 *registered pipeline, as built · 7 stages · from registered_rules.json and the rebuild chain; v5 graph of 5 Nov 2026, before decisions 9.112 and 9.117*
 
-![registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 and 9 Nov 2026, not built: curated targets where ChEMBL has none, and the curated label route of 9.117 group (ii)](study_sheet_figures/01b_pipeline_as_decided.png)
+![registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 Nov 2026 (targets curated from DrugCentral, GtoPdb, labels and reviews where ChEMBL has none) and the encoder of decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026; none of it built](study_sheet_figures/01b_pipeline_as_decided.png)
 
-*registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 and 9 Nov 2026, not built: curated targets where ChEMBL has none, and the curated label route of 9.117 group (ii)*
+*registered pipeline, as decided · decisions 9.117 and 9.121 ruled 8 Nov 2026 (targets curated from DrugCentral, GtoPdb, labels and reviews where ChEMBL has none) and the encoder of decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026; none of it built*
 
-The nonlinearities switched on by default (bottleneck, pH weight) sit after the loop; the in-loop aggregators and edge gates are off, so none of them can change the route a signal takes, only its size at the end.
+The nonlinearities switched on by default (bottleneck, pH weight) sit after the loop; the in-loop aggregators and edge gates are off, so none of them can change the route a signal takes, only its size at the end. That describes the built encoder. As decided (item 37f, not built), saturation, the bottleneck and the pH ceiling sit inside the loop.
 
 ### How the model is fit and tested
 
@@ -49,17 +49,21 @@ The lockbox is touched once, after every seed and control has run; until the own
 
 *graph schema, as decided · solid: the v5 graph of 5 Nov 2026; dashed: decision 9.112, ruled 4 Nov 2026 and not built*
 
-A gene perturbation seeds its gene node (−1 for a loss or untyped allele, +1 for a hypermorph); a drug seeds its own node at +1 and reaches its targets through signed `targets` edges, which skip the divisor.
+A gene perturbation seeds its gene node (−1 for a loss or untyped allele, +1 for a hypermorph); a drug seeds its own node at +1 and reaches its targets through signed `targets` edges, which skip the divisor. That is as built. As decided in item 37 (not built), a drug's seed is split across its targets by occupancy (37h), and a drug the body makes seeds on the compound it already is (37m).
 
 ## Architecture
 
-The model is four learned transforms around one linear loop: input weights and relation gains feed the fixed point, a gated expansion reads it out and a noisy-OR head turns it into symptom probabilities. Everything that is not linear acts after the loop or in the head.
+As built, the model is four learned transforms around one linear loop: input weights and relation gains feed the fixed point, a gated expansion reads it out and a noisy-OR head turns it into symptom probabilities. Everything that is not linear acts after the loop or in the head. As decided (decision 9.81 and amendment items 37e, 37f and 37g, registered 23 November 2026, not built): soft saturation, a floor at −1, a headroom per node, the bottleneck and the pH ceiling move inside the loop; the 0.9 gain clamp goes; and a root-finder replaces the damped iteration, keeps only the stable steady states and combines them by noisy-OR. How several steady states are searched for is decision 9.138, open.
 
-![mechanistic_pathway_learning/models/linear_response_encoder.py on main at f54e3e9](study_sheet_figures/05_encoder.png)
+![encoder, as built · linear_response_encoder.py and forward_cone_divisor.py on main at e6ea5f5; before decision 9.81 and amendment item 37f](study_sheet_figures/05_encoder_as_built.png)
 
-*mechanistic_pathway_learning/models/linear_response_encoder.py on main at f54e3e9*
+*encoder, as built · linear_response_encoder.py and forward_cone_divisor.py on main at e6ea5f5; before decision 9.81 and amendment item 37f*
 
-Key: B perturbations, P seeds per perturbation, N nodes, R relations, Q cell classes, C propagation channels (Q × channels per class), D state channels, F node feature columns, M pathway modules, S symptoms. Under `forward_cone` each seed is propagated as its own column with its own divisor; that is exact only because everything inside the loop is linear in the input.
+![encoder, as decided · decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026, not built; the steady-state search is decision 9.138, open](study_sheet_figures/05b_encoder_as_decided.png)
+
+*encoder, as decided · decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026, not built; the steady-state search is decision 9.138, open*
+
+Key: B perturbations, P seeds per perturbation, N nodes, R relations, Q cell classes, C propagation channels (Q × channels per class), D state channels, F node feature columns, M pathway modules, S symptoms. Under `forward_cone` each seed is propagated as its own column with its own divisor; that is exact only because everything inside the loop is linear in the input. That holds as built. Under item 37f (not built) saturation sits inside the loop, and the forward\_cone rule is withdrawn in the commit that builds the root-finder.
 
 ![models/noisy_or_pathway_module_model.py and configs/registered_rules.json on main at f54e3e9](study_sheet_figures/06_noisy_or_head.png)
 
@@ -81,13 +85,13 @@ Neither arm can change the confirmatory verdict: the message-passing reading is 
 
 ### How the propagation works
 
-The block diagram above names the transforms; this one shows what they do to a signal. A knockout enters at one node, and every edge passes a signed share of its source to its target, over and over, until the whole field stops moving.
+The block diagram above names the transforms; this one shows what they do to a signal. A knockout enters at one node, and every edge passes a signed share of its source to its target, over and over, until the whole field stops moving. This is the built encoder; what decision 9.81 and item 37f change is at the foot of the diagram.
 
 ![linear_response_encoder.py and forward_cone_divisor.py on main; the toy graph and the convergence curve are illustrative, not measured](study_sheet_figures/08_propagation.png)
 
 *linear_response_encoder.py and forward_cone_divisor.py on main; the toy graph and the convergence curve are illustrative, not measured*
 
-The resting input is the part worth dwelling on. Under the old `total_in_degree` divisor it still took its share, so an input that never moves diluted the one that did. `forward_cone` counts only the edges the seed can reach, which is decision 9.16 and what PR #8 landed on 24 October.
+The resting input is the part worth dwelling on. Under the old `total_in_degree` divisor it still took its share, so an input that never moves diluted the one that did. `forward_cone` counts only the edges the seed can reach, which is decision 9.16 and what PR #8 landed on 22 October.
 
 ### How the modules work
 
@@ -133,9 +137,15 @@ Counting the defaults makes the model's shape plain: the physiology is almost pa
 
 Two things follow. The operator's 476 gains (28 relations × 17 channels) are each shared by every edge of their relation, which is the "one global ratio" problem of the adherence review: one elasticity per relation cannot raise one metabolite and lower another through the same relation pair. And the module supports are the only per-node parameters in the model, which sits oddly beside the design rule that parameters are "never per node, since a per-node parameter is memorisation that cannot transfer to a held-out gene". The held-out split is over perturbations rather than nodes, so a node's gate is still trained by every other perturbation that reaches it; I have not found a document that works that through, so treat it as a question to put rather than a fault to report.
 
+![effective parameters, as built with the decided changes in its key · counted from the code on main at e170c31f and the v5 graph of 5 Nov 2026; no fitted model; methods from the Fable pass of 17 Nov 2026](study_sheet_figures/12b_effective_parameters.png)
+
+*effective parameters, as built with the decided changes in its key · counted from the code on main at e170c31f and the v5 graph of 5 Nov 2026; no fitted model; methods from the Fable pass of 17 Nov 2026*
+
+The labels reach the encoder only through the module activations, so whatever the parameter values, the predictions can move in at most 19,927 independent directions of the 405,908 nominal parameters. The two counts a fit would give, the open gates and the learning coefficient, wait on a trained run, and they answer a different question from the bounds. The nominal count predates the reach rule switched on 24 November 2026 (decision 9.150, amendment item 39), which holds at 0 the supports of nodes fewer than two training seeds can reach (8 × 8,791 on the v5 training rows of fold 0); the bound of 19,927 does not depend on it, and the nominal count is recounted at the next measurement.
+
 ### What each quantity means
 
-Read top to bottom, this is the diagrams' data flow. Shapes use the key above; "arbitrary units" means the scale is set by the input magnitude and the learned weights, so only sign and ratios carry meaning.
+Read top to bottom, this is the diagrams' data flow. Shapes use the key above; "arbitrary units" means the scale is set by the input magnitude and the learned weights, so only sign and ratios carry meaning. The table describes the built encoder. Under item 37f (not built) the gains lose their 0.9 cap, and b and the pH weight act inside the loop.
 
 | Quantity | Meaning | In biological terms | Range or units |
 | --- | --- | --- | --- |
@@ -176,11 +186,11 @@ Each row gives the formula, what its symbols mean and the file on `main` that de
 
 | Quantity | Formula | Symbols | Defined in |
 | --- | --- | --- | --- |
-| Fixed point | h ← (1−d)·h + d·(Σ\_r g\_r·S\_r·h + u) | d damping 0.5, g\_r relation gain, S\_r signed adjacency, u sustained input | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
-| Contraction bound | \|g\_r\| ≤ 0.9, and each row of Σ\_r \|S\_r\| ≤ 1 | what guarantees one fixed point | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
-| Forward-cone divisor | row × (total ÷ cone divisor) | the cone divisor counts only in-edges the seed can reach | [forward\_cone\_divisor.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/forward_cone_divisor.py) |
-| Limiting-step bottleneck | b = max over routes of min over nodes | per cell class, on the unsigned structure, applied after the loop (`class_bottleneck`) | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
-| Compartment pH weight | ΔpH = −log10(1 + s·δ), w = exp(−(ΔpH/width)²) | s sensitivity (never calibrated, so ≈ 1), δ proton deviation | [compartment\_ph.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/graph/compartment_ph.py) |
+| Fixed point | h ← (1−d)·h + d·(Σ\_r g\_r·S\_r·h + u) | d damping 0.5, g\_r relation gain, S\_r signed adjacency, u sustained input; as built. Item 37f (not built) replaces this damped iteration with a root-finder and puts saturation inside the update | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
+| Contraction bound | \|g\_r\| ≤ 0.9, and each row of Σ\_r \|S\_r\| ≤ 1 | what guarantees one fixed point, as built. Item 37f (not built) removes the 0.9 clamp, so several steady states are possible; only stable ones enter a prediction, and their search is decision 9.138, open | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
+| Forward-cone divisor | row × (total ÷ cone divisor) | the cone divisor counts only in-edges the seed can reach; the registered normalisation rule as built, withdrawn in the commit that builds item 37f's root-finder | [forward\_cone\_divisor.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/forward_cone_divisor.py) |
+| Limiting-step bottleneck | b = max over routes of min over nodes | per cell class, on the unsigned structure, applied after the loop (`class_bottleneck`), as built; item 37f (not built) moves it inside the loop | [linear\_response\_encoder.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/linear_response_encoder.py) |
+| Compartment pH weight | ΔpH = −log10(1 + s·δ), w = exp(−(ΔpH/width)²) | s sensitivity (never calibrated, so ≈ 1), δ proton deviation; applied after the loop as built, inside it under item 37f (not built) | [compartment\_ph.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/graph/compartment_ph.py) |
 | Module activation | a\_m = sigmoid(Σ\_n z\_mn·field\_n·r\_m + c\_m) | z support, r readout vector, c bias | [noisy\_or\_pathway\_module\_model.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py) |
 | Noisy-OR | P(s) = 1 − (1 − leak\_s)·Π\_m (1 − link\_ms·a\_m) | leak: causes outside every module; link: module-to-symptom probability | [noisy\_or\_pathway\_module\_model.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py) |
 | **Labelling propensity** | π(x,s) = sigmoid(logit(π₀(t,s)) + c·(z(x) − z₀)) | t perturbation type, s symptom, z log(1 + distinct PubMed ids), z₀ its median, c the one learned slope | [positive\_unlabelled\_likelihood.py](https://github.com/TimeDelta/perturbation-symptom-modules/blob/main/mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py) |
@@ -195,11 +205,15 @@ A note on the word "time scale", which the encoder's docstring uses of the chann
 
 ### Propagation channels
 
-![propagation channels · linear_response_encoder.py and run_main_model.py defaults on main at e14b969; 17 classes as experiments/build_cell_class_weights.py writes them](study_sheet_figures/13_propagation_channels.png)
+![propagation channels, as built · linear_response_encoder.py and run_main_model.py defaults on main at e14b969; 17 classes as experiments/build_cell_class_weights.py writes them; before amendment item 37](study_sheet_figures/13_propagation_channels_as_built.png)
 
-*propagation channels · linear_response_encoder.py and run_main_model.py defaults on main at e14b969; 17 classes as experiments/build_cell_class_weights.py writes them*
+*propagation channels, as built · linear_response_encoder.py and run_main_model.py defaults on main at e14b969; 17 classes as experiments/build_cell_class_weights.py writes them; before amendment item 37*
 
-Under the limiting-step rule expression leaves the loop, so inside it the 17 lanes differ only in their learned gains. One lane's response reaches another only through the shared extracellular pool and the expansion W.
+![propagation channels, as decided · amendment items 37b, 37f, 37l and 37n, registered 23 Nov 2026, not built; the fuller regional structure is decision 9.136, open](study_sheet_figures/13b_propagation_channels_as_decided.png)
+
+*propagation channels, as decided · amendment items 37b, 37f, 37l and 37n, registered 23 Nov 2026, not built; the fuller regional structure is decision 9.136, open*
+
+As built, under the limiting-step rule expression leaves the loop, so inside it the 17 lanes differ only in their learned gains. One lane's response reaches another only through the shared extracellular pool and the expansion W. As decided and not built: item 37f moves the bottleneck inside the loop, and item 37b adds cell classes, so there are more than 17 lanes.
 
 ### The membrane potential, as built and as decided
 
@@ -211,18 +225,18 @@ Under the limiting-step rule expression leaves the loop, so inside it the 17 lan
 
 *membrane potential, as decided · decisions 9.112 and 9.113, ruled 4, 7 and 8 Nov 2026, not built; constants from the Fable reviews of those days*
 
-"Gradient" in these two diagrams is the transmembrane ion concentration gradient, not the gradient of the training loss. The pool shares in the decided version are the pump-clamped pool sensitivities, normalised over the three inside pools; the outside pools stay open until 9.112's last question is ruled.
+"Gradient" in these two diagrams is the transmembrane ion concentration gradient, not the gradient of the training loss. The pool shares in the decided version are the pump-clamped pool sensitivities, carried in millivolts like the conductance edges and not rescaled to sum to 1 (decision 9.129, ruled 12 November 2026); the outside pools take weight 0 at the steady-state readout (ruled 7 November 2026).
 
 ## The registered model on main
 
-One model is tested: the noisy-OR linear-response encoder, at one-sided 0.05, with no magnitude floor. Eleven rules in `configs/registered_rules.json` are asserted against the code by `tests/test_registration_matches_the_code.py`; five amendments follow the frozen 15 October baseline. The four that changed between 20 and 24 October are marked.
+One model is tested: the noisy-OR linear-response encoder, at one-sided 0.05, with no magnitude floor. Thirteen rules in `configs/registered_rules.json` are asserted against the code by `tests/test_registration_matches_the_code.py`; seven amendments (docs/status.md, generated 24 November 2026) follow the frozen 15 October baseline. The four that changed between 20 and 24 October are marked.
 
 | Rule | Value now | Was | Changed |
 | --- | --- | --- | --- |
 | `tested_models` | linear-response noisy-OR only | that plus message-passing noisy-OR | 22 Oct (9.77) |
 | `robustness_models` | message-passing noisy-OR (spends no alpha) | none | 22 Oct (9.77) |
 | `alpha_one_sided` | 0.05 | 0.025 per model | 22 Oct (9.78) |
-| `normalisation` | `forward_cone`: in-degree counted only over edges the seed can reach | `total_in_degree` | 24 Oct (9.16, PR #8) |
+| `normalisation` | `forward_cone`: in-degree counted only over edges the seed can reach | `total_in_degree` | 22 Oct (9.16, PR #8) |
 | `label_likelihood` | `positive_unlabelled`, every kept pair counted once | weighted cross-entropy (silent pair at 0.2) | 24 Oct (9.90, PR #17) |
 | `floor_rule` | none: paired interval on model minus best baseline | 0.05 fixed and others | 15 Oct |
 | `held_out_fraction` | 1/7 of genes and of drugs | — | — |
@@ -230,7 +244,7 @@ One model is tested: the noisy-OR linear-response encoder, at one-sided 0.05, wi
 | `minimum_positives_to_score` | 5 positives and 1 negative | — | — |
 | `validation_fold_rule` | `seed % 7` | "fold 0" | 15 Oct |
 
-The registered reason for keeping the linear encoder is that it alone has a closed-form steady state, so the sensitivity of a label to a sign-disputed edge can be read without a training run. Your words of 22 October: "Defer it to robustness. I don't want it constraining things because this is more about mechanistically identifiably predictive nosology".
+The registered reason for keeping the linear encoder is that it alone has a closed-form steady state, so the sensitivity of a label to a sign-disputed edge can be read without a training run. Item 37f's root-finder (registered 23 November 2026, not built) gives up that closed form; decision 9.81 records that changing the tested model goes through an amendment. Your words of 22 October: "Defer it to robustness. I don't want it constraining things because this is more about mechanistically identifiably predictive nosology".
 
 One registered piece does not act: the pH ceiling is inert because no trainer calls `calibrate_ph_sensitivity`, so the settled field there is of order 1e-11. Separately, decision 9.90's row described the weighted loss as the default until a dated correction on 25 October (`24438249`).
 
@@ -294,9 +308,9 @@ The Siletti cluster aggregate (294 MB) has a fetch line, but it points at a Drop
 
 Five ideas carry most of the recent decisions: the fixed point, why rates drop out of it, where linearity binds, forward-cone normalisation and the counted-once likelihood.
 
-### 1. The fixed point
+### 1. The fixed point, as built
 
-The linear encoder repeats one update until the state stops moving: damping d = 0.5, the input re-added every round, tolerance 1e-3, at most 60 rounds. Every relation gain satisfies |gain\_r| ≤ 0.9 and every row of the summed absolute adjacency sums to at most 1, so the map is a contraction and the fixed point is unique.
+As built, the linear encoder repeats one update until the state stops moving: damping d = 0.5, the input re-added every round, tolerance 1e-3, at most 60 rounds. Every relation gain satisfies |gain\_r| ≤ 0.9 and every row of the summed absolute adjacency sums to at most 1, so the map is a contraction and the fixed point is unique. As decided (amendment item 37f, registered 23 November 2026, not built): the 0.9 gain clamp goes; soft saturation, a floor at −1 and a headroom sit inside the loop; and a root-finder with implicit differentiation replaces the damped iteration, beside an unclamped iteration for readings at each round. Uniqueness is then no longer guaranteed: only stable steady states enter a prediction, several combine by noisy-OR, and how they are searched for is decision 9.138, open.
 
 ```latex
 h_{t+1} = (1-d)\,h_t + d\,\big(\textstyle\sum_r \mathrm{gain}_r S_r h_t + u\big)
@@ -322,7 +336,7 @@ The partition is by relation, not by node: a protein keeps its fast binding and 
 
 ### 3. Where linearity binds
 
-Eight cases need a nonlinearity; the in-loop aggregators stay safe only because each statistic is odd and positively homogeneous, and saturation breaks exactly that.
+Eight cases need a nonlinearity; the in-loop aggregators stay safe only because each statistic is odd and positively homogeneous, and saturation breaks exactly that. Item 37f (registered 23 November 2026, not built) puts soft saturation inside the loop all the same, with a floor at −1 for every node.
 
 | # | Case | Size or status | Evidence it needs a nonlinearity |
 | --- | --- | --- | --- |
@@ -331,13 +345,13 @@ Eight cases need a nonlinearity; the in-loop aggregators stay safe only because 
 | 3 | Complex members: all needed or any one | 542 conjunctions, 238 disjunctions, not told apart | **Needed once marked.** An all-members complex is a minimum and an any-member one a maximum; a weighted sum is neither. The message-passing encoder already uses `conjunction_aggregation = "minimum"`, and the review calls the gap "a live difference between the two registered encoders". The data step comes first: the graph does not yet mark which entities are conjunctions. |
 | 4 | Receptor adaptation | not represented anywhere | **Partly.** Desensitisation scales a receptor's gain by its own occupancy, a product of states. But a linear negative-feedback loop already gives partial adaptation, and integral feedback gives perfect adaptation: "integral control in some form is necessary for a robust implementation of perfect adaptation" ([Yi et al. 2000](https://doi.org/10.1073/pnas.97.9.4649)). Review section 11 calls adaptation "the largest unrepresented piece of pharmacology in the study". |
 | 5 | Knockout against inhibitor (no occupancy) | 154 of 222 drugs carry total input 1 | **Weak for propagation.** Occupancy C / (C + K) saturates in concentration, but each drug enters at one therapeutic concentration, so occupancy can be a per-drug input weight computed before the loop. The fault is in the input: 154 of 222 drugs enter at 1, the size of a complete knockout or full activation, whatever their dose. |
-| 6 | Compartment pH ceiling | registered but inert | **Conditional.** pH is the log of \[H+\], and the registered form ΔpH = −log10(1 + s × deviation) is nonlinear; item 22b exists because it broke evenness. It needs to be inside the loop only if pH feeds back on other nodes, such as lysosomal enzymes. At cytosolic H+ the settled field is of order 1e-11, so the case may be moot (inventory open question 3). |
-| 7 | Dosage asymmetry | every gene perturbation | **Strongest.** Loss saturates at zero activity and gain does not, while the linear response is odd by construction. Human genetics is not symmetric: according to PubMed, Collins et al. 2022 identify "2,987 haploinsufficient and 1,559 triplosensitive genes", 648 of them uniquely triplosensitive ([doi](https://doi.org/10.1016/j.cell.2022.06.036)), and MECP2 duplication overlaps Rett syndrome rather than mirroring it ([Ramocki et al. 2010](https://doi.org/10.1002/ajmg.a.33184)). |
-| 8 | Multistability, hysteresis, oscillation | excluded by the contraction bound | **Needed if the labels depend on it.** A linear system has one fixed point or a continuum and no isolated limit cycle, so bistable switches and the circadian clock cannot be represented. Clock edges exist in CollecTRI. Whether any label depends on these dynamics is unmeasured. |
+| 6 | Compartment pH ceiling | registered but inert | **Conditional.** pH is the log of \[H+\], and the registered form ΔpH = −log10(1 + s × deviation) is nonlinear; item 22b exists because it broke evenness. It needs to be inside the loop only if pH feeds back on other nodes, such as lysosomal enzymes. At cytosolic H+ the settled field is of order 1e-11, so the case may be moot (inventory open question 3). Ruled since: inside the loop (item 37f, part 6; not built). |
+| 7 | Dosage asymmetry | every gene perturbation | **Strongest.** Loss saturates at zero activity and gain does not, while the linear response is odd by construction. Item 37f registers a floor at −1 for every node (not built), which breaks the mirror on the loss side. Human genetics is not symmetric: according to PubMed, Collins et al. 2022 identify "2,987 haploinsufficient and 1,559 triplosensitive genes", 648 of them uniquely triplosensitive ([doi](https://doi.org/10.1016/j.cell.2022.06.036)), and MECP2 duplication overlaps Rett syndrome rather than mirroring it ([Ramocki et al. 2010](https://doi.org/10.1002/ajmg.a.33184)). |
+| 8 | Multistability, hysteresis, oscillation | excluded by the contraction bound as built; item 37f removes the gain clamp (not built) | **Needed if the labels depend on it.** A linear system has one fixed point or a continuum and no isolated limit cycle, so bistable switches and the circadian clock cannot be represented. That is the built encoder. As decided (item 37f, not built), a root-finder searches for several steady states, and the stable ones combine by noisy-OR. Clock edges exist in CollecTRI. Whether any label depends on these dynamics is unmeasured. |
 
 ### 4. Forward-cone normalisation
 
-Each edge is divided by its destination's in-degree over all relations, counting only edges whose source the seed can reach. The divisor is therefore per seed and computed inside the loop. Two combinations are refused rather than handled: the `softmax_mixture` aggregator and edge gates.
+Each edge is divided by its destination's in-degree over all relations, counting only edges whose source the seed can reach. The divisor is therefore per seed and computed inside the loop. This is the registered normalisation rule as built; it leaves the registered rules in the commit that builds item 37f's root-finder. Two combinations are refused rather than handled: the `softmax_mixture` aggregator and edge gates.
 
 ### 5. The counted-once positive-unlabelled likelihood
 

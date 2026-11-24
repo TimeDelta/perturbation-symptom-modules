@@ -829,7 +829,7 @@
       "class": "living",
       "reviewed": "2026-11-07",
       "as_of_commit": "d903103",
-      "what": "the owner's study sheet (architecture, quantities, equations, concepts, critique and the 19 diagrams), the Markdown copy of the Claude Docs doc, refreshed in place by exporting it again; figures in docs/study_sheet_figures"
+      "what": "the owner's study sheet (architecture, quantities, equations, concepts, critique and the 25 diagrams), the Markdown copy of the Claude Docs doc, refreshed in place by exporting it again; figures in docs/study_sheet_figures"
     },
     "docs/research_summary.md": {
       "class": "living",
