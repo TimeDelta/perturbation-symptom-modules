@@ -1118,6 +1118,18 @@
       "recorded": "2026-11-24",
       "append_only": true,
       "what": "the 115 decisions docs/status.md listed as waiting on the owner at 13b08ca, each row read whole and classed: 23 owe nothing, 14 wait on the rebuild or a measurement, 22 are owed by a session, 52 need a ruling of the owner's and 4 are held by the owner; with what gates the lockbox draw, the rulings that share a question and the stale rows; read on Opus 5.5 from the project's own log, no outside source"
+    },
+    "docs/records/2026-11/deflation_multistart_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "decision 9.138's search for several stable steady states: deflation, multistart and deflated continuation compared from their sources, with the linear-algebra cost probed on release v0.4's structure with synthetic weights, the owner's open choices listed and a hybrid recommended, nothing decided; read on Fable, redoing the pass of 17 November 2026 whose report was lost"
+    },
+    "docs/records/2026-11/item931_second_agency_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "decision 9.31: the second-agency reading (Health Canada, EMA, HPRA) of the twenty drugs whose US label is silent on central action, read for 18 with quotations, isradipine and nisoldipine unread; admission not decided; read on Fable"
     }
   }
 }
