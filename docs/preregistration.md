@@ -1528,6 +1528,15 @@ states it and carries an interval for it.
 **0.45 remains as the fallback** for `--weighting grade`, the fixed-grades arm, where it is a convention and is
 labelled one. Under the registered default weighting the class's weight comes from the fit.
 
+**Added 24 November 2026: that sentence holds only under `--weighting reliability`, and only for the arm that reads a
+weight.** Since decision 9.90 (24 October 2026) the registered loss, `label_likelihood` `positive_unlabelled`, reads no
+evidence weight, so the class's weight reaches only the `--label-likelihood weighted` arm. Every evidence table the
+rebuild built took the assembler's default `--weighting grade`, under which the fit writes `reliability_posterior` and
+sets no weight, so through those tables the class changed no trained number. On the owner's ruling of 24 November 2026
+("Build the table anyways") the rebuild also builds the v5 table with `--weighting reliability`
+(`evidence_full_v5_reliability`, `scripts/rebuild_data_layer.sh`), where the class's weight does come from the fit.
+Which table the weighted arm reads is not yet set (decision 8.5).
+
 **13. `VM_c` is computed, not fitted, and the claim is the subthreshold steady state.** The neuronal membrane potential
 is the linearised parallel-conductance equation over the ion pools: each pool feeds `VM_c` one edge whose weight is that
 ion's share of the resting leak conductance times RT/zF, six fixed weights adding no free parameter

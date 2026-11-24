@@ -1268,7 +1268,10 @@ the cytosol, which ruling Q5d moved to the lysosome.
 - The session's repository scope covers only this project, so the route to upstream is GitHub's search API; the ruling
   that allows it is recorded in the amendment, not yet in `CLAUDE.md`.
 
-**Status.** Not started.
+**Status.** Swept on Fable on 24 November 2026 (`docs/records/2026-11/item21_human_gem_sweep_2026-11-24.md`). Ruled
+the same day as decision 9.151: the pin stays at v2.0.1 for now and is moved to the latest upstream release before
+the lockbox draw, with the changes on routes to labelled nodes, or touching transmitter and calcium nodes,
+adjudicated one by one and the rest adopted and disclosed. Not built.
 
 ---
 

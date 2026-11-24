@@ -306,6 +306,19 @@ if [ "$stage" = "fine" ]; then
       --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
       --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv \
       --open-targets-scoped-rows "$open_targets_rows" $drug_wiring
+  # The same table with --weighting reliability: each pair's weight is the global scale times its Dawid-Skene posterior,
+  # the registered default of configs/evidence_assembly.yaml (mode: learned_reliability) and of amendment item 12d
+  # ("Under the registered default weighting the class's weight comes from the fit"). Since decision 9.90 the
+  # registered loss reads no evidence weight, so only the --label-likelihood weighted arm reads this column; the table
+  # above keeps --weighting grade for the fixed_grades arm. The owner, 24 November 2026, on building it although only
+  # that arm reads it: "Build the table anyways". The global scale is the assembler's default of 1.0;
+  # docs/experiment_design.md leaves it to validation-set tuning, which is not done here.
+  step "$processed/evidence_full_v5_reliability/evidence_records.parquet" "evidence table v5, reliability weighting" \
+    python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
+      --output-dir "$processed/evidence_full_v5_reliability" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
+      --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
+      --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv \
+      --open-targets-scoped-rows "$open_targets_rows" --weighting reliability $drug_wiring
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"
