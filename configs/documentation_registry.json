@@ -1112,6 +1112,12 @@
       "recorded": "2026-11-24",
       "append_only": true,
       "what": "the Fable checks of the study sheet's diagrams and prose of 23 and 24 November 2026: lost-run decision ids found and replaced, the encoder and propagation-channel diagrams split into as-built and as-decided halves, every diagram's depicts list audited, and the 29 architecture passages registered"
+    },
+    "docs/records/2026-11/open_decision_triage_2026-11-24.md": {
+      "class": "record",
+      "recorded": "2026-11-24",
+      "append_only": true,
+      "what": "the 115 decisions docs/status.md listed as waiting on the owner at 13b08ca, each row read whole and classed: 23 owe nothing, 14 wait on the rebuild or a measurement, 22 are owed by a session, 52 need a ruling of the owner's and 4 are held by the owner; with what gates the lockbox draw, the rulings that share a question and the stale rows; read on Opus 5.5 from the project's own log, no outside source"
     }
   }
 }
