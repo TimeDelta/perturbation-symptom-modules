@@ -894,27 +894,6 @@
       "checked": "2026-11-24",
       "checked_at_commit": "47f0879"
     },
-    "mtp7zsmsxgy.31639": {
-      "title": "resting input and forward_cone",
-      "depicts": {
-        "decisions": [
-          "9.16"
-        ],
-        "items": [
-          "37f"
-        ],
-        "files": [
-          "mechanistic_pathway_learning/models/forward_cone_divisor.py"
-        ]
-      },
-      "fingerprints": {
-        "decision:9.16": "0c5df8a1fc05b81af868b4947ed7168d3142220bd3832c3be1d99aca9f5241ec",
-        "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
-      },
-      "checked": "2026-11-24",
-      "checked_at_commit": "571d1d1"
-    },
     "mtp7zsmsxgy.31942": {
       "title": "what a module is",
       "depicts": {
@@ -1158,21 +1137,6 @@
       },
       "checked": "2026-11-24",
       "checked_at_commit": "47f0879"
-    },
-    "mtp7zsmsxgy.1602": {
-      "title": "the registered model (lead and table .1944)",
-      "depicts": {
-        "decisions": [
-          "9.16",
-          "9.77",
-          "9.78",
-          "9.87",
-          "9.90"
-        ],
-        "files": [
-          "configs/registered_rules.json"
-        ]
-      }
     },
     "mtp7zsmsxgy.2802": {
       "title": "why the linear encoder",
