@@ -20,9 +20,11 @@ such row (24 November 2026) sends Aggression D000374 from irritability, the name
 aggressive_behavior; the owner: "Shouldn't mesh aggression go to aggressive behavior fine constructs?". The questionnaire
 item has no override and stays with the namesake.
 
-The IMPC crosswalk is re-keyed the same way: a coarse row's proxy goes to the fine construct its MP term names match,
-else to the namesake; every other fine construct of that coarse row takes a row with validity "none", because a proxy
-stated for a coarse construct was not stated for its parts.
+The IMPC crosswalk is re-keyed the same way: a coarse row's proxy goes to the fine construct the override table names
+for one of its MP term ids, else to the fine construct its MP term names match, else to the namesake; every other fine
+construct of that coarse row takes a row with validity "none", because a proxy stated for a coarse construct was not
+stated for its parts. The first MP override (24 November 2026) sends increased aggression MP:0005655 from irritability
+to aggressive_behavior, as for MeSH Aggression above, because the stems "aggression" and "aggressive" do not match.
 
 A fine construct can also be split out below a coarse row's roots, from configs/fine_construct_extra_roots.csv: each row
 names a coarse construct and an HPO term under one of its roots, which becomes a root of that row for the fine derivation
@@ -274,7 +276,8 @@ def annotate_extra_roots(fine_rows: list[dict[str, str]], extra_roots: list[dict
 
 def read_term_overrides(path: Path | None) -> dict[str, str]:
     """term (lower case) -> fine construct; the file has columns term, fine_construct and an optional note. A term is a
-    MedDRA preferred term or a MeSH descriptor's D-number (lower case here as every key is: "d000374")."""
+    MedDRA preferred term, a MeSH descriptor's D-number or an MP term id (lower case here as every key is: "d000374",
+    "mp:0005655")."""
     if path is None or not Path(path).exists():
         return {}
     return {row["term"].strip().lower(): row["fine_construct"].strip() for row in read_rows(Path(path)) if row.get("term", "").strip()}
@@ -413,10 +416,13 @@ def namesake_of_coarse(coarse_rows: list[dict[str, str]]) -> dict[str, str]:
     return {row["target_symptom"]: next(construct.name for construct in fine_constructs_of(row) if construct.is_namesake) for row in coarse_rows}
 
 
-def fine_impc_rows(impc_rows: list[dict[str, str]], coarse_rows: list[dict[str, str]], additions: list[dict[str, str]]) -> list[dict[str, str]]:
-    """The IMPC crosswalk re-keyed to the fine constructs: a coarse row's proxy goes to the fine construct its MP term
-    names match, else to the namesake; the other fine constructs of that coarse row take a row saying no proxy was
-    stated for them; an added construct takes a 'none' row until one is curated."""
+def fine_impc_rows(impc_rows: list[dict[str, str]], coarse_rows: list[dict[str, str]], additions: list[dict[str, str]],
+                   overrides: dict[str, str] | None = None) -> list[dict[str, str]]:
+    """The IMPC crosswalk re-keyed to the fine constructs: a coarse row's proxy goes to the fine construct an override
+    names for one of its MP term ids, else to the one its MP term names match, else to the namesake; the other fine
+    constructs of that coarse row take a row saying no proxy was stated for them; an added construct takes a 'none' row
+    until one is curated."""
+    overrides = overrides or {}
     constructs_by_coarse = {row["target_symptom"]: fine_constructs_of(row) for row in coarse_rows}
     output = []
     for impc_row in impc_rows:
@@ -426,13 +432,22 @@ def fine_impc_rows(impc_rows: list[dict[str, str]], coarse_rows: list[dict[str, 
         if len(constructs) == 1:
             output.append({**impc_row, "target_symptom": constructs[0].name})
             continue
-        term_stems = stems(impc_row.get("mp_term_names", ""))
-        best, best_overlap = None, 0
-        for construct in constructs:
-            overlap = len(term_stems & stems(construct.hpo_name))
-            if overlap > best_overlap:
-                best, best_overlap = construct, overlap
-        chosen = best or next(construct for construct in constructs if construct.is_namesake)
+        mp_term_ids = [term_id.strip().lower() for term_id in impc_row.get("mp_term_ids", "").split(";") if term_id.strip()]
+        overridden_names = {overrides[term_id] for term_id in mp_term_ids if term_id in overrides}
+        names = {construct.name for construct in constructs}
+        if len(overridden_names) > 1 or not overridden_names <= names:
+            raise ValueError(f"overrides send the MP terms of {impc_row['target_symptom']!r} to {sorted(overridden_names)}; "
+                             f"one construct of {sorted(names)} is needed")
+        if overridden_names:
+            chosen = next(construct for construct in constructs if construct.name in overridden_names)
+        else:
+            term_stems = stems(impc_row.get("mp_term_names", ""))
+            best, best_overlap = None, 0
+            for construct in constructs:
+                overlap = len(term_stems & stems(construct.hpo_name))
+                if overlap > best_overlap:
+                    best, best_overlap = construct, overlap
+            chosen = best or next(construct for construct in constructs if construct.is_namesake)
         for construct in constructs:
             if construct is chosen:
                 output.append({**impc_row, "target_symptom": construct.name})

@@ -7,7 +7,8 @@ row's terms are shared out among its HPO roots by the ontology's own vocabulary,
 preferred terms whose words the ontology uses for it, an extra root splits a construct out below a coarse row's roots
 without changing the coarse row, a coarse row named in the kept-together table is not split at its roots, a MeSH
 descriptor stays with the coarse row's namesake unless an override names its
-D-number, and every assignment is listed with how it was made.
+D-number, an IMPC proxy goes to the fine construct an override names for one of its MP term ids before the name match,
+and every assignment is listed with how it was made.
 
 Usage:
   python experiments/build_fine_symptom_crosswalk.py
@@ -126,6 +127,8 @@ def render(stamp: str, fine_rows: list[dict[str, str]], assignments: list[dict[s
         lines += [f"| {assignment['coarse_symptom']} | {assignment['term']} | {assignment['fine_construct']} |" for assignment in moved_descriptors]
     lines += ["",
               "## The IMPC crosswalk at the fine level", "",
+              "A coarse row's mouse proxy goes to the fine construct a row of configs/fine_construct_term_overrides.csv names for one of its "
+              "MP term ids, else to the one its MP term names match, else to the namesake.", "",
               "| fine construct | relation | MP terms | validity |", "| --- | --- | --- | --- |"]
     for row in impc_rows:
         lines.append(f"| {row['target_symptom']} | {row['relation']} | {row['mp_term_names'] or '-'} | {row['validity']} |")
@@ -158,7 +161,7 @@ def build(obo: Path, sider: Path) -> tuple[list[dict[str, str]], list[dict[str, 
     overrides = read_term_overrides(TERM_OVERRIDES_PATH)
     fine_rows, assignments = build_fine_crosswalk(coarse_rows, additions, overrides, vocabulary)
     fine_rows = annotate_extra_roots(fine_rows, extra_roots)
-    impc_rows = fine_impc_rows(read_rows(IMPC_COARSE_PATH), coarse_rows, additions)
+    impc_rows = fine_impc_rows(read_rows(IMPC_COARSE_PATH), coarse_rows, additions, overrides)
     return fine_rows, assignments, impc_rows, extra_roots
 
 

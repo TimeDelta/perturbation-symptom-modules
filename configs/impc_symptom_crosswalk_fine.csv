@@ -3,8 +3,8 @@ hyperactivity,induces,MP:0001399,hyperactivity,OFD,strong,"locomotor hyperactivi
 psychomotor_retardation,induces,MP:0001402,decreased locomotor activity,OFD,moderate,"hypolocomotion in the open field; confounded by motor and sensory deficits, which the SHIRPA screen would show for the same line"
 anxiety,induces,MP:0001363;MP:0002797,increased anxiety-related response;increased thigmotaxis,OFD;LDT,moderate,"thigmotaxis in the open field and light avoidance in the light-dark box; face validity and predictive validity for anxiolytics, not for every anxiety construct"
 anxiety,relieves,MP:0001364;MP:0020870,decreased anxiety-related response;decreased thigmotaxis,,moderate,the reverse direction: a knockout that reduces anxiety-like behaviour
-irritability,induces,MP:0005655,increased aggression,,moderate,"observed in handling and resident-intruder settings, not from a powered core procedure, so no measured absence is read"
-aggressive_behavior,induces,,,,none,no mouse proxy stated at the fine level; the coarse row's proxy went to irritability (decision 9.58)
+irritability,induces,,,,none,no mouse proxy stated at the fine level; the coarse row's proxy went to aggressive_behavior (decision 9.58)
+aggressive_behavior,induces,MP:0005655,increased aggression,,moderate,"observed in handling and resident-intruder settings, not from a powered core procedure, so no measured absence is read"
 cognitive_impairment,induces,MP:0009454;MP:0009456;MP:0020422;MP:0008428,impaired contextual conditioning behavior;impaired cued conditioning behavior;decreased freezing behavior;abnormal spatial working memory,FEA,moderate,fear-conditioning memory and working memory; narrower than human cognitive impairment
 cognitive_impairment,relieves,MP:0009453;MP:0009455,enhanced contextual conditioning behavior;enhanced cued conditioning behavior,,moderate,the reverse direction
 polyphagia,induces,MP:0011939,increased food intake,CAL,strong,"a physiological measure from indirect calorimetry, not a behavioural proxy; body weight alone is not read, because it also moves with energy expenditure"

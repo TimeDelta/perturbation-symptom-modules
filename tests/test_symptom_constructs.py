@@ -307,6 +307,27 @@ def test_the_committed_crosswalk_files_mesh_aggression_under_aggressive_behavior
     assert "Agitation" in split_cell(fine["agitation"]["meddra_preferred_terms"]) and fine["irritability"]["meddra_preferred_terms"] == "Irritability"
 
 
+
+def test_an_mp_override_moves_a_mouse_proxy_before_the_name_match():
+    """An override keyed by an MP term id sends the coarse row's proxy to the construct it names; the name match would
+    send the hyperactivity-and-restlessness proxy to restlessness."""
+    impc = [{"target_symptom": "psychomotor_agitation", "relation": "induces", "mp_term_ids": "MP:0001399", "mp_term_names": "hyperactivity;restlessness",
+             "negative_procedure_codes": "OFD", "validity": "moderate", "note": ""}]
+    by_key = {(row["target_symptom"], row["relation"]): row for row in fine_impc_rows(impc, coarse_rows(), [], {"mp:0001399": "agitation"})}
+    assert by_key[("agitation", "induces")]["mp_term_ids"] == "MP:0001399"
+    assert by_key[("restlessness", "induces")]["validity"] == "none" and "agitation" in by_key[("restlessness", "induces")]["note"]
+    with pytest.raises(ValueError, match="one construct of"):
+        fine_impc_rows(impc, coarse_rows(), [], {"mp:0001399": "anxiety"})
+
+
+def test_the_committed_mouse_crosswalk_puts_increased_aggression_under_aggressive_behavior():
+    """The owner, 24 November 2026, answering "Yes" to moving MP:0005655 increased aggression the same way as MeSH
+    Aggression: the proxy belongs to aggressive_behavior, and irritability holds no mouse proxy."""
+    rows = {(row["target_symptom"], row["relation"]): row for row in read_rows(ROOT / "configs/impc_symptom_crosswalk_fine.csv")}
+    assert rows[("aggressive_behavior", "induces")]["mp_term_ids"] == "MP:0005655"
+    assert rows[("irritability", "induces")]["mp_term_ids"] == "" and rows[("irritability", "induces")]["validity"] == "none"
+
+
 AKATHISIA_STANZA = """
 [Term]
 id: HP:0031943

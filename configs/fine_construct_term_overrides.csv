@@ -5,3 +5,4 @@ Extrapyramidal disorder,parkinsonism,"the general drug-induced extrapyramidal te
 Hypokinesia,bradykinesia,reduced movement is the bradykinesia construct
 Akinesia,bradykinesia,as above
 D000374,aggressive_behavior,"MeSH Aggression (tree F01.145.126, Behavior; id.nlm.nih.gov read 24 November 2026) names aggression, not irritability; the owner, 24 November 2026: ""Shouldn't mesh aggression go to aggressive behavior fine constructs?"" Irritable Mood D007508 stays with irritability"
+MP:0005655,aggressive_behavior,"MP increased aggression (resident-intruder and handling observations) names aggression, not irritability, as MeSH D000374 above; the owner, 24 November 2026, answering ""Yes"" to moving it the same way"
