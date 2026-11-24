@@ -593,7 +593,7 @@
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-24",
-      "checked_at_commit": "d2e746d"
+      "checked_at_commit": "327c1b9"
     },
     "a2c305c9-428b": {
       "title": "Robustness and exploratory arms, as decided (9.122)",
