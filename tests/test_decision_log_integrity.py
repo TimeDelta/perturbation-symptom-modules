@@ -120,3 +120,12 @@ def test_the_generators_refuse_a_shallow_clone_and_name_the_fix(monkeypatch):
         refuse_on_shallow_history("experiments/generate_status.py")
     assert "shallow" in str(refusal.value) and "--depth" in str(refusal.value)
     assert refuse_on_shallow_history("experiments/generate_status.py", allow_shallow=True) is None
+
+
+def test_the_nothing_owed_marker_may_carry_its_own_full_stop():
+    """9.105 wrote "**nothing owed.**" and was listed as waiting on the owner until 24 November 2026."""
+    log = ("| 9.401 | measured | **nothing owed.** Offered a choice, the owner declined it. |\n"
+           "| 9.402 | measured | **Nothing owed:** recorded for the record |\n"
+           "| 9.403 | measured | decided and recorded; nothing owed on the exclusion itself |\n"
+           "| 9.404 | measured | **nothing owed on the exclusion itself.** four things owed |\n")
+    assert decision_ids_owing_nothing(log) == {"9.401", "9.402"}

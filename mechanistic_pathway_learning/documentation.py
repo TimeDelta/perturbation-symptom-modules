@@ -436,10 +436,15 @@ def closed_decision_ids(text: str) -> set[str]:
 # status page can count the decisions waiting on the owner apart from the measurements recorded for the record (the
 # owner, 21 October 2026: the log's header called every open row a decision waiting on them, and several were not).
 NOTHING_OWED_MARKER = "**nothing owed**"
+# The marker as written, with punctuation inside the bold allowed: 9.105 writes "**nothing owed.**", which the exact
+# marker missed, so the status page listed it as waiting on the owner (found by the triage of 24 November 2026,
+# docs/records/2026-11/open_decision_triage_2026-11-24.md). Only the marker opening the cell counts; a row that says
+# it owes nothing in other words is corrected in the log, not matched here.
+NOTHING_OWED_PATTERN = re.compile(r"^\*\*nothing owed[.:;]?\*\*", flags=re.IGNORECASE)
 
 
 def decision_ids_owing_nothing(text: str) -> set[str]:
-    """Ids of open (not struck-through) rows whose last cell starts with NOTHING_OWED_MARKER."""
+    """Ids of open (not struck-through) rows whose last cell starts with the marker (NOTHING_OWED_PATTERN)."""
     ids = set()
     open_subsection: str | None = None  # the id of the subsection being read, in the restructured form
     for line in text.replace("\\n", "\n").splitlines():
@@ -452,11 +457,11 @@ def decision_ids_owing_nothing(text: str) -> set[str]:
             continue
         match = re.match(r"^\|\s*(?P<id>\d+\.\d+[a-z]?)\s*\|", line)
         if not match:
-            if open_subsection and line.strip().lower().startswith(NOTHING_OWED_MARKER):
+            if open_subsection and NOTHING_OWED_PATTERN.match(line.strip()):
                 ids.add(open_subsection)
             continue
         last_cell = line.rstrip().rstrip("|").rsplit(" | ", 1)[-1].strip()
-        if last_cell.lower().startswith(NOTHING_OWED_MARKER):
+        if NOTHING_OWED_PATTERN.match(last_cell):
             ids.add(match.group("id"))
     return ids
 
