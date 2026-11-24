@@ -56,10 +56,10 @@
         "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
         "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
         "file:experiments/run_main_model.py": "979619721dd7bb1cf66561465c70d9a05cf095c85752ab918b95b47d9e93eaf5",
-        "file:docs/preregistration.md": "bbcb939f7e20ab70bc98f262c30acdd35f190533b09512afc93940a3331c0f5e"
+        "file:docs/preregistration.md": "a2d6301d2b8c10f165cc5c43b8f7314e9ec6bd583c59905cc701beb7bcb6fa70"
       },
-      "checked": "2026-11-23",
-      "checked_at_commit": "6d4a8fa"
+      "checked": "2026-11-24",
+      "checked_at_commit": "f935f53"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
