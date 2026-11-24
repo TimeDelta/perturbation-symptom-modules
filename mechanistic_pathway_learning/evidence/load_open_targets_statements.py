@@ -41,6 +41,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from mechanistic_pathway_learning.evidence.allele_mechanisms import GAIN_OF_FUNCTION_SUFFIX
 from mechanistic_pathway_learning.evidence.assign_evidence_grades import OPEN_TARGETS_EVIDENCE_CLASS, EvidenceRecord
 from mechanistic_pathway_learning.evidence.combined_perturbations import RECEPTOR_ACTIVATION_PERTURBATION_TYPE
 
@@ -158,8 +159,29 @@ def activation_perturbation_rows(placements: list[StatementPlacement]) -> list[d
     return sorted(rows.values(), key=lambda row: row["perturbation_id"])
 
 
+def perturbations_of_target_by_direction(gene_perturbation_ids: set[str]) -> dict[tuple[str, str], str]:
+    """The perturbation each (target, curated direction) joins, read from the gene perturbations a table holds.
+
+    The owner, 24 November 2026, on the proposal that inhibition statements join the loss-of-function allele and
+    activation statements the gain-of-function allele, as closer to physiology: "1 yes please fix". Inhibition of a
+    target lowers its activity, as the gene's own perturbation does (the bare gene symbol, seeded -1: its loss of
+    function, or an untyped allele under --allele-perturbations); activation raises it, as the hypermorphic
+    "<gene>|gain_of_function" allele does (seeded +1, allele_mechanisms.GAIN_OF_FUNCTION_SUFFIX). A table without
+    that allele, which is every table built without --allele-perturbations, gives an activation statement nothing to
+    join. Until 24 November 2026 every statement joined the bare gene symbol whatever its direction, so an activation
+    statement attached to the gene's loss of function.
+    """
+    joins = {}
+    for perturbation_id in gene_perturbation_ids:
+        if perturbation_id.endswith(GAIN_OF_FUNCTION_SUFFIX):
+            joins[(perturbation_id[:-len(GAIN_OF_FUNCTION_SUFFIX)], "activation")] = perturbation_id
+        elif "|" not in perturbation_id:
+            joins[(perturbation_id, "inhibition")] = perturbation_id
+    return joins
+
+
 def reliability_reports(statements: list[CuratedStatement], items_with_a_positive_report: set[tuple[str, str, str]],
-                        perturbation_of_target: dict[str, str],
+                        perturbation_of_target: dict[tuple[str, str], str],
                         evidenced_negative_pairs: set[tuple[str, str]] | None = None) -> list[dict]:
     """Report rows for the Dawid-Skene reliability fit (amendment item 12d; the owner, 13 October 2026: "add it to
     the Dawid-Skene fit estimates").
@@ -179,6 +201,9 @@ def reliability_reports(statements: list[CuratedStatement], items_with_a_positiv
     fit and nothing else. A pair the selection has relabelled an evidenced negative is skipped for the same
     reason, in the other direction.
 
+    perturbation_of_target maps (target, direction) to the perturbation the statement joins, as
+    perturbations_of_target_by_direction builds it; a statement with no entry joins nothing.
+
     Joining such an item creates nothing: the grade ignores reports of another evidence class, so this class
     reaches the reliability fit and not the grade - the same route the literature class takes.
 
@@ -190,7 +215,7 @@ def reliability_reports(statements: list[CuratedStatement], items_with_a_positiv
     evidenced_negative_pairs = evidenced_negative_pairs or set()
     reports = []
     for statement in statements:
-        perturbation_identifier = perturbation_of_target.get(statement.target)
+        perturbation_identifier = perturbation_of_target.get((statement.target, statement.direction))
         item = (perturbation_identifier, statement.symptom, "induces")
         if perturbation_identifier is None or item not in items_with_a_positive_report:
             continue

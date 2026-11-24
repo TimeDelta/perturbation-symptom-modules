@@ -116,7 +116,7 @@ def test_only_human_worded_statements_are_read():
 
 
 EXISTING_ITEMS = {("GRIN1", "psychosis", "induces")}
-PERTURBATION_OF_TARGET = {"GRIN1": "GRIN1", "HTR2C": "HTR2C"}
+PERTURBATION_OF_TARGET = {("GRIN1", "inhibition"): "GRIN1", ("HTR2C", "inhibition"): "HTR2C"}
 
 
 def test_a_reliability_report_is_emitted_only_for_an_item_another_source_already_reports():

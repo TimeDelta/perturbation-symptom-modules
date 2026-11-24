@@ -19,6 +19,7 @@ import pandas as pd
 from mechanistic_pathway_learning.evidence.evidence_reliability_model import fit_weighted_dawid_skene
 from mechanistic_pathway_learning.evidence.load_open_targets_statements import (
     human_worded_statements,
+    perturbations_of_target_by_direction,
     reliability_reports,
 )
 
@@ -72,7 +73,10 @@ def main() -> None:
         (row.perturbation_id, row.symptom, row.relation)
         for row in existing_reports[existing_reports.report_value == 1].itertuples()}
     gene_perturbation_ids = set(existing_reports[existing_reports.perturbation_type == "gene"].perturbation_id)
-    perturbation_of_target = {gene: gene for gene in gene_perturbation_ids}
+    # Since 24 November 2026 a statement joins by its direction (perturbations_of_target_by_direction), so on a table
+    # without gain-of-function alleles an activation statement joins nothing. The run of 14 October 2026 that wrote
+    # docs/generated/open_targets_reliability_effect.json joined every statement to the bare gene symbol.
+    perturbation_of_target = perturbations_of_target_by_direction(gene_perturbation_ids)
 
     statements = build_statements(arguments.scoped_rows)
     open_targets_rows = reliability_reports(statements, items_with_a_positive_report, perturbation_of_target)

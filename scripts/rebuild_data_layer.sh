@@ -107,7 +107,9 @@ fi
 # --open-targets-scoped-rows. Until 24 November 2026 this script neither built the table nor passed the flag, so no
 # table it built carried the class. Every assembler call in this script takes the assembler's default --weighting
 # grade, under which the fit sets the reliability_posterior column and no observation's weight, so here the class
-# moves that column and adds its rows to evidence_reports.parquet. The two v3 tables are not passed it: they reproduce builds that predate the
+# moves that column and adds its rows to evidence_reports.parquet. A statement joins the perturbation that moves its
+# target the same way (since 24 November 2026), so on v4, which has no gain-of-function alleles, an activation
+# statement joins nothing. The two v3 tables are not passed it: they reproduce builds that predate the
 # decision of 13 October 2026, which the preregistration enters "at the v4 rebuild".
 open_targets_rows="$processed/off_target_scoping/open_targets_symptom_rows.parquet"
 # the step names its output in full, not by the variable, so experiments/check_rebuild_inputs.py can resolve it
@@ -291,12 +293,13 @@ if [ "$stage" = "fine" ]; then
   step "$processed/onsides_v5/onsides_reports.parquet" "OnSIDES reports v5 (fine constructs)" \
     python experiments/build_onsides_reports.py --crosswalk docs/symptom_crosswalk_fine.csv --output-dir "$processed/onsides_v5" \
       --markdown-output "$log_directory/onsides_v5.md" --evidence-dir "$processed/evidence_full_v5" --max-drug-targets 0 $drug_wiring
-  # --open-targets-scoped-rows (decision 8.5) joins a statement to the perturbation whose identifier is its target's
-  # gene symbol and to the construct that carries the statement's symptom name. On this table that is the gene's loss
-  # of function or untyped allele, never "<gene>|gain_of_function" or a neomorph, for a statement of either direction;
-  # and a statement whose coarse symptom has no namesake among the fine constructs (psychomotor_agitation,
-  # irritability_or_aggression, suicidality) joins nothing. Neither has been ruled on for alleles or fine constructs:
-  # 8.5 was built and measured on the v4 table of 14 October 2026. The assembler's log prints the count that lands.
+  # --open-targets-scoped-rows (decision 8.5) joins a statement to the perturbation that moves its target the same
+  # way, and to the construct that carries the statement's symptom name. An inhibition statement joins the gene's loss
+  # of function or untyped allele (the bare gene symbol), an activation statement its "<gene>|gain_of_function" allele
+  # (the owner, 24 November 2026: "1 yes please fix"; load_open_targets_statements.perturbations_of_target_by_direction),
+  # and neither joins a neomorph. A statement whose coarse symptom has no namesake among the fine constructs
+  # (psychomotor_agitation, irritability_or_aggression, suicidality) joins nothing; how coarse statements map to fine
+  # constructs is not ruled. The assembler's log prints the count that lands.
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \

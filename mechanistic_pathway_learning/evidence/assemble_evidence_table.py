@@ -61,6 +61,7 @@ from mechanistic_pathway_learning.evidence.assign_evidence_grades import (
 )
 from mechanistic_pathway_learning.evidence.load_open_targets_statements import (
     human_worded_statements,
+    perturbations_of_target_by_direction,
     reliability_reports,
 )
 from mechanistic_pathway_learning.evidence.evidence_reliability_model import (
@@ -922,7 +923,7 @@ def assemble(
             (row.perturbation_id, row.symptom, row.relation)
             for row in reports[reports.report_value == 1].itertuples()}
         gene_perturbation_ids = set(reports[reports.perturbation_type == "gene"].perturbation_id)
-        perturbation_of_target = {gene_symbol: gene_symbol for gene_symbol in gene_perturbation_ids}
+        perturbation_of_target = perturbations_of_target_by_direction(gene_perturbation_ids)
         statements = human_worded_statements(pd.read_parquet(open_targets_scoped_rows_path))
         open_targets_rows = reliability_reports(statements, items_with_a_positive_report, perturbation_of_target)
         if open_targets_rows:

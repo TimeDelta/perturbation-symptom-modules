@@ -11,11 +11,12 @@ import inspect
 from mechanistic_pathway_learning.evidence import assemble_evidence_table
 from mechanistic_pathway_learning.evidence.load_open_targets_statements import (
     CuratedStatement,
+    perturbations_of_target_by_direction,
     reliability_reports,
 )
 
 EXISTING_ITEM = ("GRIN1", "psychosis", "induces")
-PERTURBATION_OF_TARGET = {"GRIN1": "GRIN1"}
+PERTURBATION_OF_TARGET = {("GRIN1", "inhibition"): "GRIN1"}
 
 
 def a_statement(target: str, direction: str, symptom: str) -> CuratedStatement:
@@ -63,3 +64,26 @@ def test_the_emitted_report_names_the_class_and_carries_a_positive_value():
     assert "Open Targets" in report["source"]
     assert report["perturbation_id"] == "GRIN1"
     assert report["symptom"] == "psychosis"
+
+
+def test_each_direction_joins_the_allele_that_moves_the_target_the_same_way():
+    """The owner, 24 November 2026: "1 yes please fix", on joining inhibition statements to the loss-of-function
+    allele and activation statements to the gain-of-function allele. Before, both joined the bare gene symbol, so
+    an activation statement attached to the gene's loss of function."""
+    joins = perturbations_of_target_by_direction({"GRIN1", "GRIN1|gain_of_function", "HTR2C"})
+    assert joins[("GRIN1", "inhibition")] == "GRIN1"
+    assert joins[("GRIN1", "activation")] == "GRIN1|gain_of_function"
+    assert ("HTR2C", "activation") not in joins  # no gain-of-function allele, so nothing to join
+    activation_item = ("GRIN1|gain_of_function", "psychosis", "induces")
+    activation = reliability_reports([a_statement("GRIN1", "activation", "psychosis")],
+                                     {EXISTING_ITEM, activation_item}, joins)
+    assert [report["perturbation_id"] for report in activation] == ["GRIN1|gain_of_function"]
+    assert reliability_reports([a_statement("HTR2C", "activation", "psychosis")],
+                               {("HTR2C", "psychosis", "induces")}, joins) == []
+
+
+def test_a_curated_allele_other_than_gain_of_function_joins_no_statement():
+    """A neomorph or any other "<gene>|..." allele does what its own mechanism edges say, not more or less of the
+    gene's normal activity, so neither direction of a target-level statement describes it."""
+    joins = perturbations_of_target_by_direction({"HTT|polyglutamine_expansion"})
+    assert joins == {}
