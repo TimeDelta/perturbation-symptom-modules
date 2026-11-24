@@ -87,3 +87,33 @@ def test_a_curated_allele_other_than_gain_of_function_joins_no_statement():
     gene's normal activity, so neither direction of a target-level statement describes it."""
     joins = perturbations_of_target_by_direction({"HTT|polyglutamine_expansion"})
     assert joins == {}
+
+
+def test_a_fine_construct_table_moves_each_statement_to_the_constructs_its_wording_names():
+    """Decision 8.5, the owner, 24 November 2026: "Use a: Map statements by curated wording to fine constructs"."""
+    mapping = {("GRIN1", "inhibition", "psychosis"): ("psychosis", "hallucinations")}
+    items = {("GRIN1", "psychosis", "induces"), ("GRIN1", "hallucinations", "induces")}
+    reports = reliability_reports([a_statement("GRIN1", "inhibition", "psychosis")], items, PERTURBATION_OF_TARGET,
+                                  fine_constructs_of_statement=mapping)
+    assert sorted(report["symptom"] for report in reports) == ["hallucinations", "psychosis"]
+    assert len({report["report_id"] for report in reports}) == 2  # one statement, two constructs, two distinct ids
+    assert {report["source_term_id"] for report in reports} == {"psychosis"}  # the statement's own coarse symptom
+
+
+def test_a_statement_missing_from_the_fine_construct_map_is_an_error_not_a_silent_namesake():
+    import pytest
+    with pytest.raises(KeyError):
+        reliability_reports([a_statement("GRIN1", "inhibition", "psychosis")], {EXISTING_ITEM}, PERTURBATION_OF_TARGET,
+                            fine_constructs_of_statement={})
+
+
+def test_the_registered_fine_construct_map_names_only_fine_constructs_and_carries_the_owners_rulings():
+    import pandas as pd
+    from mechanistic_pathway_learning.evidence.load_open_targets_statements import load_fine_construct_map
+    mapping = load_fine_construct_map()
+    assert len(mapping) == 111  # the statements docs/generated/open_targets_reliability_effect.json counts
+    fine_constructs = set(pd.read_csv("docs/symptom_crosswalk_fine.csv").target_symptom)
+    assert all(constructs and set(constructs) <= fine_constructs for constructs in mapping.values())
+    assert mapping[("ADORA2A", "inhibition", "psychomotor_agitation")] == ("agitation", "anxiety")  # "3 add anxiety"
+    assert mapping[("DRD1", "inhibition", "suicidality")] == ("suicidal_ideation",)
+    assert mapping[("DRD1", "inhibition", "parkinsonism")] == ("parkinsonism",)

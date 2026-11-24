@@ -61,6 +61,7 @@ from mechanistic_pathway_learning.evidence.assign_evidence_grades import (
 )
 from mechanistic_pathway_learning.evidence.load_open_targets_statements import (
     human_worded_statements,
+    load_fine_construct_map,
     perturbations_of_target_by_direction,
     reliability_reports,
 )
@@ -718,6 +719,7 @@ def assemble(
     seed_gain_of_function_genes_positive: bool = False,
     admitted_atc_prefixes: tuple[str, ...] = NERVOUS_SYSTEM_ATC_PREFIXES,
     open_targets_scoped_rows_path: Path | None = None,
+    open_targets_fine_constructs_path: Path | None = None,
     allele_perturbations: bool = False,
     orphadata_product1_path: Path | None = None,
     neomorphic_alleles_path: Path | None = DEFAULT_NEOMORPHIC_ALLELES_PATH,
@@ -750,7 +752,10 @@ def assemble(
     open_targets_scoped_rows_path (amendment item 12d, decision 8.5 on option (a)) is the table
     experiments/scope_open_targets_symptom_labels.py writes: its human-worded statements join the reliability fit as
     reports on items that already carry a positive report, and reach no grade and no label. None assembles without
-    the class; a path that does not exist raises before anything is read.
+    the class; a path that does not exist raises before anything is read. open_targets_fine_constructs_path
+    (configs/open_targets_fine_constructs.csv, the owner's ruling of 24 November 2026 under 8.5) moves each statement
+    to the fine constructs its wording names, for a table built on docs/symptom_crosswalk_fine.csv; None joins each
+    statement to its own coarse symptom name.
 
     complex_target_narrowing (perturbation/gtopdb_drug_targets.ComplexTargetNarrowing, decision 8.11) narrows each
     SIDER drug's ChEMBL complex targets to the subunits the Guide to PHARMACOLOGY names before the drug is seeded;
@@ -925,7 +930,10 @@ def assemble(
         gene_perturbation_ids = set(reports[reports.perturbation_type == "gene"].perturbation_id)
         perturbation_of_target = perturbations_of_target_by_direction(gene_perturbation_ids)
         statements = human_worded_statements(pd.read_parquet(open_targets_scoped_rows_path))
-        open_targets_rows = reliability_reports(statements, items_with_a_positive_report, perturbation_of_target)
+        fine_constructs_of_statement = (load_fine_construct_map(open_targets_fine_constructs_path)
+                                        if open_targets_fine_constructs_path is not None else None)
+        open_targets_rows = reliability_reports(statements, items_with_a_positive_report, perturbation_of_target,
+                                                fine_constructs_of_statement=fine_constructs_of_statement)
         if open_targets_rows:
             open_targets_frame = pd.DataFrame(open_targets_rows)
             open_targets_frame["rubric_weight"] = rubric_weights_for_table(open_targets_frame, rubric_weight_defaults)
@@ -1077,6 +1085,8 @@ def main() -> None:
     parser.add_argument("--binding-sites", type=Path, default=DEFAULT_BINDING_SITES_PATH, help="the drugs' binding sites, which name the obligate subunits")
     parser.add_argument("--open-targets-scoped-rows", type=Path, default=None,
                         help="data/processed/off_target_scoping/open_targets_symptom_rows.parquet (amendment item 12d, decision 8.5): the curated target-safety statements enter the Dawid-Skene reliability fit and reach no grade and no label. Omit the flag to assemble without the class; a path that does not exist is an error")
+    parser.add_argument("--open-targets-fine-constructs", type=Path, default=None,
+                        help="configs/open_targets_fine_constructs.csv (decision 8.5, 24 November 2026): join each Open Targets statement to the fine constructs its curated wording names, for a table built on the fine crosswalk. Omit it on a coarse table")
     arguments = parser.parse_args()
     rubric_weight_defaults = load_rubric_weight_defaults(arguments.report_rubric_weights)
     assembled = assemble(arguments.crosswalk, arguments.hpo_obo, arguments.hpo_annotations, arguments.graph_dir, arguments.sider_dir, arguments.chembl_dir,
@@ -1087,6 +1097,7 @@ def main() -> None:
                          seed_gain_of_function_genes_positive=arguments.seed_gain_of_function_genes_positive,
                          admitted_atc_prefixes=read_admitted_atc_prefixes(arguments.admitted_atc_prefixes) if arguments.admitted_atc_prefixes is not None else NERVOUS_SYSTEM_ATC_PREFIXES,
                          open_targets_scoped_rows_path=arguments.open_targets_scoped_rows,
+                         open_targets_fine_constructs_path=arguments.open_targets_fine_constructs,
                          allele_perturbations=arguments.allele_perturbations, orphadata_product1_path=arguments.orphadata_product1,
                          neomorphic_alleles_path=arguments.neomorphic_alleles,
                          gene2phenotype_path=None if str(arguments.gene2phenotype).lower() == "none" else Path(arguments.gene2phenotype),

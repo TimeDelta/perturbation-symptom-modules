@@ -180,9 +180,32 @@ def perturbations_of_target_by_direction(gene_perturbation_ids: set[str]) -> dic
     return joins
 
 
+FINE_CONSTRUCT_MAP_PATH = Path("configs/open_targets_fine_constructs.csv")
+
+
+def load_fine_construct_map(path: Path = FINE_CONSTRUCT_MAP_PATH) -> dict[tuple[str, str, str], tuple[str, ...]]:
+    """(target, direction, coarse symptom) -> the fine constructs the statement's curated wording names.
+
+    Decision 8.5, the owner, 24 November 2026: "Use a: Map statements by curated wording to fine constructs", offered
+    against fanning a statement out to every fine child of its coarse symptom and against joining the namesake only.
+    The table was read on Fable (docs/records/2026-11/ot_fine_construct_map_2026-11-24.md), each wording checked
+    against the construct's crosswalk terms and a second source where it was ambiguous, with the owner's rulings on its
+    unsure rows applied; a statement too vague for any fine child keeps its coarse namesake where one exists.
+    """
+    table = pd.read_csv(path, dtype=str).fillna("")
+    mapping = {}
+    for row in table.itertuples():
+        key = (row.target, row.direction, row.coarse_symptom)
+        if key in mapping:
+            raise ValueError(f"{path}: {key} appears twice")
+        mapping[key] = tuple(construct for construct in row.fine_constructs.split(";") if construct)
+    return mapping
+
+
 def reliability_reports(statements: list[CuratedStatement], items_with_a_positive_report: set[tuple[str, str, str]],
                         perturbation_of_target: dict[tuple[str, str], str],
-                        evidenced_negative_pairs: set[tuple[str, str]] | None = None) -> list[dict]:
+                        evidenced_negative_pairs: set[tuple[str, str]] | None = None,
+                        fine_constructs_of_statement: dict[tuple[str, str, str], tuple[str, ...]] | None = None) -> list[dict]:
     """Report rows for the Dawid-Skene reliability fit (amendment item 12d; the owner, 13 October 2026: "add it to
     the Dawid-Skene fit estimates").
 
@@ -204,6 +227,11 @@ def reliability_reports(statements: list[CuratedStatement], items_with_a_positiv
     perturbation_of_target maps (target, direction) to the perturbation the statement joins, as
     perturbations_of_target_by_direction builds it; a statement with no entry joins nothing.
 
+    fine_constructs_of_statement (load_fine_construct_map), for a table built on the fine constructs, moves each
+    statement from its coarse symptom to the fine construct(s) its wording names, one report per construct; a
+    statement the map does not hold raises, so a new curation release cannot join the coarse name silently. None
+    joins the statement's own symptom name, as on the coarse tables.
+
     Joining such an item creates nothing: the grade ignores reports of another evidence class, so this class
     reaches the reliability fit and not the grade - the same route the literature class takes.
 
@@ -215,38 +243,62 @@ def reliability_reports(statements: list[CuratedStatement], items_with_a_positiv
     evidenced_negative_pairs = evidenced_negative_pairs or set()
     reports = []
     for statement in statements:
-        perturbation_identifier = perturbation_of_target.get((statement.target, statement.direction))
-        item = (perturbation_identifier, statement.symptom, "induces")
-        if perturbation_identifier is None or item not in items_with_a_positive_report:
-            continue
-        if (perturbation_identifier, statement.symptom) in evidenced_negative_pairs:
-            continue
-        references = [reference.strip() for reference in statement.references.split(";") if reference.strip()]
-        reports.append({
-            "report_id": f"{SOURCE_NAME}|{statement.target}|{statement.direction}|{statement.symptom}",
-            "perturbation_id": perturbation_identifier,
-            "perturbation_type": "gene",
-            "perturbation_label": statement.target,
-            "symptom": statement.symptom,
-            "relation": "induces",
-            "evidence_class": OPEN_TARGETS_EVIDENCE_CLASS,
-            "source": SOURCE_NAME,
-            "report_value": 1,
-            "source_record_id": statement.target,
-            "source_record_label": f"{statement.target} {statement.direction}",
-            "source_term_id": statement.symptom,
-            "source_term_label": statement.curated_wording,
-            "evidence_code": "target_safety_review",
-            "model_description": f"{statement.direction} of {statement.target}",
-            "frequency": None, "frequency_denominator": None, "placebo_flag": False, "onset": None, "sex": None,
-            "references": statement.references,
-            "pubmed_reference_count": sum(1 for reference in references if reference.upper().startswith("PMID")),
-            "evidence_date": None,
-            "rubric_log_sample_size": 0.0, "rubric_frequency_known": 0.0, "rubric_evidence_code_pcs": 0.0,
-            "rubric_evidence_code_tas": 0.0, "rubric_evidence_code_iea": 0.0, "rubric_placebo_controlled": 0.0,
-            "rubric_curated_synopsis": 0.0,
-        })
+        if fine_constructs_of_statement is None:
+            symptoms = (statement.symptom,)
+        else:
+            key = (statement.target, statement.direction, statement.symptom)
+            if key not in fine_constructs_of_statement:
+                raise KeyError(f"no fine-construct mapping for the Open Targets statement {key}; add it to {FINE_CONSTRUCT_MAP_PATH}")
+            symptoms = fine_constructs_of_statement[key]
+        for symptom in symptoms:
+            report = _reliability_report(statement, symptom, perturbation_of_target, items_with_a_positive_report,
+                                         evidenced_negative_pairs, several_constructs=fine_constructs_of_statement is not None)
+            if report is not None:
+                reports.append(report)
     return reports
+
+
+def _reliability_report(statement: CuratedStatement, symptom: str, perturbation_of_target: dict[tuple[str, str], str],
+                        items_with_a_positive_report: set[tuple[str, str, str]],
+                        evidenced_negative_pairs: set[tuple[str, str]], several_constructs: bool) -> dict | None:
+    """The one report a statement makes on one construct, or None where reliability_reports' guards skip it.
+
+    On a fine-construct table the report id carries the construct, since one statement can name two (HTR2A activation
+    names psychosis and hallucinations); the statement's own coarse symptom stays in source_term_id."""
+    perturbation_identifier = perturbation_of_target.get((statement.target, statement.direction))
+    item = (perturbation_identifier, symptom, "induces")
+    if perturbation_identifier is None or item not in items_with_a_positive_report:
+        return None
+    if (perturbation_identifier, symptom) in evidenced_negative_pairs:
+        return None
+    references = [reference.strip() for reference in statement.references.split(";") if reference.strip()]
+    report_id = f"{SOURCE_NAME}|{statement.target}|{statement.direction}|{statement.symptom}"
+    if several_constructs:
+        report_id += f"|{symptom}"
+    return {
+        "report_id": report_id,
+        "perturbation_id": perturbation_identifier,
+        "perturbation_type": "gene",
+        "perturbation_label": statement.target,
+        "symptom": symptom,
+        "relation": "induces",
+        "evidence_class": OPEN_TARGETS_EVIDENCE_CLASS,
+        "source": SOURCE_NAME,
+        "report_value": 1,
+        "source_record_id": statement.target,
+        "source_record_label": f"{statement.target} {statement.direction}",
+        "source_term_id": statement.symptom,
+        "source_term_label": statement.curated_wording,
+        "evidence_code": "target_safety_review",
+        "model_description": f"{statement.direction} of {statement.target}",
+        "frequency": None, "frequency_denominator": None, "placebo_flag": False, "onset": None, "sex": None,
+        "references": statement.references,
+        "pubmed_reference_count": sum(1 for reference in references if reference.upper().startswith("PMID")),
+        "evidence_date": None,
+        "rubric_log_sample_size": 0.0, "rubric_frequency_known": 0.0, "rubric_evidence_code_pcs": 0.0,
+        "rubric_evidence_code_tas": 0.0, "rubric_evidence_code_iea": 0.0, "rubric_placebo_controlled": 0.0,
+        "rubric_curated_synopsis": 0.0,
+    }
 
 
 def evidence_records(placements: list[StatementPlacement]) -> list[EvidenceRecord]:

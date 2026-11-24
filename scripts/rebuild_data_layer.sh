@@ -297,15 +297,16 @@ if [ "$stage" = "fine" ]; then
   # way, and to the construct that carries the statement's symptom name. An inhibition statement joins the gene's loss
   # of function or untyped allele (the bare gene symbol), an activation statement its "<gene>|gain_of_function" allele
   # (the owner, 24 November 2026: "1 yes please fix"; load_open_targets_statements.perturbations_of_target_by_direction),
-  # and neither joins a neomorph. A statement whose coarse symptom has no namesake among the fine constructs
-  # (psychomotor_agitation, irritability_or_aggression, suicidality) joins nothing; how coarse statements map to fine
-  # constructs is not ruled. The assembler's log prints the count that lands.
+  # and neither joins a neomorph. On these tables a statement joins the fine constructs its curated wording names,
+  # by configs/open_targets_fine_constructs.csv (the owner, 24 November 2026: "Use a: Map statements by curated wording
+  # to fine constructs"), so the statements on psychomotor_agitation, irritability_or_aggression and suicidality, which
+  # have no fine namesake, join their wording's construct. The assembler's log prints the count that lands.
   step "$processed/evidence_full_v5/evidence_records.parquet" "evidence table v5 (fine constructs)" \
     python -m mechanistic_pathway_learning.evidence.assemble_evidence_table --crosswalk docs/symptom_crosswalk_fine.csv --graph-dir "$processed/graph_full" \
       --output-dir "$processed/evidence_full_v5" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
       --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
       --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv \
-      --open-targets-scoped-rows "$open_targets_rows" $drug_wiring
+      --open-targets-scoped-rows "$open_targets_rows" --open-targets-fine-constructs configs/open_targets_fine_constructs.csv $drug_wiring
   # The same table with --weighting reliability: each pair's weight is the global scale times its Dawid-Skene posterior,
   # the registered default of configs/evidence_assembly.yaml (mode: learned_reliability) and of amendment item 12d
   # ("Under the registered default weighting the class's weight comes from the fit"). Since decision 9.90 the
@@ -318,7 +319,7 @@ if [ "$stage" = "fine" ]; then
       --output-dir "$processed/evidence_full_v5_reliability" --extra-reports "$processed/onsides_v5/onsides_reports.parquet" \
       --onsides-bridge data/raw/onsides/v3.1.1/ingredient_identifier_bridge.json --max-drug-targets 0 --allele-perturbations \
       --rejected-indications configs/rejected_sider_indications.csv --curated-label-events configs/curated_label_events.csv \
-      --open-targets-scoped-rows "$open_targets_rows" --weighting reliability $drug_wiring
+      --open-targets-scoped-rows "$open_targets_rows" --open-targets-fine-constructs configs/open_targets_fine_constructs.csv --weighting reliability $drug_wiring
   step "$processed/label_selection/better_v2_full_v5.parquet" "label selection better_v2 on v5, never-above-placebo pairs set aside" \
     python experiments/build_label_selection.py --evidence-dir "$processed/evidence_full_v5" --crosswalk docs/symptom_crosswalk_fine.csv --mask-grades C --mask-never-above-placebo \
       --output "$processed/label_selection/better_v2_full_v5.parquet"
