@@ -1259,10 +1259,12 @@
         "decisions": [
           "9.81",
           "9.97",
-          "9.110"
+          "9.110",
+          "9.153"
         ],
         "items": [
-          "37f"
+          "37f",
+          "40"
         ],
         "files": [
           "docs/nonlinearity_inventory.md"
@@ -1272,11 +1274,13 @@
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.97": "7a14a2f6a27e98537e976dd88d241cc02aea1cd0f784bd11705db0752f1a22e9",
         "decision:9.110": "d05df7239d09a25c131a673d25e34da3e940acc4846c85be8a710a6e991766a0",
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:docs/nonlinearity_inventory.md": "b96b1a99d043d0aee152e2e817df0551b330c93ac005702c4c49a677fa137864"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "fea288c"
     },
     "mtp7zsmsxgy.13809": {
       "title": "concept 4, forward-cone normalisation",
