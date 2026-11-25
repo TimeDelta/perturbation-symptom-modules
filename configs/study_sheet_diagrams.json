@@ -700,27 +700,33 @@
       "title": "opening paragraph",
       "depicts": {
         "decisions": [
-          "9.81"
+          "9.81",
+          "9.153"
         ],
         "items": [
-          "37f"
+          "37f",
+          "40"
         ]
       },
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
-        "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5"
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
+        "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "3234002"
     },
     "mtp7zsmsxgy.14749": {
       "title": "pipeline lead",
       "depicts": {
         "decisions": [
-          "9.81"
+          "9.81",
+          "9.153"
         ],
         "items": [
-          "37f"
+          "37f",
+          "40"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py"
@@ -728,11 +734,13 @@
       },
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "3234002"
     },
     "mtp7zsmsxgy.14955": {
       "title": "nonlinearities sit after the loop",
@@ -804,12 +812,14 @@
       "depicts": {
         "decisions": [
           "9.81",
-          "9.138"
+          "9.138",
+          "9.153"
         ],
         "items": [
           "37e",
           "37f",
-          "37g"
+          "37g",
+          "40"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py",
@@ -819,14 +829,16 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.138": "46f8df368e63b35f6d0d00ae85bb5fbf5bc9a3a48b8fe1f6d9271f629fdc4c44",
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37e": "51d353e3705e3fde9b12fecf4506e547292039fa9d335e67ad0f075aaaa75d23",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "3234002"
     },
     "mtp7zsmsxgy.20413": {
       "title": "key and forward_cone exactness",
@@ -1049,10 +1061,12 @@
         "decisions": [
           "9.16",
           "9.81",
-          "9.90"
+          "9.90",
+          "9.153"
         ],
         "items": [
-          "37f"
+          "37f",
+          "40"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py",
@@ -1067,7 +1081,9 @@
         "decision:9.16": "56969743a48a3720ef9fac82a6e7fd7460b691145316a25ec64108be0fb5b41d",
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc",
         "file:mechanistic_pathway_learning/graph/compartment_ph.py": "3d1408db544e6dedc830f1f7a4a65fb6b504b33e89215b87a8eb26dd818ed264",
@@ -1075,8 +1091,8 @@
         "file:mechanistic_pathway_learning/models/positive_unlabelled_likelihood.py": "ebca2603d042c271fa9f20fdae4bc0430c5916093b8316870582ad7a36be8569",
         "file:mechanistic_pathway_learning/models/minimum_description_length_selection.py": "20eaeb3ca2c3e5a903fcd019917fc0f5aba9d658ec2913ba9c046f41ef990ea5"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "3234002"
     },
     "mtp7zsmsxgy.24431": {
       "title": "the word \"time scale\"",
@@ -1198,10 +1214,12 @@
       "depicts": {
         "decisions": [
           "9.81",
-          "9.138"
+          "9.138",
+          "9.153"
         ],
         "items": [
-          "37f"
+          "37f",
+          "40"
         ],
         "files": [
           "mechanistic_pathway_learning/models/linear_response_encoder.py"
@@ -1210,11 +1228,13 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.138": "46f8df368e63b35f6d0d00ae85bb5fbf5bc9a3a48b8fe1f6d9271f629fdc4c44",
+        "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
+        "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "5f9635b7d3a23c19b23479ba36cf4687840ffecb9d4056feb5e910ae357f372d"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-25",
+      "checked_at_commit": "3234002"
     },
     "mtp7zsmsxgy.11974": {
       "title": "concept 2, rates drop out (formula .12205)",
