@@ -1,6 +1,6 @@
 # Perturbation-symptom modules: study sheet
 
-The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 169, 24 November 2026). The text is the doc's own Markdown export; the 25 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. Each image is rendered from that diagram's own source in the doc, with a light palette that stands in for the doc's theme, so its colours can differ slightly from the doc while its text and shapes are the doc's. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
+The owner's study sheet, exported from Claude Docs (https://claude.ai/artifact/RzVm4LjdeHmzzdSyzJ5j65). The doc is the version that is kept current; this file is its Markdown copy, refreshed in place by exporting it again (last from revision 184, 25 November 2026). The text is the doc's own Markdown export; the 25 diagrams, which that export leaves out, are rendered as PNG images in [`study_sheet_figures/`](study_sheet_figures/), each followed by its caption. Each image is rendered from that diagram's own source in the doc, with a light palette that stands in for the doc's theme, so its colours can differ slightly from the doc while its text and shapes are the doc's. From 27 October to 7 November 2026 the copy was a dated record, an export of revision 36 with an HTML page and 12 figures, filed under the date of that export; the owner asked on 7 November 2026 that the date be removed from the file names, and git holds that version.
 
 Oct 25, 2026 · @Bryan Nova
 
@@ -59,9 +59,9 @@ As built, the model is four learned transforms around one linear loop: input wei
 
 *encoder, as built · linear_response_encoder.py and forward_cone_divisor.py on main at e6ea5f5; before decision 9.81 and amendment item 37f*
 
-![encoder, as decided · decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026, not built; the steady-state search is decision 9.138, open](study_sheet_figures/05b_encoder_as_decided.png)
+![encoder, as decided · decision 9.81 and amendment items 37e, 37f, 37g and 40, registered 23 and 24 Nov 2026, not built; the search for other steady states is decision 9.138, deferred](study_sheet_figures/05b_encoder_as_decided.png)
 
-*encoder, as decided · decision 9.81 and amendment items 37e, 37f and 37g, registered 23 Nov 2026, not built; the steady-state search is decision 9.138, open*
+*encoder, as decided · decision 9.81 and amendment items 37e, 37f, 37g and 40, registered 23 and 24 Nov 2026, not built; the search for other steady states is decision 9.138, deferred*
 
 Key: B perturbations, P seeds per perturbation, N nodes, R relations, Q cell classes, C propagation channels (Q × channels per class), D state channels, F node feature columns, M pathway modules, S symptoms. Under `forward_cone` each seed is propagated as its own column with its own divisor; that is exact only because everything inside the loop is linear in the input. That holds as built. Under item 37f (not built) saturation sits inside the loop, and the forward\_cone rule is withdrawn in the commit that builds the root-finder.
 
