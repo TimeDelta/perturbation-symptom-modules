@@ -1,22 +1,51 @@
-"""What can a predictor earn from the open leakage channel alone, under the item 25 split? (Open decision 9.35.)
+"""What can a predictor earn from the open leakage channels alone, under the item 25 split? (Decision 9.35.)
 
-The owner, 14 October 2026: "build the adversary. it's a good control", and then "you can remove the leakage ceiling
-construction since that adversary is being used instead". So this script measures a control and sets no threshold: it
-reports what a lookup-only predictor earns in the units of the registered reading, and the channel counts behind it.
+What it is for now. Decision 9.35 was ruled on 24 November 2026 (the owner: "Use 1.a but not on current graph. On graph
+at time of draw, right?"): the adversary's advantage must stay below one standard error of the test's own reading, with
+the curve fitted on development-set pseudo-draws on the graph the draw is made on. The pseudo-draw records this script
+writes are what that curve would be fitted on. The fit, the ceiling it gives and the draw it gates are not built, so
+this script still measures and sets no threshold. Until 24 November 2026 that was the whole of its purpose, on the
+owner's words of 14 October 2026: "build the adversary. it's a good control", and then "you can remove the leakage
+ceiling construction since that adversary is being used instead"; the ruling of 24 November sets a ceiling built from
+this adversary, checked at the draw.
 
 What it does. Over --num-draws pseudo-draws of the item 25 rule on the development data, each draw gives a held-out set
 and a training set. The adversary is fitted on the training labels and scores the held-out rows from the training
-perturbations that share a seed node with them, nothing else. Its advantage over each registered baseline is read in
-macro and micro AUPRC with the paired bootstrap of design section 7, the same reading the confirmatory test uses, so the
-number is comparable with H1's 0.05 requirement and with the measured precision of the readings.
+perturbations that reach them through the channels it is given, nothing else: the shared seed node channel always, and
+the reached-node channel of decision 9.36 when --reached-node-hops is given (off by default, so a run without it is the
+run of 14 October 2026). Its advantage over each registered baseline is read in macro and micro AUPRC with the paired
+bootstrap of design section 7, so the number is comparable with the measured precision of the readings. Until 27
+November 2026 this docstring also said it was comparable "with H1's 0.05 requirement"; that floor was removed on 15
+October 2026. Each draw also records its label-free statistics: seen_target_share always, and seen_reached_node_share
+with the reached-node channel on.
+
+The reached-node channel. With --reached-node-hops K the adversary also counts as a neighbour a training perturbation
+whose forward walk of at most K steps reaches a node the held-out perturbation's walk reaches, over the (held-out type,
+training type) pairs of --reached-node-type-pairs and the edges of --reached-node-edges, both required with it because
+no ruling settles them (9.36 measured the gene side on every stored edge). k is a sensitivity sweep (9.36), so the
+script is run once per K. A run with the channel on must name its own --checkpoint-dir, --json-output and
+--markdown-output, so it can neither resume from the shared seed node run's checkpoints nor overwrite
+docs/generated/leakage_only_adversary.json and .md, the record of 14 October 2026 on
+graph_full_neuronal_split_binders_drugs_v4_enzymes.
+
+What a checkpoint directory holds. A checkpointed draw is named by its pooling rule and seed only, so the directory also
+holds checkpoint_inputs.json, the inputs its draws were computed on (the graph, evidence and label selection digests,
+the grouping, the bootstrap count, the excluded lockbox and the channel list). A run whose inputs differ from those, or
+that finds draws without that file (a directory written before 27 November 2026), refuses to resume from it, since its
+output would record this run's digests over draws made on other inputs, and those digests are what say which graph the
+pseudo-draws were made on (9.35: on the graph the draw is made on).
 
 Why pseudo-draws and not the real one. The adversary needs the held-out labels to be *scored*, which the lockbox
 forbids before `runs/confirmatory/SCORED` exists. Development pseudo-draws under the same rule need no lockbox label, so
-this runs before the draw and tells the owner whether the channel is worth anything at all - which is what they would
-otherwise learn only after the one scoring they get.
+this runs before the draw. The pseudo-draw seeds are 0 to --num-draws - 1 and the output records them
+(pseudo_draw_seeds), since a pseudo-draw at the real draw's seed would score the very rows that draw holds out. The draw
+of 9.35 is not built.
 
 Usage:
   python experiments/measure_leakage_only_adversary.py --num-draws 20
+  python experiments/measure_leakage_only_adversary.py --num-draws 20 --reached-node-hops 2 \\
+      --reached-node-type-pairs gene:gene --reached-node-edges stored --checkpoint-dir <dir> \\
+      --json-output <path> --markdown-output <path>
 """
 from __future__ import annotations
 
@@ -26,19 +55,43 @@ from pathlib import Path
 
 import numpy as np
 
-from mechanistic_pathway_learning.evaluation.experiment_data import EVIDENCED_NEGATIVE_ARRAYS, load_experiment_data
+from mechanistic_pathway_learning.data_release import sha256_of_file
+from mechanistic_pathway_learning.evaluation.experiment_data import EVIDENCED_NEGATIVE_ARRAYS, GENE_TO_PROTEIN_FILE, load_experiment_data
 from mechanistic_pathway_learning.evaluation.perturbation_wise_and_pathway_wise_splits import assign_grouped_folds
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
-    LeakageOnlyAdversary, POOLING_RULES, channel_breakdown, leaked_neighbours, seed_nodes_of_perturbations,
-    seen_target_share)
+    LeakageOnlyAdversary, POOLING_RULES, REACH_EDGE_SETS, channel_breakdown, neighbours_through_the_channels,
+    reach_edges, reached_nodes_of_perturbations, registered_channel_list, seed_nodes_of_perturbations,
+    seen_reached_node_share, seen_target_share)
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import (
     macro_statistic, micro_auprc, paired_bootstrap_macro_difference, paired_bootstrap_micro_difference)
 from mechanistic_pathway_learning.evaluation.target_held_out_split import REGISTERED_HELD_OUT_FRACTION, held_out_perturbations, targets_of_drugs
+from mechanistic_pathway_learning.graph.drug_entry_nodes import DRUG_ENTRY_FILE
 from mechanistic_pathway_learning.models.baselines.popularity_baseline import PopularityBaseline
 
 # a 95 percent bootstrap interval is about this many standard errors wide on each side, used only to turn the interval
 # the registered machinery returns into the standard error the readings are compared against
 STANDARD_ERRORS_IN_A_95_PERCENT_HALF_WIDTH = 1.959964
+# The files of a graph directory that load_experiment_data reads, so their SHA-256 values say which graph a measurement
+# was made on. The two optional ones are hashed when present.
+GRAPH_FILES_READ = ("nodes.parquet", "edges.parquet", "relation_types.json")
+OPTIONAL_GRAPH_FILES_READ = (GENE_TO_PROTEIN_FILE, DRUG_ENTRY_FILE)
+
+
+def graph_file_sha256(graph_directory: Path) -> dict[str, str]:
+    """file name -> SHA-256 for the files of the graph directory load_experiment_data reads (GRAPH_FILES_READ, and
+    OPTIONAL_GRAPH_FILES_READ when present): what says which graph the pseudo-draws were made on, since decision 9.35
+    fits its curve on the graph the draw is made on."""
+    directory = Path(graph_directory)
+    digests = {}
+    for name in GRAPH_FILES_READ:
+        path = directory / name
+        if not path.is_file():
+            raise FileNotFoundError(f"{path} is missing; a graph directory holds {', '.join(GRAPH_FILES_READ)}")
+        digests[name] = sha256_of_file(path)
+    for name in OPTIONAL_GRAPH_FILES_READ:
+        if (directory / name).is_file():
+            digests[name] = sha256_of_file(directory / name)
+    return digests
 
 
 def registered_two_sided_draw(data, draw_seed: int) -> tuple[set[str], set[str]]:
@@ -63,8 +116,11 @@ def registered_two_sided_draw(data, draw_seed: int) -> tuple[set[str], set[str]]
     return held_out_ids, held_out_targets
 
 
-def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int) -> dict:
-    """One pseudo-draw: the adversary's advantage over popularity and degree-scaled popularity, and the channel counts."""
+def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int, reached_nodes_of_perturbation=None,
+             reached_node_type_pairs=None) -> dict:
+    """One pseudo-draw: the adversary's advantage over popularity, degree-scaled popularity and type popularity, the
+    channel counts and the label-free statistics. Without reached_nodes_of_perturbation the adversary has the shared
+    seed node channel alone, as in every run before 27 November 2026."""
     held_out_ids, held_out_targets = registered_two_sided_draw(data, draw_seed)
     held_out_rows = np.array([index for index, perturbation_id in enumerate(data.perturbation_ids) if str(perturbation_id) in held_out_ids], dtype=int)
     training_rows = np.array([index for index, perturbation_id in enumerate(data.perturbation_ids) if str(perturbation_id) not in held_out_ids], dtype=int)
@@ -76,8 +132,10 @@ def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int) -> dic
     label_mask = data.label_mask if data.label_mask is not None else np.ones(data.outcomes.shape, dtype=bool)
 
     seed_nodes_of_perturbation = seed_nodes_of_perturbations(data.perturbation_ids, data.perturbation_seeds, data.node_ids)
-    neighbours = leaked_neighbours(held_out_identifiers, training_identifiers, seed_nodes_of_perturbation)
     perturbation_types_of_id = {str(perturbation_id): kind for perturbation_id, kind in zip(data.perturbation_ids, data.perturbation_types)}
+    neighbours = neighbours_through_the_channels(
+        held_out_identifiers, training_identifiers, seed_nodes_of_perturbation, reached_nodes_of_perturbation,
+        perturbation_types_of_id, reached_node_type_pairs)
 
     adversary = LeakageOnlyAdversary(pooling_rule).fit(training_identifiers, data.outcomes[training_rows], label_mask[training_rows])
     adversary_scores = adversary.predict(held_out_identifiers, neighbours)
@@ -95,12 +153,18 @@ def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int) -> dic
                   targets_of_drugs(data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids), held_out_identifiers),
               "adversary_macro_auprc": float(macro_average(adversary_scores, held_out_outcomes, held_out_mask)),
               "adversary_micro_auprc": float(micro_auprc(adversary_scores, held_out_outcomes, held_out_mask))}
+    if reached_nodes_of_perturbation is not None:
+        result["seen_reached_node_share"] = seen_reached_node_share(
+            reached_nodes_of_perturbation, held_out_identifiers, training_identifiers, perturbation_types_of_id,
+            reached_node_type_pairs)
     result.update(channel_breakdown(neighbours, perturbation_types_of_id))
 
-    # The drug stratum, approved by the owner 14 October 2026 ("1. yes"). The whole-lockbox reading is diluted: a draw
-    # holds out about 170 genes to 22-39 drugs, no gene shares a seed node with anything, and the adversary falls back
-    # to the base rate on every gene row, so its whole-lockbox macro and micro sit almost on top of popularity whatever
-    # the drug side is doing. The channel exists only among drugs, so the bound has force only where it is read.
+    # The drug stratum, approved by the owner 14 October 2026 ("1. yes"). The whole-lockbox reading is diluted: in the
+    # shared seed node run of 14 October 2026 (graph_full_neuronal_split_binders_drugs_v4_enzymes) a draw held out about
+    # 170 genes to 22-39 drugs, no gene shared a seed node with anything, and the adversary fell back to the base rate
+    # on every gene row, so its whole-lockbox macro and micro sat almost on top of popularity whatever the drug side was
+    # doing. That channel exists only among drugs, so its bound has force only where it is read. With the reached-node
+    # channel on, gene rows can have neighbours, and the gene stratum is read the same way.
     held_out_is_a_drug = np.array([data.perturbation_types[row] == "drug" for row in held_out_rows], dtype=bool)
     strata = {"all_held_out": np.ones(len(held_out_rows), dtype=bool), "drug_stratum": held_out_is_a_drug,
               "gene_stratum": ~held_out_is_a_drug}
@@ -174,15 +238,33 @@ def main() -> None:
     parser.add_argument("--pooling-rules", nargs="+", default=list(POOLING_RULES), choices=list(POOLING_RULES),
                         help="which pooling rules to measure; the default measures all of them, which is the cross "
                              "product this script is slowest on")
-    parser.add_argument("--checkpoint-dir", type=Path, default=Path("runs/leakage_only_adversary_draws"),
+    parser.add_argument("--checkpoint-dir", type=Path, default=None,
                         help="one JSON per (pooling rule, draw). A draw already written here is skipped, so a run "
-                             "stopped by the background time limit resumes where it left off instead of starting over")
+                             "stopped by the background time limit resumes where it left off instead of starting over; "
+                             "a directory whose checkpoint_inputs.json names other inputs, or that holds draws without "
+                             "one, is refused. Defaults to runs/leakage_only_adversary_draws for the shared seed node run; "
+                             "required with --reached-node-hops")
     parser.add_argument("--num-bootstrap", type=int, default=1000)
     parser.add_argument("--lockbox", type=Path, default=None,
                         help="a drawn lockbox whose perturbations are excluded, so the calibration reads development rows only")
-    parser.add_argument("--json-output", type=Path, default=Path("docs/generated/leakage_only_adversary.json"))
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/leakage_only_adversary.md"))
+    parser.add_argument("--reached-node-hops", type=int, default=None,
+                        help="switch on the reached-node channel of decision 9.36 with walks of at most this many steps "
+                             "(off by default; 0 reproduces the shared seed node channel). Needs --reached-node-type-pairs "
+                             "and --reached-node-edges")
+    parser.add_argument("--reached-node-type-pairs", nargs="+", default=None, metavar="HELD_OUT_TYPE:TRAINING_TYPE",
+                        help="the (held-out type, training type) pairs the reached-node channel covers, e.g. gene:gene; "
+                             "required with --reached-node-hops, since no ruling says whether drugs enter it")
+    parser.add_argument("--reached-node-edges", choices=list(REACH_EDGE_SETS), default=None,
+                        help="the edges the reached-node walk follows (leakage_only_adversary.REACH_EDGE_SETS); required "
+                             "with --reached-node-hops")
+    parser.add_argument("--json-output", type=Path, default=None,
+                        help="defaults to docs/generated/leakage_only_adversary.json for the shared seed node run; "
+                             "required with --reached-node-hops")
+    parser.add_argument("--markdown-output", type=Path, default=None,
+                        help="defaults to docs/generated/leakage_only_adversary.md for the shared seed node run; "
+                             "required with --reached-node-hops")
     arguments = parser.parse_args()
+    reached_node_type_pairs = resolve_channel_arguments(parser, arguments)
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by,
                                label_selection=arguments.label_selection)
@@ -191,11 +273,23 @@ def main() -> None:
         excluded_lockbox_perturbations = {str(perturbation_id) for perturbation_id in json.loads(arguments.lockbox.read_text())["perturbation_ids"]}
         keep = [index for index, perturbation_id in enumerate(data.perturbation_ids) if str(perturbation_id) not in excluded_lockbox_perturbations]
         data = _restrict(data, keep)
+    reached_nodes_of_perturbation = None
+    if arguments.reached_node_hops is not None:
+        walk_source, walk_target = reach_edges(data.edge_source, data.edge_target, data.is_currency, arguments.reached_node_edges)
+        reached_nodes_of_perturbation = reached_nodes_of_perturbations(
+            data.perturbation_ids, data.perturbation_seeds, data.node_ids, walk_source, walk_target, arguments.reached_node_hops)
 
     results = {"pooling_rules": {}, "excluded_lockbox_perturbations": len(excluded_lockbox_perturbations),
                "evidence_dir": str(arguments.evidence_dir), "graph_dir": str(arguments.graph_dir),
-               "label_selection": str(arguments.label_selection), "num_draws": arguments.num_draws}
-    arguments.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+               "label_selection": str(arguments.label_selection), "num_draws": arguments.num_draws,
+               "pseudo_draw_seeds": list(range(arguments.num_draws)), "group_by": arguments.group_by,
+               "num_bootstrap": arguments.num_bootstrap,
+               "lockbox_excluded": None if arguments.lockbox is None else str(arguments.lockbox),
+               "channels": registered_channel_list(arguments.reached_node_hops, reached_node_type_pairs, arguments.reached_node_edges),
+               "graph_file_sha256": graph_file_sha256(arguments.graph_dir),
+               "evidence_records_sha256": sha256_of_file(arguments.evidence_dir / "evidence_records.parquet"),
+               "label_selection_sha256": sha256_of_file(arguments.label_selection)}
+    claim_checkpoint_directory(arguments.checkpoint_dir, {key: results[key] for key in CHECKPOINT_INPUT_KEYS})
     completed_draws = 0
     for pooling_rule in arguments.pooling_rules:
         draws = []
@@ -204,7 +298,8 @@ def main() -> None:
             if checkpoint_path.exists():
                 draws.append(json.loads(checkpoint_path.read_text()))
                 continue
-            draw = one_draw(data, draw_seed, pooling_rule, arguments.num_bootstrap)
+            draw = one_draw(data, draw_seed, pooling_rule, arguments.num_bootstrap, reached_nodes_of_perturbation,
+                            reached_node_type_pairs)
             checkpoint_path.write_text(json.dumps(draw, indent=1) + "\n")
             draws.append(draw)
             completed_draws += 1
@@ -217,6 +312,79 @@ def main() -> None:
     arguments.json_output.write_text(json.dumps(results, indent=1) + "\n")
     arguments.markdown_output.write_text(_markdown(results, arguments) + "\n")
     print(f"wrote {arguments.json_output} and {arguments.markdown_output}")
+
+
+SHARED_SEED_NODE_RUN_DEFAULTS = {"checkpoint_dir": Path("runs/leakage_only_adversary_draws"),
+                                 "json_output": Path("docs/generated/leakage_only_adversary.json"),
+                                 "markdown_output": Path("docs/generated/leakage_only_adversary.md")}
+# What a checkpointed draw depends on besides its pooling rule and seed, which name its file.
+CHECKPOINT_INPUTS_FILE = "checkpoint_inputs.json"
+CHECKPOINT_INPUT_KEYS = ("graph_file_sha256", "evidence_records_sha256", "label_selection_sha256", "group_by",
+                         "num_bootstrap", "lockbox_excluded", "excluded_lockbox_perturbations", "channels")
+
+
+def claim_checkpoint_directory(checkpoint_dir: Path, inputs: dict) -> None:
+    """Make checkpoint_dir the store of draws computed on inputs, or refuse it.
+
+    A directory whose CHECKPOINT_INPUTS_FILE records other inputs is refused, and so is one holding draws with no such
+    file, since resuming from either would write this run's digests over draws made on other inputs. An empty
+    directory, or a new one, has the file written."""
+    checkpoint_dir = Path(checkpoint_dir)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    inputs_path = checkpoint_dir / CHECKPOINT_INPUTS_FILE
+    inputs = json.loads(json.dumps(inputs))  # compared as it will read back
+    if inputs_path.exists():
+        recorded = json.loads(inputs_path.read_text())
+        differing = sorted(key for key in set(recorded) | set(inputs) if recorded.get(key) != inputs.get(key))
+        if differing:
+            raise SystemExit(f"{checkpoint_dir} holds draws computed on other inputs ({', '.join(differing)} differ); "
+                             "name another --checkpoint-dir")
+        return
+    if any(checkpoint_dir.glob("*_draw_*.json")):
+        raise SystemExit(f"{checkpoint_dir} holds draws with no {CHECKPOINT_INPUTS_FILE}, so which inputs they were computed "
+                         "on is unknown; name another --checkpoint-dir")
+    inputs_path.write_text(json.dumps(inputs, indent=1, sort_keys=True) + "\n")
+
+
+def parse_type_pairs(texts) -> list[tuple[str, str]]:
+    """["gene:gene", "drug:gene"] -> [("gene", "gene"), ("drug", "gene")], held-out type first."""
+    pairs = []
+    for text in texts:
+        held_out_type, separator, training_type = str(text).partition(":")
+        if not separator or not held_out_type or not training_type or ":" in training_type:
+            raise ValueError(f"a reached-node type pair is HELD_OUT_TYPE:TRAINING_TYPE, not {text!r}")
+        pairs.append((held_out_type, training_type))
+    return pairs
+
+
+def resolve_channel_arguments(parser, arguments) -> list[tuple[str, str]] | None:
+    """The reached-node type pairs, after checking the channel's arguments come together, and the output defaults.
+
+    The shared seed node run keeps the paths it always had. A reached-node run must name its own, so it cannot resume
+    from the other run's checkpoints (which are named by pooling rule and seed only) or overwrite the committed
+    record of 14 October 2026."""
+    channel_arguments = (arguments.reached_node_type_pairs, arguments.reached_node_edges)
+    if arguments.reached_node_hops is None:
+        if any(value is not None for value in channel_arguments):
+            parser.error("--reached-node-type-pairs and --reached-node-edges need --reached-node-hops")
+        for name, default in SHARED_SEED_NODE_RUN_DEFAULTS.items():
+            if getattr(arguments, name) is None:
+                setattr(arguments, name, default)
+        return None
+    if arguments.reached_node_hops < 0:
+        parser.error("--reached-node-hops is a number of steps, 0 or more")
+    if any(value is None for value in channel_arguments):
+        parser.error("--reached-node-hops needs --reached-node-type-pairs and --reached-node-edges, which have no default")
+    missing = [f"--{name.replace('_', '-')}" for name in SHARED_SEED_NODE_RUN_DEFAULTS if getattr(arguments, name) is None]
+    if missing:
+        parser.error(f"a run with the reached-node channel must name {', '.join(missing)}")
+    for name, default in SHARED_SEED_NODE_RUN_DEFAULTS.items():
+        if Path(getattr(arguments, name)).resolve() == default.resolve():
+            parser.error(f"--{name.replace('_', '-')} {default} belongs to the shared seed node run; name another path")
+    try:
+        return parse_type_pairs(arguments.reached_node_type_pairs)
+    except ValueError as error:
+        parser.error(str(error))
 
 
 def _restrict(data, keep: list[int]):
@@ -234,6 +402,14 @@ def _restrict(data, keep: list[int]):
 
 
 def _markdown(results: dict, arguments) -> str:
+    """The page. Without the reached-node channel it writes the page of 14 October 2026 word for word, which is what
+    docs/generated/leakage_only_adversary.md holds; that page's comparison with "H1's registered requirement of a 0.05
+    macro and micro difference" and its account of route transfer as "the hypothesis under test rather than a leak" are
+    history (the floor was removed on 15 October 2026, and decision 9.36 put sharing within k hops into the adversary on
+    24 November 2026), kept so the generator still writes the record it generated. A run with the reached-node channel
+    writes the current account instead."""
+    if arguments.reached_node_hops is not None:
+        return _markdown_with_the_reached_node_channel(results, arguments)
     lines = ["# The leakage-only adversary (generated by experiments/measure_leakage_only_adversary.py)", "",
              f"Evidence {arguments.evidence_dir}, label selection {arguments.label_selection}, graph {arguments.graph_dir}; "
              f"{arguments.num_draws} pseudo-draws of the item 25 rule at the registered held-out fraction, "
@@ -246,6 +422,18 @@ def _markdown(results: dict, arguments) -> str:
              "Read against H1's registered requirement of a 0.05 macro and micro difference, and against the measured "
              "precision of the readings (paired-bootstrap 95 percent half-widths of 0.019 to 0.063 macro and 0.018 to "
              "0.041 micro, growing by about 1.4 at Holm's smallest level).", ""]
+    lines += _summary_tables(results)
+    lines += ["## The channel this does not cover", "",
+              "Two perturbations sharing a seed node perturb the same node, so a label transfers by identity and a "
+              "lookup substitutes for mechanism: that is the channel measured here. Two perturbations whose seeds sit "
+              "in one pathway are the hypothesis under test rather than a leak, so transfer along a route is not "
+              "measured and must not be: bounding it would bound the study's own subject. A channel outside both "
+              "descriptions is a disclosed limitation."]
+    return "\n".join(lines)
+
+
+def _summary_tables(results: dict) -> list[str]:
+    lines = []
     for pooling_rule, block in results["pooling_rules"].items():
         summary = block["summary"]
         lines += [f"## {pooling_rule}", "", f"Usable draws: {summary.get('usable_draws', 0)}.", "",
@@ -255,12 +443,28 @@ def _markdown(results: dict, arguments) -> str:
             if isinstance(value, dict):
                 lines.append(f"| {key.replace('_', ' ')} | {value['mean']:.4f} | {value['minimum']:.4f} | {value['maximum']:.4f} |")
         lines.append("")
-    lines += ["## The channel this does not cover", "",
-              "Two perturbations sharing a seed node perturb the same node, so a label transfers by identity and a "
-              "lookup substitutes for mechanism: that is the channel measured here. Two perturbations whose seeds sit "
-              "in one pathway are the hypothesis under test rather than a leak, so transfer along a route is not "
-              "measured and must not be: bounding it would bound the study's own subject. A channel outside both "
-              "descriptions is a disclosed limitation."]
+    return lines
+
+
+def _markdown_with_the_reached_node_channel(results: dict, arguments) -> str:
+    channels = results["channels"]
+    reached = next(channel for channel in channels["scored"] if channel["channel"] == "reached_node")
+    pairs = ", ".join(f"{pair['held_out_type']} held out with {pair['training_type']} in training" for pair in reached["covers"])
+    lines = ["# The leakage-only adversary with the reached-node channel (generated by experiments/measure_leakage_only_adversary.py)", "",
+             f"Evidence {arguments.evidence_dir}, label selection {arguments.label_selection}, graph {arguments.graph_dir}; "
+             f"{arguments.num_draws} pseudo-draws of the item 25 rule at the registered held-out fraction, "
+             f"{arguments.num_bootstrap} bootstrap resamples per reading.", "",
+             "The adversary knows two things: which training perturbations reach the held-out perturbation through the "
+             "channels below, and the training labels. No edge weight or sign, no propagation, no descriptor. It is "
+             "handed the leaked labels directly, so its advantage is an upper bound on what any model could take from "
+             "these channels by lookup. A held-out perturbation with no neighbour takes the training base rate.", "",
+             f"Channels scored: a shared seed node, for every pair; and a node reached by both walks of at most "
+             f"{reached['maximum_hops']} steps over the edges '{reached['reach_edge_set']}' (decision 9.36), for {pairs}. "
+             "Decision 9.35 (ruled 24 November 2026) reads the advantage against one standard error of the test's own "
+             "reading, on the graph the draw is made on; this page measures and sets no ceiling, and the fit that "
+             "would turn these draws into one, and the draw it gates, are not built.", ""]
+    lines += _summary_tables(results)
+    lines += ["## The channels this does not cover", ""] + [f"- {text}" for text in channels["not_scored"]]
     return "\n".join(lines)
 
 

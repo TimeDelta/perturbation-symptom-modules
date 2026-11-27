@@ -101,8 +101,11 @@ BASELINE_NAMES = ("popularity", "degree_popularity", "type_popularity", "type_de
 INPUT_SIZE_NAME = "input_size"  # the control for the input-size objection; --with-input-size, so no earlier run changes
 # decision 9.35, 14 October 2026. The leakage-only adversary is a baseline rather than a reading of its own, because in
 # this design the baselines are the controls: the registered reading is the model minus the best baseline, so putting
-# the lookup in that set makes the model have to beat what a lookup can do, and no threshold on leakage is needed
-# anywhere. It can only lower a model's margin, never raise it. --with-leakage-lookup, so no earlier run changes.
+# the lookup in that set makes the model have to beat what a lookup can do. It can only lower a model's margin, never
+# raise it. --with-leakage-lookup, so no earlier run changes; it uses the shared seed node channel alone. Until 27
+# November 2026 this comment also said that "no threshold on leakage is needed anywhere"; the ruling of 24 November 2026
+# on 9.35 sets one at the draw (the adversary's advantage below one standard error of the test's own reading; that
+# ceiling and the draw it gates are not built), which is a check on the held-out set and leaves this baseline as it was.
 LEAKAGE_LOOKUP_NAME = "leakage_lookup"
 CACHED_BASELINES = ("random_walk_with_restart", "knowledge_graph_embedding_transe")  # the slow fits; popularity takes milliseconds
 BASELINE_SOURCES = [Path(__file__), *sorted((Path(__file__).resolve().parents[1] / "mechanistic_pathway_learning" / "models" / "baselines").glob("*.py"))]
@@ -438,7 +441,8 @@ def main() -> None:
     parser.add_argument("--with-leakage-lookup", action="store_true",
                         help="also run the leakage-only adversary as a baseline (decision 9.35): it predicts a held-out perturbation from the training "
                              "labels of the perturbations sharing a seed node with it and nothing else, so a model must beat what a lookup across the "
-                             "split can do. The baselines are the controls here, which is why this is one and not a reading of its own")
+                             "split can do. The baselines are the controls here, which is why this is one and not a reading of its own. The "
+                             "reached-node channel of decision 9.36 is not used here")
     parser.add_argument("--with-input-size", action="store_true",
                         help="also run the input-size baseline, which sees a perturbation's number of seeds and total input magnitude and nothing else "
                              "(the control for the input-size objection, docs/label_source_review.md 13.1)")

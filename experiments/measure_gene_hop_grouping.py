@@ -1,5 +1,7 @@
 """Does hop-limited reached-node grouping of GENE perturbations balloon, and what does it catch that disease clusters
-miss? (Open decision 9.36.)
+miss? (Decision 9.36, measured while it was open; ruled 24 November 2026: the k=2 reached-node channel enters the
+leakage adversary of 9.35, with k as a sensitivity sweep, and the split stays as item 25 registers it. The channel is
+evaluation/leakage_only_adversary.reached_node_neighbours.)
 
 The owner, 14 October 2026: "why not split on downstream nodes touched instead of direct target? i guess that's kind of
 like the graph proximity metric you mentioned but i'm sure this could balloon very quickly so, if that happens, maybe
