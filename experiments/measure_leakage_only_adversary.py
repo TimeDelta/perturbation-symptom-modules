@@ -3,11 +3,10 @@
 What it is for now. Decision 9.35 was ruled on 24 November 2026 (the owner: "Use 1.a but not on current graph. On graph
 at time of draw, right?"): the adversary's advantage must stay below one standard error of the test's own reading, with
 the curve fitted on development-set pseudo-draws on the graph the draw is made on. The pseudo-draw records this script
-writes are what that curve would be fitted on. The fit, the ceiling it gives and the draw it gates are not built, so
-this script still measures and sets no threshold. Until 24 November 2026 that was the whole of its purpose, on the
-owner's words of 14 October 2026: "build the adversary. it's a good control", and then "you can remove the leakage
-ceiling construction since that adversary is being used instead"; the ruling of 24 November sets a ceiling built from
-this adversary, checked at the draw.
+writes are what experiments/calibrate_leakage_ceiling.py fits that curve on. Until 24 November 2026 the script measured
+a control and set no threshold, on the owner's words of 14 October 2026: "build the adversary. it's a good control", and
+then "you can remove the leakage ceiling construction since that adversary is being used instead"; the ruling of 24
+November sets a ceiling built from this adversary, checked at the draw.
 
 What it does. Over --num-draws pseudo-draws of the item 25 rule on the development data, each draw gives a held-out set
 and a training set. The adversary is fitted on the training labels and scores the held-out rows from the training
@@ -32,14 +31,13 @@ What a checkpoint directory holds. A checkpointed draw is named by its pooling r
 holds checkpoint_inputs.json, the inputs its draws were computed on (the graph, evidence and label selection digests,
 the grouping, the bootstrap count, the excluded lockbox and the channel list). A run whose inputs differ from those, or
 that finds draws without that file (a directory written before 27 November 2026), refuses to resume from it, since its
-output would record this run's digests over draws made on other inputs, and those digests are what say which graph the
-pseudo-draws were made on (9.35: on the graph the draw is made on).
+output would record this run's digests over draws made on other inputs, which is what
+experiments/calibrate_leakage_ceiling.py checks the graph by.
 
 Why pseudo-draws and not the real one. The adversary needs the held-out labels to be *scored*, which the lockbox
 forbids before `runs/confirmatory/SCORED` exists. Development pseudo-draws under the same rule need no lockbox label, so
-this runs before the draw. The pseudo-draw seeds are 0 to --num-draws - 1 and the output records them
-(pseudo_draw_seeds), since a pseudo-draw at the real draw's seed would score the very rows that draw holds out. The draw
-of 9.35 is not built.
+this runs before the draw. The pseudo-draw seeds are 0 to --num-draws - 1; experiments/draw_held_out_set.py refuses a
+real seed order that repeats one, since a pseudo-draw at the real draw's seed scores the very rows the draw holds out.
 
 Usage:
   python experiments/measure_leakage_only_adversary.py --num-draws 20
@@ -57,14 +55,13 @@ import numpy as np
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
 from mechanistic_pathway_learning.evaluation.experiment_data import EVIDENCED_NEGATIVE_ARRAYS, GENE_TO_PROTEIN_FILE, load_experiment_data
-from mechanistic_pathway_learning.evaluation.perturbation_wise_and_pathway_wise_splits import assign_grouped_folds
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
     LeakageOnlyAdversary, POOLING_RULES, REACH_EDGE_SETS, channel_breakdown, neighbours_through_the_channels,
     reach_edges, reached_nodes_of_perturbations, registered_channel_list, seed_nodes_of_perturbations,
     seen_reached_node_share, seen_target_share)
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import (
     macro_statistic, micro_auprc, paired_bootstrap_macro_difference, paired_bootstrap_micro_difference)
-from mechanistic_pathway_learning.evaluation.target_held_out_split import REGISTERED_HELD_OUT_FRACTION, held_out_perturbations, targets_of_drugs
+from mechanistic_pathway_learning.evaluation.target_held_out_split import targets_of_drugs, two_sided_held_out_perturbations
 from mechanistic_pathway_learning.graph.drug_entry_nodes import DRUG_ENTRY_FILE
 from mechanistic_pathway_learning.models.baselines.popularity_baseline import PopularityBaseline
 
@@ -80,7 +77,8 @@ OPTIONAL_GRAPH_FILES_READ = (GENE_TO_PROTEIN_FILE, DRUG_ENTRY_FILE)
 def graph_file_sha256(graph_directory: Path) -> dict[str, str]:
     """file name -> SHA-256 for the files of the graph directory load_experiment_data reads (GRAPH_FILES_READ, and
     OPTIONAL_GRAPH_FILES_READ when present): what says which graph the pseudo-draws were made on, since decision 9.35
-    fits its curve on the graph the draw is made on."""
+    fits its curve on the graph the draw is made on. experiments/calibrate_leakage_ceiling.py and
+    experiments/draw_held_out_set.py check the graph by it."""
     directory = Path(graph_directory)
     digests = {}
     for name in GRAPH_FILES_READ:
@@ -104,16 +102,12 @@ def registered_two_sided_draw(data, draw_seed: int) -> tuple[set[str], set[str]]
     pulls a gene in only when its own node is a held-out drug **target**, and no gene node is a drug target on a
     gene/protein-split graph, so every pseudo-draw held out 39, 22 or 30 drugs and **zero** genes. Since 1,414 of the
     1,636 perturbations are genes, the adversary was being scored on 2 percent of the row mix it will meet.
+
+    Since 27 November 2026 the draw itself is target_held_out_split.two_sided_held_out_perturbations, which
+    experiments/draw_held_out_set.py calls too; this keeps the name the script has always used.
     """
-    held_out_ids, held_out_targets = held_out_perturbations(
-        data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids, draw_seed,
-        REGISTERED_HELD_OUT_FRACTION)
-    num_grouped_folds = int(round(1 / REGISTERED_HELD_OUT_FRACTION))
-    fold_of_perturbation = assign_grouped_folds(data.perturbation_ids, data.group_ids, num_grouped_folds, draw_seed)
-    for perturbation_id, kind in zip(data.perturbation_ids, data.perturbation_types):
-        if kind != "drug" and fold_of_perturbation[perturbation_id] == 0:
-            held_out_ids.add(str(perturbation_id))
-    return held_out_ids, held_out_targets
+    return two_sided_held_out_perturbations(data.perturbation_ids, data.perturbation_types, data.perturbation_seeds,
+                                            data.node_ids, data.group_ids, draw_seed)
 
 
 def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int, reached_nodes_of_perturbation=None,
@@ -464,8 +458,8 @@ def _markdown_with_the_reached_node_channel(results: dict, arguments) -> str:
              f"Channels scored: a shared seed node, for every pair; and a node reached by both walks of at most "
              f"{reached['maximum_hops']} steps over the edges '{reached['reach_edge_set']}' (decision 9.36), for {pairs}. "
              "Decision 9.35 (ruled 24 November 2026) reads the advantage against one standard error of the test's own "
-             "reading, on the graph the draw is made on; this page measures and sets no ceiling, and the fit that "
-             "would turn these draws into one, and the draw it gates, are not built.", ""]
+             "reading, on the graph the draw is made on; this page measures and sets no ceiling, which "
+             "experiments/calibrate_leakage_ceiling.py fits from these draws.", ""]
     lines += _summary_tables(results)
     lines += ["## The channels this does not cover", ""] + [f"- {text}" for text in channels["not_scored"]]
     return "\n".join(lines)

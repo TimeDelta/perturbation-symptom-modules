@@ -104,8 +104,9 @@ INPUT_SIZE_NAME = "input_size"  # the control for the input-size objection; --wi
 # the lookup in that set makes the model have to beat what a lookup can do. It can only lower a model's margin, never
 # raise it. --with-leakage-lookup, so no earlier run changes; it uses the shared seed node channel alone. Until 27
 # November 2026 this comment also said that "no threshold on leakage is needed anywhere"; the ruling of 24 November 2026
-# on 9.35 sets one at the draw (the adversary's advantage below one standard error of the test's own reading; that
-# ceiling and the draw it gates are not built), which is a check on the held-out set and leaves this baseline as it was.
+# on 9.35 sets one at the draw (the adversary's advantage below one standard error of the test's own reading,
+# evaluation/leakage_ceiling.py and experiments/draw_held_out_set.py), which is a check on the held-out set and leaves
+# this baseline as it was.
 LEAKAGE_LOOKUP_NAME = "leakage_lookup"
 CACHED_BASELINES = ("random_walk_with_restart", "knowledge_graph_embedding_transe")  # the slow fits; popularity takes milliseconds
 BASELINE_SOURCES = [Path(__file__), *sorted((Path(__file__).resolve().parents[1] / "mechanistic_pathway_learning" / "models" / "baselines").glob("*.py"))]

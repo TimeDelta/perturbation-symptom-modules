@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import random
 
+from mechanistic_pathway_learning.evaluation.perturbation_wise_and_pathway_wise_splits import assign_grouped_folds
+
 REGISTERED_HELD_OUT_FRACTION = 1 / 7
 # a draw stops growing once it is this far past the registered fraction, since no later prefix can be nearer
 STOP_SEARCHING_PAST = 0.05
@@ -82,6 +84,29 @@ def held_out_perturbations(perturbation_ids, perturbation_types, perturbation_se
         if own & held_targets:
             held.add(str(perturbation_id))
     return held, held_targets
+
+
+def two_sided_held_out_perturbations(perturbation_ids, perturbation_types, perturbation_seeds, node_ids, group_ids,
+                                     seed: int, held_out_fraction: float = REGISTERED_HELD_OUT_FRACTION) -> tuple[set[str], set[str]]:
+    """(the held-out perturbation ids, the held-out target node ids) with **each side at its own registered fraction**
+    (item 25: "the genes by the registered disease-cluster grouping and the drugs by the rule below, one seventh of
+    each rather than one seventh of the whole").
+
+    The drug side is held_out_perturbations. The gene side, every perturbation that is not a drug, is fold 0 of
+    round(1 / held_out_fraction) grouped folds of group_ids (assign_grouped_folds with the same seed), so no leakage
+    group of the grouping the caller loaded is split within that side; a drug held out by its targets can still share
+    a group with a gene in training, which is item 25's rule and not a defect of it. Moved here on 27 November 2026
+    from experiments/measure_leakage_only_adversary.py (registered_two_sided_draw, which now calls it), so the
+    measurement and experiments/draw_held_out_set.py draw by one implementation.
+    """
+    held_out_ids, held_out_target_ids = held_out_perturbations(perturbation_ids, perturbation_types, perturbation_seeds,
+                                                               node_ids, seed, held_out_fraction)
+    num_grouped_folds = int(round(1 / held_out_fraction))
+    fold_of_perturbation = assign_grouped_folds(perturbation_ids, group_ids, num_grouped_folds, seed)
+    for perturbation_id, kind in zip(perturbation_ids, perturbation_types):
+        if kind != "drug" and fold_of_perturbation[perturbation_id] == 0:
+            held_out_ids.add(str(perturbation_id))
+    return held_out_ids, held_out_target_ids
 
 
 def mechanisms_never_trained(targets_of_drug: dict[str, set[str]], held: set[str]) -> dict[str, set[str]]:

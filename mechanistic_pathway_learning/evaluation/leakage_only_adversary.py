@@ -6,12 +6,10 @@ overlapping targets is not checkable against anything, because nothing says what
 the units of the test is: it asks how much of the registered reading a predictor could earn **by lookup alone**. The
 ruling of 24 November 2026 (decision 9.35, the owner: "Use 1.a but not on current graph. On graph at time of draw,
 right?") is that this advantage must stay below one standard error of the test's own reading, on the graph the draw is
-made on, with the curve that turns it into a label-free ceiling fitted on development-set pseudo-draws. Registering
-that rule is an amendment item owed before the draw. The ceiling and the draw it gates are not built: this module and
-experiments/measure_leakage_only_adversary.py give the adversary and the pseudo-draws such a curve would be fitted on,
-and nothing here sets a ceiling or draws a held-out set. Until 27 November 2026 this docstring also compared the
-advantage with "the 0.05 difference H1 already requires"; that floor was removed on 15 October 2026, so the comparison
-is history.
+made on, with the curve that turns it into a label-free ceiling fitted on development-set pseudo-draws
+(`evaluation/leakage_ceiling.py`). Registering that rule is an amendment item owed before the draw. Until 27 November
+2026 this docstring also compared the advantage with "the 0.05 difference H1 already requires"; that floor was removed
+on 15 October 2026, so the comparison is history.
 
 What the adversary is allowed to know. Exactly two things: which training perturbations reach the held-out
 perturbation through the channels it is given, and the training labels. No edge weight or sign, no propagation, no
@@ -216,8 +214,8 @@ def seen_reached_node_share(reached_nodes_of_perturbation, held_out_ids, trainin
     paired with theirs also reaches. NaN when no held-out perturbation is of a covered type or none reaches a node.
 
     It is one candidate. Which label-free statistic, or which set of them, the draw is checked against once this
-    channel enters the adversary is not ruled, and the ceiling of 9.35 that would be checked against it is not built;
-    experiments/measure_leakage_only_adversary.py records it per pseudo-draw with the channel on.
+    channel enters the adversary is not ruled, so experiments/calibrate_leakage_ceiling.py takes it as a required
+    argument.
     """
     covered = validated_type_pairs(reached_node_type_pairs)
     nodes_reached_by_training_type: dict[str, set[str]] = {}
@@ -345,7 +343,7 @@ def seen_target_share(targets_of_drug: dict[str, set[str]], held_out_ids) -> flo
     It reads no label, so it can be computed on the real draw without opening the lockbox, which is what lets a ceiling
     calibrated on development pseudo-draws be applied to the draw that counts. With the reached-node channel of 9.36 in
     the adversary, whether the draw is checked against this statistic, against seen_reached_node_share or against both
-    is not ruled, and the ceiling of 9.35 and the draw it gates are not built.
+    is not ruled, and experiments/calibrate_leakage_ceiling.py takes it as a required argument.
     """
     held = {str(held_out_id) for held_out_id in held_out_ids}
     trained_targets = {target for drug, own in targets_of_drug.items() if drug not in held for target in own}
