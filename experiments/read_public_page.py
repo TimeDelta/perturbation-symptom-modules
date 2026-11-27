@@ -7,7 +7,9 @@ This script is that fallback with its limits written into code, so that a resear
 
   1. the site's robots file is read first, and a page it disallows for automated readers is left unread. A site
      that serves no robots file places no restriction, which is what the protocol says, so that is read;
-     --treat-missing-robots-as-refusal restores the stricter behaviour this script started with;
+     --treat-missing-robots-as-refusal restores the stricter behaviour this script started with. A redirect is
+     followed by this script, one hop at a time, and every limit here is applied again at each address it reaches
+     (REDIRECT_STATUS_CODES): the robots file of a host a redirect leads to binds as the first host's does;
   2. a page that answers with a check that the visitor is human is reported as refused and not saved. A status that
      says the service is busy or down rather than closed to this reader (429, 503, and 500 and a timeout with them)
      is reported as transient and not as a refusal, so the caller may wait and request the same address on the same
@@ -79,6 +81,15 @@ CHALLENGE_STATUS_CODES = frozenset({401, 403, 407})
 # both say the service failed, not that it closed itself to this reader. Europe PMC answered 500 to a research pass of
 # 20 November 2026 (section 22).
 TRANSIENT_STATUS_CODES = frozenset({429, 500, 503})
+# Redirects are followed by PublicPageReader.read and not by urllib. Until 27 November 2026 request_bytes let urllib
+# follow them, so the robots file was read for the host first named and never for the host a redirect led to: a Fable
+# pass of decision 9.99 (batch 5, 27 November 2026) found doi.org addresses saved as nature.com articles that
+# nature.com's robots file disallows. Now each hop is a request of its own, refused or read under the same limits as
+# the first. A robots file is itself fetched through its redirects, as RFC 9309 (section 2.3.1.2) says a crawler
+# should, up to MAXIMUM_ROBOTS_FILE_REDIRECTS, past which it is taken as not served.
+REDIRECT_STATUS_CODES = frozenset({301, 302, 303, 307, 308})
+MAXIMUM_PAGE_REDIRECTS = 10  # urllib's own limit (HTTPRedirectHandler.max_redirections)
+MAXIMUM_ROBOTS_FILE_REDIRECTS = 5
 CHALLENGE_MARKERS = (
     "verify you are a human", "verify you are human", "are you a robot", "captcha", "altcha-widget", "cf-chl",
     "challenge-platform", "enable javascript and cookies to continue", "unusual traffic", "access denied",
@@ -241,13 +252,36 @@ def is_timeout(error: BaseException) -> bool:
     return isinstance(error, urllib.error.URLError) and isinstance(getattr(error, "reason", None), TimeoutError)
 
 
+class RedirectAnswer(Exception):
+    """The server answered with a redirect, which the caller follows (or refuses) as a request of its own."""
+
+    def __init__(self, status_code: int, location: str) -> None:
+        super().__init__(f"HTTP {status_code} to {location}")
+        self.status_code = status_code
+        self.location = location
+
+
+class DoNotFollowRedirects(urllib.request.HTTPRedirectHandler):
+    """Makes urllib hand a redirect back as an HTTPError instead of following it."""
+
+    def redirect_request(self, request, response_file, status_code, message, headers, new_address):  # noqa: D102
+        return None
+
+
+OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS = urllib.request.build_opener(DoNotFollowRedirects)
+
+
 def request_bytes(address: str) -> tuple[int, str, bytes]:
-    """Status code, content type and body of one GET. An HTTP error status is returned, not raised."""
+    """Status code, content type and body of one GET. An HTTP error status is returned, not raised; a redirect is not
+    followed but raised as RedirectAnswer, with its target made absolute."""
     request = urllib.request.Request(address, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml,text/plain,application/pdf;q=0.9,*/*;q=0.5"})
     try:
-        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+        with OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS.open(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
             return response.status, response.headers.get("Content-Type", ""), response.read()
     except urllib.error.HTTPError as error:
+        location = error.headers.get("Location") if error.headers else None
+        if error.code in REDIRECT_STATUS_CODES and location:
+            raise RedirectAnswer(error.code, urllib.parse.urljoin(address, location)) from None
         return error.code, error.headers.get("Content-Type", "") if error.headers else "", error.read() or b""
 
 
@@ -266,11 +300,29 @@ class PublicPageReader:
             time.sleep(SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST - elapsed_seconds)
         self.last_request_time_by_host[host] = time.monotonic()
 
+    def _request_robots_file(self, host: str) -> tuple[int, bytes] | None:
+        """Status and body of the host's robots file, through at most MAXIMUM_ROBOTS_FILE_REDIRECTS redirects (RFC 9309,
+        section 2.3.1.2); None when it redirects further than that or away from https."""
+        robots_address = f"https://{host}/robots.txt"
+        for _ in range(MAXIMUM_ROBOTS_FILE_REDIRECTS + 1):
+            self._wait_for_host(urllib.parse.urlsplit(robots_address).hostname or "")
+            try:
+                status_code, _, body = request_bytes(robots_address)
+                return status_code, body
+            except RedirectAnswer as redirect:
+                if urllib.parse.urlsplit(redirect.location).scheme != "https":
+                    return None
+                robots_address = redirect.location
+        return None
+
     def robots_file_of_host(self, host: str) -> str | None:
         """The host's robots rules as text; an empty string when it has none; None when it would not serve them."""
         if host not in self.robots_file_by_host:
-            self._wait_for_host(host)
-            status_code, _, body = request_bytes(f"https://{host}/robots.txt")
+            robots_answer = self._request_robots_file(host)
+            if robots_answer is None:
+                self.robots_file_by_host[host] = None
+                return None
+            status_code, body = robots_answer
             robots_file_text = body.decode("utf-8", errors="replace")
             if status_code == 404:
                 self.robots_file_by_host[host] = ""
@@ -280,17 +332,13 @@ class PublicPageReader:
                 self.robots_file_by_host[host] = None
         return self.robots_file_by_host[host]
 
-    def read(self, address: str) -> dict:
-        """One record per address: whether it was read, why not when it was not, and where the page was saved."""
-        record: dict = {"address": address, "read": False, "requested_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
-        refusal_reason = reason_address_is_not_requested(address)
-        if refusal_reason:
-            return record | {"reason": refusal_reason}
+    def _robots_answer(self, address: str) -> tuple[str | None, str | None]:
+        """(why the address may not be read, or None; the note on the robots file to record, or None)."""
         host = urllib.parse.urlsplit(address).hostname or ""
         try:
             robots_file_text = self.robots_file_of_host(host)
         except Exception as error:  # noqa: BLE001 - a network failure is reported, not raised
-            return record | {"reason": f"the robots file could not be requested ({error})"}
+            return f"the robots file could not be requested ({error})", None
         if robots_file_text is None:
             # The Robots Exclusion Protocol says an absent robots file places no restriction, so treating one as a
             # refusal was this script's own policy and not the site's answer (the owner, 14 October 2026: "can you
@@ -298,23 +346,52 @@ class PublicPageReader:
             # the project already holds two of its files, so the policy was turning away a source it had read before.
             # A real Disallow rule and a check that the visitor is human are still refusals and are still respected.
             if self.treat_missing_robots_as_refusal:
-                return record | {"reason": "the site did not serve a robots file, and this reader was asked to treat that as a refusal"}
-            record |= {"robots_file": "none served, which the protocol treats as no restriction"}
-        elif not robots_file_allows(robots_file_text, address):
+                return "the site did not serve a robots file, and this reader was asked to treat that as a refusal", None
+            return None, "none served, which the protocol treats as no restriction"
+        if not robots_file_allows(robots_file_text, address):
             exemption = robots_rule_exemption(address)
             if exemption is None:
-                return record | {"reason": "the site's robots file disallows this address for automated readers"}
-            record |= {"robots_file": f"disallows this address; read under the ruling of {exemption}"}
-        self._wait_for_host(host)
-        try:
-            status_code, content_type, body = request_bytes(address)
-        except Exception as error:  # noqa: BLE001
-            if is_timeout(error):  # transient, as a 500 is (TRANSIENT_STATUS_CODES)
-                return record | {"reason": f"the request timed out, which is not a refusal ({error}); "
-                                           f"wait and request this same address on this same host again, rather than a "
-                                           f"cache, a mirror or another host",
-                                 "transient": True}
-            return record | {"reason": f"the request failed ({error})"}
+                return "the site's robots file disallows this address for automated readers", None
+            return None, f"disallows this address; read under the ruling of {exemption}"
+        return None, None
+
+    def read(self, address: str) -> dict:
+        """One record per address: whether it was read, why not when it was not, and where the page was saved. A
+        redirect is followed here, one hop at a time, and each address it reaches is refused or read under every
+        limit the first address was (REDIRECT_STATUS_CODES); the record lists the hops under "redirects"."""
+        record: dict = {"address": address, "read": False, "requested_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        current_address = address
+        redirects: list[dict] = []
+        while True:
+            on_redirect = f"the address redirected to {current_address}, and " if redirects else ""
+            refusal_reason = reason_address_is_not_requested(current_address)
+            if refusal_reason:
+                return record | {"reason": on_redirect + refusal_reason}
+            robots_refusal, robots_note = self._robots_answer(current_address)
+            if robots_refusal:
+                return record | {"reason": on_redirect + robots_refusal}
+            if robots_note:
+                record["robots_file"] = robots_note if not redirects else f"at {current_address}: {robots_note}"
+            self._wait_for_host(urllib.parse.urlsplit(current_address).hostname or "")
+            try:
+                status_code, content_type, body = request_bytes(current_address)
+                break
+            except RedirectAnswer as redirect:
+                redirects.append({"from": current_address, "status_code": redirect.status_code, "to": redirect.location})
+                record["redirects"] = redirects
+                if len(redirects) > MAXIMUM_PAGE_REDIRECTS:
+                    return record | {"reason": f"more than {MAXIMUM_PAGE_REDIRECTS} redirects"}
+                current_address = redirect.location
+                continue
+            except Exception as error:  # noqa: BLE001
+                if is_timeout(error):  # transient, as a 500 is (TRANSIENT_STATUS_CODES)
+                    return record | {"reason": f"the request timed out, which is not a refusal ({error}); "
+                                               f"wait and request this same address on this same host again, rather "
+                                               f"than a cache, a mirror or another host",
+                                     "transient": True}
+                return record | {"reason": f"the request failed ({error})"}
+        if redirects:
+            record["final_address"] = current_address
         is_text = "pdf" not in content_type.lower() and not body.startswith(b"%PDF")
         response_text = body.decode("utf-8", errors="replace") if is_text else ""
         record |= {"status_code": status_code, "content_type": content_type, "bytes": len(body)}

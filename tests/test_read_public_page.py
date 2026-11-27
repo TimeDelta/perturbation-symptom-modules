@@ -317,3 +317,120 @@ def test_a_host_the_owner_ruled_a_requested_block_is_not_requested_except_its_ro
     assert read_public_page.reason_address_is_not_requested("https://api.cellxgene.cziscience.com/robots.txt") is None
     assert read_public_page.reason_address_is_not_requested("https://datasets.cellxgene.cziscience.com/x.h5ad") is None
     assert read_public_page.reason_address_is_not_requested("https://cellxgene.cziscience.com/collections/x") is None
+
+
+def reader_with_redirects(tmp_path, monkeypatch, redirect_target_by_address: dict, robots_file_by_host: dict) -> tuple:
+    """A reader whose requests are answered locally: a redirect for each address in redirect_target_by_address, the
+    robots file given for each host (none, so 404, for a host not named) and a short page for anything else."""
+    requested = []
+
+    def answer(address):
+        requested.append(address)
+        if address in redirect_target_by_address:
+            raise read_public_page.RedirectAnswer(302, redirect_target_by_address[address])
+        if address.endswith("/robots.txt"):
+            host = address.split("/")[2]
+            if host in robots_file_by_host:
+                return 200, "text/plain", robots_file_by_host[host].encode()
+            return 404, "text/plain", b""
+        return 200, "text/html", b"<html><body>The article.</body></html>"
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    return read_public_page.PublicPageReader(tmp_path), requested
+
+
+def test_a_redirect_to_a_page_its_hosts_robots_file_disallows_is_not_read(tmp_path, monkeypatch):
+    """A Fable pass of decision 9.99 (batch 5, 27 November 2026) found doi.org addresses saved as nature.com articles
+    that nature.com's robots file disallows, because urllib followed the redirect and only doi.org's robots file was
+    read. The host a redirect leads to is held to its own robots file, and the page is not requested."""
+    doi_address = "https://doi.org/10.1038/example"
+    article_address = "https://www.nature.com/articles/example"
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {doi_address: article_address},
+                                              {"www.nature.com": "User-agent: *\nDisallow: /articles/\n"})
+    record = reader.read(doi_address)
+    assert record["read"] is False
+    assert "redirected to https://www.nature.com/articles/example" in record["reason"]
+    assert "robots file disallows" in record["reason"]
+    assert record["redirects"] == [{"from": doi_address, "status_code": 302, "to": article_address}]
+    assert article_address not in requested
+    assert requested == ["https://doi.org/robots.txt", doi_address, "https://www.nature.com/robots.txt"]
+    assert not any(tmp_path.iterdir())
+
+
+def test_a_redirect_to_an_allowed_page_is_followed_and_recorded(tmp_path, monkeypatch):
+    doi_address = "https://doi.org/10.1000/allowed"
+    article_address = "https://journal.example.org/article/allowed"
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {doi_address: article_address},
+                                              {"journal.example.org": "User-agent: *\nDisallow: /private/\n"})
+    record = reader.read(doi_address)
+    assert record["read"] is True, record
+    assert record["address"] == doi_address and record["final_address"] == article_address
+    assert record["redirects"] == [{"from": doi_address, "status_code": 302, "to": article_address}]
+    assert requested == ["https://doi.org/robots.txt", doi_address, "https://journal.example.org/robots.txt", article_address]
+
+
+@pytest.mark.parametrize("target, expected_reason", [
+    ("http://journal.example.org/article", "only https"),
+    ("https://api.cellxgene.cziscience.com/curation/v1/collections/x", "requested block"),
+    ("https://pubchem.ncbi.nlm.nih.gov/compound/Lithium", "measured pKa records only"),
+    ("https://journal.example.org/article?contact=someone%40example.org", "e-mail address"),
+])
+def test_every_limit_on_the_first_address_holds_on_an_address_a_redirect_reaches(tmp_path, monkeypatch, target, expected_reason):
+    start_address = "https://doi.org/10.1000/start"
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {start_address: target}, {})
+    record = reader.read(start_address)
+    assert record["read"] is False and expected_reason in record["reason"], record
+    assert target not in requested
+    assert not any(tmp_path.iterdir())
+
+
+def test_a_redirect_loop_is_cut_off(tmp_path, monkeypatch):
+    first, second = "https://a.example.org/one", "https://a.example.org/two"
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {first: second, second: first}, {})
+    record = reader.read(first)
+    assert record["read"] is False and "redirects" in record["reason"]
+    assert len(record["redirects"]) == read_public_page.MAXIMUM_PAGE_REDIRECTS + 1
+
+
+def test_a_robots_file_is_read_through_its_redirects(tmp_path, monkeypatch):
+    """RFC 9309, section 2.3.1.2: a crawler should follow at least five redirects of the robots file."""
+    reader, requested = reader_with_redirects(
+        tmp_path, monkeypatch, {"https://example.org/robots.txt": "https://www.example.org/robots.txt"},
+        {"www.example.org": "User-agent: *\nDisallow: /closed/\n"})
+    assert reader.read("https://example.org/closed/page")["read"] is False
+    assert requested == ["https://example.org/robots.txt", "https://www.example.org/robots.txt"]
+
+
+def test_request_bytes_hands_a_redirect_back_instead_of_following_it(monkeypatch):
+    """Against a local server, with no proxy: the answer to a redirect is RedirectAnswer with the target made
+    absolute, and the target is not requested."""
+    import http.server
+    import threading
+    import urllib.request
+
+    paths_requested = []
+
+    class RedirectingHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):  # noqa: N802
+            paths_requested.append(self.path)
+            self.send_response(302)
+            self.send_header("Location", "/elsewhere")
+            self.end_headers()
+
+        def log_message(self, *arguments):
+            pass
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), RedirectingHandler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    monkeypatch.setattr(read_public_page, "OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS",
+                        urllib.request.build_opener(urllib.request.ProxyHandler({}), read_public_page.DoNotFollowRedirects))
+    try:
+        address = f"http://127.0.0.1:{server.server_address[1]}/start"
+        with pytest.raises(read_public_page.RedirectAnswer) as raised:
+            read_public_page.request_bytes(address)
+        assert raised.value.status_code == 302
+        assert raised.value.location == f"http://127.0.0.1:{server.server_address[1]}/elsewhere"
+        assert paths_requested == ["/start"]
+    finally:
+        server.shutdown()
