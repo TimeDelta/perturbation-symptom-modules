@@ -170,12 +170,15 @@ def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int, reache
               "gene_stratum": ~held_out_is_a_drug}
 
     # type_popularity is the comparator the pooled reading needs, and reading against popularity alone was a defect.
-    # Popularity gives every row the same score for a symptom, so it cannot order a drug above a gene; the adversary's
-    # score differs from the base rate on drug rows only, so it orders drugs first, and with the drug base rate well
-    # above the gene one that earns a large AUPRC gain for KNOWING WHICH PERTURBATIONS ARE DRUGS rather than for any
-    # lookup. Against popularity the pooled macro advantage came out at +0.139, above the drug stratum's own +0.041,
-    # which is the signature of that contamination. Within the drug stratum every row is a drug, so there
-    # type_popularity and popularity coincide and the stratum numbers were never affected.
+    # Popularity gives every row the same score for a symptom, so it cannot order a drug above a gene. In the first
+    # stratum run of 14 October 2026 the adversary had the shared seed node channel alone and its score differed from
+    # the base rate on drug rows only, so it ordered drugs first, and with the drug base rate well above the gene one
+    # that earned a large AUPRC gain for KNOWING WHICH PERTURBATIONS ARE DRUGS rather than for any lookup. Against
+    # popularity the pooled macro advantage came out at +0.139, above the drug stratum's own +0.041, which is the
+    # signature of that contamination (the graph is not recorded beside those two numbers; the script's default that
+    # day was graph_full_neuronal_split_binders_drugs_v4_enzymes). Within the drug stratum every row is a drug, so there
+    # type_popularity and popularity coincide and the stratum numbers were never affected. With the reached-node channel
+    # on, gene rows can have neighbours too, so their scores can differ from the base rate as well.
     training_kinds = np.asarray([data.perturbation_types[row] for row in training_rows])
     held_out_kinds = np.asarray([data.perturbation_types[row] for row in held_out_rows])
 
