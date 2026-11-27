@@ -70,7 +70,7 @@ def test_the_floor_rule_is_none(registered_rules):
     assert argument_parser_default("score_confirmatory", "--floor-rule") == "none"
 
 
-def test_alpha_is_one_sided_025(registered_rules):
+def test_alpha_is_one_sided_05(registered_rules):
     assert registered_rules["alpha_one_sided"]["value"] == 0.05
     assert argument_parser_default("score_confirmatory", "--alpha") == 0.05
 

@@ -36,7 +36,9 @@ GRAPH = Path("data/processed/graph_full_neuronal")
 ELECTRICAL = ("changes_membrane_potential", "changes_ion_pool")
 
 pytestmark = pytest.mark.skipif(not (GRAPH / "edges.parquet").exists(),
-                                reason="the confirmatory graph is not built in this checkout")
+                                reason="data/processed/graph_full_neuronal (the neuronal variant from which "
+                                       "scripts/rebuild_data_layer.sh builds the confirmatory graph_full_neuronal_split_binders) "
+                                       "is not built in this checkout")
 
 
 @pytest.fixture(scope="module")

@@ -165,7 +165,7 @@ def main() -> None:
     parser.add_argument("--narrow-by-site-structure", action=argparse.BooleanOptionalAction, default=True,
                         help="with the narrowing: a drug configs/binding_sites.csv places at the benzodiazepine site, where GtoPdb names fewer than two "
                              "of the complex's subunits, is narrowed to the subunits that form the site (alpha1, 2, 3 or 5 with gamma2); an extension "
-                             "of decision 8.11 for the owner to accept or refuse")
+                             "of decision 8.11, which closed on 20 October 2026 when the owner merged pull request #4 with both additions on by default")
     parser.add_argument("--binding-sites", type=Path, default=DEFAULT_BINDING_SITES_PATH)
     parser.add_argument("--markdown-output", type=Path, default=Path("docs/onsides_label_slice.md"))
     arguments = parser.parse_args()

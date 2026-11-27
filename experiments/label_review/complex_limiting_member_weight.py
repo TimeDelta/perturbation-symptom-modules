@@ -13,7 +13,8 @@ semantics:
   - **At the complex.** The gate is `min` over the members, taken within each class. An obligate subunit that a
     class does not express shuts the complex in that class however abundant the others are, which is what a complex
     is.
-  - **On the member genes only**, which is close to today's behaviour, gates each path by the member it travelled
+  - **On the member genes only**, which is close to the behaviour before decision 4.2 was built (13 October 2026),
+    gates each path by the member it travelled
     through. A response entering through an abundant subunit passes even when another subunit is missing, so the
     complex behaves like a maximum over its members rather than a minimum. That is the wrong physiology.
   - **On the downstream reaction** would put the complex's weight somewhere the complex is not, double-gate any
@@ -21,7 +22,7 @@ semantics:
     reaction's weight.
 
 So this script measures the first, and reports three things the decision needs: how many complexes can carry a
-weight at all, how far the gate moves from the present flat 1, and how often the limiting member differs between
+weight at all, how far the gate moves from the flat 1 a complex carried until 13 October 2026, and how often the limiting member differs between
 classes, because a member chosen once globally would not be the same rule as a minimum per class.
 
 Counting only: no graph, label or model input is changed.
@@ -199,19 +200,23 @@ def write_document(document: Path, classes: list[str], complexes: set, member_ed
         "limiting subunits. Choosing one limiting subunit globally would therefore be a different rule and a "
         "weaker one, carrying the wrong subunit's profile in every class where another is scarcer. The minimum is "
         "taken within each class, which is what \"per type\" asks for.", "",
-        "## Two consequences, one of them a problem", "",
+        "## Two consequences, one of them a problem until decision 4.2b closed (13 October 2026)", "",
         "**The compounding along a path is the encoder's standing convention, not a new double count.** A response "
         "on gene -> complex -> reaction is scaled by the complex's gate and also by the member gene's own weight, "
         "and that member's abundance is already inside the minimum. Every path in this encoder is scaled once per "
         "node it crosses, so a complex is no different from any other node on it; exempting complexes from the "
         "convention would need an argument that does not exist. Recorded so the choice is visible.", "",
-        "**H2's rewired-expression control does not touch the complex gate, and should.** That control permutes the "
-        "Human-GEM gene rules and recomputes the reactions' cell-class weights "
-        "(`rewired_reaction_cell_class_weights`, which returns reaction rows only). A complex takes its gate from "
-        "`member_of` edges and not from a rule, so the permutation leaves every complex gate intact and the "
-        "\"rewired\" condition still carries real expression structure through "
-        f"{len(registered)} complexes. The analogous permutation is of gene-to-complex membership, and extending "
-        "the control that way is a change to a registered control: it is open decision 4.2b, not a build.", "",
+        "**H2's rewired-expression control rewires the complex gates (decision 4.2b, closed and built 13 October "
+        "2026).** When this page was first written, on 13 October 2026, it did not: the control permuted the "
+        "Human-GEM gene rules and recomputed the reactions' cell-class weights alone "
+        "(`rewired_reaction_cell_class_weights`, which returns reaction rows only), while a complex takes its gate "
+        "from `member_of` edges and not from a rule, so the permutation left every complex gate intact and the "
+        "\"rewired\" condition still carried real expression structure through "
+        f"{len(registered)} complexes. That was open decision 4.2b, closed and built the same day (commit 564a433): "
+        "the rewiring already permuted `member_of` like every other relation, so under "
+        "`--recompute-reaction-expression-on-rewired-graph` a complex now takes the limiting member of whichever "
+        "genes the rewired graph says belong to it (`rewired_complex_cell_class_weights`), and every complex is "
+        "rewritten, not only the gated ones.", "",
     ]
     document.parent.mkdir(parents=True, exist_ok=True)
     document.write_text("\n".join(lines) + "\n")

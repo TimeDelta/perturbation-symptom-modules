@@ -145,7 +145,7 @@ these changes touches says so where it applies:
    also the one that draws the held-out set (decision 1.1, under the leakage ceiling of 9.35), after the rebuild of
    decision 1.2; the lockbox file the job reads is then the one drawn on that table, not configs/lockbox_v2.json as
    the job script of 9 October names it. A check-in, a document or a job marker is not the go-ahead:
-   `bash scripts/resume_jobs.sh --register confirmatory_lockbox "bash runs/full/confirmatory_lockbox.sh" runs/full/confirmatory_lockbox.done runs/full/confirmatory_lockbox.failed "the 30 confirmatory lockbox runs of the two tested models, the lockbox baselines and the one-time scoring"`.
+   `bash scripts/resume_jobs.sh --register confirmatory_lockbox "bash runs/full/confirmatory_lockbox.sh" runs/full/confirmatory_lockbox.done runs/full/confirmatory_lockbox.failed "the 30 confirmatory lockbox runs of the tested model and the robustness model, the lockbox baselines and the one-time scoring"`.
    runs/full/confirmatory_lockbox.sh reads the two models from configs/head_choice.json. If a development run failed to
    train, do not register it; report to the user, because an amendment needs a dated entry in the specification
    before the first lockbox run.

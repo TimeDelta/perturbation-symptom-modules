@@ -6,11 +6,15 @@ counts. "Superfluous" is read three ways, each measured separately:
 
   1. **Unreachable.** A node that no perturbation seed can reach holds a field of exactly zero in every example, so it
      contributes nothing to any prediction. An edge leaving such a node always carries a message of zero.
-  2. **Diluting.** The registered normalisation is item 28's `total_in_degree`: the message into a node is divided by
-     the sum of the weights of every edge entering it, over all relations together
-     (`linear_response_encoder.signed_stacked_adjacency`, `normalisation == "total_in_degree"`). An edge that always
-     carries zero still counts in that divisor, so unreachable content divides down the real signal at every node it
-     feeds. This is the sense in which superfluous content is harmful rather than merely inert.
+  2. **Diluting.** The divisor measured here is item 28's `total_in_degree`, the registered normalisation until 20
+     October 2026: the message into a node is divided by the sum of the weights of every edge entering it, over all
+     relations together (`linear_response_encoder.LinearResponseEncoder.signed_stacked_adjacency`,
+     `normalisation == "total_in_degree"`). An edge that always carries zero still counts in that divisor, so
+     unreachable content divides down the real signal at every node it feeds. This is the sense in which superfluous content is harmful rather than merely inert. The
+     registered normalisation since 20 October 2026 is `forward_cone` (configs/registered_rules.json, normalisation;
+     amendment item 28 as narrowed by decision 9.16), which counts only the edges whose source the seed can reach, so
+     under it an edge whose source the seed cannot reach is outside the divisor; the dilution this script reports is
+     the `total_in_degree` divisor's, which the edge-gated path still uses (decision 9.16).
   3. **Duplicated.** Two nodes that receive from exactly the same sources under exactly the same relations hold the
      same field in every example, so the second adds parameters and no information.
 
@@ -24,12 +28,16 @@ The adjacency measured here is the one the encoder builds, not the stored edge t
   - a drug's `targets` edges leave the normalised adjacency and are added on their own, so they carry a response and
     are **not** in any divisor (`entry_relation_names`); every other relation is in the divisor.
 
-The readout side. The registered symptom head reads the field at every graph node: the module support is a learned
-hard-concrete gate over all N nodes and the pool is a sum over them
-(`noisy_or_pathway_module_model.NoisyOrPathwayModuleModel.module_activation`), and the output gate is a sigmoid of
-node features that zeroes nothing structurally. So under the registered head there is no readout node set to run a
-backward cone from: every node that holds a field is read. The backward cone is reported from two stricter readout
-sets instead, as a sensitivity reading, and each is labelled as the counterfactual it is.
+The readout side. Until 24 November 2026 the registered symptom head read the field at every graph node: the module
+support is a learned hard-concrete gate over all N nodes and the pool is a sum over them
+(`noisy_or_pathway_module_model.NoisyOrPathwayModuleHead.module_activation`), and the output gate is a sigmoid of
+node features that zeroes nothing structurally. So under that head there was no readout node set to run a backward
+cone from: every node that holds a field was read, and the first readout set below, "every node", is that head's.
+Since 24 November 2026 (amendment item 39, registered rule module_support_minimum_reach = 2,
+mechanistic_pathway_learning/models/support_reach.py) a node that fewer than 2 seed sources of the run's training rows can reach is never module
+support of the tested model, so that model no longer reads every node that holds a field; its readout set depends on
+a run's training rows and is not computed here. The backward cone is reported from two stricter readout sets as well,
+as a sensitivity reading, and each is labelled as the counterfactual it is.
 
 Nothing here changes a graph, a label, a model or a model input. It reads two parquet files and prints counts.
 
@@ -290,9 +298,11 @@ def main() -> None:
           f"filter drops: {len(unreachable_gene_symbols & set(every_grade.perturbation_id.astype(str))):,} of "
           f"{len(unreachable_gene_symbols):,}")
 
-    # The backward cone. Under the registered head every node is read, so two stricter readouts are reported instead.
+    # The backward cone. Under the registered head before 24 November 2026 every node was read, so two stricter readouts
+    # are reported beside it; since then amendment item 39 keeps nodes fewer than 2 sources reach out of module support,
+    # a set that depends on a run's training rows and is not computed here (see the docstring).
     readouts: dict[str, np.ndarray] = {}
-    readouts["every node (the registered symptom head)"] = np.ones(num_nodes, dtype=bool)
+    readouts["every node (the registered symptom head before 24 November 2026, amendment item 39)"] = np.ones(num_nodes, dtype=bool)
     laboratory_readout = (node_type == "metabolite")
     readouts["every metabolite (the laboratory readout's node kind)"] = laboratory_readout
     if arguments.curated_modules.exists():

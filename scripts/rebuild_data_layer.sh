@@ -8,12 +8,26 @@
 #
 #   bash scripts/rebuild_data_layer.sh            # graphs, evidence tables, label selections, drug entry nodes, and the two
 #                                                   # evidence sources that record absences (trial arms, FAERS)
-#   bash scripts/rebuild_data_layer.sh slice        # the monogenic slice tables the slice-era tests read (minutes)
+#   bash scripts/rebuild_data_layer.sh slice        # then the monogenic slice tables the slice-era tests read (minutes
+#                                                   # once the shared steps below have their outputs)
 #   bash scripts/rebuild_data_layer.sh descriptors  # then the node descriptors and cell-class weights (about 3 hours
 #                                                   # of ESM-2 embeddings on 2 cores, and a 1.24 GB download)
-#   bash scripts/rebuild_data_layer.sh fine         # the v5 tables on the fine symptom constructs (decision 9.58; an hour)
+#   bash scripts/rebuild_data_layer.sh fine         # then the v5 tables on the fine symptom constructs (decision 9.58; an hour)
 #   bash scripts/rebuild_data_layer.sh brenda       # then the derived BRENDA table, from the split graph the
 #                                                   # graphs stage built (decision 9.88; minutes)
+#
+# Every stage, not only the default one, first runs the shared steps that sit outside the `if [ "$stage" = ... ]`
+# blocks, each one whose output is missing: the raw fetches (scripts/fetch_raw_sources.sh, the ChEMBL passes, the
+# UniProt, GO, ChEBI and Reactome fetches and the OnSIDES identifier bridge), the base graph and its manganese and
+# neuronal variants, the Open Targets statements, the v3 and v4 evidence tables and label selections, and the FDA label
+# fetches. Only the blocks under a stage guard belong to one stage. So the times given above for a stage hold only on a
+# disk that already holds the shared outputs; on a fresh disk any stage, `slice` included, runs hours of fetches and
+# builds first and writes the graph and evidence directory names the registered rebuild will write, the trap decision
+# 9.106 records. The slice block itself copies data/processed/graph and data/processed/evidence from data/releases/v0.4
+# (graph and evidence_slice_sweeps), builds the manganese and neuronal variants of that graph, and builds its gene and
+# protein split with experiments/build_gene_protein_split.py, which also reads the UniProt proteome
+# (data/raw/uniprot/uniprot_human_reviewed.tsv.gz), the Reactome export (data/raw/reactome/current) and
+# data/raw/chembl/targets.json.
 #
 # Library versions matter for the file hashes: the tables of data/releases/v0.4 were written by pandas 2.3.3 and
 # pyarrow 25.0.1, and with those two the rebuilt tables that have a recorded hash and no fitted column match it

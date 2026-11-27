@@ -1,10 +1,14 @@
 """Score the lockbox once: the confirmatory test of docs/preregistration.md (specification of 8 October 2026).
 
 Inputs, all trained on the development set and scored on configs/lockbox_v2.json (the user's decision of 8 October 2026):
-- the two tested models, one head per encoder of the second confirmatory family (confirmatory_v2_*), chosen on the
-  development set by experiments/choose_heads.py and read from configs/head_choice.json unless --models names others
-  (run_main_model_batch.py --lockbox ... --score-lockbox), each with five seeds and, per
-  seed, a run on the real labels (lockbox_seed<k>), one on labels permuted within degree strata (lockbox_seed<k>_permuted)
+- the tested model of the second confirmatory family (confirmatory_v2_*), read from the `chosen` key of
+  configs/head_choice.json unless --models names others: one model, the noisy-OR configuration of the linear-response
+  encoder (registered rule tested_models). That record was written on 15 October 2026 from the owner's decision, not
+  by experiments/choose_heads.py, which was not run and stays as a record (until 15 October 2026 one head per encoder
+  was to be chosen on the development set by that script). Its `robustness` key holds the message-passing encoder
+  (decision 9.77, registered rule robustness_models), which is scored by naming it to --models in a run declared
+  outside the tested family. Each model is run (run_main_model_batch.py --lockbox ... --score-lockbox) with five seeds
+  and, per seed, a run on the real labels (lockbox_seed<k>), one on labels permuted within degree strata (lockbox_seed<k>_permuted)
   and one on a degree-preserving rewiring of the graph (lockbox_seed<k>_rewired); a run counts only if it was refitted
   after early stopping with the large leakage groups in training (amendments of 8 October 2026), its predictions are
   finite, one row per lockbox perturbation and one column per symptom, its recorded arguments are those of its
@@ -218,12 +222,16 @@ def recorded_arguments(namespace: argparse.Namespace) -> dict:
 
 
 def chosen_models(head_choice: Path, lockbox: Path) -> list[str]:
-    """The configurations experiments/choose_heads.py chose, one per encoder, after checking they were chosen on lockbox's development set."""
+    """The tested configurations: the values of the record's `chosen` key (registered rule tested_models, one model), after
+    checking that the record names lockbox. configs/head_choice.json was written on 15 October 2026 from the owner's decision,
+    not by experiments/choose_heads.py (which was not run and stays as a record), so the lockbox check compares paths and
+    guards only against a record written for another lockbox; its `robustness` key is not read here (decision 9.77)."""
     if not head_choice.exists():
-        raise SystemExit(f"{head_choice} is missing: run experiments/choose_heads.py on the development set first, or name the models with --models")
+        raise SystemExit(f"{head_choice} is missing: name the tested models with --models, or restore the head-choice record "
+                         "whose `chosen` key the registered rule tested_models names (configs/head_choice.json)")
     record = json.loads(head_choice.read_text())
     if Path(record["lockbox"]) != lockbox:
-        raise SystemExit(f"{head_choice} chose heads on the development set of {record['lockbox']}, not of {lockbox}")
+        raise SystemExit(f"{head_choice} was written for the lockbox {record['lockbox']}, not for {lockbox}")
     return list(record["chosen"].values())
 
 
@@ -296,7 +304,9 @@ def main() -> None:
     parser.add_argument("--lockbox", type=Path, default=Path("configs/lockbox_v2.json"))
     parser.add_argument("--run-root", type=Path, default=Path("runs/full"), help="holds <model>_<group-by>_confirmatory for every model")
     parser.add_argument("--models", nargs="*", default=None, help="the tested models; default: the configurations chosen in --head-choice")
-    parser.add_argument("--head-choice", type=Path, default=Path("configs/head_choice.json"), help="experiments/choose_heads.py output; its lockbox must be --lockbox")
+    parser.add_argument("--head-choice", type=Path, default=Path("configs/head_choice.json"), help="the head-choice record: its `chosen` values are the tested models (registered rule tested_models) and its "
+                             "lockbox must be --lockbox; configs/head_choice.json was written on 15 October 2026 from the owner's decision, "
+                             "not by experiments/choose_heads.py")
     parser.add_argument("--baseline-root", type=Path, default=Path("runs/full/lockbox_v2_baselines"), help="holds seed<k> from run_baselines.py --score-lockbox --seed <k>")
     parser.add_argument("--baselines", nargs="*", default=list(BASELINES))
     parser.add_argument("--seeds", type=int, nargs="*", default=[0, 1, 2, 3, 4])

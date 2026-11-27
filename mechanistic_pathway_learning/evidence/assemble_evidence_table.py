@@ -1081,7 +1081,7 @@ def main() -> None:
     parser.add_argument("--narrow-by-site-structure", action=argparse.BooleanOptionalAction, default=True,
                         help="with the narrowing: a drug configs/binding_sites.csv places at the benzodiazepine site, where GtoPdb names fewer than two "
                              "of the complex's subunits, is narrowed to the subunits that form the site (alpha1, 2, 3 or 5 with gamma2); an extension "
-                             "of decision 8.11 for the owner to accept or refuse")
+                             "of decision 8.11, which closed on 20 October 2026 when the owner merged pull request #4 with both additions on by default")
     parser.add_argument("--binding-sites", type=Path, default=DEFAULT_BINDING_SITES_PATH, help="the drugs' binding sites, which name the obligate subunits")
     parser.add_argument("--open-targets-scoped-rows", type=Path, default=None,
                         help="data/processed/off_target_scoping/open_targets_symptom_rows.parquet (amendment item 12d, decision 8.5): the curated target-safety statements enter the Dawid-Skene reliability fit and reach no grade and no label. Omit the flag to assemble without the class; a path that does not exist is an error")

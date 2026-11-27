@@ -29,8 +29,11 @@ LINEAR_RESPONSE_ENCODER = ["--encoder", "linear_response", "--cofactor-relations
 # for the chosen number of epochs, so the models fit on the same perturbations as the baselines
 CONFIRMATORY_VALIDATION = ["--keep-large-groups-in-training", "--refit-on-validation"]
 # the second confirmatory family (the user's decisions of 8 October 2026, docs/preregistration.md): grade C pairs masked
-# (better_v2), the early-stopping validation set rotated with the seed and drawn per drug stratum, one head per encoder
-# chosen on the development folds (experiments/choose_heads.py). The lockbox file is passed by the job (--lockbox).
+# (better_v2), the early-stopping validation set rotated with the seed and drawn per drug stratum, and, until 15 October
+# 2026, one head per encoder chosen on the development folds (experiments/choose_heads.py). That choice was superseded on
+# 15 October 2026: configs/head_choice.json was written from the owner's decision, choose_heads.py was not run, and the
+# `chosen` key names the one tested model (registered rule tested_models; the message-passing encoder sits under
+# `robustness`, decision 9.77). The lockbox file is passed by the job (--lockbox).
 # This family trains on the graph that splits genes from proteins (the user, 9 October 2026: "the confirmatory config
 # should definitely be the split graph and include the protein descriptors and brain expressions, compartments,
 # everything that physiologically makes sense"; docs/preregistration.md, amendment of 9 October 2026, and

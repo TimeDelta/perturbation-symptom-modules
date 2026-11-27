@@ -8,16 +8,26 @@ from mechanistic_pathway_learning.evaluation.experiment_data import load_experim
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import degree_strata
 
 # The monogenic slice (the pilot graph of data/releases/v0.4), its evidence table and its gene/protein split, on which
-# the tests below check the hop over encodes. Only the optional slice stage of scripts/rebuild_data_layer.sh writes
-# them: it copies the first two from the release and builds the split.
+# the tests below check the hop over encodes. The slice block of scripts/rebuild_data_layer.sh writes them: it copies
+# the first two from the release (data/releases/v0.4/graph and evidence_slice_sweeps) and builds the split with
+# experiments/build_gene_protein_split.py, which also reads the UniProt proteome, the Reactome export and
+# data/raw/chembl/targets.json. Running `bash scripts/rebuild_data_layer.sh slice` is not only that block: like every
+# stage it first runs the shared raw fetches, graph builds and evidence tables whose outputs are missing, so on a disk
+# without them it runs for hours and writes the directory names the registered rebuild will write (decision 9.106).
 MERGED_GRAPH = Path("data/processed/graph")
 SPLIT_GRAPH = Path("data/processed/graph_split")
 EVIDENCE = Path("data/processed/evidence")
+SLICE_TABLES_ARE_MISSING = (
+    "{graph_directory} or {evidence_directory} is not built here. They come from the slice block of "
+    "scripts/rebuild_data_layer.sh (two copies from data/releases/v0.4 and experiments/build_gene_protein_split.py, which "
+    "also needs data/raw/uniprot/uniprot_human_reviewed.tsv.gz, data/raw/reactome/current and data/raw/chembl/targets.json); "
+    "the script's slice stage first runs every shared fetch and build whose output is missing, which on a fresh disk is hours "
+    "and writes the registered rebuild's directory names (decision 9.106)")
 
 
 def load(graph_directory: Path):
     if not (graph_directory / "nodes.parquet").exists() or not (EVIDENCE / "evidence_records.parquet").exists():
-        pytest.skip(f"{graph_directory} or {EVIDENCE} is not built here; bash scripts/rebuild_data_layer.sh slice builds them")
+        pytest.skip(SLICE_TABLES_ARE_MISSING.format(graph_directory=graph_directory, evidence_directory=EVIDENCE))
     return load_experiment_data(graph_directory, EVIDENCE, group_by="disease_cluster")
 
 

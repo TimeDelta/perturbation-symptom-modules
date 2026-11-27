@@ -55,28 +55,29 @@ SMILES_ISOTOPE_ATOM = re.compile(r"\[\d+[A-Za-z]")
 # (human_gem_chebi_audit.csv of that pass). Ruling Q3: each takes upstream Human-GEM's replacement, checked one by one;
 # until that curation is done they stay here.
 ABSENT_FROM_CHEBI_PENDING_Q3 = {
-    ("MAM00341", "CHEBI:1038735"): "13,16,19-docosatrienoic acid; ruling Q3 pending",
-    ("MAM00604", "CHEBI:805752"): "21-hydroxyallopregnanolone; ruling Q3 pending",
-    ("MAM00623", "CHEBI:387060"): "26-hydroxycholesterol; ruling Q3 pending",
-    ("MAM00664", "CHEBI:240943"): "2-methylbutyrylglycine; ruling Q3 pending",
-    ("MAM00821", "CHEBI:742324"): "3-methoxytyramine; ruling Q3 pending",
-    ("MAM01161", "CHEBI:308079"): "6-hydroxymelatonin; ruling Q3 pending",
-    ("MAM01315", "CHEBI:730073"): "alloxan; ruling Q3 pending",
-    ("MAM01450", "CHEBI:1307929"): "cholesterol; ruling Q3 pending",
-    ("MAM01597", "CHEBI:1146900"): "CoA; ruling Q3 pending",
-    ("MAM01766", "CHEBI:708641"): "ecgonine; ruling Q3 pending",
-    ("MAM02744", "CHEBI:583972"): "phylloquinone; ruling Q3 pending",
-    ("MAM03136", "CHEBI:1127735"): "vanillylmandelate; ruling Q3 pending",
-    ("MAM03142", "CHEBI:283119"): "vitamin D3; ruling Q3 pending",
-    ("MAM03155", "CHEBI:1305691"): "xylitol; ruling Q3 pending",
-    ("MAM03569", "CHEBI:603631"): "cis,cis-11,14-eicosadienoic acid; ruling Q3 pending",
-    ("MAM03630", "CHEBI:356660"): "Glycylproline; ruling Q3 pending",
-    ("MAM03813", "CHEBI:580913"): "1-Heptadecanoylglycerophosphocholine; ruling Q3 pending",
+    ("MAM00341", "CHEBI:1038735"): "13,16,19-docosatrienoic acid; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM00604", "CHEBI:805752"): "21-hydroxyallopregnanolone; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM00623", "CHEBI:387060"): "26-hydroxycholesterol; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM00664", "CHEBI:240943"): "2-methylbutyrylglycine; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM00821", "CHEBI:742324"): "3-methoxytyramine; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM01161", "CHEBI:308079"): "6-hydroxymelatonin; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM01315", "CHEBI:730073"): "alloxan; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM01450", "CHEBI:1307929"): "cholesterol; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM01597", "CHEBI:1146900"): "CoA; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM01766", "CHEBI:708641"): "ecgonine; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM02744", "CHEBI:583972"): "phylloquinone; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03136", "CHEBI:1127735"): "vanillylmandelate; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03142", "CHEBI:283119"): "vitamin D3; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03155", "CHEBI:1305691"): "xylitol; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03569", "CHEBI:603631"): "cis,cis-11,14-eicosadienoic acid; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03630", "CHEBI:356660"): "Glycylproline; Q3 curation pending (upstream replacement, checked one by one)",
+    ("MAM03813", "CHEBI:580913"): "1-Heptadecanoylglycerophosphocholine; Q3 curation pending (upstream replacement, checked one by one)",
 }
 # Q2. H+ is annotated as CHEBI:24636 "proton", the 1H ion, whose InChI and SMILES are isotopic by construction, where
-# Reactome uses hydron, CHEBI:15378. Ruling Q4 gives it a decision of its own, so the guard does not settle it.
+# Reactome uses hydron, CHEBI:15378. Ruling Q4 (amendment item 37o) is that the duplicate proton is merged into one
+# node per compartment; the merge is not yet built, so the guard exempts the proton until it lands.
 LABELLED_PENDING_Q4 = {
-    ("MAM02039", "CHEBI:24636"): "H+ annotated as proton rather than hydron; ruling Q4 pending (a decision of its own)",
+    ("MAM02039", "CHEBI:24636"): "H+ annotated as proton rather than hydron; ruled a merge (Q4, item 37o), not yet built",
 }
 # Q5c. Disagreements the guard finds in the corrected model that are not yet adjudicated. Empty since 20 November 2026:
 # the two the guard found that day beyond ruling Q5, the c, n, r and x structure of MAM00373 (15(R)-HEPE) and the name

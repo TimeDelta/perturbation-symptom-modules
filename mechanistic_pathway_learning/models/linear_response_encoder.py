@@ -1615,7 +1615,8 @@ class LinearResponseEncoder(nn.Module):
         if self.edge_gates is None or not hasattr(self.edge_gates, "open_edges"):
             raise ValueError("flip estimates need hard edge gates (decision 9.62)")
         if self.gate_normalisation != "total_in_degree":
-            raise ValueError("flip estimates are written for the registered total_in_degree normalisation")
+            raise ValueError("flip estimates are written for item 28's total_in_degree normalisation (the registered forward_cone is not built "
+                             "for gates, decision 9.16)")
         gradients = [values.grad for values in self.flip_collection if values.grad is not None]
         if not gradients:
             raise ValueError("no gated values with a gradient were collected; set collect_flip_gradients and run a backward pass first")
