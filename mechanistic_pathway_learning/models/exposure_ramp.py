@@ -41,7 +41,9 @@ The rules, each as item 40 writes it (docs/preregistration.md, item 40) and how 
     state_match_tolerance away from the earlier state, the system was bistable at the earlier level and the ramp moved
     from one stable state to the other, which is a fold of the branch from rest between the two levels; where Anderson
     mixing produced the landing, it is then confirmed by the plain relaxation from the earlier state (the definition),
-    whose state is kept if the two differ, and the level is flagged. "**A
+    whose state is kept if the two differ, and the level is flagged. The test finds a fold only where the system is
+    still bistable at the earlier level's input: a fold whose bistable range lies wholly between two levels is crossed,
+    and the jump kept, without the flag (tests/test_exposure_ramp.py pins it on a planted switch). "**A
     level that does not settle** (a sustained oscillation) is read at the centre of the oscillation, each node halfway
     between the highest and the lowest value it takes over one cycle [...] and flagged as oscillating": the plain
     relaxation is continued and recorded, one cycle is found by upward crossings of the midline of the node that
@@ -367,10 +369,11 @@ class LevelReading:
     ("did not converge", "unstable": converged on a state the relaxation does not settle on), with the state it gave
     and that state's growth rate. growth_rate is the probe's estimate at a settled state. fold_jump is item 40 (4)'s
     fold flag (37f's bifurcation flag): True where the ramp moved to another stable state between the previous level
-    and this one, False where it did not, None where the test is not evaluated; anderson_disagreed is True where the
-    fold test's confirmation by the plain relaxation landed elsewhere than Anderson mixing had, and the plain
-    relaxation's state was kept. For an oscillating level, cycle holds the cycle read and last_relaxation_state the
-    recorded relaxation's last state."""
+    and this one, False where the settle at the previous level's input, run from this level's state, lands back on the
+    previous state (which misses a fold whose bistable range lies wholly between the two levels: module docstring,
+    rule (4)), None where the test is not evaluated; anderson_disagreed is True where the fold test's confirmation by
+    the plain relaxation landed elsewhere than Anderson mixing had, and the plain relaxation's state was kept. For an
+    oscillating level, cycle holds the cycle read and last_relaxation_state the recorded relaxation's last state."""
 
     exposure_fraction: float
     kind: str
@@ -444,7 +447,9 @@ def _fold_test(update_map: UpdateMap, previous: LevelReading, previous_input: to
                settings: ExposureRampSettings) -> bool | None:
     """True where the relaxation at the previous level's input, run from the current state, settles on a state other
     than the previous one (the system was bistable there and the ramp moved between its stable states); None where it
-    does not settle."""
+    does not settle. False where it settles back on the previous state, which is also what happens where the system
+    is not bistable at the previous input, so a fold whose bistable range lies wholly between the two levels is not
+    found (module docstring, rule (4))."""
     back = _settle(update_map, current_state, previous_input, settings)
     if not back.settled:
         return None

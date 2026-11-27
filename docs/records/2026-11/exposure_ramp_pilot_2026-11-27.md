@@ -78,9 +78,16 @@ a grid and refined by bisection. The lower branch ends at a fold at **0.41833** 
   2.0e-11.
 - **The fold jump is kept and flagged**, as written. The flag is raised at level 5, the first level past the fold,
   and at no other level. The jump lands on the other stable state.
+- **The fold test finds a fold only where the system is still bistable at the level before the jump.** This switch
+  is bistable from rest to the fold, so that holds at every level here. A fold whose bistable range falls wholly
+  between two levels is crossed, and the jump kept, without the flag. `tests/test_exposure_ramp.py`
+  (`test_a_fold_whose_bistable_range_lies_wholly_between_two_levels_is_not_flagged`) pins that on a weaker switch;
+  this run does not measure it.
 - **Anderson mixing did not make the jump.** At level 5, starting from the lower branch's last state, it had not
   converged after its 2,000 evaluations. The plain relaxation from the same start made the landing in the remaining
-  2,549. Every other level settled under Anderson mixing in 7 to 15 evaluations.
+  2,549. Every other level settled under Anderson mixing in 7 to 15 evaluations. This run's Anderson memory of 5
+  combines six residuals of a two-node state, more residuals than the state has dimensions, with no regularization;
+  the run did not vary the memory.
 - The growth rate of the linearized relaxation at level 4, which lies 0.018 below the fold, is 0.997921. At rest it is
   0.990799, and past the fold 0.9825 to 0.9841.
 

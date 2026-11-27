@@ -175,6 +175,30 @@ def test_the_ramp_reads_the_branch_from_rest_and_flags_the_fold_where_the_branch
     assert all(level.fold_jump is False for index, level in enumerate(switch_ramp.levels[1:], start=1) if index != 5)
 
 
+def test_a_fold_whose_bistable_range_lies_wholly_between_two_levels_is_not_flagged():
+    """The fold test's documented limit (exposure_ramp module docstring, rule (4); LevelReading.fold_jump): it finds a
+    fold only where the system is still bistable at the earlier level's input. This weaker switch (test values) is
+    bistable only between entry inputs 1.0 and 1.2, levels 5 and 6 of ten: the ramp jumps from the lower branch to the
+    upper one between them and the flag is not raised. With one more level inside the bistable range it is raised."""
+    weaker = dict(headroom=9.0, steepness=1.0, loop_weight=0.42)
+    network = planted_bistable_switch(**weaker, full_entry_input=2.0)
+
+    def roots(entry_input):
+        return [torch.tensor(root, dtype=DTYPE) for root in switch_scalar_roots(**weaker, entry_input=entry_input)]
+
+    assert len(roots(1.0)) == 1 and len(roots(1.03)) == 3 and len(roots(1.2)) == 1
+    coarse = ramp_of(network, exposure_fractions(10, False), settings())
+    before, after = coarse.levels[5], coarse.levels[6]
+    assert (before.exposure_fraction, after.exposure_fraction) == (0.5, 0.6)
+    assert largest_absolute_entry(before.state - roots(1.0)[0]) < 1e-6
+    assert largest_absolute_entry(after.state - roots(1.2)[0]) < 1e-6
+    assert bool((after.state > roots(1.03)[1]).all()), "past the middle, unstable state: the ramp jumped"
+    assert after.kind == SETTLED and after.fold_jump is False and coarse.fold_levels == ()
+    with_a_level_inside = tuple(sorted(exposure_fractions(10, False) + (0.515,)))  # entry input 1.03
+    finer = ramp_of(network, with_a_level_inside, settings())
+    assert finer.levels[6].exposure_fraction == 0.515 and finer.fold_levels == (7,)
+
+
 def test_only_the_branch_from_rest_is_read_where_another_stable_state_exists():
     network = dataclasses.replace(switch(), full_exposure=torch.tensor([0.3, 0.0], dtype=DTYPE))  # inside the bistable range
     ramp = ramp_of(network, exposure_fractions(3, False), settings())
