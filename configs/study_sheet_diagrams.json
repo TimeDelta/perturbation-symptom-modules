@@ -347,10 +347,10 @@
         "item:37c": "d8409edfc71cfc7a98245aa72a68ef0376770f4aa0065ca5727ad1b18afdd7a2",
         "item:37d": "ef00c0995ebbc303748270b74513ed254d9a3bfff9237392c0c22a5d113c1206",
         "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1",
-        "file:docs/item37_rulings_draft_2026-11-13.md": "68f829767a9b469e2f1d9eec52470d074b256ae1565ad2f0283ce1a0e89bbab6"
+        "file:docs/item37_rulings_draft_2026-11-13.md": "dfeb2ac336498b0414869f04993c2e379c84188906c9048717e6b8309a26fe4b"
       },
-      "checked": "2026-11-25",
-      "checked_at_commit": "969dbbc"
+      "checked": "2026-11-27",
+      "checked_at_commit": "082941d"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
