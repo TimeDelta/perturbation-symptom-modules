@@ -13,7 +13,8 @@ question: how many tissues a gene is expressed in. A gene expressed everywhere c
 so if the median gene is expressed in most tissues then a tissue partition of the nodes does not exist and only a
 weighted reading does.
 
-Sources measured, all already downloaded:
+Sources measured, all already downloaded (the counts are those of 12 October 2026; the HPA release used since 27
+November 2026, decision 9.155, has 11 brain regions and 48 cell types):
   GTEx v10 gene median TPM           68 tissues (14 of them brain regions), by Ensembl gene id
   HPA rna_brain_region_hpa           13 brain regions, by Ensembl gene id and gene name
   HPA rna_single_nuclei_cluster_type 34 brain cell types, by Ensembl gene id and gene name

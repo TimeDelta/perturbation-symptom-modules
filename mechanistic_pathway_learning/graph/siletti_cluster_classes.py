@@ -1,10 +1,11 @@
 """Cell classes taken from single clusters of the adult human brain atlas, beside the pooled HPA classes (decision 9.76,
 the owner, 21 October 2026: "add the Siletti atlas").
 
-Why. The Human Protein Atlas single-nucleus download is at supercluster level: its 34 cluster types are the atlas's
-superclusters, so the noradrenergic neurons of the locus coeruleus and the medulla are absorbed into "splatter"
-(DBH at most 0.7 nCPM, PHOX2A 0.4), and PHOX2A, which drives DBH, TH and SLC6A2 in those neurons (Morin et al. 1997,
-PMID 9115735), fell under the detection threshold in every class. The atlas itself (Siletti et al. 2023, "Transcriptomic
+Why (21 October 2026). The Human Protein Atlas single-nucleus download of the time was at supercluster level: its 34
+cluster types were the atlas's superclusters, so the noradrenergic neurons of the locus coeruleus and the medulla were
+absorbed into "splatter" (DBH at most 0.7 nCPM, PHOX2A 0.4), and PHOX2A, which drives DBH, TH and SLC6A2 in those
+neurons (Morin et al. 1997, PMID 9115735), fell under the detection threshold in every class. The HPA release used since
+27 November 2026 (decision 9.155) names 48 cluster types; how they bear on these classes is owed under that decision. The atlas itself (Siletti et al. 2023, "Transcriptomic
 diversity of cell types across the adult human brain", Science 382:eadd7046, PMID 37824663, doi:10.1126/science.add7046)
 resolves them: "Our analysis identified 461 clusters and 3313 subclusters organized largely according to developmental
 origins and revealing high diversity in midbrain and hindbrain neurons."

@@ -473,7 +473,7 @@ def figure_dopaminergic_class() -> None:
     positions = np.arange(len(genes))
     figure, axis = plt.subplots(figsize=(12, 4.6))
     axis.bar(positions - 0.2, dopaminergic + 0.1, width=0.4, color="#c0392b", label="dopaminergic class (atlas cluster 395)")
-    axis.bar(positions + 0.2, hpa_highest + 0.1, width=0.4, color="#7f8c8d", label="highest of HPA's 34 cluster types (named below each gene)")
+    axis.bar(positions + 0.2, hpa_highest + 0.1, width=0.4, color="#7f8c8d", label="highest of HPA's cluster types (named below each gene)")
     for position, gene in zip(positions, genes):
         axis.annotate(anchors[gene]["hpa_top_cluster_type"].replace("vascular associated", "vascular"), xy=(position + 0.2, 0), xycoords=("data", "axes fraction"), xytext=(0, -22),
                       textcoords="offset points", ha="right", va="top", rotation=30, rotation_mode="anchor", fontsize=6.5, color="#555555")

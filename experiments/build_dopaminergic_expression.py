@@ -1,8 +1,9 @@
 """Pseudobulk expression of the dopaminergic neuron cluster of the adult human brain atlas (Siletti et al. 2023), on the
 Human Protein Atlas nCPM scale, for the class_dopaminergic_neuron column of the brain expression descriptors.
 
-HPA's single-nucleus brain tables group the atlas's clusters into 34 cluster types, none of them dopaminergic, so the
-cluster is summed here from the atlas's per-dissection count files on CZ CELLxGENE (collection
+Until 23 November 2026 HPA's single-nucleus brain table grouped the atlas's clusters into 34 cluster types, none of them
+dopaminergic (the release used since, decision 9.155, names 48, one of them called "dopaminergic"; what that means for
+this class is owed under that decision), so the cluster is summed here from the atlas's per-dissection count files on CZ CELLxGENE (collection
 283d65eb-dd53-496d-adb7-7570c7caa443, CC BY 4.0; X holds raw UMI counts). Cluster 395 ("DA VGLUT2" in the atlas's
 tables/cluster_annotation.xlsx, 998 nuclei from 3 donors, 93 percent of them in midbrain dissections) is the
 dopaminergic cluster. Four dissections hold most of its nuclei: SN-RN, SN, PAG-DR and PAG.

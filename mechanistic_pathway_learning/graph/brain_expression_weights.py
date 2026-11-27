@@ -22,7 +22,7 @@ carry ambient RNA that gives most genes a few nCPM in every class. Ambient RNA i
 documented by Caglayan et al. 2022 ("pervasive neuronal ambient RNA contamination in all glial cell types unless glia
 and neurons are physically separated prior to sequencing"; doi:10.1016/j.neuron.2022.09.010) and its size by Janssen
 et al. 2023 ("on average 3-35% of the total counts (UMIs) per cell", mouse kidney; doi:10.1186/s13059-023-02978-x);
-both in docs/references.bib. In the HPA table, measured on 24 October 2026 by experiments/measure_ambient_rna_hpa.py,
+both in docs/references.bib. In the HPA table of the release read until 23 November 2026, measured on 24 October 2026 by experiments/measure_ambient_rna_hpa.py,
 SNAP25 reads 43 to 118 nCPM in oligodendrocytes, astrocytes and microglia, and 62.9 percent of expressed genes are at
 1 nCPM or more in all 34 cluster types (which does not by itself separate ambient RNA from broad expression).
 

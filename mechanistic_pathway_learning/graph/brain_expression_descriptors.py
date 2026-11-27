@@ -9,13 +9,16 @@ Columns, per gene (log1p of the expression value, standardised over the nodes of
   - gtex_brain_max and gtex_other_max: the largest GTEx v10 median TPM over the 13 brain tissues, and over every other
     tissue, so a peripheral anchor such as PAH (2.7 TPM in brain, 272 elsewhere) is told apart from a gene absent
     everywhere;
-  - region_<name>: Human Protein Atlas consensus nTPM in each of 13 brain regions (rna_brain_region_hpa);
-  - class_<name>: Human Protein Atlas single-nucleus nCPM (rna_single_nuclei_cluster_type, 34 cluster types from the
-    adult human brain atlas of Siletti et al. 2023), the largest value over the cluster types of each of 10 cell
-    classes in CELL_CLASS_OF_CLUSTER_TYPE. The 34 types are grouped to keep the column count low for 451 training
+  - region_<name>: Human Protein Atlas consensus nTPM in each brain region of rna_brain_region_hpa (13 regions in the
+    release read until 23 November 2026, 11 in the release used since, decision 9.155);
+  - class_<name>: Human Protein Atlas single-nucleus nCPM (rna_single_nuclei_cluster_type; in the release read until
+    23 November 2026, 34 cluster types from the adult human brain atlas of Siletti et al. 2023), the largest value over
+    the cluster types of each of 10 cell classes in CELL_CLASS_OF_CLUSTER_TYPE. The release used since (decision 9.155,
+    27 November 2026) names 48 cluster types, none of them a key of CELL_CLASS_OF_CLUSTER_TYPE, so hpa_cell_class_table
+    refuses it until each type is given a class, which that decision lists as owed. The 34 types were grouped to keep the column count low for 451 training
     perturbations; the grouping follows the atlas's own superclusters, with striatal medium spiny neurons kept apart
-    from other inhibitory neurons because of their place in reward and motor circuits. HPA's 34 cluster types have no
-    dopaminergic one (SLC6A3 peaks at 0.6 nCPM), so an 11th class, class_dopaminergic_neuron, comes from the atlas's
+    from other inhibitory neurons because of their place in reward and motor circuits. Those 34 cluster types had no
+    dopaminergic one (SLC6A3 peaked at 0.6 nCPM), so an 11th class, class_dopaminergic_neuron, comes from the atlas's
     own dopaminergic cluster (cluster 395, "DA VGLUT2", 998 nuclei, 93 percent midbrain), summed from the per-dissection
     count files on CZ CELLxGENE (experiments/build_dopaminergic_expression.py) and put on HPA's nCPM scale by
     trimmed_mean_scale_factor against HPA's splatter cluster type, the supercluster cluster 395 belongs to;
@@ -45,6 +48,8 @@ import pandas as pd
 from mechanistic_pathway_learning.graph.node_descriptors import standardise
 
 GTEX_BRAIN_TISSUE_PREFIX = "Brain_"
+# The cluster types of the HPA release read until 23 November 2026. The release used since (decision 9.155) names 48
+# others, each owed a class under that decision; until then hpa_cell_class_table refuses it.
 CELL_CLASS_OF_CLUSTER_TYPE = {
     "amygdala excitatory": "excitatory_neuron", "deep-layer corticothalamic and 6b": "excitatory_neuron",
     "deep-layer intratelencephalic": "excitatory_neuron", "deep-layer near-projecting": "excitatory_neuron",

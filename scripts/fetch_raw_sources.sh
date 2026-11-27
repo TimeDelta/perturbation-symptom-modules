@@ -149,13 +149,15 @@ fetch "$raw_directory/omnipath/collectri_interactions_evidences.json" "https://o
 # GTEx v10 median gene TPM (8,846,936 bytes recorded in docs/alternative_sources.md).
 fetch "$raw_directory/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz" "https://storage.googleapis.com/adult-gtex/bulk-gex/v10/rna-seq/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz"
 
-# Human Protein Atlas: brain regions and single-nucleus cluster types. The address serves the current release, so the
-# files are then read with the build's own readers (experiments/check_hpa_downloads.py): a release whose cluster types
+# Human Protein Atlas: brain regions and single-nucleus cluster types, pinned since 27 November 2026 to the release
+# fetched on 23 November (zip members dated 10 November and 25 October 2026), which the owner ruled is used
+# (decision 9.155: "Just use the new one"); until then the pins were 108fb699 and a287c1ab, the release of 7 October.
+# The address serves the current release, so the files are then read with the build's own readers (experiments/check_hpa_downloads.py): a release whose cluster types
 # CELL_CLASS_OF_CLUSTER_TYPE does not name is reported UNREADABLE here rather than at the base graph of a rebuild.
 hpa_region_table_path="$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip"
 hpa_cluster_type_table_path="$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"
-fetch "$hpa_region_table_path" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" 108fb699eccc3f8611b475caa7968ad67f10ee47c4cc88db16d2fcaa0214a0f3
-fetch "$hpa_cluster_type_table_path" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" a287c1abab593c9d6802349a82f118efc0d4aea411be7d897b8feb0b31b02f2a
+fetch "$hpa_region_table_path" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" a6cd5e1423085c56f673ee4771f5dbca9a0ef4ecb257d7efa3f06b7887b4340d
+fetch "$hpa_cluster_type_table_path" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" b24e46d48e12a8c2944cfe3c48191d62b1c93f207cd8f78d6a942d5ed7870edf
 if [ -s "$hpa_region_table_path" ] && [ -s "$hpa_cluster_type_table_path" ] \
   && ! PYTHONPATH=. python experiments/check_hpa_downloads.py --region-table "$hpa_region_table_path" --cluster-type-table "$hpa_cluster_type_table_path"; then
   printf '%s\t-\t-\t-\tUNREADABLE\n' "$hpa_cluster_type_table_path" >> "$report_path"
