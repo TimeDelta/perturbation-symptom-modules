@@ -793,6 +793,9 @@ def test_the_member_removals_of_amendment_37a_are_the_ruled_rows_and_no_others()
     assert set(REACTOME_ENTITY_MEMBERS_REMOVED) == muscle_subunit_rows | trp_set_rows
     assert all("37a (iii)" in REACTOME_ENTITY_MEMBERS_REMOVED[row] for row in muscle_subunit_rows)
     assert all("37a (v)" in REACTOME_ENTITY_MEMBERS_REMOVED[(gene, "RCTE_3295582")] for gene in ("TRPC4AP", "TRPV5", "TRPV6"))
+    rows_of_37a = muscle_subunit_rows | {(gene, "RCTE_3295582") for gene in ("TRPC4AP", "TRPV5", "TRPV6")}
+    assert all("docs/item37_rulings_draft_2026-11-13.md" in REACTOME_ENTITY_MEMBERS_REMOVED[row] for row in rows_of_37a), \
+        "each row's reason names where its ruling and sources are recorded"
     genes_removed = {gene for gene, _ in REACTOME_ENTITY_MEMBERS_REMOVED}
     assert "CHRNB1" not in genes_removed
     assert not any(gene.startswith(("ANO", "KCNJ")) for gene in genes_removed), "the anoctamin and Kir rows are owed"

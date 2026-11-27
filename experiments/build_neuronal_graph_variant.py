@@ -134,10 +134,14 @@ NEURONAL_ENTITIES_HOLDING_A_MUSCLE_NICOTINIC_SUBUNIT = {
 REACTOME_ENTITY_MEMBERS_REMOVED = {
     **{(gene, "RCTE_3295582"): "the mucolipins release calcium from the endolysosome (MAR_TRPML_CALCIUM_RELEASE), not from outside the cell"
        for gene in ("MCOLN1", "MCOLN2", "MCOLN3")},
-    **{(gene, entity): "a muscle-type nicotinic subunit: that receptor sits on no central cell class and its subunits leave the neuronal entities (amendment item 37a (iii))"
+    **{(gene, entity): "a muscle-type nicotinic subunit: that receptor sits on no central cell class and its subunits leave the neuronal entities "
+                       "(amendment item 37a (iii)); the entity read on the Reactome v98 export and the muscle composition in UniProt P11230 and the "
+                       "Concise Guide 2023/24, PMC11339754 (docs/item37_rulings_draft_2026-11-13.md, appendix)"
        for gene, entities in NEURONAL_ENTITIES_HOLDING_A_MUSCLE_NICOTINIC_SUBUNIT.items() for entity in entities},
-    ("TRPC4AP", "RCTE_3295582"): "a scaffold rather than a pore subunit (amendment item 37a (v))",
-    **{(gene, "RCTE_3295582"): "no pass has shown it on a central cell class, and it stays out until one does (amendment item 37a (v))"
+    ("TRPC4AP", "RCTE_3295582"): "a scaffold rather than a pore subunit (amendment item 37a (v); docs/item37_rulings_draft_2026-11-13.md, "
+                                 "section 5, which records the ruling and no source read for it)",
+    **{(gene, "RCTE_3295582"): "no pass has shown it on a central cell class, and it stays out until one does (amendment item 37a (v); "
+                               "docs/item37_rulings_draft_2026-11-13.md, section 5, which records the ruling and no source read for it)"
        for gene in ("TRPV5", "TRPV6")},
 }
 # The charge guard the owner approved on 14 October 2026 ("good call on prophylactically changing the mapper to
