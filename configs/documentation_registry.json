@@ -1185,6 +1185,16 @@
       "recorded": "2026-11-27",
       "append_only": true,
       "what": "the planted-network half of item 40 (7)'s pilot (decision 9.153): the exposure-ramp readout of mechanistic_pathway_learning/models/exposure_ramp.py run by experiments/run_exposure_ramp_pilot.py on a planted bistable switch, a planted oscillating loop and the two side by side, each rule checked against a reference computed apart from the ramp, the gradients checked by finite differences, the step-size dependence of the oscillation shown, planted timings only; no confirmatory-graph timing, no tolerance or time budget proposed, item 40 and row 9.153 unchanged; an engineering measurement, no outside source read"
+    },
+    "docs/drafts/amendment_fine_symptom_list_draft.md": {
+      "class": "draft",
+      "recorded": "2026-11-27",
+      "what": "a draft amendment item registering the fine symptom list of decision 9.58 (item 41, provisionally), with the readings of the owner's rulings it rests on (R1 to R12); not registered"
+    },
+    "docs/drafts/amendment_fine_symptom_list_draft.progress.md": {
+      "class": "draft",
+      "recorded": "2026-11-27",
+      "what": "the working log of the pass that wrote docs/drafts/amendment_fine_symptom_list_draft.md"
     }
   }
 }
