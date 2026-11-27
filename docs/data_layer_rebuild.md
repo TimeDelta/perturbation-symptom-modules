@@ -463,3 +463,82 @@ pair files, which the script names as placed by hand.
 `small_molecule_protein.tsv` hold 126,125, 64,516 and 6,554 rows, one more each than the 126,124, 64,515 and 6,553 of
 10 October 2026 (table above); the two evidences files hold 126,125 and 64,516 interactions, the counts the script's
 comment records for their first download on 17 October 2026.
+
+## Addition, 27 November 2026, later: the pinned inputs fetched for the skipped tests
+
+What was added to `data/raw/` on this container on 27 November 2026, between 22:17 and 22:29 UTC, at `1e77cfa`, and
+what the suite gave afterwards. `scripts/fetch_raw_sources.sh` and `scripts/rebuild_data_layer.sh` were not run, so
+`data/raw/fetch_raw_sources_report.tsv` still reads as on 24 November 2026 and holds no row for the files below; this
+section is their record. No rebuild has run, no tracked file changed, and no download was deleted (36 GB free before and
+after).
+
+**Fetched, each checked against its pin.**
+
+| file under `data/raw/` | address | bytes | SHA-256 | pin |
+| --- | --- | --- | --- | --- |
+| `opentargets_curation/adverse_effects.tsv` | `https://raw.githubusercontent.com/opentargets/curation/1ddf04e7c998bf599746777a3c022b97e1c6888f/target_safety/adverse_effects.tsv` | 668,163 | `4dc79e2ede729feed3e913ee6a901a72ace55165ef903601bd45a8a09f821615` | equals the hash `scripts/fetch_raw_sources.sh` passes |
+| `opentargets_curation/secondary_pharmacology.json` | `https://raw.githubusercontent.com/opentargets/curation/1ddf04e7c998bf599746777a3c022b97e1c6888f/target_safety/secondary_pharmacology.json` | 83,542 | `4a6dcf6b9d12b9d25c854b55cdf83c0cf25723c23002c74cf745ae76ece01844` | equals the hash `scripts/fetch_raw_sources.sh` passes |
+| `plasma_protein_binding/fraction_unbound_database.xlsx` | `https://ndownloader.figshare.com/files/44611381` (figshare article 25243138, by `experiments/fetch_fraction_unbound_database.py`) | 48,117 | `9fe90e80100483caae3b6fe8de6e58e1c3a5253eaf4e895782b8a92b03e1f420` | md5 `e1458c9b73dcf2174e36429df2c41e66` equals the one figshare publishes; bytes and SHA-256 equal `docs/data_sources.md` (fetched 2026-10-09) |
+
+The two Open Targets files were fetched with curl from the addresses at lines 220-222 of `scripts/fetch_raw_sources.sh`,
+with the flags of its `fetch()`, to the destinations it names.
+
+**Converted locally.** `scripts/convert_onsides_to_parquet.py` wrote `onsides/v3.1.1/parquet/` from
+`onsides/v3.1.1/onsides-v3.1.1.zip` (84,862,297 bytes, SHA-256
+`7739c73336786c92e73ca383af92d3f2814caf5e94206e08475b86d5a5ec22b9`, fetched 23 November 2026): `product_adverse_effect`
+6,928,666 rows, `product_label` 41,119, `product_to_rxnorm` 64,310, `vocab_rxnorm_ingredient_to_product` 8,598,
+`vocab_rxnorm_ingredient` 1,866, `vocab_rxnorm_product` 10,469, `vocab_meddra_adverse_effect` 6,423 and
+`high_confidence` 342.
+
+**The ChEMBL cache, `chembl/`.** `experiments/fetch_chembl_drug_targets.py` ran four times, from 22:18 to 22:28 UTC,
+against `https://www.ebi.ac.uk/chembl/api/data` and UniChem's `https://www.ebi.ac.uk/unichem/api/v1/compounds`.
+`chembl_release.json` reads `ChEMBL_37`, release date 2026-05-01, after each pass, so the cache was kept. The last
+three passes printed the same line, "mechanisms 7561; SIDER drugs mapped 1177/1430; targets 389; release ChEMBL_37".
+The files: `mechanisms.json` 5,815,975 bytes, `369ff0ee07e62742b2c02e4cafeacb6ebceeac60832d90210c98e7a6c5bb09c0`;
+`unichem_pubchem_to_chembl.json` 37,058, `8dc0a57d884442cb126378ef07a4497e8a1329fdf805af4b8cf692ab03bf61d4`;
+`molecule_parents.json` 62,497, `fdac76efb929e8f12f7d0c606984acfe5ed49fdd583e633908ce5fe9399cb98c`;
+`pubchem_to_chembl_with_parents.json` 37,544, `91fcadcfe78ceb89490156cf74140c233f6c6de515942788e33d088c82a1c5b1`;
+`targets.json` 81,214, `191eee51959be580639dc44b6047c83aa82cfbd91cd89a7f6ac0eed1e14a2b04`; `chembl_release.json`
+212, `29dc1fb09487a8d2962253a4d0d92c4ded0aa0d831effab42445d0c3483d4740`. No hash is recorded for these files, so the
+release is the only pin checked. UniChem's mappings are as served on 27 November 2026. The marker `chembl/.complete`,
+which `scripts/rebuild_data_layer.sh` writes after its own four passes and reads to skip them, was written by the pass
+and then removed, so a rebuild on this disk still runs the four passes and takes UniChem's mappings on its own day.
+
+**Not fetched.**
+
+- ChEBI release 257. `experiments/read_public_page.py` read `https://ftp.ebi.ac.uk/pub/databases/chebi/archive/` at
+  22:28:48 UTC (3,460 bytes, SHA-256 `5abf252b4e23c96eb4c7a96e76193b31c168a7271578f5d613f0e52ce58b05cd`): it lists
+  `rel245/` to `rel256/`, the last dated 2026-11-04 15:48, and no `rel257/`. So no archive address for release 257
+  exists, and the file of SHA-256 `0c2b406d8abc3e96217e3f798963422c7319ba0762dcad5d39591e6ac81a649e` that
+  `docs/data_sources.md` records is not on this disk. The current `ontology/chebi_core.obo.gz` is listed at 2026-11-05
+  18:33 (`https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/`, read at 22:29:12 UTC, SHA-256
+  `59b5b618611fa73061af1ad7172ff5824525a9f1772c99b359d78c81f6614ae2`) and was not fetched.
+- The UniProt proteome, GO, Reactome, the organelle channel annotations and the OnSIDES identifier bridge
+  (`experiments/fetch_node_descriptor_sources.py`, `fetch_reactome_pathways.py`,
+  `fetch_organelle_channel_annotations.py`, `fetch_onsides_identifier_bridge.py`), which fetch the release a provider
+  serves on the day. They are left for the held rebuild to fetch at its own time, as this pass's brief set it, citing
+  decisions 9.111 and 9.151. The SFARI and ChEMBL rat-behaviour data were not touched either.
+
+**The suite.** `set -o pipefail; PYTHONPATH=. python -m pytest -q -p no:cacheprovider -rs` at `1e77cfa`: 2174 passed,
+27 skipped, 0 failed, in 214 s. The run earlier on 27 November 2026 at `cdd1a49`, before these fetches, gave 2078
+passed and 35 skipped. The eight tests that ran now and were skipped then are the ChEMBL-cache tests, and all eight
+passed:
+
+- `tests/test_chembl_parent_corrections.py::test_every_correction_points_at_a_mechanism_parent_of_the_pinned_release`
+- `tests/test_drug_target_additions.py::test_on_the_pinned_cache_cocaine_carries_its_sodium_channel_family_and_the_three_transporters`
+- `tests/test_drug_target_additions.py::test_on_the_pinned_cache_no_addition_names_a_target_its_drug_has_a_chembl_mechanism_row_for`
+- `tests/test_drug_target_exclusions.py::test_on_the_pinned_cache_acamprosate_keeps_its_nmda_row_and_loses_the_gaba_a_complex`
+- `tests/test_drug_target_exclusions.py::test_on_the_pinned_cache_levodopa_loses_drd3_and_is_seeded_on_the_l_dopa_compound`
+- `tests/test_drug_target_exclusions.py::test_on_the_pinned_cache_scn7a_sits_in_one_target_only`
+- `tests/test_endogenous_drug_merge.py::test_on_the_pinned_cache_the_committed_listing_moves_melatonin_s_agonism_and_nothing_else`
+- `tests/test_endogenous_drug_merge.py::test_on_the_pinned_cache_levodopa_stays_the_plain_graph_compound_of_daeff3b6`
+
+The 27 that still skip: five ChEBI guards (`tests/test_chebi_charge_guard.py`, three, and
+`tests/test_human_gem_identifier_guards.py`, two), two that need the OnSIDES identifier bridge
+(`tests/test_chembl_parent_corrections.py` and `tests/test_curated_drug_wiring.py`), one each for the UniProt dump
+(`tests/test_brenda_regulation_mapping.py`) and the organelle channel annotations
+(`tests/test_organelle_channel_annotations.py`), and 18 that need built graphs or processed tables
+(`tests/test_chloride_charge_sum.py`, `test_currency_tagging.py`, `test_drug_name_resolution.py`,
+`test_endogenous_drug_merge.py`, `test_one_hop_degree_strata.py` and `test_reactome_import.py`). No test depends on the
+Open Targets files, the OnSIDES parquet tables or the fraction-unbound database by itself; they are inputs of the
+rebuild.
