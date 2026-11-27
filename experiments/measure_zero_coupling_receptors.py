@@ -43,9 +43,11 @@ record is of the inputs, not of a graph: no graph is assembled, so no later step
 layers, the node filter, the transcription gate) is applied, and a figure on a built graph is a separate measurement
 (CLAUDE.md, "A measurement carries the graph it was taken on").
 
-Every input is a required argument with no default, so a record names the files it read, and an absent or empty input
-is refused rather than read as no filter (the build's loaders return nothing for an absent path). It changes nothing it
-reads and writes one JSON file, which it refuses to put under the repository's data/ directory.
+Every input is a required argument with no default, so a record names the files it read. An absent input, and an
+admitted table that holds no pair, are refused rather than read as no filter (the build's loaders return nothing for an
+absent path, and receptor_g_alpha_edge_is_dropped drops nothing without admitted pairs); an OmniPath or overrides table
+that exists but holds no row is read as it is. It changes nothing it reads and writes one JSON file, which it refuses
+to put under the repository's data/ directory.
 
 Usage, from the repository root:
   PYTHONPATH=. python experiments/measure_zero_coupling_receptors.py \\
