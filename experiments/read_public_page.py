@@ -273,16 +273,21 @@ OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS = urllib.request.build_opener(DoNotFollowR
 
 def request_bytes(address: str) -> tuple[int, str, bytes]:
     """Status code, content type and body of one GET. An HTTP error status is returned, not raised; a redirect is not
-    followed but raised as RedirectAnswer, with its target made absolute."""
+    followed but raised as RedirectAnswer, with its target made absolute. The HTTPError holds the answer's connection
+    open, so it is closed on both paths (after its body is read on the error path) rather than left to garbage
+    collection."""
     request = urllib.request.Request(address, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml,text/plain,application/pdf;q=0.9,*/*;q=0.5"})
     try:
         with OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS.open(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
             return response.status, response.headers.get("Content-Type", ""), response.read()
     except urllib.error.HTTPError as error:
-        location = error.headers.get("Location") if error.headers else None
-        if error.code in REDIRECT_STATUS_CODES and location:
-            raise RedirectAnswer(error.code, urllib.parse.urljoin(address, location)) from None
-        return error.code, error.headers.get("Content-Type", "") if error.headers else "", error.read() or b""
+        try:
+            location = error.headers.get("Location") if error.headers else None
+            if error.code in REDIRECT_STATUS_CODES and location:
+                raise RedirectAnswer(error.code, urllib.parse.urljoin(address, location)) from None
+            return error.code, error.headers.get("Content-Type", "") if error.headers else "", error.read() or b""
+        finally:
+            error.close()
 
 
 class PublicPageReader:

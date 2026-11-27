@@ -61,7 +61,8 @@ def test_the_committed_crosswalk_reads_and_names_every_symptom_once_per_relation
     pairs = [(row.symptom, row.relation) for row in rows]
     assert len(pairs) == len(set(pairs))
     symptoms = {row.symptom for row in rows}
-    crosswalk_symptoms = {row["target_symptom"] for row in csv.DictReader(open("docs/symptom_crosswalk.csv", encoding="utf-8"))}
+    with open("docs/symptom_crosswalk.csv", encoding="utf-8") as crosswalk_file:
+        crosswalk_symptoms = {row["target_symptom"] for row in csv.DictReader(crosswalk_file)}
     assert symptoms == crosswalk_symptoms, "every study symptom has a row saying what its mouse proxy is, or that it has none"
     assert all(row.validity in ("strong", "moderate", "weak", "endophenotype_only", "none") for row in rows)
     for row in rows:

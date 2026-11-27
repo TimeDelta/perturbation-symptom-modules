@@ -434,3 +434,49 @@ def test_request_bytes_hands_a_redirect_back_instead_of_following_it(monkeypatch
         assert paths_requested == ["/start"]
     finally:
         server.shutdown()
+        server.server_close()
+
+
+class BodyThatRecordsItsClosing:
+    """A stand-in for the connection an HTTPError holds: it serves a body and records whether it was closed."""
+
+    def __init__(self, body: bytes) -> None:
+        import io
+        self.stream = io.BytesIO(body)
+        self.closed_by_caller = False
+
+    def read(self, *arguments):
+        return self.stream.read(*arguments)
+
+    def close(self):
+        self.closed_by_caller = True
+        self.stream.close()
+
+
+class OpenerThatAnswersWithAnError:
+    def __init__(self, error: urllib.error.HTTPError) -> None:
+        self.error = error
+
+    def open(self, request, timeout=None):  # noqa: D102
+        raise self.error
+
+
+@pytest.mark.parametrize("status_code, headers, expect_redirect", [(302, {"Location": "/elsewhere"}, True),
+                                                                    (404, {"Content-Type": "text/plain"}, False)])
+def test_request_bytes_closes_the_error_answer_on_the_redirect_and_the_error_paths(monkeypatch, status_code, headers, expect_redirect):
+    """The HTTPError urllib raises holds the answer's connection; request_bytes closes it whether it raises
+    RedirectAnswer or returns the error status with its body, so no socket is left to garbage collection."""
+    import email.message
+    message = email.message.Message()
+    for name, value in headers.items():
+        message[name] = value
+    body = BodyThatRecordsItsClosing(b"not found")
+    error = urllib.error.HTTPError("https://example.org/start", status_code, "answer", message, body)
+    monkeypatch.setattr(read_public_page, "OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS", OpenerThatAnswersWithAnError(error))
+    if expect_redirect:
+        with pytest.raises(read_public_page.RedirectAnswer) as raised:
+            read_public_page.request_bytes("https://example.org/start")
+        assert raised.value.location == "https://example.org/elsewhere"
+    else:
+        assert read_public_page.request_bytes("https://example.org/start") == (404, "text/plain", b"not found")
+    assert body.closed_by_caller

@@ -78,9 +78,9 @@ def test_a_knockouts_response_does_not_depend_on_the_allele_node(tmp_path):
                                     entry_node_mask=torch.as_tensor(data.entry_node_mask), entry_relation_names=("targets",), edge_weight=torch.as_tensor(data.edge_weight))
     knockout = encoder.response(torch.tensor([[data.node_index["GENE:C"]]]), torch.tensor([[[-1.0, 1.0]]]))
     allele_row = data.node_index["ALLELE:B_toxic_expansion"]
-    assert float(knockout[0, allele_row].abs().max()) == 0.0, "an allele node that is not seeded holds nothing"
+    assert float(knockout[0, allele_row].detach().abs().max()) == 0.0, "an allele node that is not seeded holds nothing"
     allele = encoder.response(torch.tensor([[allele_row]]), torch.tensor([[[1.0, 1.0]]]))
-    assert float(allele[0, data.node_index["GENE:C"]].abs().max()) > 0, "seeded, the allele acts on its targets"
+    assert float(allele[0, data.node_index["GENE:C"]].detach().abs().max()) > 0, "seeded, the allele acts on its targets"
 
 
 def test_the_tables_are_extended_for_entry_nodes_without_writing_the_graph(tmp_path):

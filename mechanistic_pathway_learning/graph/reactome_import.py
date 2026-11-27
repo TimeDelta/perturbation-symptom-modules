@@ -796,8 +796,10 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     # copies disagreeing: the vacuolar water and oxygen, the mitochondrial and intermembrane sodium and five
     # compartments of calcium propagated while their other copies did not (defect 3 of tag_currency_metabolites). The
     # name rule is re-applied over the completed table, which also keeps the neuronal pools this module creates out of
-    # the currency set whatever their degree, since the membrane potential reads them.
-    before = set(node_table.loc[node_table.is_currency.fillna(False).astype(bool), "node_id"])
+    # the currency set whatever their degree, since the membrane potential reads them. A row the concatenation left
+    # without a value (NaN, which makes the column object dtype) counts as not currency; the nullable boolean dtype
+    # fills it without the object downcast pandas deprecates, and refuses a value that is not a boolean.
+    before = set(node_table.loc[node_table.is_currency.astype("boolean").fillna(False).astype(bool), "node_id"])
     after = retag_currency_by_name(list(node_table.node_id), list(node_table.display_name), before, node_types=list(node_table.node_type))
     node_table = node_table.copy()
     node_table["is_currency"] = node_table.node_id.isin(after)

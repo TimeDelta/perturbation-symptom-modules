@@ -118,7 +118,8 @@ def test_the_uniprot_evidence_source_says_where_an_edge_came_from():
 
 
 def test_every_curated_row_carries_its_source_and_a_quote():
-    rows = list(csv.DictReader(CURATED_TABLE.open()))
+    with CURATED_TABLE.open() as curated_table_file:
+        rows = list(csv.DictReader(curated_table_file))
     assert rows, "the curated carriage table must not be empty"
     for row in rows:
         assert row["binder_gene"] and row["cargo_name"] and row["cargo_chebi"].startswith("CHEBI:")
