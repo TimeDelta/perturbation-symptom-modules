@@ -300,15 +300,54 @@ def test_item_references_in_living_documents_resolve_to_registration_items(regis
     assert not unresolved, f"item numbers named that docs/preregistration.md does not hold: {unresolved}"
 
 
+# The code the two guards below read: the package, the experiment scripts, the shell and Python scripts and the tests
+# (until 27 November 2026 the decision guard read the package alone). This file is left out because its fixtures name
+# ids that do not exist on purpose (item 99 in test_decision_and_item_references_are_matched_by_word).
+CODE_DIRECTORIES_AND_PATTERNS = (("mechanistic_pathway_learning", "*.py"), ("experiments", "*.py"), ("scripts", "*.py"),
+                                 ("scripts", "*.sh"), ("tests", "*.py"))
+CODE_FILES_WITH_DELIBERATELY_UNRESOLVED_REFERENCES = {"tests/test_documentation_process.py"}
+
+
+def code_files_citing_decisions_and_items() -> list[tuple[str, str]]:
+    """(path relative to the repository, text) of every code file the reference guards read."""
+    code_files = []
+    for directory, pattern in CODE_DIRECTORIES_AND_PATTERNS:
+        for source in sorted((REPOSITORY_ROOT / directory).rglob(pattern)):
+            relative_path = str(source.relative_to(REPOSITORY_ROOT))
+            if source.is_file() and relative_path not in CODE_FILES_WITH_DELIBERATELY_UNRESOLVED_REFERENCES:
+                code_files.append((relative_path, source.read_text(encoding="utf-8", errors="replace")))
+    return code_files
+
+
 def test_the_code_names_only_decisions_the_log_holds(known_decisions):
-    """Docstrings and comments cite decisions by id; a renumbering that leaves the code pointing at nothing is a
-    stale statement in the place sessions read first."""
+    """Docstrings, comments, help strings and messages cite decisions by id; a renumbering that leaves the code pointing
+    at nothing is a stale statement in the place sessions read first (CLAUDE.md, Code: "A comment that names a symbol,
+    flag, file or decision id names one that exists"). Read over the package, experiments/, scripts/ and tests/."""
     unresolved = {}
-    for source in sorted((REPOSITORY_ROOT / "mechanistic_pathway_learning").rglob("*.py")):
-        missing = unresolved_decision_references(source.read_text(encoding="utf-8", errors="replace"), known_decisions)
+    for relative_path, text in code_files_citing_decisions_and_items():
+        missing = unresolved_decision_references(text, known_decisions)
         if missing:
-            unresolved[str(source.relative_to(REPOSITORY_ROOT))] = missing
+            unresolved[relative_path] = missing
     assert not unresolved, unresolved
+
+
+def test_the_code_names_only_items_the_registration_holds(known_items):
+    """The same guard for amendment items: an `item N` in the code resolves to an item docs/preregistration.md heads,
+    or to the item it is a lettered sub-point of."""
+    unresolved = {}
+    for relative_path, text in code_files_citing_decisions_and_items():
+        missing = unresolved_item_references(text, known_items)
+        if missing:
+            unresolved[relative_path] = missing
+    assert not unresolved, f"item numbers named in the code that docs/preregistration.md does not hold: {unresolved}"
+
+
+def test_the_reference_guards_read_every_code_directory_and_leave_out_only_the_fixture_file():
+    read_paths = {relative_path for relative_path, _ in code_files_citing_decisions_and_items()}
+    for expected in ("mechanistic_pathway_learning/documentation.py", "experiments/score_confirmatory.py",
+                     "scripts/rebuild_data_layer.sh", "scripts/convert_onsides_to_parquet.py", "tests/test_registration_matches_the_code.py"):
+        assert expected in read_paths, expected
+    assert "tests/test_documentation_process.py" not in read_paths
 
 
 # ----------------------------------------------------------------------------------------------------------------------
