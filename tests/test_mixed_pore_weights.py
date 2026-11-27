@@ -15,10 +15,14 @@ from mechanistic_pathway_learning.graph.membrane_potential import (
     chord_conductance_per_unit_permeability, mixed_pore_conductance_microsiemens_per_square_centimetre,
     mixed_pore_reversal_potential_millivolts, mixed_pore_weight_millivolts, pore_conductance_weight_millivolts)
 
-# (pore, recorded reversal potential in mV, recorded weight in mV), from the reconciliation table of 6 November 2026
+# (pore, recorded reversal potential in mV, recorded weight in mV), from the reconciliation table of 6 November 2026,
+# with the two ratios amendment item 37d replaced on 27 November 2026 taken from where the document records them: the
+# neuronal nicotinic at Nutter and Adams 1995's 1.23 (the table's second source, -2.7 mV; its weight 18.80 in the
+# addition of 27 November 2026) and NALCN at Lu et al. 2007's ratios ("Added 6 November 2026: Lu et al. 2007 read in
+# full", +4.0 mV and 19.19 mV)
 RECORDED = [
-    ("nicotinic, neuronal", -2.1, 18.83),
-    ("NALCN", +2.2, 19.09),
+    ("nicotinic, neuronal", -2.7, 18.80),
+    ("NALCN", +4.0, 19.19),
     ("AMPA", -0.8, 18.91),
     ("kainate", -0.8, 18.91),
     ("NMDA", +2.2, 19.09),
@@ -39,6 +43,34 @@ def test_the_recorded_reversal_potential_and_weight_are_reproduced(pore, recorde
     permeability = MIXED_PORE_PERMEABILITIES[pore]
     assert mixed_pore_reversal_potential_millivolts(permeability) == pytest.approx(recorded_reversal, abs=0.15)
     assert mixed_pore_weight_millivolts(permeability) == pytest.approx(recorded_weight, abs=0.01)
+
+
+@pytest.mark.parametrize("pore,ratio_used_until_27_november,recorded_reversal,recorded_weight", [
+    ("nicotinic, neuronal", {"Na+": 1.0, "K+": 1.2}, -2.1, 18.83),  # Haghighi and Cooper 2000, oocytes
+    ("NALCN", {"Na+": 1.0, "K+": 1.0}, +2.2, 19.09),                # Ren 2011, "equally permeable"
+])
+def test_the_ratios_amendment_37d_replaced_still_give_the_history_the_record_keeps(
+        pore, ratio_used_until_27_november, recorded_reversal, recorded_weight):
+    """Until 27 November 2026 the table held these two ratios, and the record keeps their values as history. The rule
+    did not change with amendment item 37d, only two of its inputs, so the old inputs must still give the old values;
+    and the new ones must move each weight by under 2 per cent, as the amendment states."""
+    assert mixed_pore_reversal_potential_millivolts(ratio_used_until_27_november) == pytest.approx(
+        recorded_reversal, abs=0.05)
+    assert mixed_pore_weight_millivolts(ratio_used_until_27_november) == pytest.approx(recorded_weight, abs=0.01)
+    assert MIXED_PORE_PERMEABILITIES[pore] != ratio_used_until_27_november
+    relative_change_of_the_weight = (
+        (mixed_pore_weight_millivolts(MIXED_PORE_PERMEABILITIES[pore]) - recorded_weight) / recorded_weight)
+    assert abs(relative_change_of_the_weight) < 0.02
+
+
+def test_the_amended_ratios_are_the_ruled_ones_in_the_form_their_sources_give():
+    """Amendment item 37d: the neuronal nicotinic P_K/P_Na is the native-neuron 1.23, and NALCN's is 0.92, entered as
+    Lu et al. 2007's two ratios to caesium, 1.3 and 1.2, whose quotient rounds to the ruled value."""
+    nicotinic = MIXED_PORE_PERMEABILITIES["nicotinic, neuronal"]
+    assert nicotinic["K+"] / nicotinic["Na+"] == pytest.approx(1.23)
+    nalcn = MIXED_PORE_PERMEABILITIES["NALCN"]
+    assert nalcn == {"Na+": 1.3, "K+": 1.2}
+    assert round(nalcn["K+"] / nalcn["Na+"], 2) == 0.92
 
 
 def test_the_second_hcn_permeability_ratio_also_reproduces():
@@ -141,11 +173,15 @@ def test_grina_is_not_an_nmda_receptor_though_the_grin_prefix_would_take_it():
 
 
 def test_chrna1_is_left_in_the_neuronal_class_on_purpose():
-    """CHRNA1 assembles the muscle receptor, so taxonomically it belongs in "nicotinic, muscle". It is left where it
-    is because graph/reactome_import.py picks a reaction's class from its first sorted catalyst gene, and on the v5
-    graph RCT_622326 and RCT_629595 are each decided by CHRNA1 while every other member of each is neuronal: moving
-    it would flip two overwhelmingly neuronal reactions to the muscle weight on an alphabetical accident. This test
-    exists so the state is deliberate and a later change to it is a decision rather than a drive-by fix."""
+    """CHRNA1 assembles the muscle receptor, so taxonomically it belongs in "nicotinic, muscle". Until 27 November 2026
+    it was left neuronal because graph/reactome_import.py picks a reaction's class from its first sorted catalyst
+    gene, and on the v5 graph RCT_622326 and RCT_629595 were each decided by CHRNA1 while every other member of each is
+    neuronal, so moving it would have flipped two overwhelmingly neuronal reactions to the muscle weight on an
+    alphabetical accident. Since then the owner's ruling of 13 November 2026 is coded (amendment item 37a (iii)):
+    REACTOME_ENTITY_MEMBERS_REMOVED in experiments/build_neuronal_graph_variant.py takes CHRNA1, CHRND, CHRNE and
+    CHRNG out of the six neuronal entities they were found in, so on a build that applies it CHRNA1 decides no
+    reaction and its filing here changes no weight. The filing is still pinned so that moving it, which the ruling
+    does not settle, is a decision rather than a drive-by fix; tests/test_reactome_import.py pins the removals."""
     from mechanistic_pathway_learning.graph.membrane_potential import mixed_pore_class_of_gene
 
     assert mixed_pore_class_of_gene("CHRNA1") == "nicotinic, neuronal"

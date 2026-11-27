@@ -413,7 +413,9 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
     Human-GEM states for a membrane the protein does not sit on (SERCA on a plasma-membrane calcium efflux), removed
     before the electrical pass so the reaction's current is not the gene's. entity_members_removed: {(gene, Reactome
     entity node id): why}, a member Reactome gives a set whose reaction the protein does not carry at that membrane
-    (the lysosomal mucolipins in the plasma-membrane TRP set), which keeps the gene node and its other edges."""
+    (the lysosomal mucolipins in the plasma-membrane TRP set), or, since 27 November 2026, a member amendment item 37a
+    takes out of a pore (the muscle-type nicotinic subunits, the scaffold TRPC4AP, TRPV5 and TRPV6), which keeps the
+    gene node and its other edges."""
     if membrane_potential_build not in MEMBRANE_POTENTIAL_BUILDS:
         raise ValueError(f"membrane_potential_build must be one of {MEMBRANE_POTENTIAL_BUILDS}, not {membrane_potential_build!r}")
     if membrane_potential_build == "pores_and_clamped_pools" and not pore_genes_by_ion:

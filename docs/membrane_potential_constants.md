@@ -575,6 +575,27 @@ temperature, "20-25 degrees C"; the ratio crosses to 310.15 K, not an E_rev. (c)
 
 **Added 6 November 2026: the four selectivity gaps, read on Fable.** A pass asked for by the owner closed gap (a) for two families and bounded the rest; its script reproduced all eight weights above, NALCN 19.09 and nicotinic 18.83 mV included. **ASIC** is read for the first time and is nearly a sodium pore, not a nonselective one: P_Na/P_K **5.5 ± 0.6** (rat ASIC2a) and **7.4 ± 0.6** (ASIC1a/2a heteromer), Lynagh et al. 2020, "reduced P Na + / P K + from 5.5 ± 0.6 at WT" and "P Na + / P K + = 7.4 ± 0.6, n = 4" (PMC7062507), with P_Na/P_K 5-13 (ASIC1a) and 14.0 (ASIC1b) in the Concise Guide (PMC11339754) and "K/Na permeability ratios around 0.2" in Vallée et al. 2021 (PMC8536179). That gives **E_rev +35.5 to +49.5 mV and weight 21.5 to 23.0 mV**, the weight **+12.5 to +20.3 per cent** above the nonselective 19.09. **TRPA1** is P_K/P_Na **0.98** (Bobkov et al. 2011, PMC3062711, single-channel, human, symmetrical 140 mM NaCl), so E_rev +2.65 mV and weight 19.11: the assumption was right to 0.03 mV. **TRPV1, TRPC, NMDA and TRPM4/TRPM5 stay assumptions** (P_K = P_Na); for NMDA that assumption is the primary literature's own, Perszyk et al. 2020 Methods, "We assumed that the relative permeabilities of K and Na are the same" (PMC6986806). The assumptions are now **bounded**: over P_K/P_Na 0.8 to 1.3 the weight moves under ±2 per cent and E_rev stays within -4.0 to +7.3 mV, so **no sign can change**. Refused: `www.jbc.org` and `www.annualreviews.org` (robots; HTTP 403). **A flag for the build:** in the v5 graph the reactions these ratios attach to are ASIC `RCT_2671885`, TRPM4/5 `RCT_3295580`, TRPV1 `RCT_9701141`, TRPA1 `RCT_9701055`, `RCT_3295579` (shared by TRPV1, TRPA1 and the six TRPCs) and NMDA `RCT_432164`. Four of the six (TRPV1, TRPA1, TRPC and NMDA) are written by Reactome as Ca2+ transport, which the registered monovalent-only equation excludes, so the monovalent ratio has no row `VM_c` can see for them until 9.112's correction that classifies the Ca2+-only mixed pores by catalyst is built.
 
+**Added 27 November 2026: two of the ratios above replaced in the code, on amendment item 37d.** The owner ruled on
+17 November 2026, registered as amendment item 37d of `docs/preregistration.md`, that the neuronal nicotinic P_K/P_Na
+is the native-neuron 1.23 rather than the oocyte 1.2 ("yes. native 1.23 instead of oocytes") and that NALCN's is 0.92
+rather than a review's rounded 1.0 ("yes to 0.92"). `MIXED_PORE_PERMEABILITIES` in
+`mechanistic_pathway_learning/graph/membrane_potential.py` holds them from this date:
+
+| pore | until 27 November 2026 | from 27 November 2026 |
+| --- | --- | --- |
+| nicotinic, neuronal | `{"Na+": 1.0, "K+": 1.2}`, Haghighi and Cooper 2000 (oocytes, "our unpublished observations"): E_rev -2.1 mV, weight 18.83 mV | `{"Na+": 1.0, "K+": 1.23}`, Nutter and Adams 1995, Table I (native neurons; the second source in the reconciliation table above): E_rev -2.7 mV, weight 18.80 mV (-0.19 per cent) |
+| NALCN | `{"Na+": 1.0, "K+": 1.0}`, Ren 2011, "equally permeable": E_rev +2.2 mV, weight 19.09 mV | `{"Na+": 1.3, "K+": 1.2}`, Lu et al. 2007, p. 374, the paper's two ratios to caesium entered as it gives them, so P_K/P_Na = 1.2/1.3 = 0.923, which the ruling states as 0.92: E_rev +4.0 mV, weight 19.19 mV (+0.57 per cent), as the addition "Lu et al. 2007 read in full" above computed |
+
+These are computations at the registered constants with the module's own functions, made on 27 November 2026, and
+not measurements on a graph. Entering the rounded 0.92 instead of the paper's two ratios would give +4.1 mV and
+19.20 mV, 0.08 mV and 0.005 mV higher. No sign changes, and both weights stay between the ruled Na+ and K+ terms. Only
+the `pores_and_clamped_pools` build reads these ratios, through `conductance_edge_for_a_pore`, so the registered
+`computed_from_the_pools` build does not change and no committed graph carries the new values. The NALCN class also
+reaches `MAR_SODIUM_LEAK`, which SCN7A shares with NALCN, until 37a's split of SCN7A out of it is built. The values
+18.83 and 19.09 mV for these two pores, in the reconciliation table above and in the rulings of 7 November 2026
+below, are kept as the history of the code before this date; `tests/test_mixed_pore_weights.py` holds the new values
+and the old ones.
+
 ## Extracellular pools: the ruling of 7 November 2026
 
 Decision 9.112 left the three extracellular pools (Na+, K+ and Cl- outside the cell) without a weight, since the

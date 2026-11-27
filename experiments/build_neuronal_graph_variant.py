@@ -99,13 +99,47 @@ HUMAN_GEM_CATALYSIS_REMOVED = {
 }
 # A member Reactome gives a set whose reaction the protein does not carry at that membrane (decision 9.75). Reactome's
 # DefinedSet "TRPs" (RCTE_3295582, 23 members) catalyses RCT_3295579 "TRPs transport extracellular Ca2+ to cytosol",
-# and lists the mucolipins MCOLN1 to MCOLN3 among 20 plasma-membrane TRP channels; so each mucolipin depolarised the
-# neuron. They are the endolysosomal calcium release channels: "endolysosome-localized mucolipin transient receptor
-# potential (TRPML) channels" are the "Ca(2+) release channels" of the endolysosome (Dong et al. 2010, PMID 20802798),
-# and UniProt places MCOLN1 on the "Late endosome membrane" and "Lysosome membrane" with its Ca2+ transport
-# (RHEA:29671) at experimental evidence (Q9GZU1). Their release reaction is the curated MAR_TRPML_CALCIUM_RELEASE.
-REACTOME_ENTITY_MEMBERS_REMOVED = {(gene, "RCTE_3295582"): "the mucolipins release calcium from the endolysosome (MAR_TRPML_CALCIUM_RELEASE), not from outside the cell"
-                                   for gene in ("MCOLN1", "MCOLN2", "MCOLN3")}
+# and lists the mucolipins MCOLN1 to MCOLN3 among 20 other members, the plasma-membrane TRP channels and the scaffold
+# TRPC4AP; so each mucolipin depolarised the neuron. They are the endolysosomal calcium release channels:
+# "endolysosome-localized mucolipin transient receptor potential (TRPML) channels" are the "Ca(2+) release channels"
+# of the endolysosome (Dong et al. 2010, PMID 20802798), and UniProt places MCOLN1 on the "Late endosome membrane" and
+# "Lysosome membrane" with its Ca2+ transport (RHEA:29671) at experimental evidence (Q9GZU1). Their release reaction
+# is the curated MAR_TRPML_CALCIUM_RELEASE.
+#
+# The same table carries the member removals of amendment item 37a that name an entity the repository already
+# records, coded here on 27 November 2026 (no graph is built with them yet):
+# - 37a (iii), the owner, 13 November 2026 ("accepted"): the muscle-type nicotinic receptor sits on no central cell
+#   class, is not added, and "its subunits leave the neuronal entities". CHRND, CHRNE and CHRNG leave RCTE_629590
+#   (catalyst of RCT_622325) and its unbound set RCTE_629576; CHRNA1 leaves RCTE_629600 (RCT_622326), RCTE_629592
+#   (RCT_629595) and their unbound sets RCTE_629586 and RCTE_629581. The six entities are the ones a Fable pass of
+#   13 November 2026 found them in on the Reactome v98 export R-HSA-112316.sbml, the muscle composition being read in
+#   UniProt P11230 and in the Concise Guide 2023/24 (PMC11339754), whose "(alpha1)2beta1deltaepsilon" is transliterated
+#   here; CHRNB1 is a member of no entity (docs/item37_rulings_draft_2026-11-13.md, appendix).
+# - 37a (v): TRPC4AP, "a scaffold rather than a pore subunit", leaves the TRP set (the owner, on the proposal that
+#   removed it: "that makes way more sense for c. confirm c split."), and TRPV5 and TRPV6 stay out of it "until a
+#   pass shows one of them on a central cell class" (the owner, 20 November 2026: "Yea"; the draft, section 5). The
+#   repository records these rulings and their grounds but not the sources read for them, so these three rows rest
+#   on the rulings and are owed to a Fable check.
+# The importer raises when the release it reads does not give an entity a member named here, so a release that
+# renumbers or regroups these entities stops the build instead of leaving a subunit in place, and every gene keeps
+# its gene node and its other edges. The table is applied under every --membrane-potential build, so these removals
+# change the member_of edges of the registered computed_from_the_pools build as well as of pores_and_clamped_pools.
+# Owed and not here: the seven anoctamins RCT_2684901 loses under 37a (v), ANO3, ANO4, ANO5, ANO7, ANO8, ANO9 and
+# ANO10, whose catalyst entity id needs a Reactome export this commit did not read; and the six Kir2, Kir4 and Kir5
+# genes that leave Reactome's GIRK entity, which the repository does not yet name.
+NEURONAL_ENTITIES_HOLDING_A_MUSCLE_NICOTINIC_SUBUNIT = {
+    "CHRNA1": ("RCTE_629600", "RCTE_629592", "RCTE_629586", "RCTE_629581"),
+    **{gene: ("RCTE_629590", "RCTE_629576") for gene in ("CHRND", "CHRNE", "CHRNG")},
+}
+REACTOME_ENTITY_MEMBERS_REMOVED = {
+    **{(gene, "RCTE_3295582"): "the mucolipins release calcium from the endolysosome (MAR_TRPML_CALCIUM_RELEASE), not from outside the cell"
+       for gene in ("MCOLN1", "MCOLN2", "MCOLN3")},
+    **{(gene, entity): "a muscle-type nicotinic subunit: that receptor sits on no central cell class and its subunits leave the neuronal entities (amendment item 37a (iii))"
+       for gene, entities in NEURONAL_ENTITIES_HOLDING_A_MUSCLE_NICOTINIC_SUBUNIT.items() for entity in entities},
+    ("TRPC4AP", "RCTE_3295582"): "a scaffold rather than a pore subunit (amendment item 37a (v))",
+    **{(gene, "RCTE_3295582"): "no pass has shown it on a central cell class, and it stays out until one does (amendment item 37a (v))"
+       for gene in ("TRPV5", "TRPV6")},
+}
 # The charge guard the owner approved on 14 October 2026 ("good call on prophylactically changing the mapper to
 # ChEBl term Reactome names"). It turned out to be the substantive fix rather than a precaution, because NEITHER
 # Human-GEM entity is chloride by its own annotation: MAM02144 is `InChI=1S/ClH/h1H`, hydrogen chloride, CHEBI:17883

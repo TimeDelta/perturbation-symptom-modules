@@ -290,11 +290,20 @@ def clamped_pool_edge_weights() -> dict[tuple[str, str], tuple[float, float]]:
 # The mixed-cation pores of amendment item 37's sub-ruling of 7 November 2026: one conductance edge per pore at its
 # own reversal potential, with the permeability ratio read from a source where one exists. The ratios are the values
 # reconciled by the Fable pass of 6 November 2026 (docs/membrane_potential_constants.md, "Added 6 November 2026"),
-# which corrected two of the 5 November readings: neuronal nicotinic to -2.1 mV and NALCN to +2.2 mV. Each entry is
-# {ion: permeability}, in arbitrary units since only the ratios enter; "assumed" in the comment marks a ratio no
-# source states, which the item carries as a stated assumption rather than a reading.
+# with two replaced on the owner's rulings of 17 November 2026, registered as amendment item 37d and coded here on
+# 27 November 2026: the neuronal nicotinic P_K/P_Na is the native-neuron 1.23 (the owner: "yes. native 1.23 instead of
+# oocytes"), giving -2.7 mV and 18.80 mV, and NALCN's is Lu et al. 2007's 0.92 (the owner: "yes to 0.92"), giving
+# +4.0 mV and 19.19 mV. Until 27 November 2026 the two were Haghighi and Cooper 2000's oocyte 1.2 (-2.1 mV, weight
+# 18.83 mV) and Ren 2011's "equally permeable" 1.0 (+2.2 mV, 19.09 mV); docs/membrane_potential_constants.md keeps both
+# as history ("Added 27 November 2026"). NALCN is entered in the exact form the paper gives, its two ratios to
+# caesium, P_Na/P_Cs 1.3 and P_K/P_Cs 1.2 (p. 374; caesium is the denominator by p. 381, equation 1), so P_K/P_Na is
+# 1.2/1.3 = 0.923, which the ruling states rounded as 0.92; rounding first would move E_rev by 0.08 mV and the
+# weight by 0.005 mV. These ratios enter only through conductance_edge_for_a_pore, which the pores_and_clamped_pools
+# build alone calls, so the registered computed_from_the_pools build does not change. Each entry is {ion:
+# permeability}, in arbitrary units since only the ratios enter; "assumed" in the comment marks a ratio no source
+# states, which the item carries as a stated assumption rather than a reading.
 MIXED_PORE_PERMEABILITIES: dict[str, dict[str, float]] = {
-    "nicotinic, neuronal": {"Na+": 1.0, "K+": 1.2},       # Haghighi and Cooper 2000, P_K/P_Na 1.2
+    "nicotinic, neuronal": {"Na+": 1.0, "K+": 1.23},      # Nutter and Adams 1995, Table I, native neurons, P_K/P_Na 1.23
     "nicotinic, muscle": {"Na+": 1.0, "K+": 1.1},         # Adams, Dwyer and Hille 1980
     "AMPA": {"Na+": 1.0, "K+": 1.0 / 0.88},               # Jonas and Sakmann 1992, P_Na/P_Cs 0.88
     "kainate": {"Na+": 1.0, "K+": 1.0 / 0.88},            # treated as the edited AMPA case
@@ -302,7 +311,7 @@ MIXED_PORE_PERMEABILITIES: dict[str, dict[str, float]] = {
     "5-HT3": {"Na+": 1.0, "K+": 1.10},                    # Yang 1990, P_K/P_Na 1.10
     "P2X": {"Na+": 1.0, "K+": 1.0},                       # Evans et al. 1996, P_K/P_Na 1.0
     "TRPM4/5": {"Na+": 1.0, "K+": 1.0},                   # P_K = P_Na assumed; Launay et al. 2002 state no ratio
-    "NALCN": {"Na+": 1.0, "K+": 1.0},                      # Ren 2011, equally permeable to Na+ and K+
+    "NALCN": {"Na+": 1.3, "K+": 1.2},                     # Lu et al. 2007, P_Na/P_Cs 1.3 and P_K/P_Cs 1.2, so 0.92
     "HCN": {"Na+": 0.35, "K+": 1.0},                      # Macri et al. 2012, P_Na/P_K 0.35
     "Nav": {"Na+": 1.0, "K+": 1.0 / 12.0},                # Hille 1972, P_K/P_Na 1/12; the single-ion check
 }
@@ -370,8 +379,10 @@ def mixed_pore_conductance_microsiemens_per_square_centimetre(permeability: dict
 def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
     """The pore's conductance-edge weight: g_pore |E_rev - V_rest| / g_total, in millivolts.
 
-    Reproduces every weight docs/membrane_potential_constants.md records: neuronal nicotinic 18.83, NALCN, NMDA, P2X
-    and TRPM4/5 19.09, AMPA and kainate 18.91, muscle nicotinic and 5-HT3 18.95, HCN 17.06 and 15.45, Nav 22.77.
+    Reproduces every weight docs/membrane_potential_constants.md records: neuronal nicotinic 18.80, NALCN 19.19, NMDA,
+    P2X and TRPM4/5 19.09, AMPA and kainate 18.91, muscle nicotinic and 5-HT3 18.95, HCN 17.06 and 15.45, Nav 22.77;
+    and, at the two ratios amendment item 37d replaced on 27 November 2026, the neuronal nicotinic 18.83 and NALCN 19.09
+    the table carried until then.
 
     **A limitation this rule carries, measured 9 November 2026.** The single edge at E_rev and the per-ion split it
     implies (sum over ions of g_i (E_i - V_rest) / g_total) do not agree, because reweighting the GHK chord shares by
@@ -396,17 +407,27 @@ def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
 # Checked by a Fable pass on 9 November 2026 against UniProtKB reviewed human entries and Alexander et al., Concise
 # Guide to PHARMACOLOGY 2023/24: Ion channels (PMC11339754). Every prefix was confirmed except the two below.
 #
-# **CHRNA1 and CHRNB1 sit in the wrong class here, and correcting the table alone would make the build worse.** The
-# alpha1 and beta1 subunits assemble the MUSCLE receptor (UniProt P02708 and P11230, "Pentamer of two alpha chains,
-# and one each of the beta, delta, and gamma (in immature muscle) or epsilon (in mature muscle) chains"; the Concise
-# Guide's junctional stoichiometry "(alpha1)2beta1deltaepsilon"). But graph/reactome_import.py gives a reaction the
-# class of its first catalyst gene in sorted order, and Reactome's nicotinic entities mix muscle and neuronal
-# subunits. Measured on the v5 graph, 9 November 2026: RCT_622326 and RCT_629595 are each decided by CHRNA1 while
-# every other member of each is neuronal, so moving CHRNA1 would flip two overwhelmingly neuronal reactions from
-# 18.83 to 18.95 mV on an alphabetical accident; and "nicotinic, muscle" is selected by NO v5 reaction either way,
-# since CHRND, CHRNE and CHRNG occur only in RCT_622325, where CHRNA3 sorts first. The repair belongs to the
-# selection rule rather than to this table, and it is the owner's to make. CHRNB1 catalyses nothing in v5, so moving
-# it alone would change nothing. Recorded here rather than silently corrected.
+# **CHRNA1 and CHRNB1 are filed as neuronal here though they assemble the muscle receptor, and on a build that
+# applies the owner's ruling the filing decides no weight.** The alpha1 and beta1 subunits assemble the MUSCLE
+# receptor (UniProt P02708 and P11230, "Pentamer of two alpha chains, and one each of the beta, delta, and gamma (in
+# immature muscle) or epsilon (in mature muscle) chains"; the Concise Guide's junctional stoichiometry
+# "(alpha1)2beta1deltaepsilon"). graph/reactome_import.py still gives a reaction the class of its first catalyst gene
+# in sorted order, and Reactome's nicotinic entities mix muscle and neuronal subunits. Measured on the v5 graph,
+# 9 November 2026: RCT_622326 and RCT_629595 were each decided by CHRNA1 while every other member of each is
+# neuronal, so moving CHRNA1 then would have flipped two overwhelmingly neuronal reactions to the muscle weight on an
+# alphabetical accident; and "nicotinic, muscle" was selected by no v5 reaction either way, since CHRND, CHRNE and
+# CHRNG occur only in RCT_622325, where CHRNA3 sorts first. CHRNB1 catalyses nothing in v5.
+#
+# Until 27 November 2026 this comment said the repair was the owner's to make. The owner made it on 13 November 2026,
+# registered as amendment item 37a (iii): the muscle-type receptor sits on no central cell class, is not added, and
+# its subunits leave the neuronal entities. REACTOME_ENTITY_MEMBERS_REMOVED in
+# experiments/build_neuronal_graph_variant.py takes CHRNA1 out of RCTE_629600, RCTE_629592, RCTE_629586 and
+# RCTE_629581 and CHRND, CHRNE and CHRNG out of RCTE_629590 and RCTE_629576, the six entities a Fable pass of
+# 13 November 2026 found them in (docs/item37_rulings_draft_2026-11-13.md, appendix); CHRNB1 is a member of none. So
+# on a build that applies the removals CHRNA1 decides neither RCT_622326 nor RCT_629595, and no reaction of those
+# entities takes its class from a muscle subunit. The filing above is left as it was: moving CHRNA1 and CHRNB1 to
+# "nicotinic, muscle" would change no reaction of that build, the ruling does not settle it, and the rule that
+# replaces the first-catalyst choice, 37a (i)'s classes by assembly, is registered and not built.
 #
 # The delta glutamate receptors (GRID1, GRID2) are absent, and that absence stands, but the reason once given for it
 # does not: whether GluD conducts is **contested**. Against: the Concise Guide, "They do not form a functional

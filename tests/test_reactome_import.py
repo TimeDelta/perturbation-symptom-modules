@@ -766,7 +766,8 @@ def test_the_lysosomal_release_of_the_curated_set_draws_on_the_lysosomal_store()
                  if curated.reaction_id in ("MAR_TRPML_CALCIUM_RELEASE", "MAR_TRIC_A_POTASSIUM", "MAR_TRIC_B_POTASSIUM", "MAR_TMEM175_POTASSIUM")]
     assert len(organelle) == 4
     assert ION_POOL_ALIASES == {"MAM02144": "MAM01442"}
-    assert {gene for gene, _ in REACTOME_ENTITY_MEMBERS_REMOVED} == {"MCOLN1", "MCOLN2", "MCOLN3"}
+    assert {(gene, entity) for gene, entity in REACTOME_ENTITY_MEMBERS_REMOVED if gene.startswith("MCOLN")} == {
+        ("MCOLN1", "RCTE_3295582"), ("MCOLN2", "RCTE_3295582"), ("MCOLN3", "RCTE_3295582")}
     assert {reaction for _, reaction in HUMAN_GEM_CATALYSIS_REMOVED} == {"MAR07629", "MAR09580"}
     # the ER release reactions the TRIC currents activate are Reactome's, absent from this small graph, so only the lysosomal one is imported here
     _, edges, _, _ = run_store_import(curated_reactions=[curated for curated in organelle if curated.reaction_id == "MAR_TRPML_CALCIUM_RELEASE"])
@@ -776,6 +777,25 @@ def test_the_lysosomal_release_of_the_curated_set_draws_on_the_lysosomal_store()
         if tric.reaction_id.startswith("MAR_TRIC"):
             assert "RCT_2855020" in tric.activates_reactions
     assert next(curated for curated in organelle if curated.reaction_id == "MAR_TMEM175_POTASSIUM").activates_reactions == ()
+
+
+def test_the_member_removals_of_amendment_37a_are_the_ruled_rows_and_no_others():
+    """Amendment item 37a, coded on 27 November 2026 for the rows whose Reactome entity the repository names
+    (docs/item37_rulings_draft_2026-11-13.md, the appendix and section 5). (iii): the muscle-type nicotinic subunits
+    leave the six neuronal entities a Fable pass of 13 November 2026 found them in, and CHRNB1, a member of no entity,
+    has no row. (v): TRPC4AP, TRPV5 and TRPV6 leave the plasma-membrane TRP set beside the mucolipins of decision 9.75.
+    The anoctamins and the six Kir genes of (v) are owed and not here, so this test changes when they are added."""
+    from experiments.build_neuronal_graph_variant import REACTOME_ENTITY_MEMBERS_REMOVED
+
+    muscle_subunit_rows = ({("CHRNA1", entity) for entity in ("RCTE_629600", "RCTE_629592", "RCTE_629586", "RCTE_629581")}
+                           | {(gene, entity) for gene in ("CHRND", "CHRNE", "CHRNG") for entity in ("RCTE_629590", "RCTE_629576")})
+    trp_set_rows = {(gene, "RCTE_3295582") for gene in ("MCOLN1", "MCOLN2", "MCOLN3", "TRPC4AP", "TRPV5", "TRPV6")}
+    assert set(REACTOME_ENTITY_MEMBERS_REMOVED) == muscle_subunit_rows | trp_set_rows
+    assert all("37a (iii)" in REACTOME_ENTITY_MEMBERS_REMOVED[row] for row in muscle_subunit_rows)
+    assert all("37a (v)" in REACTOME_ENTITY_MEMBERS_REMOVED[(gene, "RCTE_3295582")] for gene in ("TRPC4AP", "TRPV5", "TRPV6"))
+    genes_removed = {gene for gene, _ in REACTOME_ENTITY_MEMBERS_REMOVED}
+    assert "CHRNB1" not in genes_removed
+    assert not any(gene.startswith(("ANO", "KCNJ")) for gene in genes_removed), "the anoctamin and Kir rows are owed"
 
 
 def test_a_release_directory_without_exports_is_refused(tmp_path):
@@ -844,6 +864,51 @@ def test_a_mixed_cation_pore_reaches_the_potential_at_its_own_reversal_potential
     assert "Nav" in pore.iloc[0].evidence_source
     assert summary["conductance_edges"] == {"Nav": 1}
     assert summary["excluded_by_the_ion_matched_test"] == []
+
+
+def nicotinic_sbml_with_entity(entity_species_id: str, member_accessions: tuple[str, ...]) -> str:
+    """REACTOME_SBML with its sodium channel set replaced by a nicotinic receptor entity of the given Reactome species id
+    and members, so that the build script's real rows for that entity can run through the importer. The accessions
+    are fixture strings, mapped to gene symbols by the caller's gene_of_uniprot."""
+    member_parts = "".join(f'<bqbiol:hasPart xmlns:bqbiol="y">identifiers.org/uniprot:{accession}</bqbiol:hasPart>'
+                           for accession in member_accessions)
+    replacements = [
+        ('<species id="species_2000" name="Voltage gated Na+ channel [cytosol]"',
+         f'<species id="{entity_species_id}" name="nicotinic receptor fixture [plasma membrane]"'),
+        ('<bqbiol:hasPart xmlns:bqbiol="y">identifiers.org/uniprot:P35498</bqbiol:hasPart>', member_parts),
+        ('<modifierSpeciesReference species="species_2000"', f'<modifierSpeciesReference species="{entity_species_id}"'),
+    ]
+    sbml = REACTOME_SBML
+    for old, new in replacements:
+        assert sbml.count(old) == 1, old
+        sbml = sbml.replace(old, new)
+    return sbml
+
+
+def test_a_muscle_subunit_leaves_a_nicotinic_entity_and_the_reaction_keeps_the_amended_neuronal_weight():
+    """Amendment items 37a (iii) and 37d together, through the importer: the build script's own row takes CHRNA1 out of
+    RCTE_629600, the catalyst of RCT_622326, keeping its gene node; the reaction keeps its neuronal catalyst and takes
+    the neuronal nicotinic weight at Nutter and Adams 1995's P_K/P_Na 1.23, 18.80 mV, where 1.2 gave 18.83 until
+    27 November 2026."""
+    from experiments.build_neuronal_graph_variant import REACTOME_ENTITY_MEMBERS_REMOVED
+
+    rows_of_this_entity = {key: why for key, why in REACTOME_ENTITY_MEMBERS_REMOVED.items() if key[1] == "RCTE_629600"}
+    assert set(rows_of_this_entity) == {("CHRNA1", "RCTE_629600")}
+    nodes, edges, _, summary = run_import(
+        sbml_texts=[nicotinic_sbml_with_entity("species_629600", ("FIXTUREALPHAONE", "FIXTUREALPHATHREE"))],
+        gene_of_uniprot={"FIXTUREALPHAONE": "CHRNA1", "FIXTUREALPHATHREE": "CHRNA3", "P21579": "SYT1"},
+        membrane_potential_build="pores_and_clamped_pools", pore_genes={"CHRNA1", "CHRNA3"},
+        pore_genes_by_ion=NO_ION_CHANNEL_GENES, entity_members_removed=rows_of_this_entity)
+    members = edges[(edges.relation_type == "member_of") & (edges.target_id == "RCTE_629600")]
+    assert set(members.source_id) == {"GENE:CHRNA3"}
+    assert "GENE:CHRNA1" in set(nodes.node_id), "the gene node stays"
+    assert summary["entity_members_removed"] == [
+        f"CHRNA1 -> RCTE_629600 (nicotinic receptor fixture): {rows_of_this_entity[('CHRNA1', 'RCTE_629600')]}"]
+    pore = edges[(edges.relation_type == "driving_force") & ~edges.source_id.str.startswith("NEURON_")]
+    assert len(pore) == 1, pore
+    assert pore.iloc[0].weight == pytest.approx(18.80, abs=0.01)
+    assert "nicotinic, neuronal" in pore.iloc[0].evidence_source
+    assert summary["conductance_edges"] == {"nicotinic, neuronal": 1}
 
 
 def test_the_pores_build_refuses_to_run_without_the_pore_genes():
