@@ -410,3 +410,56 @@ are curated and unused until it has a mechanism target, which is curation and so
 commits landed while the job ran. Every Python line that differs between them is in a docstring, a comment or a test,
 and the one config that differs (`configs/study_sheet_diagrams.json`) is read by no build step, so the outputs are
 those `452cadb0` builds.
+
+## Addition, 27 November 2026: the raw fetch of 23 November 2026, and a Human Protein Atlas release the build cannot read
+
+What `data/raw/` on this container holds after the raw fetch of 23 November 2026, measured read-only on 27 November
+2026. No rebuild has run on it.
+
+**The job.** `scripts/fetch_raw_sources.sh` ran as the job `fetch_raw_sources` on 23 November 2026, launched at 15:40
+UTC and relaunched at 16:04 and 16:14; its third pass exited with status 1 at 16:17:24 UTC
+(`runs/jobs/fetch_raw_sources.failed.2026-11-23`), on the ChEMBL rat-behaviour manifest. The report
+`data/raw/fetch_raw_sources_report.tsv` and the done marker `runs/jobs/fetch_raw_sources.done` are dated 24 November
+2026, 18:49 UTC, after a retry of that manifest outside the job: the report's row for it reads `fetched (retried
+2026-11-24)`, a status the script does not write. The report holds 75 rows: 66 `present`, 8 `DRIFT` and that one. The
+two Human Protein Atlas files were downloaded at 15:42 UTC on 23 November.
+
+**The eight DRIFT rows** (measured SHA-256 against the one the script passes):
+
+| file | measured | recorded | the script's comment |
+| --- | --- | --- | --- |
+| `hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip` | `a6cd5e14` | `108fb699` | not marked rolling |
+| `hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip` | `b24e46d4` | `a287c1ab` | not marked rolling |
+| `gene2phenotype/G2P_all_panels.csv` | `46de5a15` | `6c93384d` | made on the fly, reports DRIFT |
+| `chembl_37/src1src7.txt.gz` | `c70ab011` | `7974d208` | rolling |
+| `mgi/MGI_PhenoGenoMP.rpt` | `a2fbfc8f` | `952b04f1` | rolling |
+| `mgi/MGI_PhenotypicAllele.rpt` | `6f5c632c` | `ef322cdf` | rolling |
+| `zfin/phenotype_fish.txt` | `c82e5e75` | `a71bfd55` | rolling |
+| `zfin/fish_components_fish.txt` | `0072e255` | `962f9ef4` | rolling |
+
+**The Human Protein Atlas files are a new release, and the build cannot read the cluster-type file.** The zip
+members are dated 10 November 2026 (`rna_brain_region_hpa.tsv`) and 25 October 2026
+(`rna_single_nuclei_cluster_type.tsv`).
+
+- The region file holds 221,782 rows over 20,162 genes, with columns TPM, pTPM and nTPM, in 11 brain regions: amygdala,
+  basal ganglia, cerebellum, cerebral cortex, hippocampal formation, hypothalamus, medulla oblongata, midbrain, pons,
+  spinal cord and thalamus. `docs/data_sources.md` records 13 regions for the file of hash `108fb699`. `hpa_region_table`
+  (`mechanistic_pathway_learning/graph/brain_expression_descriptors.py`) reads any set of regions, so the descriptors
+  would be built with 11 region columns in place of 13.
+- The cluster-type file holds 939,840 rows over 19,580 genes in 48 cluster types, written in lower case (`astrocytes`,
+  `dopaminergic`, `medium spiny neurons (msn)` and 45 more). `CELL_CLASS_OF_CLUSTER_TYPE` in the same module has 34
+  keys, the cluster types of the earlier release; none of the 48 is one of them, and one (`bergmann glia`) matches
+  only when case is ignored. `hpa_cell_class_table` raises `ValueError: cluster types with no cell class: [...]`.
+  `load_cell_class_expression` (`mechanistic_pathway_learning/graph/build_physiology_graph.py`) calls it whenever the
+  file exists, from the base-graph step of `scripts/rebuild_data_layer.sh`, which every stage runs first. So a rebuild
+  on this disk stops at its base graph, and it does so whichever stage is asked for.
+
+**Inputs absent from this disk**, and why: the two Open Targets files, whose fetch lines entered the script in
+`51ed9d1` (24 November 2026, 01:50 UTC), after the job's passes; GEO GSE100472, the pineal input the owner downloads
+by hand (the script's comment says why it cannot be fetched); the Fenckova et al. 2019 supplement and the Negatome 2.0
+pair files, which the script names as placed by hand.
+
+**OmniPath**, a live service checked by its counts: `omnipath_interactions.tsv`, `collectri_interactions.tsv` and
+`small_molecule_protein.tsv` hold 126,125, 64,516 and 6,554 rows, one more each than the 126,124, 64,515 and 6,553 of
+10 October 2026 (table above); the two evidences files hold 126,125 and 64,516 interactions, the counts the script's
+comment records for their first download on 17 October 2026.

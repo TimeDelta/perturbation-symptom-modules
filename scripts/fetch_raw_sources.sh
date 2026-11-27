@@ -8,7 +8,13 @@
 # drift is a fact to record against the rebuild, not a reason to stop it. The report goes to
 # data/raw/fetch_raw_sources_report.tsv with one row per file: path, bytes, sha256, recorded sha256 or "-", status.
 # A FAILED row stops the script with exit status 1; a KEPT row (a re-fetch that failed where an earlier copy is held,
-# so far only the ChEMBL rat-behaviour pages) does not.
+# so far only the ChEMBL rat-behaviour pages) does not. Two more statuses stop it, added on 27 November 2026 after the
+# fetch of 23 November brought a Human Protein Atlas release the build cannot read (docs/data_layer_rebuild.md):
+# SHORT, a body under SHORTEST_PLAUSIBLE_DOWNLOAD_BYTES whose SHA-256 is not the recorded one (an empty answer or a
+# short error message served with a success code), which is moved aside to DESTINATION.short so that no build reads it
+# and the next run fetches it again; and UNREADABLE, when experiments/check_hpa_downloads.py, which runs the build's own
+# HPA readers, cannot read the two HPA files. A hash pin does not catch the second, since proteinatlas.org serves the
+# current release at an unversioned address.
 #
 # Sources with their own script are not fetched here: experiments/fetch_chembl_drug_targets.py,
 # fetch_node_descriptor_sources.py (UniProt proteome, GO, hp-base.owl, ChEBI), fetch_reactome_pathways.py,
@@ -39,6 +45,12 @@ fi
 hpo_release="v2026-09-01"
 hpo_release_url="https://github.com/obophenotype/human-phenotype-ontology/releases/download/$hpo_release"
 
+# Below this many bytes a download with no matching recorded SHA-256 is reported SHORT. Chosen on 27 November 2026
+# against the report of 24 November: the smallest file this script fetches is the ESM-2 contact regression at 1,959
+# bytes, which is pinned by its hash and so never SHORT, and the smallest unpinned one is 19,984 bytes (IMPC's
+# README). The value is an engineering guard on downloads; nothing in a build reads it.
+SHORTEST_PLAUSIBLE_DOWNLOAD_BYTES=1024
+
 fetch() {
   # fetch DESTINATION URL [RECORDED_SHA256] [CA_BUNDLE]
   # CA_BUNDLE replaces curl's default bundle for this one fetch; bundle_with_trust_anchor makes one that keeps the
@@ -65,8 +77,16 @@ fetch() {
   if [ "$recorded_sha256" != "-" ] && [ "$recorded_sha256" != "$measured_sha256" ]; then
     status="DRIFT"
   fi
+  if [ "$measured_bytes" -lt "$SHORTEST_PLAUSIBLE_DOWNLOAD_BYTES" ] && [ "$recorded_sha256" != "$measured_sha256" ]; then
+    status="SHORT"
+    mv "$destination_path" "$destination_path.short"
+  fi
   printf '%s\t%s\t%s\t%s\t%s\n' "$destination_path" "$measured_bytes" "$measured_sha256" "$recorded_sha256" "$status" >> "$report_path"
   echo "$status $destination_path ($measured_bytes bytes)"
+  if [ "$status" = "SHORT" ]; then
+    echo "SHORT $destination_path: $measured_bytes bytes, kept aside as $destination_path.short" >&2
+    return 1
+  fi
 }
 
 bundle_with_trust_anchor() {
@@ -129,9 +149,17 @@ fetch "$raw_directory/omnipath/collectri_interactions_evidences.json" "https://o
 # GTEx v10 median gene TPM (8,846,936 bytes recorded in docs/alternative_sources.md).
 fetch "$raw_directory/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz" "https://storage.googleapis.com/adult-gtex/bulk-gex/v10/rna-seq/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz"
 
-# Human Protein Atlas: brain regions and single-nucleus cluster types.
-fetch "$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" 108fb699eccc3f8611b475caa7968ad67f10ee47c4cc88db16d2fcaa0214a0f3
-fetch "$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" a287c1abab593c9d6802349a82f118efc0d4aea411be7d897b8feb0b31b02f2a
+# Human Protein Atlas: brain regions and single-nucleus cluster types. The address serves the current release, so the
+# files are then read with the build's own readers (experiments/check_hpa_downloads.py): a release whose cluster types
+# CELL_CLASS_OF_CLUSTER_TYPE does not name is reported UNREADABLE here rather than at the base graph of a rebuild.
+hpa_region_table_path="$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip"
+hpa_cluster_type_table_path="$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"
+fetch "$hpa_region_table_path" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" 108fb699eccc3f8611b475caa7968ad67f10ee47c4cc88db16d2fcaa0214a0f3
+fetch "$hpa_cluster_type_table_path" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" a287c1abab593c9d6802349a82f118efc0d4aea411be7d897b8feb0b31b02f2a
+if [ -s "$hpa_region_table_path" ] && [ -s "$hpa_cluster_type_table_path" ] \
+  && ! PYTHONPATH=. python experiments/check_hpa_downloads.py --region-table "$hpa_region_table_path" --cluster-type-table "$hpa_cluster_type_table_path"; then
+  printf '%s\t-\t-\t-\tUNREADABLE\n' "$hpa_cluster_type_table_path" >> "$report_path"
+fi
 
 # GEO GSE100472, six human pineal glands (RNA-seq; Bozinoski, Klein, Mason and Coon, NICHD): the pineal class of
 # decision 9.76 (graph/peripheral_cell_classes.py), which GTEx and the Human Protein Atlas do not sample. NOT fetched
@@ -364,8 +392,9 @@ if [ "$with_cellxgene" = "yes" ]; then
       printf '%s\t-\t%s\t%s\tDRIFT\n' "$dissection_path" "$measured_prefix" "$recorded_prefix" >> "$report_path"
     fi
   done
-  # The files holding cluster 400, the forebrain cholinergic neurons, for the two cholinergic classes (striatal and
-  # basal forebrain) the owner ruled on 16 November 2026: the Splatter supercluster file, which holds all 769 of the
+  # The files holding cluster 400, the forebrain cholinergic neurons, for the cholinergic classes split from it: two
+  # (striatal and basal forebrain) as the owner ruled on 16 November 2026, three since (striatal, NGFR-negative basal
+  # forebrain and NGFR-positive basal forebrain; amendment item 37b, docs/preregistration.md): the Splatter supercluster file, which holds all 769 of the
   # cluster's nuclei, and the eleven dissections that hold any of them, for the cross-check of the subcluster split
   # against anatomy ("use all eleven"). Served from datasets.cellxgene.cziscience.com by immutable dataset version id.
   # The ids were read on 16 November 2026 from the collection listing of api.cellxgene.cziscience.com, a host the owner
@@ -402,6 +431,6 @@ if [ "$with_cellxgene" = "yes" ]; then
 fi
 
 echo "report: $report_path"
-if grep -q -P '\tFAILED$' "$report_path"; then
+if grep -q -P '\t(FAILED|SHORT|UNREADABLE)$' "$report_path"; then
   exit 1
 fi
