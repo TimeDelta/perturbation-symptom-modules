@@ -62,7 +62,8 @@ the timing repeats.
 
 It writes one JSON file, refused under the repository's data/ directory.
 
-Usage, from the repository root:
+Usage, from the repository root (the command the record of 27 November 2026,
+docs/records/2026-11/exposure_ramp_pilot_2026-11-27.md, was run with, its output path aside):
   PYTHONPATH=. python experiments/run_exposure_ramp_pilot.py --number-of-levels 10 --rest-is-read no \\
       --step-size 0.02 --comparison-step-sizes 0.5 0.1 0.05 0.02 0.01 --anderson-memory 5 \\
       --anderson-regularization 0 --anderson-iteration-cap 2000 --settle-tolerance 1e-11 \\

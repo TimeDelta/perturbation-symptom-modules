@@ -1148,6 +1148,12 @@
       "recorded": "2026-11-27",
       "append_only": true,
       "what": "decision 9.22's zero-coupling count, taken by experiments/measure_zero_coupling_receptors.py on the inputs of 9.23's coupling filter before graph assembly (OmniPath of 23 November 2026, the admitted table of 4 November 2026): the annotated receptors with a signed G-alpha edge before the filter and none after it, by name, with the binds-only and no-edge cases apart; to be retaken on the v5 rebuild and after 9.99; counts only, no reading for any decision; the JSON beside it is the full result"
+    },
+    "docs/records/2026-11/exposure_ramp_pilot_2026-11-27.md": {
+      "class": "record",
+      "recorded": "2026-11-27",
+      "append_only": true,
+      "what": "the planted-network half of item 40 (7)'s pilot (decision 9.153): the exposure-ramp readout of mechanistic_pathway_learning/models/exposure_ramp.py run by experiments/run_exposure_ramp_pilot.py on a planted bistable switch, a planted oscillating loop and the two side by side, each rule checked against a reference computed apart from the ramp, the gradients checked by finite differences, the step-size dependence of the oscillation shown, planted timings only; no confirmatory-graph timing, no tolerance or time budget proposed, item 40 and row 9.153 unchanged; an engineering measurement, no outside source read"
     }
   }
 }

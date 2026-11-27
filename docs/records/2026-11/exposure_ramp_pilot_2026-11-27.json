@@ -1,0 +1,1646 @@
+{
+ "what": "item 40 (7)'s pilot on planted networks (experiments/run_exposure_ramp_pilot.py)",
+ "measured": "2026-11-27T20:37:50+00:00",
+ "commit": "f5bf64f4d3316d17741af06039251c55d38e897d",
+ "code_differs_from_commit": false,
+ "torch": "2.15.0+cu132",
+ "graph": "planted networks only (PLANTED_SWITCH, PLANTED_LOOP, PLANTED_COMBINED); no graph build",
+ "arguments": {
+  "number_of_levels": 10,
+  "rest_is_read": "no",
+  "step_size": 0.02,
+  "comparison_step_sizes": [
+   0.5,
+   0.1,
+   0.05,
+   0.02,
+   0.01
+  ],
+  "anderson_memory": 5,
+  "anderson_regularization": 0.0,
+  "anderson_iteration_cap": 2000,
+  "settle_tolerance": 1e-11,
+  "relaxation_iteration_cap": 60000,
+  "stability_probe_steps": 400,
+  "state_match_tolerance": 0.0001,
+  "cycle_tolerance": 0.01,
+  "cycle_iteration_cap": 40000,
+  "adjoint_tolerance": 1e-11,
+  "adjoint_iteration_cap": 100000,
+  "warm_start_after_oscillation": "last_relaxation_state",
+  "finite_difference_step": 1e-06,
+  "gradient_agreement_tolerance": 0.0001,
+  "profile_step": 1e-06,
+  "profile_points": 5,
+  "ode_tolerance": 1e-10,
+  "ode_settling_time": 3000.0,
+  "ode_reading_time": 200.0,
+  "timing_repeats": 5,
+  "output": "docs/records/2026-11/exposure_ramp_pilot_2026-11-27.json"
+ },
+ "planted_values": {
+  "switch": {
+   "headroom": 9.0,
+   "steepness": 1.0,
+   "loop_weight": 0.6,
+   "full_entry_input": 1.0
+  },
+  "loop": {
+   "headroom": 9.0,
+   "steepness": 1.0,
+   "loop_weight": 1.5,
+   "full_entry_input": 3.0
+  },
+  "combined": {
+   "switch_full_entry_input": 1.3,
+   "loop_full_entry_input": 3.0,
+   "symptom_names": [
+    "switch_partner_high",
+    "loop_inhibitor_high",
+    "switch_entry_over_partner"
+   ],
+   "head_weights": [
+    [
+     0.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ],
+    [
+     1.0,
+     -1.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "head_bias": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "results": {
+  "switch": {
+   "fold_fraction_reference": 0.4183316576697298,
+   "first_level_past_the_fold": 5,
+   "fold_levels": [
+    5
+   ],
+   "levels": [
+    {
+     "level_index": 0,
+     "exposure_fraction": 0.0,
+     "kind": "settled",
+     "read": false,
+     "solver": "rest state given",
+     "map_evaluations": 1,
+     "state_or_centre": [
+      0.0,
+      0.0
+     ],
+     "growth_rate": 0.990799,
+     "anderson_rejection": null,
+     "fold_jump": null,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 1,
+     "exposure_fraction": 0.1,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 10,
+     "state_or_centre": [
+      0.140315,
+      0.078362
+     ],
+     "growth_rate": 0.991832,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 2,
+     "exposure_fraction": 0.2,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 11,
+     "state_or_centre": [
+      0.316179,
+      0.184159
+     ],
+     "growth_rate": 0.993109,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 3,
+     "exposure_fraction": 0.3,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 13,
+     "state_or_centre": [
+      0.555416,
+      0.342404
+     ],
+     "growth_rate": 0.994827,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 4,
+     "exposure_fraction": 0.4,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 15,
+     "state_or_centre": [
+      0.994181,
+      0.678816
+     ],
+     "growth_rate": 0.997921,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 5,
+     "exposure_fraction": 0.5,
+     "kind": "settled",
+     "read": true,
+     "solver": "plain relaxation",
+     "map_evaluations": 4549,
+     "state_or_centre": [
+      8.683769,
+      8.531596
+     ],
+     "growth_rate": 0.984104,
+     "anderson_rejection": "did not converge",
+     "fold_jump": true,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 6,
+     "exposure_fraction": 0.6,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 7,
+     "state_or_centre": [
+      8.714355,
+      8.539722
+     ],
+     "growth_rate": 0.983765,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 7,
+     "exposure_fraction": 0.7,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 8,
+     "state_or_centre": [
+      8.741922,
+      8.54693
+     ],
+     "growth_rate": 0.983435,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 8,
+     "exposure_fraction": 0.8,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 7,
+     "state_or_centre": [
+      8.766784,
+      8.553339
+     ],
+     "growth_rate": 0.983114,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 9,
+     "exposure_fraction": 0.9,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 7,
+     "state_or_centre": [
+      8.789216,
+      8.559047
+     ],
+     "growth_rate": 0.982802,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 10,
+     "exposure_fraction": 1.0,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 7,
+     "state_or_centre": [
+      8.809463,
+      8.564139
+     ],
+     "growth_rate": 0.9825,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    }
+   ],
+   "agreement_with_reference": [
+    {
+     "level_index": 1,
+     "steady_states_at_this_input": 3,
+     "expected_branch": "lowest",
+     "distance_from_expected": 1.1666417831790454e-11
+    },
+    {
+     "level_index": 2,
+     "steady_states_at_this_input": 3,
+     "expected_branch": "lowest",
+     "distance_from_expected": 3.054584363226809e-12
+    },
+    {
+     "level_index": 3,
+     "steady_states_at_this_input": 3,
+     "expected_branch": "lowest",
+     "distance_from_expected": 2.7200464103316335e-14
+    },
+    {
+     "level_index": 4,
+     "steady_states_at_this_input": 3,
+     "expected_branch": "lowest",
+     "distance_from_expected": 2.018540889991982e-11
+    },
+    {
+     "level_index": 5,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 1.2807532812075806e-11
+    },
+    {
+     "level_index": 6,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 8.254730232692964e-12
+    },
+    {
+     "level_index": 7,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 1.1368683772161603e-13
+    },
+    {
+     "level_index": 8,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 3.268496584496461e-13
+    },
+    {
+     "level_index": 9,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 4.440892098500626e-13
+    },
+    {
+     "level_index": 10,
+     "steady_states_at_this_input": 1,
+     "expected_branch": "lowest",
+     "distance_from_expected": 1.1546319456101628e-13
+    }
+   ],
+   "passed": true
+  },
+  "loop": {
+   "relaxation_onset_fraction_reference": 0.5337365323896468,
+   "ode_hopf_fraction_reference": 0.5967224395177719,
+   "oscillating_levels": [
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "levels": [
+    {
+     "level_index": 0,
+     "exposure_fraction": 0.0,
+     "kind": "settled",
+     "read": false,
+     "solver": "rest state given",
+     "map_evaluations": 1,
+     "state_or_centre": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "growth_rate": 0.993775,
+     "anderson_rejection": null,
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "level_index": 1,
+     "exposure_fraction": 0.1,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 16,
+     "state_or_centre": [
+      0.072921,
+      0.102841,
+      0.147653
+     ],
+     "growth_rate": 0.995034,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.072921,
+      0.102841,
+      0.147653
+     ]
+    },
+    {
+     "level_index": 2,
+     "exposure_fraction": 0.2,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 17,
+     "state_or_centre": [
+      0.136607,
+      0.200123,
+      0.304438
+     ],
+     "growth_rate": 0.996406,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.136607,
+      0.200123,
+      0.304438
+     ]
+    },
+    {
+     "level_index": 3,
+     "exposure_fraction": 0.3,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 15,
+     "state_or_centre": [
+      0.192563,
+      0.291629,
+      0.468178
+     ],
+     "growth_rate": 0.99763,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.192563,
+      0.291629,
+      0.468178
+     ]
+    },
+    {
+     "level_index": 4,
+     "exposure_fraction": 0.4,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 15,
+     "state_or_centre": [
+      0.242157,
+      0.377637,
+      0.637251
+     ],
+     "growth_rate": 0.998635,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.242157,
+      0.377637,
+      0.637251
+     ]
+    },
+    {
+     "level_index": 5,
+     "exposure_fraction": 0.5,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 20,
+     "state_or_centre": [
+      0.286535,
+      0.458633,
+      0.810461
+     ],
+     "growth_rate": 0.999756,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false,
+     "equilibrium": [
+      0.286535,
+      0.458633,
+      0.810461
+     ]
+    },
+    {
+     "level_index": 6,
+     "exposure_fraction": 0.6,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100015,
+     "state_or_centre": [
+      0.314701,
+      0.57588,
+      1.129452
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      0.326626,
+      0.535161,
+      0.98693
+     ],
+     "anderson_growth_rate": 1.000946,
+     "cycle_length": 188,
+     "cycle_highest": [
+      0.777045,
+      1.034241,
+      1.706789
+     ],
+     "cycle_lowest": [
+      -0.147643,
+      0.117519,
+      0.552115
+     ],
+     "cycle_change_from_previous_cycle": 4.009534445464924e-05,
+     "equilibrium": [
+      0.326626,
+      0.535161,
+      0.98693
+     ],
+     "anderson_landed_on_the_equilibrium": true,
+     "ode_reference": {
+      "oscillates": true,
+      "highest": [
+       0.4058247444282594,
+       0.6138078763971336,
+       1.0835005316859923
+      ],
+      "lowest": [
+       0.24656849674030318,
+       0.45869500582376,
+       0.8981880740058369
+      ],
+      "centre": [
+       0.3261966205842813,
+       0.5362514411104469,
+       0.9908443028459146
+      ]
+     }
+    },
+    {
+     "level_index": 7,
+     "exposure_fraction": 0.7,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100017,
+     "state_or_centre": [
+      0.353161,
+      0.71198,
+      1.521047
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      0.36317,
+      0.607755,
+      1.165999
+     ],
+     "anderson_growth_rate": 1.001834,
+     "cycle_length": 191,
+     "cycle_highest": [
+      1.054323,
+      1.427547,
+      2.501533
+     ],
+     "cycle_lowest": [
+      -0.348001,
+      -0.003587,
+      0.540562
+     ],
+     "cycle_change_from_previous_cycle": 3.101313435616149e-05,
+     "equilibrium": [
+      0.36317,
+      0.607755,
+      1.165999
+     ],
+     "anderson_landed_on_the_equilibrium": true,
+     "ode_reference": {
+      "oscillates": true,
+      "highest": [
+       0.8923486676774959,
+       1.1999986375095621,
+       2.061654627279548
+      ],
+      "lowest": [
+       -0.18902030662337077,
+       0.12378460797440252,
+       0.6568339347136452
+      ],
+      "centre": [
+       0.35166418052706255,
+       0.6618916227419823,
+       1.3592442809965966
+      ]
+     }
+    },
+    {
+     "level_index": 8,
+     "exposure_fraction": 0.8,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100016,
+     "state_or_centre": [
+      0.403517,
+      0.846052,
+      1.900708
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      0.396761,
+      0.676907,
+      1.347172
+     ],
+     "anderson_growth_rate": 1.002336,
+     "cycle_length": 193,
+     "cycle_highest": [
+      1.257408,
+      1.744352,
+      3.205703
+     ],
+     "cycle_lowest": [
+      -0.450373,
+      -0.052248,
+      0.595714
+     ],
+     "cycle_change_from_previous_cycle": 2.3483585553929487e-05,
+     "equilibrium": [
+      0.396761,
+      0.676907,
+      1.347172
+     ],
+     "anderson_landed_on_the_equilibrium": true,
+     "ode_reference": {
+      "oscillates": true,
+      "highest": [
+       1.1204830970863995,
+       1.5294262410096302,
+       2.757017968571699
+      ],
+      "lowest": [
+       -0.3377617946607314,
+       0.04060030183052941,
+       0.6821820434328858
+      ],
+      "centre": [
+       0.39136065121283403,
+       0.7850132714200798,
+       1.7196000060022925
+      ]
+     }
+    },
+    {
+     "level_index": 9,
+     "exposure_fraction": 0.9,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100017,
+     "state_or_centre": [
+      0.459419,
+      0.977337,
+      2.257366
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      0.427874,
+      0.743057,
+      1.53007
+     ],
+     "anderson_growth_rate": 1.002666,
+     "cycle_length": 194,
+     "cycle_highest": [
+      1.428605,
+      2.026278,
+      3.837605
+     ],
+     "cycle_lowest": [
+      -0.509768,
+      -0.071603,
+      0.677128
+     ],
+     "cycle_change_from_previous_cycle": 0.0001745070053114084,
+     "equilibrium": [
+      0.427874,
+      0.743057,
+      1.53007
+     ],
+     "anderson_landed_on_the_equilibrium": true,
+     "ode_reference": {
+      "oscillates": true,
+      "highest": [
+       1.2984114642266693,
+       1.8065720275855457,
+       3.3789167993020612
+      ],
+      "lowest": [
+       -0.42138026839086207,
+       0.005001587083940162,
+       0.7520484039795193
+      ],
+      "centre": [
+       0.4385155979179036,
+       0.9057868073347429,
+       2.0654826016407903
+      ]
+     }
+    },
+    {
+     "level_index": 10,
+     "exposure_fraction": 1.0,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100029,
+     "state_or_centre": [
+      0.517457,
+      1.10553,
+      2.583871
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      0.456893,
+      0.806596,
+      1.714396
+     ],
+     "anderson_growth_rate": 1.003158,
+     "cycle_length": 195,
+     "cycle_highest": [
+      1.580982,
+      2.286259,
+      4.394878
+     ],
+     "cycle_lowest": [
+      -0.546068,
+      -0.0752,
+      0.772865
+     ],
+     "cycle_change_from_previous_cycle": 0.0001619631738267735,
+     "equilibrium": [
+      0.456893,
+      0.806596,
+      1.714396
+     ],
+     "anderson_landed_on_the_equilibrium": true,
+     "ode_reference": {
+      "oscillates": true,
+      "highest": [
+       1.450888292903488,
+       2.0560715978519157,
+       3.937577847513181
+      ],
+      "lowest": [
+       -0.4725699225052374,
+       -0.00806339330518153,
+       0.8428630159883047
+      ],
+      "centre": [
+       0.4891591851991254,
+       1.024004102273367,
+       2.390220431750743
+      ]
+     }
+    }
+   ],
+   "passed": true
+  },
+  "step_size_dependence": {
+   "ode_hopf_fraction": 0.5967224395177719,
+   "ode_centre_at_full_exposure": {
+    "oscillates": true,
+    "highest": [
+     1.450888292903488,
+     2.0560715978519157,
+     3.937577847513181
+    ],
+    "lowest": [
+     -0.4725699225052374,
+     -0.00806339330518153,
+     0.8428630159883047
+    ],
+    "centre": [
+     0.4891591851991254,
+     1.024004102273367,
+     2.390220431750743
+    ]
+   },
+   "by_step_size": [
+    {
+     "step_size": 0.5,
+     "relaxation_onset_fraction": null,
+     "refused": "the relaxation does not settle on the rest state at exposure 0 (growth rate 1.02133)"
+    },
+    {
+     "step_size": 0.1,
+     "relaxation_onset_fraction": 0.3521662798394789,
+     "oscillating_levels": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "unresolved_levels": [],
+     "full_level_kind": "oscillating",
+     "full_level_state_or_centre": [
+      0.679924,
+      1.512917,
+      3.266554
+     ],
+     "full_level_cycle_length": 44,
+     "full_level_distance_from_ode_centre": 0.8763335180780212
+    },
+    {
+     "step_size": 0.05,
+     "relaxation_onset_fraction": 0.4550002590836473,
+     "oscillating_levels": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "unresolved_levels": [],
+     "full_level_kind": "oscillating",
+     "full_level_state_or_centre": [
+      0.570124,
+      1.244113,
+      2.864976
+     ],
+     "full_level_cycle_length": 82,
+     "full_level_distance_from_ode_centre": 0.47475571657380833
+    },
+    {
+     "step_size": 0.02,
+     "relaxation_onset_fraction": 0.5337365323896468,
+     "oscillating_levels": [
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "unresolved_levels": [],
+     "full_level_kind": "oscillating",
+     "full_level_state_or_centre": [
+      0.517457,
+      1.10553,
+      2.583871
+     ],
+     "full_level_cycle_length": 195,
+     "full_level_distance_from_ode_centre": 0.19365085828647333
+    },
+    {
+     "step_size": 0.01,
+     "relaxation_onset_fraction": 0.5639834457824715,
+     "oscillating_levels": [
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "unresolved_levels": [],
+     "full_level_kind": "oscillating",
+     "full_level_state_or_centre": [
+      0.50256,
+      1.063628,
+      2.487138
+     ],
+     "full_level_cycle_length": 384,
+     "full_level_distance_from_ode_centre": 0.09691744089224708
+    }
+   ]
+  },
+  "combined": {
+   "symptoms": [
+    "switch_partner_high",
+    "loop_inhibitor_high",
+    "switch_entry_over_partner"
+   ],
+   "levels": [
+    {
+     "level_index": 0,
+     "exposure_fraction": 0.0,
+     "kind": "settled",
+     "read": false,
+     "solver": "rest state given",
+     "map_evaluations": 1,
+     "state_or_centre": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "growth_rate": 0.993504,
+     "anderson_rejection": null,
+     "fold_jump": null,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 1,
+     "exposure_fraction": 0.1,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 19,
+     "state_or_centre": [
+      0.188563,
+      0.106531,
+      0.072921,
+      0.102841,
+      0.147653
+     ],
+     "growth_rate": 0.994791,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 2,
+     "exposure_fraction": 0.2,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 21,
+     "state_or_centre": [
+      0.448753,
+      0.269752,
+      0.136607,
+      0.200123,
+      0.304438
+     ],
+     "growth_rate": 0.995914,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 3,
+     "exposure_fraction": 0.3,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 30,
+     "state_or_centre": [
+      0.922402,
+      0.619509,
+      0.192563,
+      0.291629,
+      0.468178
+     ],
+     "growth_rate": 0.997457,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 4,
+     "exposure_fraction": 0.4,
+     "kind": "settled",
+     "read": true,
+     "solver": "plain relaxation",
+     "map_evaluations": 19386,
+     "state_or_centre": [
+      8.690144,
+      8.533301,
+      0.242157,
+      0.377637,
+      0.637251
+     ],
+     "growth_rate": 0.998631,
+     "anderson_rejection": "did not converge",
+     "fold_jump": true,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 5,
+     "exposure_fraction": 0.5,
+     "kind": "settled",
+     "read": true,
+     "solver": "anderson mixing",
+     "map_evaluations": 29,
+     "state_or_centre": [
+      8.728495,
+      8.543433,
+      0.286535,
+      0.458633,
+      0.810461
+     ],
+     "growth_rate": 0.999519,
+     "anderson_rejection": null,
+     "fold_jump": false,
+     "anderson_disagreed": false
+    },
+    {
+     "level_index": 6,
+     "exposure_fraction": 0.6,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100022,
+     "state_or_centre": [
+      8.762015,
+      8.552116,
+      0.314701,
+      0.57588,
+      1.129452
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      8.762015,
+      8.552116,
+      0.326626,
+      0.535161,
+      0.98693
+     ],
+     "anderson_growth_rate": 1.000376,
+     "cycle_length": 188,
+     "cycle_highest": [
+      8.762015,
+      8.552116,
+      0.777045,
+      1.034241,
+      1.706789
+     ],
+     "cycle_lowest": [
+      8.762015,
+      8.552116,
+      -0.147643,
+      0.117519,
+      0.552115
+     ],
+     "cycle_change_from_previous_cycle": 4.0095344503804364e-05
+    },
+    {
+     "level_index": 7,
+     "exposure_fraction": 0.7,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100026,
+     "state_or_centre": [
+      8.791335,
+      8.559583,
+      0.353161,
+      0.71198,
+      1.521047
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      8.791335,
+      8.559583,
+      0.36317,
+      0.607755,
+      1.165999
+     ],
+     "anderson_growth_rate": 1.00151,
+     "cycle_length": 191,
+     "cycle_highest": [
+      8.791335,
+      8.559583,
+      1.054323,
+      1.427547,
+      2.501533
+     ],
+     "cycle_lowest": [
+      8.791335,
+      8.559583,
+      -0.348001,
+      -0.003587,
+      0.540562
+     ],
+     "cycle_change_from_previous_cycle": 3.1013134377699814e-05
+    },
+    {
+     "level_index": 8,
+     "exposure_fraction": 0.8,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100139,
+     "state_or_centre": [
+      8.817001,
+      8.566021,
+      0.403517,
+      0.846052,
+      1.900708
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      8.817001,
+      8.566021,
+      0.396761,
+      0.676907,
+      1.347172
+     ],
+     "anderson_growth_rate": 1.002778,
+     "cycle_length": 193,
+     "cycle_highest": [
+      8.817001,
+      8.566021,
+      1.257408,
+      1.744352,
+      3.205703
+     ],
+     "cycle_lowest": [
+      8.817001,
+      8.566021,
+      -0.450373,
+      -0.052248,
+      0.595714
+     ],
+     "cycle_change_from_previous_cycle": 2.3483585521510975e-05
+    },
+    {
+     "level_index": 9,
+     "exposure_fraction": 0.9,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100080,
+     "state_or_centre": [
+      8.839478,
+      8.571585,
+      0.459419,
+      0.977337,
+      2.257366
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      8.839478,
+      8.571585,
+      0.427874,
+      0.743057,
+      1.53007
+     ],
+     "anderson_growth_rate": 1.003824,
+     "cycle_length": 194,
+     "cycle_highest": [
+      8.839478,
+      8.571585,
+      1.428605,
+      2.026278,
+      3.837605
+     ],
+     "cycle_lowest": [
+      8.839478,
+      8.571585,
+      -0.509768,
+      -0.071603,
+      0.677128
+     ],
+     "cycle_change_from_previous_cycle": 0.00017450700580434741
+    },
+    {
+     "level_index": 10,
+     "exposure_fraction": 1.0,
+     "kind": "oscillating",
+     "read": true,
+     "solver": null,
+     "map_evaluations": 100078,
+     "state_or_centre": [
+      8.859172,
+      8.576405,
+      0.517457,
+      1.10553,
+      2.583871
+     ],
+     "growth_rate": null,
+     "anderson_rejection": "unstable",
+     "fold_jump": null,
+     "anderson_disagreed": false,
+     "anderson_state": [
+      8.859172,
+      8.576405,
+      0.456893,
+      0.806596,
+      1.714396
+     ],
+     "anderson_growth_rate": 1.004496,
+     "cycle_length": 195,
+     "cycle_highest": [
+      8.859172,
+      8.576405,
+      1.580982,
+      2.286259,
+      4.394878
+     ],
+     "cycle_lowest": [
+      8.859172,
+      8.576405,
+      -0.546068,
+      -0.0752,
+      0.772865
+     ],
+     "cycle_change_from_previous_cycle": 0.000161963174411639
+    }
+   ],
+   "read_level_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "logits_by_read_level": [
+    [
+     0.106531,
+     0.147653,
+     0.082031
+    ],
+    [
+     0.269752,
+     0.304438,
+     0.179002
+    ],
+    [
+     0.619509,
+     0.468178,
+     0.302893
+    ],
+    [
+     8.533301,
+     0.637251,
+     0.156843
+    ],
+    [
+     8.543433,
+     0.810461,
+     0.185063
+    ],
+    [
+     8.552116,
+     1.129452,
+     0.209898
+    ],
+    [
+     8.559583,
+     1.521047,
+     0.231753
+    ],
+    [
+     8.566021,
+     1.900708,
+     0.25098
+    ],
+    [
+     8.571585,
+     2.257366,
+     0.267893
+    ],
+    [
+     8.576405,
+     2.583871,
+     0.282767
+    ]
+   ],
+   "prediction": [
+    8.576405,
+    2.583871,
+    0.302893
+   ],
+   "peak_level_indices": [
+    10,
+    10,
+    3
+   ],
+   "distinct_peak_levels": [
+    3,
+    10
+   ],
+   "adjoint_solves": [
+    {
+     "level_index": 3,
+     "map_evaluations": 5,
+     "converged": true,
+     "residual_norm": 2.7755575615628914e-16
+    }
+   ],
+   "unrolled_cycles": [
+    {
+     "level_index": 10,
+     "cycle_length": 195
+    }
+   ],
+   "fold_levels": [
+    4
+   ],
+   "oscillating_levels": [
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "passed": true
+  },
+  "gradients": {
+   "implicit_switch_partner_at_its_peak": {
+    "symptom": "switch_partner_high",
+    "peak_level_index": 10,
+    "peak_level_kind": "settled",
+    "peak_exposure_fraction": 1.0,
+    "adjoint_solves": [
+     {
+      "level_index": 10,
+      "map_evaluations": 5,
+      "converged": true,
+      "residual_norm": 2.220446049250313e-16
+     }
+    ],
+    "entries": [
+     {
+      "parameter": "edge_weights",
+      "index": [
+       0,
+       1
+      ],
+      "backward_pass": 0.4119149765633499,
+      "finite_difference": 0.4119149874526329,
+      "relative_gap": 2.6435753267113038e-08
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       1,
+       0
+      ],
+      "backward_pass": 3.778319014849165,
+      "finite_difference": 3.778319006109143,
+      "relative_gap": 2.313203836172586e-09
+     },
+     {
+      "parameter": "full_exposure",
+      "index": [
+       0
+      ],
+      "backward_pass": 0.048097649465753844,
+      "finite_difference": 0.04809764941882122,
+      "relative_gap": 9.757779220967872e-10
+     }
+    ],
+    "passed": true
+   },
+   "implicit_combined_entry_over_partner_at_its_peak": {
+    "symptom": "switch_entry_over_partner",
+    "peak_level_index": 3,
+    "peak_level_kind": "settled",
+    "peak_exposure_fraction": 0.3,
+    "adjoint_solves": [
+     {
+      "level_index": 3,
+      "map_evaluations": 5,
+      "converged": true,
+      "residual_norm": 2.7755575615628914e-16
+     }
+    ],
+    "entries": [
+     {
+      "parameter": "edge_weights",
+      "index": [
+       0,
+       1
+      ],
+      "backward_pass": 0.7402517494280973,
+      "finite_difference": 0.7402516769561274,
+      "relative_gap": 9.79017881912681e-08
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       1,
+       0
+      ],
+      "backward_pass": -0.3543655102407495,
+      "finite_difference": -0.35436550216427776,
+      "relative_gap": 2.2791359587055372e-08
+     },
+     {
+      "parameter": "full_exposure",
+      "index": [
+       0
+      ],
+      "backward_pass": 0.35847007461246566,
+      "finite_difference": 0.3584712301440973,
+      "relative_gap": 3.223498943537391e-06
+     }
+    ],
+    "passed": true
+   },
+   "unrolled_loop_inhibitor_at_its_peak": {
+    "symptom": "loop_inhibitor_high",
+    "peak_level_index": 10,
+    "peak_level_kind": "oscillating",
+    "peak_exposure_fraction": 1.0,
+    "cycle_length": 195,
+    "nodes_that_do_not_move_over_the_cycle": [],
+    "unrolled_cycles": [
+     {
+      "level_index": 10,
+      "cycle_length": 195
+     }
+    ],
+    "entries": [
+     {
+      "parameter": "edge_weights",
+      "index": [
+       1,
+       0
+      ],
+      "backward_pass": 0.3903917756630166,
+      "finite_difference_same_first_state": 0.3903917760172959,
+      "relative_gap_same_first_state": 9.074969040349362e-10,
+      "finite_difference_whole_readout": 9.692167296293519,
+      "relative_gap_whole_readout": 0.9597209000083697
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       2,
+       1
+      ],
+      "backward_pass": 1.0155470976568781,
+      "finite_difference_same_first_state": 1.0155470970829583,
+      "relative_gap_same_first_state": 5.651336131006923e-10,
+      "finite_difference_whole_readout": 7.423629147185196,
+      "relative_gap_whole_readout": 0.8632007233225085
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       0,
+       2
+      ],
+      "backward_pass": 0.45017284577074024,
+      "finite_difference_same_first_state": 0.4501728465555743,
+      "relative_gap_same_first_state": 1.7434060997104612e-09,
+      "finite_difference_whole_readout": -4.310384205119533,
+      "relative_gap_whole_readout": 1.1044391461058298
+     },
+     {
+      "parameter": "full_exposure",
+      "index": [
+       0
+      ],
+      "backward_pass": 0.2544043557021228,
+      "finite_difference_same_first_state": 0.25440435624801694,
+      "relative_gap_same_first_state": 2.1457736465573562e-09,
+      "finite_difference_whole_readout": 4.559102055878839,
+      "relative_gap_whole_readout": 0.9441985828384615
+     }
+    ],
+    "matches_same_first_state": true
+   },
+   "unrolled_combined_switch_partner_at_its_peak": {
+    "symptom": "switch_partner_high",
+    "peak_level_index": 10,
+    "peak_level_kind": "oscillating",
+    "peak_exposure_fraction": 1.0,
+    "cycle_length": 195,
+    "nodes_that_do_not_move_over_the_cycle": [
+     "switch_entry",
+     "switch_partner"
+    ],
+    "unrolled_cycles": [
+     {
+      "level_index": 10,
+      "cycle_length": 195
+     }
+    ],
+    "entries": [
+     {
+      "parameter": "edge_weights",
+      "index": [
+       0,
+       1
+      ],
+      "backward_pass": 0.0,
+      "finite_difference_same_first_state": 0.1322569325168388,
+      "relative_gap_same_first_state": 1.0,
+      "finite_difference_whole_readout": 0.295825815399553,
+      "relative_gap_whole_readout": 1.0
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       1,
+       0
+      ],
+      "backward_pass": 0.0,
+      "finite_difference_same_first_state": 1.7886593024485364,
+      "relative_gap_same_first_state": 1.0,
+      "finite_difference_whole_readout": 3.668117415145389,
+      "relative_gap_whole_readout": 1.0
+     },
+     {
+      "parameter": "full_exposure",
+      "index": [
+       0
+      ],
+      "backward_pass": 0.0,
+      "finite_difference_same_first_state": 0.015421020904682337,
+      "relative_gap_same_first_state": 1.0,
+      "finite_difference_whole_readout": 0.03449298802138401,
+      "relative_gap_whole_readout": 1.0
+     },
+     {
+      "parameter": "edge_weights",
+      "index": [
+       4,
+       3
+      ],
+      "backward_pass": 0.0,
+      "finite_difference_same_first_state": 0.0,
+      "relative_gap_same_first_state": 0.0,
+      "finite_difference_whole_readout": 0.0,
+      "relative_gap_whole_readout": 0.0
+     }
+    ],
+    "matches_same_first_state": false
+   }
+  },
+  "whole_readout_profile_loop_inhibitor": {
+   "symptom": "loop_inhibitor_high",
+   "parameter": "edge_weights",
+   "index": [
+    1,
+    0
+   ],
+   "peak_level_index": 10,
+   "peak_level_kind": "oscillating",
+   "step": 1e-06,
+   "values": [
+    {
+     "offset": -4.9999999999999996e-06,
+     "whole_readout": 2.5838183896560563,
+     "same_first_state": 2.583869338078525
+    },
+    {
+     "offset": -4e-06,
+     "whole_readout": 2.583829661668931,
+     "same_first_state": 2.583869728470234
+    },
+    {
+     "offset": -3e-06,
+     "whole_readout": 2.5838405942798173,
+     "same_first_state": 2.5838701188619564
+    },
+    {
+     "offset": -2e-06,
+     "whole_readout": 2.5838511809235927,
+     "same_first_state": 2.5838705092536953
+    },
+    {
+     "offset": -1e-06,
+     "whole_readout": 2.5838614150323034,
+     "same_first_state": 2.5838708996454485
+    },
+    {
+     "offset": 0.0,
+     "whole_readout": 2.5838712900372163,
+     "same_first_state": 2.5838712900372163
+    },
+    {
+     "offset": 1e-06,
+     "whole_readout": 2.583880799366896,
+     "same_first_state": 2.5838716804290005
+    },
+    {
+     "offset": 2e-06,
+     "whole_readout": 2.583889936449126,
+     "same_first_state": 2.5838720708207985
+    },
+    {
+     "offset": 3e-06,
+     "whole_readout": 2.5838986947099225,
+     "same_first_state": 2.583872461212611
+    },
+    {
+     "offset": 4e-06,
+     "whole_readout": 2.583870942736522,
+     "same_first_state": 2.583872851604438
+    },
+    {
+     "offset": 4.9999999999999996e-06,
+     "whole_readout": 2.5838391855699516,
+     "same_first_state": 2.5838732419962818
+    }
+   ]
+  },
+  "timings_planted_only": {
+   "repeats": 5,
+   "torch_threads": 1,
+   "warm_started_settled_level_seconds": 0.04088708699964627,
+   "warm_started_settled_level_kind": "settled",
+   "warm_started_oscillating_level_seconds": 1.9557870230000844,
+   "warm_started_oscillating_level_kind": "oscillating",
+   "unrolled_cycle_with_backward_seconds": 0.016005236999262706,
+   "unrolled_cycle_length": 195
+  }
+ },
+ "checks_passed": {
+  "switch": true,
+  "loop": true,
+  "combined": true,
+  "implicit_switch_partner_at_its_peak": true,
+  "implicit_combined_entry_over_partner_at_its_peak": true,
+  "unrolled_loop_inhibitor_at_its_peak": true
+ }
+}

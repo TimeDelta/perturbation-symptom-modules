@@ -163,7 +163,8 @@ TOPICS = (
                                     "docs/message_passing_depth_probe.md", "docs/neuronal_variant_comparison.md", "docs/perturbation_type_offset.md",
                                     "docs/gene_protein_split_results.md", "docs/nonlinearity_inventory.md", "docs/mechanism_cards/*/*.md",
                                     "docs/steady_state_readout_alternatives.md", "docs/relation_timescale_ordering_*.md",
-                                    "docs/fixed_point_against_pharmacological_steady_state.md", "docs/deflation_multistart_*.md")),
+                                    "docs/fixed_point_against_pharmacological_steady_state.md", "docs/deflation_multistart_*.md",
+                                    "docs/exposure_ramp_pilot_*.md")),
 )
 OTHER_TOPIC = "Other documents"
 CARD_FAMILY = re.compile(r"^docs/mechanism_cards/([^/]+)/[^/]+\.md$")

@@ -559,7 +559,8 @@ def unrolled_cycle_centre(update_map: UpdateMap, cycle_start_state: torch.Tensor
     and min take the first tied step. For a node that does not move over the cycle (a part of the network that has
     settled while another part oscillates, at a level flagged oscillating as a whole) that is the detached first
     state, so no gradient passes through that node's centre, although the centre computed from the same first state
-    does move with the parameters (experiments/run_exposure_ramp_pilot.py measures it on the planted networks)."""
+    does move with the parameters (experiments/run_exposure_ramp_pilot.py measures it on the planted networks; the
+    record of 27 November 2026, docs/records/2026-11/exposure_ramp_pilot_2026-11-27.md, section 6)."""
     state = cycle_start_state.detach()
     states = [state]
     for _ in range(cycle_length - 1):
