@@ -282,9 +282,9 @@ CLASS_WEIGHT_RULES: tuple[str, ...] = ("product", "limiting_step")
 INPUT_WEIGHT_FORMS: tuple[str, ...] = ("positive", "signed")
 # Compartment pH as a throughput ceiling (graph/compartment_ph.py has the reasoning and the measurements; the owner,
 # 13 October 2026, of this design: "perfect solution. implement it"). After the propagation settles, the deviation at
-# the proton node governing each compartment becomes a multiplier on every node in it,
+# the proton node governing each compartment becomes a multiplier on every node in it (until 13 October 2026 it was
 #     w_pH = exp(-(sensitivity * proton deviation) ** 2),
-# so an acidified or alkalinised compartment passes less. A weight does not propagate, which is why this does not
+# and the form below replaced it), so an acidified or alkalinised compartment passes less. A weight does not propagate, which is why this does not
 # reintroduce the hub the currency mask exists to stop: the cytosolic proton touches 3,329 reactions, and a node that
 # sent freely across them would make every pair of reactions neighbours. The sensitivity is learned per compartment
 # because the model's deviations are in arbitrary units, and PH_SENSITIVITY_TARGET_ARGUMENT is what
@@ -293,8 +293,9 @@ INPUT_WEIGHT_FORMS: tuple[str, ...] = ("positive", "signed")
 # The weight is a bell curve in pH units, not in [H+] (the owner, 13 October 2026: "why not use true pH on the log
 # scale so it fits nicely into equations?"). The deviation is read as a fractional change in [H+], so
 #     pH = resting pH - log10(1 + sensitivity * deviation),   w_pH = exp(-(delta pH / width) ** 2)
-# with the optimum taken as the compartment's resting state, which makes w_pH a function of delta pH alone. The log is
-# why this needs the resting values at all and why the ratios of the other cell-state quantities do not: a ratio is
+# with the optimum taken as the compartment's resting state, which makes w_pH a function of delta pH alone, so the
+# resting pH cancels and no resting value is read here (graph/compartment_resting_ph.py holds the sourced values for
+# the uses that need an absolute pH). The log is why pH is not a ratio like the other cell-state quantities: a ratio is
 # dimensionless but says nothing about how many protons there are, and a reaction consuming H+ is limited by the count.
 # The fraction is clamped above -1 so the logarithm stays defined; a deviation that would empty the compartment of
 # protons is held just above empty rather than being allowed to produce a NaN.

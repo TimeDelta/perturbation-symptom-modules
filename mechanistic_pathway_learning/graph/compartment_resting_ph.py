@@ -2,19 +2,24 @@
 
 The owner, 13 October 2026: "for pH, ratio against HCO3 doesn't quite seem quite right because the ratio could be 10
 and still only have 10 H+ ions, which would still limit a reaction that needs H+ despite the ratio being relatively
-high ... why not use true pH on the log scale so it fits nicely into equations?" He is right, and it is the reason the
+high ... why not use true pH on the log scale so it fits nicely into equations?" They are right, and it is the reason the
 other cell-state quantities are ratios and this one is not. A ratio is dimensionless and so needs no scale, but it also
 says nothing about how many protons there are, and a reaction consuming H+ is limited by the count and not by the
 proportion. pH is the log-scale absolute, enzyme pH-activity curves are bell-shaped in pH rather than in [H+], and
 having an absolute leaves Henderson-Hasselbalch available for the question these values will be needed for next, a
 drug's ionisation against a compartment's pH and so the trapping of bases in the lysosome.
 
-With these, compartment_ph.compartment_ph_weight reads
+No code reads these values yet (checked 27 November 2026: only a test imports this module). The pH weight,
+`compartment_ph_weight` in models/linear_response_encoder.py, is a function of the change in pH alone,
 
-    pH = resting pH - log10(1 + sensitivity * deviation)
+    delta pH = -log10(1 + sensitivity * deviation)
 
 where sensitivity * deviation is the fractional change in [H+], so the sensitivity stays learned (the model's
-deviations are in arbitrary units) while the resting value sets where the compartment sits.
+deviations are in arbitrary units). Each reaction's optimum is taken as its own compartment's resting state, so the
+resting value cancels out of the weight (graph/compartment_ph.py has the reasoning). The values are kept for the uses
+that need an absolute pH: the drug ionisation named above, and enzyme pH optima centred on a compartment's resting pH
+(ruling S3b of item 37, not built). Until 27 November 2026 this paragraph said the weight read the resting value, which
+it never did.
 
 **Provenance, per value, because they are not all of one kind.** The values marked `review` are from a curated
 database entry read on 13 October 2026, whose primary source is the review it names; the ones marked `reasoned` are
