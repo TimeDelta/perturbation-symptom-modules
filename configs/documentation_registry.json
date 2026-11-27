@@ -1142,6 +1142,12 @@
       "recorded": "2026-11-24",
       "append_only": true,
       "what": "decision 9.31: prazosin's WHO ATC code C02CA01, as SIDER 4.1 gives it, confirmed against the WHO ATC/DDD index and NLM RxNav before its admission row; its only other code is the diuretic combination C02LE01; read on Fable"
+    },
+    "docs/records/2026-11/zero_coupling_receptors_2026-11-27.md": {
+      "class": "record",
+      "recorded": "2026-11-27",
+      "append_only": true,
+      "what": "decision 9.22's zero-coupling count, taken by experiments/measure_zero_coupling_receptors.py on the inputs of 9.23's coupling filter before graph assembly (OmniPath of 23 November 2026, the admitted table of 4 November 2026): the annotated receptors with a signed G-alpha edge before the filter and none after it, by name, with the binds-only and no-edge cases apart; to be retaken on the v5 rebuild and after 9.99; counts only, no reading for any decision; the JSON beside it is the full result"
     }
   }
 }
