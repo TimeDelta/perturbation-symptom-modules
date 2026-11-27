@@ -37,18 +37,18 @@
         "decision:9.78": "7791147af80ca5f00d53f87da3efdda4086c376d3e6aca620d58ac106bf731d2",
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
-        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f",
-        "file:scripts/rebuild_data_layer.sh": "aada0568d3a89a77e7a06cea56a221c2e94f26e56937f40978386cfddc8307d2",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "f8c03f0c00e630e751d602f4eaa184985a612c22f18ca40676fd300ee4cd8eaa",
+        "file:experiments/run_main_model_batch.py": "72bf25d9419f20a34640d50d8ba0d026639de56f08b65fb4ca20626302256b6b",
+        "file:scripts/rebuild_data_layer.sh": "910a95ea46c5617d62a4b754c167940ec7f6443c4ce2352f14c68e01204dacea",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "a455f9edcecb3dfa799fc0be45e2066b85ebe001488b0da62a98161e4f5ff8ec",
         "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b488df1504f14cbde7c43cafb45dfcf000ef5dbfcced77b7d6976adb4be84d2c",
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
+        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50",
+      "checked_at_commit": "7fed611",
       "partner": "64d7b2e6-81e2"
     },
     "2d0e94ac-2bbc": {
@@ -83,13 +83,13 @@
         "item:25": "d50aeab3f3fed752b2360fc87716fdef672fc48dea76637f7495ed1c0992cc9a",
         "item:26": "eef717ea6f3b0aab4c6924210f7fe746bb2300fa3692593be349a3bcc6f5ccad",
         "item:38": "366e6ef6dc2abab7bb7fafef4b8771339402bd51c385dbe4ce54caeaa4992baa",
-        "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
+        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce",
         "file:experiments/run_baselines.py": "e4062838bd2b8825fefe9c5fd7c5d96a6a33e385fcb800034d654f0acf29a4e5",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "d2e746d"
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
@@ -124,10 +124,10 @@
         "file:mechanistic_pathway_learning/graph/drug_entry_nodes.py": "5dcc87b08bf2cc5c1c924a705fc6e01e6491f9a226a4285df0b52c13ec45d8da",
         "file:configs/neomorphic_alleles.csv": "dfa3bf20dbae061d4a788364ddf199f10c83820022f3af062c4ce63718e4effb",
         "file:mechanistic_pathway_learning/graph/brenda_enzyme_regulation.py": "0409c5bc91200e8333c2086978510bb030a8c82bc9e82aa193f02138a2b40695",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1"
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "affb9c28bdc2bebc40f2841fa88079bf362a9e4f8dc3f0b98ce22fa46ea874f2"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "51ed9d1",
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611",
       "partner": "a7538790-dcbd"
     },
     "081c3c6e-6907": {
@@ -153,12 +153,12 @@
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.76": "a1283a44c8f472efb472157de77ced366283fcc7882e45721feb7051892fe2c5",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc",
         "file:mechanistic_pathway_learning/graph/compartment_ph.py": "3d1408db544e6dedc830f1f7a4a65fb6b504b33e89215b87a8eb26dd818ed264"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50",
+      "checked_at_commit": "7fed611",
       "partner": "20cf5467-e80b"
     },
     "20cf5467-e80b": {
@@ -189,10 +189,10 @@
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "14499161-f021": {
       "title": "A knockout travels as signed shares to one fixed point",
@@ -218,11 +218,11 @@
         "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "c642a74c-b09e": {
       "title": "Propagation channels: one lane per cell class",
@@ -245,12 +245,12 @@
         "decision:9.76": "a1283a44c8f472efb472157de77ced366283fcc7882e45721feb7051892fe2c5",
         "item:37b": "8b036e4e549e8bd84b4f039d3bb8ed978d8c78ff21d74967ebe8463c6c64e6b0",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50",
+      "checked_at_commit": "7fed611",
       "partner": "098c9a09-8f0f"
     },
     "098c9a09-8f0f": {
@@ -286,11 +286,11 @@
         "item:37l": "7e7c1cb324abcdefd7186de2111405bf62a1d781ea9e4b75d758691ca308e973",
         "item:37n": "24d9dc4bb3b1b78fcfd2320fc876a800f06a9e112a6a3763634b48b372904fc6",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "7d950678-d77c": {
       "title": "Membrane potential, as built",
@@ -309,11 +309,11 @@
       "fingerprints": {
         "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
         "decision:9.112": "dc5e955db4c8126319e694344034f08d3317e6c524404b45969e6316e62fa838",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1",
-        "file:mechanistic_pathway_learning/graph/reactome_import.py": "1000214957e12fb7d12bb2e2ada3c771ec1ce07ed977f61e3c118d7e6a658a78"
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "affb9c28bdc2bebc40f2841fa88079bf362a9e4f8dc3f0b98ce22fa46ea874f2",
+        "file:mechanistic_pathway_learning/graph/reactome_import.py": "88bd326cfa775d06cab9e976ba08a75f0b86e3462e44af64819b576c51f98c6e"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "51ed9d1"
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611"
     },
     "88631e83-33d4": {
       "title": "Membrane potential, as decided (9.112, 9.113)",
@@ -346,11 +346,11 @@
         "item:37a": "df25397c0766c8479261eaecb1c4f41a2c7b59b01e30986b052216a15219087f",
         "item:37c": "d8409edfc71cfc7a98245aa72a68ef0376770f4aa0065ca5727ad1b18afdd7a2",
         "item:37d": "ef00c0995ebbc303748270b74513ed254d9a3bfff9237392c0c22a5d113c1206",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1",
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "affb9c28bdc2bebc40f2841fa88079bf362a9e4f8dc3f0b98ce22fa46ea874f2",
         "file:docs/item37_rulings_draft_2026-11-13.md": "dfeb2ac336498b0414869f04993c2e379c84188906c9048717e6b8309a26fe4b"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "082941d"
+      "checked_at_commit": "7fed611"
     },
     "15dbd45a-f218": {
       "title": "The head reads the field through sparse modules",
@@ -439,13 +439,13 @@
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
         "item:37h": "c2549846cedc442d3f02bf370e810ca6bde9b57872c2fe0b230f340052211407",
         "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce",
-        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f"
+        "file:experiments/run_main_model_batch.py": "72bf25d9419f20a34640d50d8ba0d026639de56f08b65fb4ca20626302256b6b"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "e45d7aa9-175e": {
       "title": "Robustness and exploratory arms",
@@ -476,10 +476,10 @@
         "item:8": "39f13becda3758e73e12fffae12d49af7fd15ca8b9826120aa74fca7b7a21e2b",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df",
-        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f"
+        "file:experiments/run_main_model_batch.py": "72bf25d9419f20a34640d50d8ba0d026639de56f08b65fb4ca20626302256b6b"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "d2e746d",
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611",
       "partner": "a2c305c9-428b"
     },
     "a7538790-dcbd": {
@@ -504,10 +504,10 @@
         "decision:9.87": "2f673c985cb0f855e65257c81fcf9011c75aed4632eca129550cd58b3408f4fb",
         "file:mechanistic_pathway_learning/graph/drug_entry_nodes.py": "5dcc87b08bf2cc5c1c924a705fc6e01e6491f9a226a4285df0b52c13ec45d8da",
         "file:mechanistic_pathway_learning/graph/brenda_enzyme_regulation.py": "0409c5bc91200e8333c2086978510bb030a8c82bc9e82aa193f02138a2b40695",
-        "file:mechanistic_pathway_learning/graph/reactome_import.py": "1000214957e12fb7d12bb2e2ada3c771ec1ce07ed977f61e3c118d7e6a658a78"
+        "file:mechanistic_pathway_learning/graph/reactome_import.py": "88bd326cfa775d06cab9e976ba08a75f0b86e3462e44af64819b576c51f98c6e"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "51ed9d1"
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611"
     },
     "713638b8-497a": {
       "title": "Modules, as decided (9.119)",
@@ -598,18 +598,18 @@
         "item:37m": "1768d4708dea48aeeba85a5381ca1f74384b638208fa48bb724c0fe52e97e230",
         "item:37o": "c2b27e0c25a6146f96f6af086ce0cfa7631fae726415c4b519e10bd19ddff362",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f",
-        "file:scripts/rebuild_data_layer.sh": "aada0568d3a89a77e7a06cea56a221c2e94f26e56937f40978386cfddc8307d2",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "f8c03f0c00e630e751d602f4eaa184985a612c22f18ca40676fd300ee4cd8eaa",
+        "file:experiments/run_main_model_batch.py": "72bf25d9419f20a34640d50d8ba0d026639de56f08b65fb4ca20626302256b6b",
+        "file:scripts/rebuild_data_layer.sh": "910a95ea46c5617d62a4b754c167940ec7f6443c4ce2352f14c68e01204dacea",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "a455f9edcecb3dfa799fc0be45e2066b85ebe001488b0da62a98161e4f5ff8ec",
         "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b488df1504f14cbde7c43cafb45dfcf000ef5dbfcced77b7d6976adb4be84d2c",
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b",
+        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "a2c305c9-428b": {
       "title": "Robustness and exploratory arms, as decided (9.122)",
@@ -677,14 +677,14 @@
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
         "item:37h": "c2549846cedc442d3f02bf370e810ca6bde9b57872c2fe0b230f340052211407",
         "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:mechanistic_pathway_learning/models/edge_gates.py": "7a51d15609e849a4f98c000233001500cdc3e088623adf12b849c7c29db3ca40",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce",
-        "file:experiments/run_main_model_batch.py": "eb4cc9b0d28287749466f1d8ae7900e2c7f7ab821b70e5dfacbe6bfc934c518f"
+        "file:experiments/run_main_model_batch.py": "72bf25d9419f20a34640d50d8ba0d026639de56f08b65fb4ca20626302256b6b"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     }
   },
   "records": {
@@ -737,10 +737,10 @@
         "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.14955": {
       "title": "nonlinearities sit after the loop",
@@ -758,10 +758,10 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.36665": {
       "title": "lockbox touched once",
@@ -779,10 +779,10 @@
       "fingerprints": {
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "item:38": "366e6ef6dc2abab7bb7fafef4b8771339402bd51c385dbe4ce54caeaa4992baa",
-        "file:experiments/score_confirmatory.py": "2f54afa6e125c19a1eb535f941a559946a3a38885591fc85d3dc1cd0044a7a7b"
+        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "571d1d1"
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.36818": {
       "title": "how genes and drugs seed",
@@ -834,11 +834,11 @@
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.20413": {
       "title": "key and forward_cone exactness",
@@ -859,11 +859,11 @@
         "decision:9.16": "56969743a48a3720ef9fac82a6e7fd7460b691145316a25ec64108be0fb5b41d",
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.20783": {
       "title": "bottleneck and pH facts",
@@ -882,11 +882,11 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/graph/compartment_ph.py": "3d1408db544e6dedc830f1f7a4a65fb6b504b33e89215b87a8eb26dd818ed264"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.37414": {
       "title": "arms cannot change the verdict",
@@ -931,10 +931,10 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.31942": {
       "title": "what a module is",
@@ -1000,12 +1000,12 @@
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:37g": "bce6ab8e87bd30f6c85a7c16edaacd827c0c6b3efd9fc7e4ea5929d307e56f87",
         "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.21164": {
       "title": "what each quantity means (lead and table .21371)",
@@ -1032,11 +1032,11 @@
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
         "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.24243": {
       "title": "modules as nosology units",
@@ -1084,7 +1084,7 @@
         "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/forward_cone_divisor.py": "f0b02f592ce982abb0fbe2668a9836b67814ec4a8977737263c91c9c47ad52cc",
         "file:mechanistic_pathway_learning/graph/compartment_ph.py": "3d1408db544e6dedc830f1f7a4a65fb6b504b33e89215b87a8eb26dd818ed264",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
@@ -1092,7 +1092,7 @@
         "file:mechanistic_pathway_learning/models/minimum_description_length_selection.py": "20eaeb3ca2c3e5a903fcd019917fc0f5aba9d658ec2913ba9c046f41ef990ea5"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.24431": {
       "title": "the word \"time scale\"",
@@ -1110,10 +1110,10 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.36327": {
       "title": "lanes",
@@ -1136,11 +1136,11 @@
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37b": "8b036e4e549e8bd84b4f039d3bb8ed978d8c78ff21d74967ebe8463c6c64e6b0",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:experiments/build_cell_class_weights.py": "50e62b43618c3cf1d002772f88c9ccaed4acae86dcd802d10ac72a18c10383b5"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.37074": {
       "title": "membrane potential terms",
@@ -1160,10 +1160,10 @@
         "decision:9.112": "dc5e955db4c8126319e694344034f08d3317e6c524404b45969e6316e62fa838",
         "decision:9.129": "ec3bd2a9d27933d543cfd9a238b6085d6e4fc82914095757f69514fa2630caaa",
         "item:37d": "ef00c0995ebbc303748270b74513ed254d9a3bfff9237392c0c22a5d113c1206",
-        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "5ce9d29a4ab42011300b5ed4212109cd269d8718d34365f0c2834c0e47dc69f1"
+        "file:mechanistic_pathway_learning/graph/membrane_potential.py": "affb9c28bdc2bebc40f2841fa88079bf362a9e4f8dc3f0b98ce22fa46ea874f2"
       },
-      "checked": "2026-11-24",
-      "checked_at_commit": "47f0879"
+      "checked": "2026-11-27",
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.2802": {
       "title": "why the linear encoder",
@@ -1183,10 +1183,10 @@
         "decision:9.77": "09e709df02ea5ec8a2469296ea6c39b7c904275ff3c9f9971a9d577ea3dbc96c",
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.3159": {
       "title": "the pH ceiling is inert",
@@ -1204,10 +1204,10 @@
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.11532": {
       "title": "concept 1, the fixed point (heading .11513, formula .11854)",
@@ -1231,10 +1231,10 @@
         "decision:9.153": "cc9a808f44a9c5faac89a8f24d35a991f3c3e66db6c3011d89ec63a7243eed59",
         "item:37f": "869e97c1471d1325793f7bb9b60a64073f7494183eebc16026114e90560c74b5",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.11974": {
       "title": "concept 2, rates drop out (formula .12205)",
@@ -1248,10 +1248,10 @@
       },
       "fingerprints": {
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc"
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.13026": {
       "title": "concept 3, where linearity binds (table .13192)",
@@ -1361,12 +1361,12 @@
         "decision:9.119": "a41b6176420ee6f6cbf57300b2e8130600957df9469bf3f3a365ec39c59f7b47",
         "decision:9.150": "7c5809e9a0414cd8fdaf34d26bfe5d169308c13da6f21350724e9e73d11b9def",
         "item:39": "ac00e0a15fdb541f4cf0cd11e5bd2e2740776ee6c125812b149bdf8d8c53a064",
-        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "fa2a3ed99a2a5ca5a98e68af9150f007d1292b5ce68e9b13bdaa543bba81d8bc",
+        "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "1838110fe89d3b1403a2e70aa257070a08e7ea65cc28d7b3c6ae61ec76a6b5bc",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "bb76d50"
+      "checked_at_commit": "7fed611"
     },
     "mtp7zsmsxgy.1602": {
       "title": "the registered model (lead and table .1944)",
