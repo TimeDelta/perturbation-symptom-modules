@@ -163,7 +163,11 @@ def documents(today: date) -> dict:
         text = (REPOSITORY_ROOT / path).read_text(encoding="utf-8", errors="replace") if (REPOSITORY_ROOT / path).exists() else ""
         changed_since = commits_touching_since(referenced_repository_paths(text), entry["as_of_commit"]) if entry.get("as_of_commit") else []
         living_rows.append({"path": path, "reviewed": reviewed or "?", "as_of_commit": entry.get("as_of_commit", "?"), "overdue": overdue,
-                            "changed_since": changed_since, "dangling": dangling_paths(text)})
+                            "changed_since": changed_since,
+                            # an absent path the register explains (names_absent_paths, with its reason) is not reported,
+                            # the rule tests/test_documentation_process.py holds the documents to; before 27 November 2026
+                            # this diagnostic reported those too, so it named five deliberate mentions as dangling
+                            "dangling": [missing for missing in dangling_paths(text) if missing not in entry.get("names_absent_paths", {})]})
     frozen_rows = []
     for path in by_class.get("frozen", []):
         entry = registry[path].fields
@@ -254,7 +258,7 @@ def render_review(docs: dict, today: date) -> str:
         changed = ", ".join(row["changed_since"][:8]) + (f" and {len(row['changed_since']) - 8} more" if len(row["changed_since"]) > 8 else "")
         lines.append(f"  {due:8s} {row['path']}  (reviewed {row['reviewed']} at {row['as_of_commit']})" + (f": changed since: {changed}" if changed else ""))
         if row["dangling"]:
-            lines.append(f"           names paths not in the tree: {', '.join(row['dangling'])}")
+            lines.append(f"           names paths not in the tree, unexplained in the register: {', '.join(row['dangling'])}")
     return "\n".join(lines)
 
 

@@ -252,6 +252,16 @@ def test_paths_named_by_living_and_generated_documents_exist(registry):
     assert not dangling, f"paths named that are not in the tree (or say why in the register's names_absent_paths): {dangling}"
 
 
+def test_the_review_diagnostic_reports_no_absent_path_the_register_explains(registry):
+    """generate_status.py --review and the test above apply one rule: an absent path with a reason in the register's
+    names_absent_paths is allowed, so the review does not list it as dangling (it did until 27 November 2026)."""
+    from experiments.generate_status import documents
+
+    for row in documents(date.today())["living"]:
+        allowed = set(registry[row["path"]].fields.get("names_absent_paths", {}))
+        assert not allowed & set(row["dangling"]), f"{row['path']}: the review reports allowed absent paths {sorted(allowed & set(row['dangling']))}"
+
+
 def test_absent_paths_allowed_in_the_register_are_still_absent_and_explained(registry):
     """An allowance that outlives its reason is itself stale: once the file exists, the entry goes."""
     for path, entry in registry.items():

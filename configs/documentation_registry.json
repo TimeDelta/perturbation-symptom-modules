@@ -376,7 +376,7 @@
       "reviewed": "2026-11-07",
       "as_of_commit": "0c44f86",
       "names_absent_paths": {
-        "docs/split_slice_comparisons.md": "a slice comparison table the document says exists; no commit has held it",
+        "docs/split_slice_comparisons.md": "the table the commands the document gives would write (experiments/compare_twin_runs.py --markdown-output); no commit has held it, as the document says",
         "docs/split_slice_comparisons_merged_strata.md": "as above"
       }
     },
