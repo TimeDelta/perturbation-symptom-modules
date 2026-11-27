@@ -185,8 +185,8 @@
     },
     "docs/data_sources.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/decision_history.md": {
       "class": "generated",
