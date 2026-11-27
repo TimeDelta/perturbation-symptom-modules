@@ -848,13 +848,7 @@
     },
     "docs/generated/rodent_readout_human_evidence.md": {
       "class": "generated",
-      "generator": "experiments/map_rodent_readout_human_evidence.py",
-      "names_absent_paths": {
-        "docs/rodent_readout_human_evidence_references.json": "moved to `docs/generated/rodent_readout_human_evidence_references.json` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
-        "docs/rodent_readout_human_evidence_checks.json": "moved to `docs/generated/rodent_readout_human_evidence_checks.json` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
-        "docs/rodent_readout_human_evidence_prompt.txt": "moved to `docs/generated/rodent_readout_human_evidence_prompt.txt` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
-        "docs/rodent_readout_human_evidence.json": "moved to `docs/generated/rodent_readout_human_evidence.json` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
-      }
+      "generator": "experiments/map_rodent_readout_human_evidence.py"
     },
     "docs/generated/score_by_layer_contact_neuronal.md": {
       "class": "generated",
