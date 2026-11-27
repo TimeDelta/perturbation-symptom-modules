@@ -85,11 +85,11 @@
         "item:38": "366e6ef6dc2abab7bb7fafef4b8771339402bd51c385dbe4ce54caeaa4992baa",
         "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
         "file:experiments/run_main_model.py": "8512dad8238777151186763f171d7dd05cb6038a38722f9f7ad43e43bf4a43ce",
-        "file:experiments/run_baselines.py": "e4062838bd2b8825fefe9c5fd7c5d96a6a33e385fcb800034d654f0acf29a4e5",
+        "file:experiments/run_baselines.py": "48f695dc6ab5481dfc14324e597cd4db71bc2072b719edad8210f5783412e374",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-27",
-      "checked_at_commit": "7fed611"
+      "checked_at_commit": "80e83bb"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
