@@ -514,10 +514,12 @@ edge forms a negative two-cycle with the depletes_substrate edge the encoder der
 neuronal graph, measured by `experiments/measure_signed_graph_balance.py` on 7 October 2026 on the slice
 graphs of that day (`data/processed/graph`, the 94,786 stored edges of the release v0.4 `graph` table plus
 34,791 derived depletion edges, and the graph_neuronal build of the same day). The graph has been rebuilt
-several times since (the v4 build, and October builds under the v5 names that decision 9.106 rules are not
-v5), so these are the counts of that graph, not of the current one. So the balance-theoretic
-tools are unavailable here, and the papers that work best on association networks do so partly because
-those networks are close to balanced.
+several times since (the v4 build; October builds under the v5 names that decision 9.106 rules are not v5; and
+`graph_full_neuronal_split_binders_drugs_v5`, built on 5 November 2026 (decision 9.106) and rebuilt on 12 November
+2026 from `graph_full_neuronal` down (`docs/data_layer_rebuild.md`), still under `membrane_potential_build =
+computed_from_the_pools`, with the rebuild that decision 9.112 needs owed), so these are the counts of that
+graph, not of the current one. So the balance-theoretic tools are unavailable here, and the papers that work
+best on association networks do so partly because those networks are close to balanced.
 
 That reframes the project's negative result. The question is not only whether signed propagation beats
 unsigned diffusion, but whether it can when the signed graph is maximally frustrated, where the

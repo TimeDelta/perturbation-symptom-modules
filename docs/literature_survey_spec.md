@@ -168,8 +168,11 @@ each (22.5 percent of the PubTator3 rows and 1,884 pairs in the 3 October build)
 sider_chemical_matching.collapse_matches_to_one_drug_per_mesh_id keeps one STITCH id per MeSH id, in this order of
 preference: the match method (exact descriptor name, then matched synonym, then label lookup, then CTD name), then a
 STITCH id with a ChEMBL mapping in data/raw/chembl/pubchem_to_chembl_with_parents.json (the drugs the assembler can
-join to targets), then the lowest PubChem CID. The dropped ids are listed in pubtator_relations_summary.json
-(collapsed_sider_drugs_by_mesh_id); filter_ctd_rows applies the same rule, preferring the id the PubTator3 map kept.
+join to targets), read since 20 November 2026 with configs/chembl_parent_corrections.csv applied
+(map_drug_targets_to_graph_nodes.read_pubchem_to_chembl, the map the assembler joins through; the builds of this
+document read the map as fetched), then the lowest PubChem CID. The dropped ids are listed in
+pubtator_relations_summary.json (collapsed_sider_drugs_by_mesh_id); filter_ctd_rows applies the same rule,
+preferring the id the PubTator3 map kept.
 
 Build of 3 October 2026, before the one-drug-per-chemical rule: of 1,430 SIDER drugs, 1,073 matched by descriptor name, 137 by matched synonym and 220 not at all. Of 9,880 chemical ids on rows with a target descriptor, 8,897 matched no SIDER name after the autocomplete pass; all 8,897 were looked up by label and none added a match, so 137,110 rows were dropped as chemicals without a SIDER drug.
 

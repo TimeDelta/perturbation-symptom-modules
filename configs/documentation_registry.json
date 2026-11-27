@@ -289,8 +289,8 @@
     },
     "docs/evidence_reports_spec.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/experiment_design.md": {
       "class": "living",
@@ -505,8 +505,8 @@
     },
     "docs/literature_appraisal_staging.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/generated/literature_survey.md": {
       "class": "generated",
@@ -514,8 +514,8 @@
     },
     "docs/literature_survey_spec.md": {
       "class": "living",
-      "reviewed": "2026-11-04",
-      "as_of_commit": "0fd0139"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/generated/mechanism_cards/b6_default_disease_cluster/anxiety.md": {
       "class": "generated",
@@ -680,8 +680,8 @@
     },
     "docs/onsides_label_slice_spec.md": {
       "class": "living",
-      "reviewed": "2026-10-25",
-      "as_of_commit": "697f59b"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/records/2026-10/open_decision_triage_2026-10-21.md": {
       "class": "record",
