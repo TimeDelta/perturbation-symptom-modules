@@ -1,4 +1,4 @@
-"""Does the grouped split separate a drug from the loss of function of its own target gene? (Writes docs/drug_target_leakage.md.)
+"""Does the grouped split separate a drug from the loss of function of its own target gene? (Writes docs/generated/drug_target_leakage.md.)
 
 Under the disease-cluster grouping a gene is held out with the genes that share a disease entry, and a drug with the drugs
 of the same target set. Nothing keeps a drug and its target gene in one fold, so a model can learn "perturbing this node
@@ -73,7 +73,7 @@ def main() -> None:
     parser.add_argument("--label-selection", type=Path, default=Path("data/processed/label_selection/better_v1_full_v2.parquet"))
     parser.add_argument("--num-folds", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/drug_target_leakage.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/drug_target_leakage.md"))
     parser.add_argument("--json-output", type=Path, default=Path("runs/drug_target_leakage.json"))
     arguments = parser.parse_args()
     results = {}

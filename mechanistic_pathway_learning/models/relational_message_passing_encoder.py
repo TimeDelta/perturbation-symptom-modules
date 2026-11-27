@@ -58,13 +58,13 @@ with one pair of maps per layer, which is the edge form of the injection Linear(
 that a seed on the target itself receives. A mean would divide a drug's signal at its target by the
 number of study drugs sharing that target, and with every drug node present a gene knockout's field
 would depend on which drugs the study contains; both are measured in
-docs/drug_entry_nodes_measured.md. The relations of entry_relation_indices are left out of the
+docs/generated/drug_entry_nodes_measured.md. The relations of entry_relation_indices are left out of the
 stacked product because these edges are handled here.
 
 An entry node sits one edge behind the nodes a seed on the targets starts from, so with L layers its
 signal reaches L - 1 edges beyond the targets instead of L. On the confirmatory graph at three
 layers that leaves a drug a median 0.11 of the nodes its targets reach
-(docs/drug_entry_nodes_measured.md). entry_before_first_layer delivers the entry edges once before
+(docs/generated/drug_entry_nodes_measured.md). entry_before_first_layer delivers the entry edges once before
 the first layer as well, with maps of their own, so the targets start the first layer already
 carrying the drug's signal and the depth beyond them is the L of a seed on the targets. The entry
 edges still send at every layer, which makes a drug a sustained input where a seed is only an

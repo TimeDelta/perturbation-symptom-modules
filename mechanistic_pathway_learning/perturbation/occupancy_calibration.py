@@ -6,7 +6,7 @@ it is imputed from the placeholder scheme, which fixes the best-bound mechanism 
 asserts `C = 9 * Kd` of that target.
 
 **Why a constant shift was rejected** (the owner, 13 October 2026: "A slope plus bias calibration is better. Do
-that instead"). Two measurements, both in `docs/occupancy_coverage_and_shift_transfer.md`:
+that instead"). Two measurements, both in `docs/generated/occupancy_coverage_and_shift_transfer.md`:
 
   1. The placeholder's log concentration falls with the best mechanism affinity at a slope of exactly -1, because
      that is what `C = 9 * Kd` means. The measured concentration falls at about -0.53: a more potent drug is dosed

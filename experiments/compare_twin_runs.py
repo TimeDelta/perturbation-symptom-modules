@@ -328,7 +328,7 @@ def main() -> None:
     lines += ["", "## Set aside", "",
               f"Run directories are read from {' and '.join(f'`{root}`' for root in RUN_ROOTS)}. A run that finished elsewhere reads as 0 folds "
               "here: the module-fix and gene-protein-split arms live under `runs/module_fix` and are compared in docs/generated/module_health_results.md "
-              "and docs/gene_protein_split_results.md, each with its own `--run-root`.", ""]
+              "and docs/records/2026-10/gene_protein_split_results.md, each with its own `--run-root`.", ""]
     for entry in entries:
         if "set_aside" in entry:
             lines.append(f"- {entry['a']} against {entry['b']} (`{entry['change']}`): {entry['set_aside']}.")

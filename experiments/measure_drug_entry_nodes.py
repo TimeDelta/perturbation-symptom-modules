@@ -1,4 +1,4 @@
-"""Measure what drug entry nodes change before anything is trained on them (docs/drug_entry_nodes.md).
+"""Measure what drug entry nodes change before anything is trained on them (docs/records/2026-10/drug_entry_nodes.md).
 
 Nothing here fits a parameter or reads an outcome to choose anything. Every encoder is at its random start with a fixed
 seed, and two encoders that are compared share every parameter they have in common, so a difference between them comes
@@ -17,9 +17,9 @@ What is measured:
      its targets and scaled by the entry gain;
   6. the carriers' sequestration edges: what they change in a drug's own field under each encoder, and how the drugs
      with a known carrier differ from the others in kept positives;
-  7. the drug classes of the study by ATC group, for the pharmacokinetic question of docs/drug_entry_nodes.md.
+  7. the drug classes of the study by ATC group, for the pharmacokinetic question of docs/records/2026-10/drug_entry_nodes.md.
 
-Writes docs/drug_entry_nodes_measured.md and a JSON beside the variant graph. Reads no lockbox: the label selection
+Writes docs/generated/drug_entry_nodes_measured.md and a JSON beside the variant graph. Reads no lockbox: the label selection
 and the evidence table are read whole, as the trainer reads them before any split.
 
 Usage:
@@ -45,7 +45,7 @@ from mechanistic_pathway_learning.graph.drug_entry_nodes import DRUG_MECHANISM_R
 from mechanistic_pathway_learning.models.linear_response_encoder import SUBSTRATE_RELATION, LinearResponseEncoder
 from mechanistic_pathway_learning.models.relational_message_passing_encoder import RelationalMessagePassingEncoder
 
-OUTPUT_DOCUMENT = Path("docs/drug_entry_nodes_measured.md")
+OUTPUT_DOCUMENT = Path("docs/generated/drug_entry_nodes_measured.md")
 MEASUREMENTS_FILE = "drug_entry_measurements.json"
 NODE_STATE_DIM = 16
 TOLERANCE = 1e-6

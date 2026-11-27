@@ -560,7 +560,7 @@ def bridge_chembl_parents_by_sider_cid(onsides_bridge_path: Path | None, identit
     The SIDER route reaches ChEMBL through UniChem (the cache map pubchem_to_chembl_with_parents.json, with the parents
     of configs/chembl_parent_corrections.csv added when it is read, map_drug_targets_to_graph_nodes.read_pubchem_to_chembl);
     for a CID that map leaves without a usable ChEMBL id, the parent the bridge found for the same drug by RxNorm, UNII
-    or name is the fallback (docs/drug_targets_any_type.md). Until 20 November 2026 the map
+    or name is the fallback (docs/records/2026-10/drug_targets_any_type.md). Until 20 November 2026 the map
     was read as fetched, and for the table's CIDs whose cached ids carry no mechanism this fallback was the only route
     to the parent (the v5 build reached each of them in the bridge this way); the table makes their targets
     independent of the bridge file being present.
@@ -1042,7 +1042,7 @@ def main() -> None:
                         help="curated actions for the drug-target pairs whose ChEMBL rows disagree on the action; a conflict without a row is withheld "
                              "and listed in chembl_action_conflicts.csv. Pass the same file to build_onsides_reports.py")
     parser.add_argument("--onsides-bridge", type=Path, default=None, help="OnSIDES ingredient identifier bridge; its ChEMBL parents are the fallback for SIDER CIDs whose ChEMBL ids (UniChem's, with configs/chembl_parent_corrections.csv applied) give no mechanism")
-    parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/drug_targets_any_type.md)")
+    parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/records/2026-10/drug_targets_any_type.md)")
     parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs that are themselves a graph metabolite: with no mechanism target, or with one that moves onto the compound's edges at the merge (moves_mechanism_to_compound_edges)")
     parser.add_argument("--seed-gain-of-function-genes-positive", action="store_true",
                         help="seed a gene with sign +1 when every causal association behind its reports is Orphanet's gain-of-function type; without it every gene has sign -1")

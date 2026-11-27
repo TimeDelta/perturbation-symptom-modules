@@ -132,7 +132,7 @@ with fewer than five positives. It weighs frequent symptoms more and credits ran
 against the same baselines (popularity among them). Every scoring script reports it beside the macro average, in the same
 three readings (per fold, pooled, within degree strata).
 
-Leakage grouping, decided 7 October 2026 (experiments/check_drug_target_leakage.py, docs/drug_target_leakage.md): under the
+Leakage grouping, decided 7 October 2026 (experiments/check_drug_target_leakage.py, docs/generated/drug_target_leakage.md): under the
 disease-cluster grouping a drug is grouped by its target set, so it can sit in another fold than the loss of function of its
 own target gene. On the expanded labels, 69 of the 73 drugs that target a labelled gene had such a gene in another fold, and 66
 of the 418 kept drug positives were also kept positives of such a gene. Where a labelled target gene is positive for a symptom
@@ -917,12 +917,12 @@ graph that splits genes from proteins. This closes the last question of the amen
   degree quintile (CASP2, FGF8, GBA1, H3-3A, OTX2, WT1); on the slice the value is identical for all 451. The
   stratification is therefore preserved, not redefined, and is not re-registered. The first implementation of this
   hop read every node one edge away; that agreed on the slice but moved 43 percent of the full graph's strata, and it
-  was corrected before any run (docs/gene_protein_split_results.md carries both readings).
+  was corrected before any run (docs/records/2026-10/gene_protein_split_results.md carries both readings).
 - Still open, and blocking the lockbox run. Whether `encodes` is rewired in the H2 control (rewiring it would break
   the gene-to-protein identity the split exists to express, so holding it fixed is the proposal, not yet a decision);
   the descriptor treatments; and the development pilots of the two split configurations with the split baselines,
   which must be run and read first.
-- The slice reading of docs/gene_protein_split_results.md is not evidence against this change: the user does not
+- The slice reading of docs/records/2026-10/gene_protein_split_results.md is not evidence against this change: the user does not
   accept the slice as a verdict on the split until the two confirmatory models are tested on it.
 
 Amendment, 9 October 2026 (second), recording the user's decisions after the first. Each is quoted and then stated as
@@ -956,7 +956,7 @@ a rule. No lockbox run has started, and none of these changes a finished run.
   scoping only: the measurement-coverage strata count genes with an affinity, not their values, so they do not move.
 - **Every plasma substrate binder is modelled, and the measured-occupancy extension waits for them** ("All of the
   plasma substrate binders should be modeled. Once AAG and albumin are added, there will be state to attach that
-  separate extension to."). The scope, the data audit and what is missing are in docs/plasma_protein_binding.md. The
+  separate extension to."). The scope, the data audit and what is missing are in docs/records/2026-10/plasma_protein_binding.md. The
   graph already holds the binders as gene nodes (ALB, ORM1, ORM2, SERPINA6, SERPINA7, TTR, AFP, SHBG and the
   apolipoproteins) with no edge to anything they carry, so the first stage is binding edges for the substrates, and
   the second is the fraction unbound per drug, which no pinned source in this repository carries. Nothing in the
@@ -985,7 +985,7 @@ a rule. No lockbox run has started, and none of these changes a finished run.
     can carry three mechanism targets in different families, 0.49 of test drugs share a mechanism target with a
     training drug under either tie-break, carrying 0.57 of the test fold's kept drug positives, against 0.000 under the
     registered rule, which puts two drugs sharing a target node in one group by construction. On `evidence_full_v2`
-    that part is 0.000 under every rule, and what remains is the drug-to-gene leak of docs/drug_target_leakage.md:
+    that part is 0.000 under every rule, and what remains is the drug-to-gene leak of docs/generated/drug_target_leakage.md:
     0.377 of test drugs target a gene whose own perturbation is in training, carrying 0.411 of the test fold's kept
     drug positives, against 0.000 under the registered rule.
   - So the family rule's gain is bought with that leak, not with a better partition. Its largest group holds 0.18 of the
@@ -1033,7 +1033,7 @@ Three decisions and one question from the user, each quoted.
     protein nodes, which is correct: a protein node is not a Reactome entity.
 - **The plasma substrate binders are built, orosomucoid among them** ("Implement the plasma binders please, download
   and pin whatever data you need. orosomucoid should also be implemented"). Stage 1 of
-  docs/plasma_protein_binding.md: 27 `binds` edges, sign 0, from the extracellular copy of each cargo metabolite to
+  docs/records/2026-10/plasma_protein_binding.md: 27 `binds` edges, sign 0, from the extracellular copy of each cargo metabolite to
   its binder, in `data/processed/graph_full_neuronal_binders` and `data/processed/graph_full_neuronal_split_binders`
   (on the split graph the carriage sits on the protein nodes, since binding is the protein's property). Two sources,
   kept apart in `evidence_source`: the newly pinned UniProt binding-site features
@@ -1113,7 +1113,7 @@ started, so no finished run changes meaning and nothing is re-scored.
   edge set was chosen by a person reading physiology, not drawn by a rule, and TTR's amyloid neuropathy phenotypes
   are the kind of thing that reading could have been influenced by; a reader who rejects that should read the
   lockbox result for TTR as the one row this amendment could in principle have touched.
-- **What is still open.** The second stage of docs/plasma_protein_binding.md, the fraction unbound per drug, is not
+- **What is still open.** The second stage of docs/records/2026-10/plasma_protein_binding.md, the fraction unbound per drug, is not
   in this amendment and is not in the graph: it has no pinned source, and orosomucoid, whose cargo is basic drugs
   that the graph has no node for, enters through that stage rather than through these edges. The development pilots
   of the two split configurations are not re-run here (the user, the same message: "No new pilots yet"), so the
@@ -1231,7 +1231,7 @@ So the rule has two halves, one per target role:
   it is measured on the population the placeholder is carried to rather than assumed from the population it was
   estimated on: over the 154 imputed mechanism rows the median occupancy is 0.806 and a one-sd error moves it x1.2
   up and x3.5 down, against x1.2 and x3.7 on the drugs that have a measurement
-  (`docs/occupancy_coverage_and_shift_transfer.md`).
+  (`docs/generated/occupancy_coverage_and_shift_transfer.md`).
 
 **The cost is registered with the rule.** The prohibition withholds the off-targets of **61 drugs**: 578 of 1,741
 off-target rows, 33.2 percent, on drugs carrying 18.0 percent of the kept positive pairs. **No drug and no label
@@ -1288,7 +1288,7 @@ concentration is `log10 9 + 6 - pK`. The fitted values are kept in `configs/occu
 implementation is `mechanistic_pathway_learning/perturbation/occupancy_calibration.py`.
 
 **Two measurements decided the form, and the second is the stronger**
-(`docs/occupancy_coverage_and_shift_transfer.md`).
+(`docs/generated/occupancy_coverage_and_shift_transfer.md`).
 
 - **`slope = 1` is refuted and not merely improvable.** A bootstrap of 4,000 draws over the 115 fitting drugs puts
   the slope at **[0.420, 0.643]**, which excludes 1.0. Leaving one drug out, the median absolute error falls from
@@ -1606,7 +1606,7 @@ cerebrospinal-fluid or regional value can enter (user, 12 October: "Yes keep add
 94, none are lost and 16 values change, five beyond 2-fold; the diff is in the decision log. Registered with it, because
 it bears on every occupancy the study computes: **the values are predominantly rodent**, and Fagerholm 2022 reports a
 rat-to-monkey R² of 0.74 against a rat-to-human R² of 0.01 (n=13), so the species translation is an unquantified error
-on this input and no claim rests on its absolute scale (docs/brain_exposure_data_feasibility.md). **This clause is
+on this input and no claim rests on its absolute scale (docs/records/2026-10/brain_exposure_data_feasibility.md). **This clause is
 superseded from 26 October 2026 by item 36**: the Fagerholm citation is excluded as not peer reviewed, both coefficients
 are withdrawn, and the n=13 it attaches to the pair belongs to the rat-to-human comparison alone (n=17 is
 rat-to-monkey). The disclosure itself is kept and re-justified there. The cerebrospinal-fluid
@@ -1765,7 +1765,7 @@ It is withdrawn, 13 October 2026. It appears nowhere else in the registration, s
 fixed point and after the bottleneck. It therefore does **not** attenuate the messages a node passes during the
 propagation: a collapse of lysosomal pH cannot change the field at any cytosolic node. The cell-class bottleneck
 does carry its ceiling along routes, through the max-min recurrence; this one does not.
-`docs/physiological_adherence_review.md` section 5 holds its reach (18,928 of 49,796 nodes take a weight; 5,127
+`docs/records/2026-10/physiological_adherence_review.md` section 5 holds its reach (18,928 of 49,796 nodes take a weight; 5,127
 transport reactions carry a multi-compartment label and take none, as do all 25,741 gene, protein and drug nodes)
 and the conditioning of the proton node the ceiling is read from.
 
@@ -2310,7 +2310,7 @@ acting drug with a symptom label would inject label noise into a confirmatory se
 than engineered around; and the excluded-but-plausible drugs are **reported as a named stratum** rather than
 deleted from the record, the same treatment `has_measured_occupancy` receives. Two sources can narrow the gap and
 neither is required by this item: human PET occupancy, already measured as reaching about one drug in eight but
-disproportionately the modern ones (`docs/pet_occupancy_feasibility.md`), and the EMA public assessment reports,
+disproportionately the modern ones (`docs/records/2026-10/pet_occupancy_feasibility.md`), and the EMA public assessment reports,
 whose terms are verified in `docs/data_sources.md`.
 
 **b. A second medicines agency is read when, and only when, no pharmacology section could be read at all.** The
@@ -2420,7 +2420,7 @@ reaction's weight.
 over the members' relative weights, is a different quantity: the relative weight measures a gene's specificity
 across classes, so two subunits with different top classes pull each other down everywhere. Measured, it leaves 55
 percent of complexes above 0.9 in no class at all against 31 percent under the registered order
-(`docs/complex_limiting_member_weight.md`), and a complex available in no class is one nothing propagates through
+(`docs/generated/complex_limiting_member_weight.md`), and a complex available in no class is one nothing propagates through
 anywhere. **Per class** is part of the rule and not an implementation detail: the limiting subunit differs between
 classes for 555 of the 1,523 complexes that carry a gate, so a single globally chosen subunit would be a different
 rule.
@@ -2518,7 +2518,7 @@ the withdrawn item 5b.
   drugs it was estimated on. **So the constant shift is withdrawn and the calibration is a slope and a bias**, item
   5c(ii), on the owner's ruling of 13 October ("A slope plus bias calibration is better. Do that instead"). The
   slope's bootstrap interval excludes 1.0 and the out-of-sample error falls from 0.852 to 0.524 log10
-  (`docs/occupancy_coverage_and_shift_transfer.md`). This limitation is therefore answered rather than stated, and
+  (`docs/generated/occupancy_coverage_and_shift_transfer.md`). This limitation is therefore answered rather than stated, and
   is no longer the same shape as the extrapolation registered for the Open Targets agreement in item 12d, which
   stays untested. What replaces it is narrower and is registered with 5c(ii): the calibration still does not make
   the imputed group's occupancy distribution match the measured one, so `has_measured_occupancy` stays.
@@ -2681,7 +2681,7 @@ ever taken from it. The disclosure
 item 15 registers is kept, because the fact that drives it is the project's own, and reads from today:
 
 > the values are predominantly non-human (Kp,uu,brain from human 13, non-human primate 8, other animal 73;
-> `docs/drug_exposure_table.md`), and cross-species Kp,uu,brain translation is imperfect and substrate-dependent
+> `docs/generated/drug_exposure_table.md`), and cross-species Kp,uu,brain translation is imperfect and substrate-dependent
 > (Langthaler et al. 2023: minipig against rat within 2-fold for 47 percent of 17 compounds on literature free
 > fractions, the condition this project's collated values meet, and 71 percent when both species' free fractions are
 > measured in one assay; Sato et al. 2021: a rat, monkey and human model predicting Kp,uu,brain within 3-fold of
@@ -2795,7 +2795,7 @@ since 2007, under which "site-specific protocols have been replaced with a singl
 assay", had still left that company's two laboratories incubating under different conditions when the measurement
 was made, and the 1.29-fold figure above is what remained once those differences were found and removed.
 
-**What this addition does not change.** No value in `docs/drug_exposure_table.md` or any other table moves, and
+**What this addition does not change.** No value in `docs/generated/drug_exposure_table.md` or any other table moves, and
 nothing is admitted or withdrawn: all three new sources are cited in the disclosure and nowhere else, as
 Langthaler et al. 2023 and Sato et al. 2021 already are. The species-translation disclosure above stands word for
 word; this clause sits beside it as a second, independent error term on the same input. Outcome-blind: no lockbox

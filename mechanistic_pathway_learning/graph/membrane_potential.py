@@ -80,7 +80,7 @@ IONS_WITH_A_CONDUCTANCE_TERM: tuple[str, ...] = ("Na+", "K+", "Cl-", "Ca2+")
 
 # The steady-state change in an ion's cytosolic concentration per unit sustained flux, once the Na+/K+-ATPase and
 # KCC2 have acted: d ln[ion]_i per uA/cm2 of the ion's own sustained inward current. Derived from Düsterwald et al.
-# 2018 Table 1 with no learned parameter (docs/extracellular_pool_sensitivities_2026-11-07.md), and registered as
+# 2018 Table 1 with no learned parameter (docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md), and registered as
 # amendment item 37 after the owner's ruling of 4 November 2026 in decision 9.112. These are the DIAGONAL of a 3x3
 # response matrix whose cross-terms are not zero (per uA/cm2 of sustained inward sodium current, ln[K+]i moves by
 # -0.0109 and ln[Cl-]i by +0.1366): item 37 registers the diagonal alone, and the cross-terms it drops are a stated limit of the build,

@@ -45,7 +45,7 @@ Each line gives the owner's words and where they are recorded (`docs/research_su
   first 16: records `e0206dbe181747e8`, reports `50d847913fa8ef9f`, selection `1d0cde3b1292217c`. 1,636 perturbations
   (1,414 genes and 222 drugs), 24 symptoms, 2,975 kept pairs of which 1,076 are drug pairs. Against `evidence_full_v2`
   the table also carries two earlier changes that are not registered either: drugs with a target of any type and the
-  salt-form fix (the table called v3, `docs/drug_targets_any_type.md`), and parkinsonism as the 24th symptom (decision
+  salt-form fix (the table called v3, `docs/records/2026-10/drug_targets_any_type.md`), and parkinsonism as the 24th symptom (decision
   of 9 October). The amendment would register all of them together. 316 of the 317 perturbations of
   `configs/lockbox_v2.json` are in the table.
 - **The sign of 17 genes.** A gene whose every causal association is a gain of function is seeded with sign +1. The

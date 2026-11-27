@@ -600,7 +600,7 @@ and the old ones.
 
 Decision 9.112 left the three extracellular pools (Na+, K+ and Cl- outside the cell) without a weight, since the
 registered constants source (Düsterwald et al. 2018) holds them constant. A Fable pass of 7 November 2026
-(`docs/extracellular_pool_sensitivities_2026-11-07.md`; derivations in `experiments/derive_extracellular_pool_sensitivity.py`
+(`docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md`; derivations in `experiments/derive_extracellular_pool_sensitivity.py`
 and, for the cytosolic weights of 4 November, `experiments/derive_pump_leak_pool_sensitivity.py`) derived them from
 Hübel and Dahlem 2014, Cressman et al. 2009 and the registered constants with an interstitial space added, against
 experimental anchors. On the definition the cytosolic weights use (the steady state of a sustained flux of the ion,

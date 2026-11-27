@@ -1,4 +1,4 @@
-"""Committed 7 November 2026 (decision 9.112; docs/extracellular_pool_sensitivities_2026-11-07.md): the derivation
+"""Committed 7 November 2026 (decision 9.112; docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md): the derivation
 behind the extracellular values recorded with the owner's ruling of that day. Model B's equations were transcribed
 from the authors' ModelDB file; the file itself is not committed. Run: python experiments/derive_extracellular_pool_sensitivity.py
 

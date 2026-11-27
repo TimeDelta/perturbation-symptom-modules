@@ -63,7 +63,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "label_review"))
 from effect_site_coverage import normalise
 
 OUTPUT_TABLE = Path("configs/centrally_acting_drugs.csv")
-OUTPUT_DOCUMENT = Path("docs/central_action_rule.md")
+OUTPUT_DOCUMENT = Path("docs/generated/central_action_rule.md")
 OUTPUT_SUMMARY = Path("data/processed/label_review/central_action_rule.json")
 DEFAULT_MINIMUM_KPUU_BRAIN = 0.1
 VERDICTS = ("admitted", "below the Kp,uu,brain threshold", "target only, no measured Kp,uu,brain", "no brain-expressed target")

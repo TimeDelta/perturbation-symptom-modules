@@ -8,7 +8,7 @@ collisions), independent of SIDER's own ChEMBL mapping and qualification: a pair
 2015 label and is not a later-slice candidate even though the qualified table lacks it.
 
 Usage:
-  OMP_NUM_THREADS=1 python experiments/build_onsides_reports.py   # writes data/processed/onsides/onsides_reports.parquet, a summary and docs/onsides_label_slice.md
+  OMP_NUM_THREADS=1 python experiments/build_onsides_reports.py   # writes data/processed/onsides/onsides_reports.parquet, a summary and docs/generated/onsides_label_slice.md
 
 Beside the reports the build writes chembl_action_conflicts.csv: every target to which a bridged ingredient's ChEMBL
 rows give more than one action type, resolved by --chembl-action-conflict-resolutions or withheld until a row is
@@ -144,7 +144,7 @@ def main() -> None:
     parser.add_argument("--crosswalk", type=Path, default=Path("docs/symptom_crosswalk.csv"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full"), help="assembled table whose SIDER-label pairs define the qualified overlap")
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed/onsides"))
-    parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/drug_targets_any_type.md)")
+    parser.add_argument("--non-protein-targets", type=Path, default=NON_PROTEIN_TARGETS_PATH, help="ChEMBL non-protein targets -> Human-GEM metabolites (docs/records/2026-10/drug_targets_any_type.md)")
     parser.add_argument("--drugs-acting-as-graph-compounds", type=Path, default=DRUGS_ACTING_AS_GRAPH_COMPOUNDS_PATH, help="drugs that are themselves a graph metabolite: with no mechanism target, or with one that moves onto the compound's edges at the merge (moves_mechanism_to_compound_edges)")
     parser.add_argument("--max-drug-targets", type=int, default=1, help="most mechanism targets a qualifying ingredient may have; 0 lifts the single-target rule")
     parser.add_argument("--admitted-atc-prefixes", type=Path, default=None,
@@ -167,7 +167,7 @@ def main() -> None:
                              "of the complex's subunits, is narrowed to the subunits that form the site (alpha1, 2, 3 or 5 with gamma2); an extension "
                              "of decision 8.11, which closed on 20 October 2026 when the owner merged pull request #4 with both additions on by default")
     parser.add_argument("--binding-sites", type=Path, default=DEFAULT_BINDING_SITES_PATH)
-    parser.add_argument("--markdown-output", type=Path, default=Path("docs/onsides_label_slice.md"))
+    parser.add_argument("--markdown-output", type=Path, default=Path("docs/generated/onsides_label_slice.md"))
     arguments = parser.parse_args()
 
     tables = load_onsides_tables(arguments.onsides_parquet_dir)

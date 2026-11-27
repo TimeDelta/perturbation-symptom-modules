@@ -1,6 +1,6 @@
 """Tabulate the routes of administration of each study drug's FDA labels, against whether a plasma carrier is known.
 
-Why. A carrier's sequestration edge (docs/drug_entry_nodes.md) says that more carrier means less free drug and so less
+Why. A carrier's sequestration edge (docs/records/2026-10/drug_entry_nodes.md) says that more carrier means less free drug and so less
 effect. That holds for the unbound exposure of a drug only when the dose bypasses the liver's first pass and the liver
 extracts most of what reaches it: Benet 2018 (J Clin Pharmacol 58:979, Table 1) gives "Orally dosed; hepatic
 elimination: No", "IV dosed; low ER: No", "IV dosed; high ER: Yes". So whether the edge can mean what it says depends
@@ -141,7 +141,7 @@ def main() -> int:
         "",
         "Why this table exists. A carrier's sequestration edge states that more carrier lowers the drug's effect. For a drug cleared by the liver, the "
         "unbound exposure depends on the unbound fraction only when the dose bypasses the first pass and the liver extracts most of the drug "
-        "(Benet 2018, Table 1; Hochman et al. 2015, Table 2; quotes in `docs/drug_entry_nodes.md`). This table gives the route half of that "
+        "(Benet 2018, Table 1; Hochman et al. 2015, Table 2; quotes in `docs/records/2026-10/drug_entry_nodes.md`). This table gives the route half of that "
         "condition. **The extraction ratio is not tabulated: no source in this repository holds a clearance per drug.** The class of a drug is the "
         "most permissive route any of its labels names, so `intravenous` means an intravenous product exists, and the adverse-effect reports of this "
         "study do not say which product a patient took.",

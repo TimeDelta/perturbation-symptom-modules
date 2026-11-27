@@ -1,5 +1,5 @@
 """Fetch and pin the fraction unbound in plasma (fu) database of Al-Qassabi and colleagues, which is stage 2 of
-docs/plasma_protein_binding.md: the free fraction per drug, with the binding protein named.
+docs/records/2026-10/plasma_protein_binding.md: the free fraction per drug, with the binding protein named.
 
 It is the one open source found that carries all three things orosomucoid needs and that no source already pinned
 here holds: the fraction unbound in a reference population, the same drug's fraction unbound in a population whose
@@ -12,7 +12,7 @@ whether albumin (HSA), orosomucoid (AAG) or both is the major binding protein. E
 The file is taken through the figshare API rather than from a fixed download link, so its md5 can be checked against
 the one figshare publishes for it; a mismatch fails the fetch rather than pinning a corrupt file. Raw files are never
 committed (data/raw is gitignored); the pin is recorded in docs/data_sources.md, the coverage in
-docs/fraction_unbound_coverage.md.
+docs/generated/fraction_unbound_coverage.md.
 
 Usage:
   python experiments/fetch_fraction_unbound_database.py [--refresh]

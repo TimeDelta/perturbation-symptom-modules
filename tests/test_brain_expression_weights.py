@@ -76,7 +76,7 @@ def test_the_limiting_member_is_chosen_within_each_class_and_can_differ_between_
 
 def test_the_minimum_is_on_raw_expression_and_not_on_the_members_relative_weights():
     """The registered order. Taking it the other way round drives a complex of differently specific subunits
-    towards zero in every class, which is what docs/complex_limiting_member_weight.md measures."""
+    towards zero in every class, which is what docs/generated/complex_limiting_member_weight.md measures."""
     nodes, edges, class_expression = complex_fixture()
     registered = relative_expression_weights(
         complex_limiting_member_expression(nodes, edges, class_expression))

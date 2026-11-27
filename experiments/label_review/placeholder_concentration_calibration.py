@@ -103,7 +103,7 @@ def main() -> None:
              "What this document still establishes is that the placeholder is biased and that the bias is worth "
              "removing. What it got wrong is the form: a constant cannot reach the dependence on affinity that the "
              "placeholder builds in, and it leaves the best mechanism target of every imputed drug at one and the "
-             "same occupancy. Both are measured in `docs/occupancy_coverage_and_shift_transfer.md`, which carries "
+             "same occupancy. Both are measured in `docs/generated/occupancy_coverage_and_shift_transfer.md`, which carries "
              "the registered calibration. The offset below is kept as the baseline that calibration is scored "
              "against and as the record of what was registered first.", "",
              "**One limit on the transfer.** The offset is estimated on the drugs that have a measured concentration, "

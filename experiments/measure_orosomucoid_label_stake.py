@@ -6,7 +6,7 @@ would also be fine as training examples.").
 
 Two questions, answered from the repository's own inputs and nothing else:
 
-  1. the stake. The pinned fraction-unbound database (docs/fraction_unbound_coverage.md) names orosomucoid as the
+  1. the stake. The pinned fraction-unbound database (docs/generated/fraction_unbound_coverage.md) names orosomucoid as the
      major binding protein for 11 of this study's drug perturbations. This script counts the kept positive pairs
      those 11 hold, per drug and per symptom, against the whole label selection, so that "drop the orosomucoid
      drugs" has a price rather than a worry;
@@ -31,7 +31,7 @@ from experiments.measure_fraction_unbound_coverage import measurement_rows, stud
 HPO_ANNOTATIONS = Path("data/raw/hpo/genes_to_phenotype.txt")
 LABEL_SELECTION = Path("data/processed/label_selection/better_v2_full_v2.parquet")
 OUTPUT_DOCUMENT = Path("docs/generated/orosomucoid_label_stake.md")
-# every plasma binder the carriage table names (docs/plasma_protein_binding.md), orosomucoid's two genes first
+# every plasma binder the carriage table names (docs/records/2026-10/plasma_protein_binding.md), orosomucoid's two genes first
 PLASMA_BINDER_GENES = ["ORM1", "ORM2", "ALB", "SERPINA6", "SERPINA7", "TTR", "AFP", "SHBG", "RBP4", "APOA1", "APOB"]
 
 

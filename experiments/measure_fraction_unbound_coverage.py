@@ -1,5 +1,5 @@
 """How far the pinned fraction unbound database reaches over this study's drugs, which is what decides whether
-stage 2 of docs/plasma_protein_binding.md can be built (the free fraction per drug, and with it orosomucoid's role).
+stage 2 of docs/records/2026-10/plasma_protein_binding.md can be built (the free fraction per drug, and with it orosomucoid's role).
 
 Reads the database pinned by experiments/fetch_fraction_unbound_database.py (Al-Qassabi et al., CC BY 4.0,
 https://doi.org/10.48420/25243138.v1) and the study's drug perturbations, and reports, per drug the database holds:
@@ -59,7 +59,7 @@ def main() -> int:
     parser.add_argument("--database", type=Path, default=DATABASE)
     parser.add_argument("--evidence-dir", type=Path, default=Path("data/processed/evidence_full_v2"))
     parser.add_argument("--lockbox", type=Path, default=Path("configs/lockbox_v2.json"))
-    parser.add_argument("--output", type=Path, default=Path("docs/fraction_unbound_coverage.md"))
+    parser.add_argument("--output", type=Path, default=Path("docs/generated/fraction_unbound_coverage.md"))
     arguments = parser.parse_args()
 
     rows = measurement_rows(arguments.database)
@@ -98,7 +98,7 @@ def main() -> int:
               + ", ".join(orosomucoid_drugs) + ".", "",
               "## The study's drugs the database does not hold", "",
               f"{int((~drugs.covered).sum())} drugs: " + ", ".join(sorted(drugs.loc[~drugs.covered, "perturbation_label"])) + ".", "",
-              "A drug missing here has no free fraction from this source, so stage 2 of docs/plasma_protein_binding.md "
+              "A drug missing here has no free fraction from this source, so stage 2 of docs/records/2026-10/plasma_protein_binding.md "
               "cannot rescale its seed magnitudes without a second source or a prediction, and a predicted value is "
               "exactly what the database's own paper warns against for a population whose binder concentration has "
               "moved."]

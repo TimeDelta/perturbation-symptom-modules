@@ -1,6 +1,6 @@
 """Pull BRENDA's enzyme-regulation records for human proteins into one table.
 
-Decision 9.14 and docs/missing_physiology_review.md section 2: the graph can receive a metabolite response but
+Decision 9.14 and docs/records/2026-10/missing_physiology_review.md section 2: the graph can receive a metabolite response but
 almost cannot act on one, 600 of 266,966 edges running metabolite to protein and 4 `inhibits` in the whole graph.
 BRENDA's inhibitor, activating-compound, Ki, IC50, cofactor and metals/ions fields are that missing layer.
 

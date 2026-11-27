@@ -7,7 +7,7 @@ reach the metabolic layer directly; receptor targets reach it only through the
 signaling and transcription layers.
 
 Every ChEMBL target type is placed where the graph has a node for it
-(GraphNodeLookup.nodes_of_target, docs/drug_targets_any_type.md):
+(GraphNodeLookup.nodes_of_target, docs/records/2026-10/drug_targets_any_type.md):
 - protein targets (single proteins, complexes, families): the gene nodes of their gene symbols;
 - nucleic-acid targets that name a gene (the mRNA or pre-mRNA of TTR, SMN2, APOB): that gene's node, by Ensembl id;
 - metals, small molecules, lipids and oligosaccharides: the Human-GEM metabolites of
@@ -650,7 +650,7 @@ def has_dominant_target(drug_targets: list[DrugTarget], max_targets: int | None 
     Affinity margins are not yet used; a ChEMBL protein-family target (for example the GABA-A
     receptor) counts as one target even though it maps to many gene nodes. max_targets None or 0 lifts the cap: any
     drug with at least one mechanism target passes, and each of its targets is seeded with magnitude 1 spread over
-    that target's nodes (docs/drug_targets_any_type.md, "Lifting the single-target rule"). withheld_targets counts the
+    that target's nodes (docs/records/2026-10/drug_targets_any_type.md, "Lifting the single-target rule"). withheld_targets counts the
     targets withheld for an unresolved action conflict (mechanism_targets, withheld_count) against the cap, so
     withholding one of two targets does not admit a drug the rule would refuse; a drug needs a kept target to pass.
     """

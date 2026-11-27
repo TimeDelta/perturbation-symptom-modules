@@ -93,7 +93,7 @@ of entry_relation_names (a drug's mechanism edges) are kept out of the normalise
 with one positive gain per channel for each entry relation. Left in the adjacency they would be divided by the
 target's in-degree under the relation, which is the number of study drugs sharing the target, and they would add one
 to the number of relations feeding the target, which divides every other relation's message there for every
-perturbation, gene knockouts included (docs/drug_entry_nodes_measured.md). An entry node with no incoming edge holds
+perturbation, gene knockouts included (docs/generated/drug_entry_nodes_measured.md). An entry node with no incoming edge holds
 its own input at every step, so its mechanism edges deliver a sustained input sign * weight * gain_entry * u to its
 targets: the same input a seed on the target delivers, scaled per channel by the gain and one step later.
 """
@@ -127,7 +127,7 @@ COPRODUCT_RELATION = "coproduct_of"
 # This replaces the mirror pair the graph build used to write for every reversible reaction (substrate_of and
 # product_of in both directions at +1), which made the reaction receive +1 from its product instead of -1 and gave
 # every participant +1 and -1 from the same reaction: 15,867 such pairs, and 1,809 metabolites whose field was
-# identically zero under every perturbation (docs/physiological_adherence_review.md section 2).
+# identically zero under every perturbation (docs/records/2026-10/physiological_adherence_review.md section 2).
 PRODUCT_OPPOSES_RELATION = "product_opposes"
 UNSIGNED_RELATIONS = ("binds",)
 # Where the edge signs come from. "graph" uses the stored signs and the -1 of the derived depletes_substrate relation;

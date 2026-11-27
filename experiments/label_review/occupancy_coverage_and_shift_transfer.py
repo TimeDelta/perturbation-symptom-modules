@@ -50,7 +50,7 @@ specification.loader.exec_module(occupancy_module)
 
 EXPOSURE_TABLE = Path("data/processed/exposure/drug_exposure_v4.csv")
 OCCUPANCY_TABLE = Path("data/processed/exposure/target_occupancy_v4.csv")
-OUTPUT_DOCUMENT = Path("docs/occupancy_coverage_and_shift_transfer.md")
+OUTPUT_DOCUMENT = Path("docs/generated/occupancy_coverage_and_shift_transfer.md")
 
 PLACEHOLDER_OCCUPANCY_OF_THE_BEST_TARGET = 0.9
 BOOTSTRAP_DRAWS, BOOTSTRAP_SEED = 4000, 0

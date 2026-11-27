@@ -599,7 +599,7 @@ def sequestration_inputs(data, arguments) -> dict:
     CHANGE_CARRYING_RELATIONS). Under "change" (the default on a graph that holds such a relation) an edge carries how
     far its source has moved from its unperturbed state, so it is silent in a perturbation that leaves the carrier or
     the enzyme at rest; under "presence" it is averaged like any other relation and carries the source's state itself,
-    which gives every drug with a known carrier the same extra input (docs/drug_entry_nodes_measured.md, section 6).
+    which gives every drug with a known carrier the same extra input (docs/generated/drug_entry_nodes_measured.md, section 6).
     Empty on a graph without the relations. With sequestration alone the keywords are the ones they always were."""
     present = [relation for relation in CHANGE_CARRYING_RELATIONS if relation in data.relation_types]
     if not present:
@@ -2207,7 +2207,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
                              "loses which targets it acts on (the third control for the input-size objection, docs/label_source_review.md 13.1). A negative control: "
                              "a run of it is never a result of the study")
     parser.add_argument("--drug-entry", choices=DRUG_ENTRY_MODES, default=None,
-                        help="on a graph with drug entry nodes (docs/drug_entry_nodes.md): nodes seeds each drug on its own node, which is the default there; "
+                        help="on a graph with drug entry nodes (docs/records/2026-10/drug_entry_nodes.md): nodes seeds each drug on its own node, which is the default there; "
                              "targets drops the nodes and seeds the drug's targets, the ablation arm and the inputs of the source graph. No effect on a graph without drug nodes")
     parser.add_argument("--sequestration-carries", choices=SEQUESTRATION_MODES, default=None,
                         help="message passing on a graph with sequestration edges (a plasma carrier to the drug it binds) or clearance edges (an enzyme to the drug it clears): "
@@ -2215,7 +2215,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
                              "presence averages the source's state in like any other relation, which marks every drug that has a known carrier. The linear-response encoder carries the change by construction")
     parser.add_argument("--drug-mechanism-before-first-layer", action="store_true",
                         help="message passing with drug entry nodes: also deliver each drug's mechanism edges once before the first layer, so the drug's signal reaches as far "
-                             "beyond its targets as a seed on the targets does (docs/drug_entry_nodes_measured.md, the hop)")
+                             "beyond its targets as a seed on the targets does (docs/generated/drug_entry_nodes_measured.md, the hop)")
     parser.add_argument("--description-length-coefficient", type=float, default=1e-6)
     parser.add_argument("--checkpoint-every-minutes", type=float, default=20.0)
     parser.add_argument("--time-budget-seconds", type=float, default=0.0, help="stop training after this many seconds (0 = no limit)")

@@ -3,7 +3,7 @@
 Why. Three open points of the study need a number per drug that no table of the repository held:
 
   - the sequestration edge of a plasma carrier means what it says only for a drug of high hepatic extraction given past
-    the first pass (docs/drug_entry_nodes.md); the route half of that condition is tabulated
+    the first pass (docs/records/2026-10/drug_entry_nodes.md); the route half of that condition is tabulated
     (configs/drug_administration_routes.csv) and the extraction half needed a clearance per drug;
   - an occupancy at a target, theta = C / (C + K), needs the free concentration C at the target
     (docs/off_target_scoping.md, decision 3: the 90-percent placeholder or a measured concentration);
@@ -35,7 +35,7 @@ What is computed, with every assumption named in the output:
 
 Nothing here changes a label, a graph or a model input. The joined table is written under data/processed/exposure,
 which is not in git, because the licences of two of the sources do not cover redistribution of their tables
-(docs/drug_exposure_table.md states each). The generated document carries counts and the method.
+(docs/generated/drug_exposure_table.md states each). The generated document carries counts and the method.
 
 Usage:
   PYTHONPATH=. python experiments/build_drug_exposure_table.py
@@ -68,7 +68,7 @@ ROUTES = Path("configs/drug_administration_routes_v4.csv")  # experiments/tabula
 CARRIERS = Path("configs/drug_plasma_carriers_v4.csv")  # experiments/scope_label_plasma_binder_coverage.py on the v4 table
 LABEL_PROTEIN_BINDING = Path("configs/drug_label_protein_binding.csv")  # experiments/read_label_protein_binding.py
 OUTPUT_DIRECTORY = Path("data/processed/exposure")
-OUTPUT_DOCUMENT = Path("docs/drug_exposure_table.md")
+OUTPUT_DOCUMENT = Path("docs/generated/drug_exposure_table.md")
 HEPATIC_BLOOD_FLOW_ML_PER_MIN_PER_KG = 20.7  # 1,450 mL/min in a 70 kg adult
 LOW_EXTRACTION_BELOW, HIGH_EXTRACTION_ABOVE = 0.3, 0.7  # the usual cut-offs for low and high hepatic extraction
 SPECIES_PREFERENCE = ("human", "non-human primate", "other animal", "not stated")
@@ -84,7 +84,7 @@ BRAIN_NOT_CEREBROSPINAL_FLUID = re.compile(r"""kp,uu,(brain|bbb)|unbound\ brain
     |kp,uu\ from                                               # derived from an AUC ratio or from a PET volume of distribution
     |kp,uu\ \(reported,\ cerebral\ microdialysis\)""", re.IGNORECASE | re.VERBOSE)
 # A cerebrospinal fluid value is not a brain value: the project excludes it, and the quantitative reason is in
-# docs/brain_exposure_data_feasibility.md (lumbar CSF runs more than 3-fold high for P-gp substrates, and buprenorphine's
+# docs/records/2026-10/brain_exposure_data_feasibility.md (lumbar CSF runs more than 3-fold high for P-gp substrates, and buprenorphine's
 # own measured range spans 46-fold). A regional value is not a whole-brain value.
 # `region` on its own matched any text holding it - "extracellular region", a Reactome compartment, and "brain
 # region" among them - so the two senses are separated (the owner, 14 October 2026: "can't you separate the region
@@ -364,7 +364,7 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
         if len(with_carrier):
             lines += ["### The drugs with a sequestration edge", "",
                       f"{int(table.plasma_carrier.notna().sum())} drugs have a known plasma carrier (`{CARRIERS}`); {len(with_carrier)} of them have an extraction ratio here.",
-                      "The edge states that more carrier lowers the drug's effect. For the unbound exposure that holds for a drug of high extraction given past the first pass (`docs/drug_entry_nodes.md`).", "",
+                      "The edge states that more carrier lowers the drug's effect. For the unbound exposure that holds for a drug of high extraction given past the first pass (`docs/records/2026-10/drug_entry_nodes.md`).", "",
                       "| route class | low | intermediate | high |", "| --- | --- | --- | --- |"]
             for route_class in sorted(with_carrier.route_class.dropna().unique()):
                 subset = with_carrier[with_carrier.route_class == route_class]
@@ -381,9 +381,9 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
               "| source | licence, as read | where |",
               "| --- | --- | --- |",
               "| Schulz et al. 2020, [doi:10.1186/s13054-020-02915-5](https://doi.org/10.1186/s13054-020-02915-5) | \"This article is licensed under a Creative Commons Attribution 4.0 International License\"; \"The Creative Commons Public Domain Dedication waiver (http://creativecommons.org/publicdomain/zero/1.0/) applies to the data made available in this article, unless otherwise stated in a credit line to the data.\" | the article's permissions in PubMed Central |",
-              "| Lombardo et al. 2018, [doi:10.1124/dmd.118.082966](https://doi.org/10.1124/dmd.118.082966) | **permission required.** The copyright holder is the journal's society; the article is free to read under no licence; the only licence its Crossref record carries is for text and data mining and states that a user may not \"Substantially or systematically reproduce, retain or redistribute the Dataset\". The US EPA repository the table was read from carries no permission statement for it. The table is used and not redistributed, which is what those terms permit | `docs/exposure_sources/lombardo2018.md`, `docs/label_source_review.md` 13.9 |",
-              "| Benet et al. 2011, [doi:10.1208/s12248-011-9290-9](https://doi.org/10.1208/s12248-011-9290-9); Hosey et al. 2016, [doi:10.1208/s12248-015-9845-2](https://doi.org/10.1208/s12248-015-9845-2) | not open access; copyright of the journal's society. Read from the free copies in PubMed Central | `docs/exposure_sources/benet2011_bddcs.md` and `hosey2016_bddcs.md` |",
-              "| blood-to-plasma ratios | the EPA `httk` package (\"License: MIT\"); the EPA's typed copies of Paixão et al. 2012 and Uchimura et al. 2010, not checked against the articles | `docs/exposure_sources/blood_to_plasma.md` |",
+              "| Lombardo et al. 2018, [doi:10.1124/dmd.118.082966](https://doi.org/10.1124/dmd.118.082966) | **permission required.** The copyright holder is the journal's society; the article is free to read under no licence; the only licence its Crossref record carries is for text and data mining and states that a user may not \"Substantially or systematically reproduce, retain or redistribute the Dataset\". The US EPA repository the table was read from carries no permission statement for it. The table is used and not redistributed, which is what those terms permit | `docs/records/2026-10/exposure_sources/lombardo2018.md`, `docs/label_source_review.md` 13.9 |",
+              "| Benet et al. 2011, [doi:10.1208/s12248-011-9290-9](https://doi.org/10.1208/s12248-011-9290-9); Hosey et al. 2016, [doi:10.1208/s12248-015-9845-2](https://doi.org/10.1208/s12248-015-9845-2) | not open access; copyright of the journal's society. Read from the free copies in PubMed Central | `docs/records/2026-10/exposure_sources/benet2011_bddcs.md` and `hosey2016_bddcs.md` |",
+              "| blood-to-plasma ratios | the EPA `httk` package (\"License: MIT\"); the EPA's typed copies of Paixão et al. 2012 and Uchimura et al. 2010, not checked against the articles | `docs/records/2026-10/exposure_sources/blood_to_plasma.md` |",
               "| FDA drug labels through openFDA | \"Unless otherwise noted, the content, data, documentation, code, and related materials on openFDA is public domain\" (open.fda.gov/license, read 11 October 2026); \"we ask that proper credit be given\", with the example \"Data provided by the U.S. Food and Drug Administration (https://open.fda.gov)\" (open.fda.gov/terms, read 11 October 2026) | `configs/drug_label_protein_binding.csv`, with the label's set_id and effective_time per sentence |",
               "| Kp,uu,brain | per table, in `docs/generated/effect_site_data_coverage.md` | |", "",
               "Because two of these tables are not licensed for redistribution, the joined table stays out of git. The transcription scripts (`experiments/exposure_sources/`), "
@@ -391,7 +391,7 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
               "## Not retrieved", "",
               "The consensus guideline for therapeutic drug monitoring in psychiatry (Hiemke et al. 2018, [doi:10.1055/s-0043-116492](https://doi.org/10.1055/s-0043-116492)) gives therapeutic reference ranges for the psychotropic drugs, "
               "and would be the better source for them. It was not read: the publisher's robots file disallows automated readers, the article is not in PubMed Central, and no open licence was found "
-              "(`docs/exposure_sources/hiemke2018_agnp.md` lists the 22 routes tried). The table of Schulz et al. already cites the guideline for many of its ranges. "
+              "(`docs/records/2026-10/exposure_sources/hiemke2018_agnp.md` lists the 22 routes tried). The table of Schulz et al. already cites the guideline for many of its ranges. "
               "For the owner to open: <https://www.thieme-connect.com/products/ejournals/pdf/10.1055/s-0043-116492.pdf>, and the repository copy that one index labels CC BY, <https://resolver.sub.uni-goettingen.de/purl?gro-2/74377>. A PDF saved under `data/raw/exposure/hiemke2018_agnp/raw/` can be transcribed as the other tables were.", ""]
     output_path.write_text("\n".join(lines))
 

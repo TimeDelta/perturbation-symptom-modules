@@ -2,7 +2,7 @@
 
 The plasma carriage edges of docs/generated/plasma_binder_graph.md need to know which plasma protein holds a drug. The pinned
 fraction-unbound database gives that for 27 of this study's drugs and names orosomucoid for 11 of them
-(docs/fraction_unbound_coverage.md). This script asks how much further the drug labels reach, and whether they agree
+(docs/generated/fraction_unbound_coverage.md). This script asks how much further the drug labels reach, and whether they agree
 with the database where both speak, which is the only check available on a new source of the same fact.
 
 A drug is assigned a carrier only when its label sentences name exactly one of albumin and orosomucoid, outside a

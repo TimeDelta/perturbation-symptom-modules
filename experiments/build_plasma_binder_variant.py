@@ -1,7 +1,7 @@
 """Build the plasma-binder graph variant (mechanistic_pathway_learning/graph/plasma_binding.py) of a graph directory:
 <graph-dir>_binders, with binds edges, sign 0, from each extracellular cargo metabolite to its binder's gene node.
 
-Stage 1 of docs/plasma_protein_binding.md (the user's decision of 9 October 2026). It writes a new directory, so no
+Stage 1 of docs/records/2026-10/plasma_protein_binding.md (the user's decision of 9 October 2026). It writes a new directory, so no
 preregistered input changes; folding the edges into the confirmatory graph is a separate decision, because it would
 need a dated amendment and the development pilots re-run.
 
@@ -67,7 +67,7 @@ def carriage_report(summary: dict, graph_directory: Path, output_directory: Path
     one "at its next change". Everything this function emits is a property of the build it was called from: a
     statement about the graph that this run did not measure belongs in a record document, not here. One such
     statement was hand-added to the output and is dropped by the next run that writes the file, with the
-    reasoning kept at docs/drug_entry_nodes.md, section of 27 October 2026.
+    reasoning kept at docs/records/2026-10/drug_entry_nodes.md, section of 27 October 2026.
     """
     lines = ["# Plasma substrate binders in the graph", "",
              provenance_stamp("experiments/build_plasma_binder_variant.py", inputs or [str(graph_directory)]), "",

@@ -173,7 +173,7 @@ class ExperimentData:
         slice it is 1 for every perturbation and the strata collapse to one. The hop over encodes puts the gene and its
         products back together, and an encodes edge is subtracted twice because it counts in both degrees and did not
         exist in the merged graph. Measured against the merged graph's seed degree: equal for 99.2 percent of the
-        1,539 full-graph perturbations and for all 451 slice perturbations (docs/gene_protein_split_results.md).
+        1,539 full-graph perturbations and for all 451 slice perturbations (docs/records/2026-10/gene_protein_split_results.md).
 
         Reading every node one edge away instead sums the degrees of a gene's other neighbours too, which on the full
         split graph is a different quantity (median 424 against the merged 16) and moves 43 percent of the strata; it
@@ -205,7 +205,7 @@ class ExperimentData:
 
         The switch keeps the registered stratification rather than redefining it: the hop over encodes reproduces the
         merged graph's seed degree for 99.2 percent of the full-graph perturbations and all of the slice's
-        (docs/gene_protein_split_results.md), and on a merged graph, which has no encodes relation, it is the seed
+        (docs/records/2026-10/gene_protein_split_results.md), and on a merged graph, which has no encodes relation, it is the seed
         degree unchanged.
         """
         return self.perturbation_degrees_with_encoded_proteins if "protein" in set(self.node_types.tolist()) else self.perturbation_degrees
@@ -290,7 +290,7 @@ def merge_drugs_with_their_targets(perturbation_ids: list[str], perturbation_typ
 
     Under the disease-cluster grouping a drug's group is its target set, so a drug and the loss of function of its target
     gene can sit in different folds: on evidence_full with better_v1, 71 of the 72 drugs that target a labelled gene had a
-    target gene in another fold, and 59 of the 340 kept drug positives were also positives of such a gene (docs/drug_target_leakage.md).
+    target gene in another fold, and 59 of the 340 kept drug positives were also positives of such a gene (docs/generated/drug_target_leakage.md).
     A model then learns "perturbing this node causes this symptom" from the gene and is credited for it on the drug.
     Groups are the connected components of: perturbation - its group (disease cluster), drug - each gene perturbation
     whose node it targets, drug - each target node. Each component is named by the smallest disease cluster of a gene in it, or the smallest

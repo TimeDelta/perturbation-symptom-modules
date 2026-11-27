@@ -1,4 +1,4 @@
-"""Drugs as graph entry nodes (docs/drug_entry_nodes.md; the user's decision of 10 October 2026: "i definitely want
+"""Drugs as graph entry nodes (docs/records/2026-10/drug_entry_nodes.md; the user's decision of 10 October 2026: "i definitely want
 drugs as nodes with an ablation on them").
 
 What is added to a graph:
@@ -43,7 +43,7 @@ carry no receptor edge, so the merge would lose the mechanism outright), and whe
 the mechanism's. The compound's nodes keep their node type, metabolite: no node type or flag marks a node as a drug (P1.2
 and P7, section 18), and the perturbation keeps its type, drug, in the evidence table.
 
-Two properties are kept on purpose, because the measurements of docs/drug_entry_nodes_measured.md depend on them:
+Two properties are kept on purpose, because the measurements of docs/generated/drug_entry_nodes_measured.md depend on them:
 
   - No existing row changes, but for the edges a merge signs. Node and edge rows are appended, the degree of an
     existing node is left as it was, and the new relation types go after the old ones. A reader that drops the

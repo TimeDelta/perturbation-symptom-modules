@@ -509,7 +509,7 @@ def import_reactome_layer(sbml_texts: list[str], nodes: pd.DataFrame, edges: pd.
                 raise ValueError(f"the computed weight of the {ion_names[base]} {letter} pool has sign {sign}, and the table says {driving_force_sign}")
             add_edge(pool, MEMBRANE_POTENTIAL_NODE, "driving_force", sign,
                      ("pump-clamped pool sensitivity times the linearised parallel-conductance coefficient "
-                      "(amendment item 37, docs/extracellular_pool_sensitivities_2026-11-07.md)"
+                      "(amendment item 37, docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md)"
                       if pores_tell_the_potential else
                       "share of the resting leak conductance times RT/zF, linearised parallel-conductance equation "
                       "(docs/membrane_potential_constants.md)"), weight)

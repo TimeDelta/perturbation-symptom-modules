@@ -1,4 +1,4 @@
-"""Tests: drug entry nodes (graph/drug_entry_nodes.py, docs/drug_entry_nodes.md). The builder appends a node per drug
+"""Tests: drug entry nodes (graph/drug_entry_nodes.py, docs/records/2026-10/drug_entry_nodes.md). The builder appends a node per drug
 with its mechanism edges and its carriers' sequestration edges and changes no existing row, a drug that is a graph
 compound gets no node, the loader's "targets" mode gives the source graph back and its "nodes" mode seeds each drug on
 its own node with the leakage groups and degrees of the targets, and both encoders treat a drug node as present only

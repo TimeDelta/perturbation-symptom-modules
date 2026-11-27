@@ -1,9 +1,9 @@
 """Build the drug-entry-node variant of a graph directory (mechanistic_pathway_learning/graph/drug_entry_nodes.py;
-docs/drug_entry_nodes.md): <graph-dir>_drugs, with one node per drug perturbation, its mechanism edges and, for a
+docs/records/2026-10/drug_entry_nodes.md): <graph-dir>_drugs, with one node per drug perturbation, its mechanism edges and, for a
 drug whose plasma carrier is known, the carrier's sequestration edge.
 
 It writes a new directory and changes no existing one, so no registered input moves. Whether a confirmatory
-configuration reads the variant is the user's decision and needs a dated amendment (docs/drug_entry_nodes.md).
+configuration reads the variant is the user's decision and needs a dated amendment (docs/records/2026-10/drug_entry_nodes.md).
 
 Inputs:
   - the source graph directory, with gene_to_protein.parquet when it splits genes from proteins, so a drug's mechanism

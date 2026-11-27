@@ -17,7 +17,7 @@ uninterpretable without knowing which population produced it and what that popul
 classifier needs a pair of measured fractions for the drug, which is the data this study lacks: a drug with no row in
 this database has no ratio to classify, so a working classifier does not by itself widen coverage.
 
-Writes docs/special_population_carrier_signal.md. Reads no lockbox outcome. Idempotent.
+Writes docs/generated/special_population_carrier_signal.md. Reads no lockbox outcome. Idempotent.
 
 Usage:
   python experiments/measure_special_population_carrier_signal.py
@@ -35,7 +35,7 @@ from mechanistic_pathway_learning.documentation import provenance_stamp
 
 SHEET_BINDERS = {"hsa": "albumin", "aag": "orosomucoid", "both": "both"}
 POPULATION_NAMES = {"InflamDisease": "inflammatory disease"}
-OUTPUT_DOCUMENT = Path("docs/special_population_carrier_signal.md")
+OUTPUT_DOCUMENT = Path("docs/generated/special_population_carrier_signal.md")
 CARRIERS = ("albumin", "orosomucoid")
 # Every subgroup is read (decision 9.89). From 10 to 22 October 2026 the reading left out newborn through toddler, on
 # the owner's ruling that newborns "aren't diagnosable yet" (9 October) and "Only NEWBORN through TODDLER" (10

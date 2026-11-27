@@ -2,7 +2,7 @@
 
 Why. The user, 11 October 2026: "Add the enzyme labels as the carrier twin instead then". A plasma carrier and a clearing
 enzyme stand in the same relation to a drug: more of either leaves less free drug. The carrier's statement holds for few
-drugs (docs/drug_exposure_table.md) and has four to six sources (docs/label_source_review.md, section 2). The
+drugs (docs/generated/drug_exposure_table.md) and has four to six sources (docs/label_source_review.md, section 2). The
 enzyme's holds whatever the route, and a regulator has reviewed each row. This script reads the regulator's table and
 writes one row per study drug and enzyme, with the table's own sentence, for two uses:
 

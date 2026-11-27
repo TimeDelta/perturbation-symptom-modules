@@ -2,7 +2,7 @@
 
 The registered rule (group_by "disease_cluster_and_targets", merge_drugs_with_their_targets) is union-find over shared
 target nodes: a drug joins every gene perturbation whose node it targets and every drug that shares a target node with
-it. That closes the drug-gene leakage of docs/drug_target_leakage.md, but it is all-or-nothing, and once measured
+it. That closes the drug-gene leakage of docs/generated/drug_target_leakage.md, but it is all-or-nothing, and once measured
 off-targets join as well it collapses 94 percent of the drugs into one group (docs/off_target_scoping.md).
 
 Target families are the alternative: a drug's group is the GtoPdb family of its mechanism target
@@ -275,7 +275,7 @@ def markdown_report(result: dict) -> str:
               f"{best_bound['residual_leakage']['test_drugs_whose_mechanism_target_is_a_training_gene_perturbation']:.3f} "
               "target a gene whose own perturbation is in training (carrying "
               f"{best_bound['residual_leakage']['share_of_test_drug_positives_on_drugs_targeting_a_training_gene']:.3f}), "
-              "which is the leakage docs/drug_target_leakage.md exists to close: a model learns \"perturbing this node "
+              "which is the leakage docs/generated/drug_target_leakage.md exists to close: a model learns \"perturbing this node "
               "causes this symptom\" from one perturbation and is credited for it on another.", "",
               "What the family rule buys is fold balance: its largest group holds "
               f"{best_bound['group_sizes']['largest_group_share_of_drugs']:.2f} of the drugs against "

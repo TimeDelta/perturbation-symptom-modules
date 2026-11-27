@@ -21,7 +21,7 @@ The four kinds, and the two inputs each compares:
 
 Displacement is written as a lowered carrier because the graph has no edge from a drug to the carrier it occupies. Such
 an edge would make every drug with a known carrier move the carrier when taken alone, which is the extra input the
-change-carrying edges were built to avoid (docs/drug_entry_nodes_measured.md, section 6). So a displacement check tests
+change-carrying edges were built to avoid (docs/generated/drug_entry_nodes_measured.md, section 6). So a displacement check tests
 the same edge as a carrier check, with two drugs present; it says so in its kind.
 
 A check needs the drug's own node and, for the first three kinds, the edge from the carrier or the enzyme to that node

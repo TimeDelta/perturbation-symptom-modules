@@ -1,7 +1,7 @@
 """Probe, with nothing trained, what the message-passing encoder would do if its layers were reused for more rounds.
 
 Why. The registered message-passing encoder runs 3 layers, each with its own weights, so a perturbation's difference
-field is exactly zero more than 3 edges from its seeds. docs/drug_entry_nodes_measured.md, section 4, gives what that
+field is exactly zero more than 3 edges from its seeds. docs/generated/drug_entry_nodes_measured.md, section 4, gives what that
 reaches: about 1 percent of the nodes a gene knockout can reach and about 35 percent of what a drug can, against 96 to
 98 percent at the 8 steps the linear-response encoder ran when this was measured (amendment item 7 of 12 October
 2026 replaced that fixed count with iteration to a fixed point at a tolerance of 1e-3). The user asked why message passing does not carry the signal
@@ -264,7 +264,7 @@ def write_document(results: dict, arguments) -> None:
         "",
         f"Graph `{results['graph']}` ({results['graph_nodes']:,} nodes), perturbations of `{results['evidence']}`: {results['gene_knockouts']} gene knockouts and "
         f"{results['drugs']} drugs seeded on their targets, drawn with seed {results['seed']}. No label is read and no parameter is fitted. The reach of a perturbation by number of "
-        "hops, over every perturbation, is in `docs/drug_entry_nodes_measured.md`, section 4.",
+        "hops, over every perturbation, is in `docs/generated/drug_entry_nodes_measured.md`, section 4.",
         "",
         "## 1. One layer's weights reused for every round",
         "",

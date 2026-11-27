@@ -1,6 +1,6 @@
 """Check that adding parkinsonism to docs/symptom_crosswalk.csv changed only what a new symptom has to change.
 
-The rebuild (runs/full/parkinsonism_evidence.sh) runs the commands recorded in docs/drug_targets_any_type.md, so the
+The rebuild (runs/full/parkinsonism_evidence.sh) runs the commands recorded in docs/records/2026-10/drug_targets_any_type.md, so the
 first thing to establish is that nothing but the new symptom moved. Two columns of the evidence table are fitted or
 derived across symptoms and so cannot stay fixed when a symptom is added:
 
@@ -13,7 +13,7 @@ whole label selection outside the new symptom. The two fitted columns are then r
 large move in either is a reason to look rather than to proceed.
 
 The reference is evidence_full_v3. The salt-form and any-target-type change of 8 October
-(docs/drug_targets_any_type.md: "The v2 tables rebuild byte-identically from the code before this change") is in the
+(docs/records/2026-10/drug_targets_any_type.md: "The v2 tables rebuild byte-identically from the code before this change") is in the
 code, so a rebuild today lands on v3 whatever the crosswalk says, and v2 is not reproducible from the current code.
 The user's decision of 9 October 2026 ("just get rid of the v2 test at this point since it was never used anyways.
 v3 is the usable one for now") is why v2 is neither rebuilt nor reported here.
@@ -116,7 +116,7 @@ def main() -> int:
         + ("" if sound else " Something other than the symptom moved and nothing below should be read."),
         "",
         "The reference is v3, the table the current code produces. The salt-form and any-target-type change of",
-        "8 October (`docs/drug_targets_any_type.md`) is in the code, so a rebuild today lands on v3 whatever the",
+        "8 October (`docs/records/2026-10/drug_targets_any_type.md`) is in the code, so a rebuild today lands on v3 whatever the",
         "crosswalk says; v2 is not reproducible from the current code and is not reported here.",
         "",
         "| | v3, the current code | v3 with parkinsonism |",

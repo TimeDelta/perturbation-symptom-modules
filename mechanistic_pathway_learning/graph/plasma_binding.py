@@ -1,5 +1,5 @@
 """The plasma substrate binders as carriers: binds edges, sign 0, from each extracellular cargo metabolite to the
-binder's gene node (docs/plasma_protein_binding.md; the user's decision of 9 October 2026, "All of the plasma substrate
+binder's gene node (docs/records/2026-10/plasma_protein_binding.md; the user's decision of 9 October 2026, "All of the plasma substrate
 binders should be modeled", and "orosomucoid should also be implemented").
 
 Why the edges exist. Albumin, orosomucoid and the other binders are already gene nodes of the full graph, but not one

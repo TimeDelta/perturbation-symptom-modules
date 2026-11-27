@@ -97,9 +97,9 @@ The resting input is the part worth dwelling on. Under the old `total_in_degree`
 
 A module is a set of nodes the fit chooses, through a gate per node pushed toward zero, so most nodes end up in no module. Nothing anchors a module to a known pathway: the 16 curated pathway modules in `docs/curated_pathway_modules.csv` are a comparison table, not the model's starting point.
 
-![noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/physiological_adherence_review.md section 13](study_sheet_figures/09_modules.png)
+![noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/records/2026-10/physiological_adherence_review.md section 13](study_sheet_figures/09_modules.png)
 
-*noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/physiological_adherence_review.md section 13*
+*noisy_or_pathway_module_model.py on main, --num-modules default 8; sufficiency from docs/records/2026-10/physiological_adherence_review.md section 13*
 
 ![modules, as decided · decision 9.119 ruled 7 Nov 2026 (option 2), not built; design questions open](study_sheet_figures/09b_modules_as_decided.png)
 

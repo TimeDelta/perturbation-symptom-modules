@@ -153,7 +153,7 @@ def measurement_coverage_table(per_drug: list[dict], data, thresholds: tuple[flo
 
 
 def largest_group(groups: list[str], kept_positive: np.ndarray, perturbation_types: list[str]) -> dict:
-    """The largest leakage group by perturbations (as in docs/drug_targets_any_type.md) and the group holding the most
+    """The largest leakage group by perturbations (as in docs/records/2026-10/drug_targets_any_type.md) and the group holding the most
     kept positive pairs, with the share each takes."""
     positives, drugs, members = Counter(), Counter(), Counter()
     for group, count, kind in zip(groups, kept_positive, perturbation_types):

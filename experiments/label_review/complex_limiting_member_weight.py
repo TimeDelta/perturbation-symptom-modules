@@ -52,7 +52,7 @@ from mechanistic_pathway_learning.graph.brain_expression_weights import (
 
 GRAPH_DIRECTORY = Path("data/processed/graph_full_neuronal")
 CLASS_WEIGHTS = Path("data/processed/cell_class_weights/full_neuronal_cell_class_weights.parquet")
-OUTPUT_DOCUMENT = Path("docs/complex_limiting_member_weight.md")
+OUTPUT_DOCUMENT = Path("docs/generated/complex_limiting_member_weight.md")
 ALL_CELLS_CLASS = "all_cells"
 REGULATOR_RELATION_SETS = {
     "catalyzed_by alone": ("catalyzed_by",),

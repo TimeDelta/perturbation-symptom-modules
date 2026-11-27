@@ -150,7 +150,7 @@ which is why three binder genes that are perturbations change strata degree and 
 move degree quintile (docs/generated/plasma_binder_confirmatory_effect.md). The left panel takes the cargo with the most binders
 in the graph; the right panel counts the edges of each binder and names its cargo. Orosomucoid (ORM1, ORM2) gets one
 edge each, progesterone, and not because the rest was missed: its cargo is basic drugs, which this graph has no node
-for, so it enters through the fraction unbound of stage 2 (docs/plasma_protein_binding.md) rather than through these
+for, so it enters through the fraction unbound of stage 2 (docs/records/2026-10/plasma_protein_binding.md) rather than through these
 edges.
 
 ## 9. The cell state the model carries

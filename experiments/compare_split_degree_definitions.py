@@ -2,7 +2,7 @@
 
 The registered degree stratification is the merged graph's seed degree. A split graph gives a perturbed gene node only
 the edges that are about the gene, so the question is which degree on the split graph reproduces it
-(docs/gene_protein_split_results.md, docs/preregistration.md amendment of 9 October 2026). Variants per perturbation:
+(docs/records/2026-10/gene_protein_split_results.md, docs/preregistration.md amendment of 9 October 2026). Variants per perturbation:
   seed                 sum of the degrees of the perturbation's seed nodes (what is registered on a merged graph)
   one_hop_all          seed nodes and every node one edge away
   one_hop_encodes      seed nodes and the nodes they reach over the encodes relation, less the encodes edges themselves

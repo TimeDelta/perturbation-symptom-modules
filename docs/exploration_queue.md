@@ -14,13 +14,13 @@ Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` o
 (`lee2015cytoplasmic` bears on Rbfox1 targets in general, not on VAMP1, which rests on `vuong2018rbfox1`; item 8's
 entries say so); both items are parked, so nothing relies on them.
 
-Added 27 October 2026: the owner retired the two readout records (`docs/steady_state_readout_alternatives.md`,
-`docs/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
+Added 27 October 2026: the owner retired the two readout records (`docs/records/2026-10/steady_state_readout_alternatives.md`,
+`docs/records/2026-10/fixed_point_against_pharmacological_steady_state.md`) as evidence and ruled that "ANY numbers from that time are
 to have the same treatment", the slice-pilot measurements of 3 to 8 October 2026 (decisions 9.103 and 9.104). Checked
 against every item on this page that day: items 4 and 6 build on those records' derivations (item 4 on section 1.2's
 state dependence, item 6 on section 3.4's Tikhonov partition), which the ruling's words, being about numbers, do not reach; whether
 they do is the owner's to say (9.104). One item cites a count on the v0.4 slice graph: item 6's "49 de novo edges
-against 1,030 redistribution edges on the v0.4 slice" (`docs/coproduct_of_de_novo_split_2026-10-26.md`), measured on
+against 1,030 redistribution edges on the v0.4 slice" (`docs/records/2026-10/coproduct_of_de_novo_split_2026-10-26.md`), measured on
 26 October 2026, so outside the period by date and on an earlier graph; it is kept with its graph named, as CLAUDE.md
 "Modelling" requires, and the owner may extend the ruling to it. No item cites finding 10 or any other number of the
 retired table.
@@ -130,12 +130,12 @@ as circuit degeneracy or only an analogy.
 Tagged 2026-10-22.
 
 The current recuration rests on 11 decidable pairs, with the stored sign right on 7
-(`docs/regulation_sign_recuration.md`). The posterior interval runs roughly 0.35 to 0.85, too wide to set a
+(`docs/records/2026-10/regulation_sign_recuration.md`). The posterior interval runs roughly 0.35 to 0.85, too wide to set a
 latent-sign prior from. A larger seeded sample is cheap and would be worth more than further analysis of the
 existing 11.
 
 
-**Added 7 November 2026.** A second seeded sample was read on Fable: seed 20261107, 30 labels from each stratum of the frame rebuilt on the v5 build of 5 November 2026 (2,166 labels whose releases state opposite signs, 1,688 following CollecTRI2 and 478 the 2023 release; the 16 already read excluded). 60 pairs, 38 decidable, the stored sign right for 17. **Pooled with the 11 of 17 October: 24 of 49, 0.49; exact 95% interval 0.34 to 0.64; Beta(1,1) posterior mean 0.49, 95% 0.36 to 0.63**, half the width of before. The interval straddles 0.5: on a disputed label the stored sign is no better than a coin flip, so a latent-sign prior for these labels would sit near 0.5, or near 0.6 for CollecTRI2's sign and 0.4 for the 2023 release's (right for 30 and 19 of 49; the 2023 sign decided from a paper 11 of 22, its default 12 of 24). Neither this item nor the record states a width standard, so whether that is narrow enough is the owner's call; the reading of the pass is that more sampling would sharpen a prior that is already nearly flat. Nine verdicts are judgement calls flagged with their alternative (scored the other way: 22 of 42, 0.38 to 0.67). The sample, the quotes and the 108 bib entries are in the dated addition at the end of `docs/regulation_sign_recuration.md` and the record `docs/collectri_sign_recuration_sample_2026-11-07.md`.
+**Added 7 November 2026.** A second seeded sample was read on Fable: seed 20261107, 30 labels from each stratum of the frame rebuilt on the v5 build of 5 November 2026 (2,166 labels whose releases state opposite signs, 1,688 following CollecTRI2 and 478 the 2023 release; the 16 already read excluded). 60 pairs, 38 decidable, the stored sign right for 17. **Pooled with the 11 of 17 October: 24 of 49, 0.49; exact 95% interval 0.34 to 0.64; Beta(1,1) posterior mean 0.49, 95% 0.36 to 0.63**, half the width of before. The interval straddles 0.5: on a disputed label the stored sign is no better than a coin flip, so a latent-sign prior for these labels would sit near 0.5, or near 0.6 for CollecTRI2's sign and 0.4 for the 2023 release's (right for 30 and 19 of 49; the 2023 sign decided from a paper 11 of 22, its default 12 of 24). Neither this item nor the record states a width standard, so whether that is narrow enough is the owner's call; the reading of the pass is that more sampling would sharpen a prior that is already nearly flat. Nine verdicts are judgement calls flagged with their alternative (scored the other way: 22 of 42, 0.38 to 0.67). The sample, the quotes and the 108 bib entries are in the dated addition at the end of `docs/records/2026-10/regulation_sign_recuration.md` and the record `docs/records/2026-11/collectri_sign_recuration_sample_2026-11-07.md`.
 
 ---
 
@@ -186,7 +186,7 @@ do not say how they act)". GRK and arrestin edges onto receptors are already set
 **Why not as propagation.** Under the linear-response encoder a kinase and a phosphatase acting on one substrate are
 two edges of opposite sign into one node, which the graph already has. What phosphorylation does beyond that
 (ultrasensitivity from opposed enzymes near saturation, Goldbeter and Koshland 1981; multisite thresholds;
-desensitisation) is a saturation or a product of states. `docs/steady_state_readout_alternatives.md` section 1.2
+desensitisation) is a saturation or a product of states. `docs/records/2026-10/steady_state_readout_alternatives.md` section 1.2
 places desensitisation outside linearity. Phosphorylation is fast, so its rate drops out of every fixed point and it
 sits in the fast set of R2's partition. Site nodes would be relays carrying the same net sign, adding path length
 and in-degree dilution.
@@ -229,7 +229,7 @@ form (a refusal); iPTMnet's files carry no effect field and its licence pages co
 4.0 on the site, CC BY 4.0 at the foot of the README). **By the item's own test the count is small, so the
 pass recommends dropping the representation question; that is the owner's to decide.** The 16 edges whose sign SIGNOR disputes are a
 sign-evidence candidate for the override table, not a reason to keep the item. Record:
-`docs/phosphosite_opposite_effects_2026-11-07.md`; source `losurdo2026signor`.
+`docs/records/2026-11/phosphosite_opposite_effects_2026-11-07.md`; source `losurdo2026signor`.
 
 
 **Full text read, 7 November 2026 (Fable).** The owner supplied the interlibrary-loan copy of Needham et al. 2019
@@ -271,13 +271,13 @@ drug that engages 40 percent of one target and 95 percent of another enters as 0
 split evenly between them.
 
 **Most of the data is already in the repository, which is the main reason to record this rather than scope it from
-scratch.** `experiments/measure_target_occupancy.py` writes `docs/target_occupancy_measured.md` on the 222 drugs of
+scratch.** `experiments/measure_target_occupancy.py` writes `docs/generated/target_occupancy_measured.md` on the 222 drugs of
 `data/processed/evidence_full_v4`, with occupancy `C / (C + K)` at each target's own site, `C` from
-`docs/drug_exposure_table.md` and `K` the larger of the DrugCentral and Guide to PHARMACOLOGY affinities. 115 drugs
+`docs/generated/drug_exposure_table.md` and `K` the larger of the DrugCentral and Guide to PHARMACOLOGY affinities. 115 drugs
 have a concentration and an affinity at one or more mechanism genes, over 305 drug-gene pairs; items 5c and 29
 calibrate an imputed concentration for a further 68 drugs
 (`mechanistic_pathway_learning/perturbation/occupancy_calibration.py`,
-`docs/occupancy_coverage_and_shift_transfer.md`), so 183 of 222 drugs already carry a mechanism-target occupancy on
+`docs/generated/occupancy_coverage_and_shift_transfer.md`), so 183 of 222 drugs already carry a mechanism-target occupancy on
 one scale.
 
 **What is not built is the wiring.** `map_drug_targets_to_graph_nodes.py` seeds each mechanism target with
@@ -285,7 +285,7 @@ magnitude 1 spread over its graph nodes, and item 5 of the preregistration recor
 nothing yet" because no registered input reads an off-target. The occupancy machinery exists for off-target scoping
 and for the `has_measured_occupancy` stratum, not for the magnitude a drug enters with.
 
-**Three measured facts that set what the change would do**, all from `docs/target_occupancy_measured.md` at the
+**Three measured facts that set what the change would do**, all from `docs/generated/target_occupancy_measured.md` at the
 high end of the therapeutic range. The first is read at each target's own site; the second and third are from that
 document's unbound-plasma section, which is the one that reports them:
 - The best-bound mechanism target has a median occupancy of 0.90, quartiles 0.63 and 0.98: at or above 0.9 for 59
@@ -337,17 +337,17 @@ None of the four is open access, so only the abstracts are held. All four are pe
 **Known limits (do not overstate these in writing).**
 - Occupancy is not effect. For an antagonist the change in signalling depends on the endogenous tone at that
   target, which no source in this repository constrains; that is case 2 of `docs/nonlinearity_inventory.md`.
-- It does not touch the knockout-against-inhibitor conflation of `docs/physiological_adherence_review.md` section
+- It does not touch the knockout-against-inhibitor conflation of `docs/records/2026-10/physiological_adherence_review.md` section
   11. A drug at 0.8 and a lifelong knockout at 1 would still differ only in magnitude, not in developmental timing
   or in which cells are reached.
 - 39 of the 222 drugs have no affinity at any mechanism gene, so no occupancy exists for them at all.
 - The brain-side concentration rests on a `Kp,uu,brain` that is available for 94 of 222 drugs and is human for 13
-  (`docs/drug_exposure_table.md`), so most per-target occupancies read in brain inherit an animal ratio.
+  (`docs/generated/drug_exposure_table.md`), so most per-target occupancies read in brain inherit an animal ratio.
 - EC50 and IC50 values are pooled with Ki and Kd, active metabolites are not added to the parent, and a drug that
   is not a reversible ligand (an irreversible inhibitor such as vigabatrin, a prodrug, a releaser) is not described
   by one-site occupancy at all.
 - Summed occupancy correlates with the number of targets counted at 0.84, so an occupancy input carries some of the
-  same degree information the drug-node flag was criticised for in `docs/drug_entry_nodes.md`.
+  same degree information the drug-node flag was criticised for in `docs/records/2026-10/drug_entry_nodes.md`.
 
 **Status.** Parked. Not on the critical path of the 9.97 cyclase handoff, the lockbox sequence or the steady-state
 arms R0, R1 and R5, and it cannot be scored on the 1,067 HPO pairs, which carry no drug perturbations.
@@ -359,7 +359,7 @@ arms R0, R1 and R5, and it cannot be scored on the 1,067 HPO pairs, which carry 
 Tagged 2026-10-26, from the owner's question of that date about pulling timeframe ranges per edge type, and their
 refinement that what matters is only which side of an observation time a relation falls on.
 
-**What it is.** The Tikhonov partition of `docs/fixed_point_against_pharmacological_steady_state.md` section 3.4
+**What it is.** The Tikhonov partition of `docs/records/2026-10/fixed_point_against_pharmacological_steady_state.md` section 3.4
 splits relations into a fast layer and a slow layer, and "Rates enter only through membership in F and S". The slow
 set is currently proposed as `{regulates_transcription_of, encodes}` — a proposal, not code: `git grep` finds it only
 in documents and the masked loop is a sketch. The idea is to replace the fixed list with an ordering plus thresholds,
@@ -368,11 +368,11 @@ so membership is derived for each label class's observation time rather than ass
 **Why that is better than a rate table.** Rates cannot enter the update: at the fixed point every rate drops out, and
 a per-relation rate changes the transient of the full system and nothing else. Membership is the only channel rates
 have. And a fixed list can serve only one observation time, which the sourcing in
-`docs/relation_timescale_ordering_2026-10-26.md` shows is a real problem rather than a hypothetical one: at about two
+`docs/records/2026-10/relation_timescale_ordering_2026-10-26.md` shows is a real problem rather than a hypothetical one: at about two
 hours the proposed slow set is defensible and transcription already straddles, while at about six weeks transcription
 is fast and `encodes` straddles, inverting it.
 
-**What is already done.** `docs/relation_timescale_ordering_2026-10-26.md` bins the relations against about 2 hours,
+**What is already done.** `docs/records/2026-10/relation_timescale_ordering_2026-10-26.md` bins the relations against about 2 hours,
 6 weeks and 1 year, with the straddling set reported as a finding rather than a gap, and corrects section 3.4's claim
 that the band is "a few hundred nodes": that holds at 6 weeks and 1 year and fails at 2 hours, where the band is
 thousands of edges over at least five relations.
@@ -388,7 +388,7 @@ stoichiometry already in the graph. What does need sourcing is the licence to tr
 observation time, which is what the timescale record supplies.
 
 **The nearest concrete defect**, measured and recorded separately in
-`docs/coproduct_of_de_novo_split_2026-10-26.md`: the carrier relation `coproduct_of` mixes regeneration with de novo
+`docs/records/2026-10/coproduct_of_de_novo_split_2026-10-26.md`: the carrier relation `coproduct_of` mixes regeneration with de novo
 synthesis under one learned gain, 49 de novo edges against 1,030 redistribution edges on the v0.4 slice, and within
 the biopterin family 2 against 37. Splitting it is computable from the stoichiometry and needs no sourcing.
 
@@ -442,7 +442,7 @@ node per moiety, fed by the split's total-changing edges, designed with the amen
 are kept, rates re-enter through the stability check, which the partition can supply by membership. The pass recommends
 (its own view, not a ruling) extending the families by hand on two sources before any split, and puts nine questions to
 the owner. Report: the session scratchpad's `item6_design_2026-11-20.md`; nothing in the repository was changed.
-Record: `docs/exploration_item6_design_2026-11-20.md`.
+Record: `docs/records/2026-11/exploration_item6_design_2026-11-20.md`.
 
 ---
 
@@ -506,7 +506,7 @@ endosome. The endolysosome store `NEURON_MAM01413l` still has 0 edges in and 2 o
 SLC9A9 seed reaches 41,117 of 49,834 nodes, as almost every seed does. A Fable pass on NHE6 and NHE9 localisation,
 direction and disease association was started the same day.
 
-**Added 7 November 2026** (the Fable pass; full record `docs/endosomal_nhe_literature_2026-11-07.md`, 16 references).
+**Added 7 November 2026** (the Fable pass; full record `docs/records/2026-11/endosomal_nhe_literature_2026-11-07.md`, 16 references).
 `MAR05430`'s SLC9A9 catalysis is **not physiological**: Human-GEM's `genes.tsv` sources its "Cell membrane;Lysosome"
 to DeepLoc2, a prediction, while UniProt Q8IVB4 puts NHE9 on endosomal membranes and gives "Cell membrane" only by
 similarity to a mouse hair-bundle study. NHE6 (Q92581) reaches the surface only during vesicular recycling
@@ -562,7 +562,7 @@ The session's recommendation is C with a single endosome letter: drop SLC9A9 fro
 endosomal reactions with the hash pinned, add the pool with the TrkB edge alone, and have a Fable pass source the pump
 and the CLC direction first. It is the session's and not a ruling. Thirteen questions for the owner, and the full
 record, are in the pass's report (`item7_design_2026-11-20.md`, session scratchpad); none has a decision id.
-Record: `docs/exploration_item7_design_2026-11-20.md`.
+Record: `docs/records/2026-11/exploration_item7_design_2026-11-20.md`.
 
 ---
 
@@ -636,7 +636,7 @@ today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (ta
 **Known limits (do not overstate these in writing).**
 - Oxidant production by the respiratory chain depends on the redox state of its carriers and on membrane potential,
   not on flux alone, and the linear-response encoder carries a signed steady-state response, not a rate law.
-- The tables are built from PubMed abstracts (`docs/data_sources.md`), and `docs/curated_oxidant_edges_unverified.csv`
+- The tables are built from PubMed abstracts (`docs/data_sources.md`), and `docs/records/2026-11/curated_oxidant_edges_unverified.csv`
   holds 10 proposed edges that were not admitted.
 
 **What would need an owner ruling.** Whether metabolite pools, such as NADH or succinate, may drive a
@@ -657,7 +657,7 @@ this graph, whatever the gains. That makes the owner ruling named below (whether
 Reachability here follows stored edges plus the encoder's `depletes_substrate` and `product_opposes`, never leaving
 a currency node, and ignores signs.
 
-**The Fable literature pass, recorded 7 November 2026 in `docs/krebs_oxidant_literature_2026-11-07.md` (24
+**The Fable literature pass, recorded 7 November 2026 in `docs/records/2026-11/krebs_oxidant_literature_2026-11-07.md` (24
 peer-reviewed sources, every field confirmed against Europe PMC; no row applied to the curated tables).** Eight
 candidate rows fit today's schema and need no new edge kind. Oxidant sources (gene to oxidant): DLD and DLST, from
 heterozygous-knockout brain mitochondria; SDHA, at the complex II flavin site; GPD2. Oxidant targets (oxidant to
@@ -706,7 +706,7 @@ Cost: about a day of code in `redox_pools.py` and `oxidative_regulation.py`, a t
 riding on the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rebuild. Five new sources need Fable verification and BibTeX entries.
 The design pass (`item9_design_2026-11-20.md` in that session's scratchpad) holds the rows, the limits and nine
 questions for the owner.
-Record: `docs/exploration_item9_design_2026-11-20.md`.
+Record: `docs/records/2026-11/exploration_item9_design_2026-11-20.md`.
 
 ## 10. The shunt: inhibition by conductance that no edge into `VM_c` carries
 
@@ -741,7 +741,7 @@ inhibition is the shunt.
 
 **Status.** Parked. Not on the critical path: 9.112's build goes ahead without it, with the shunt stated as a limit.
 
-**Measured 7 November 2026** (Fable pass; full record `docs/shunting_inhibition_count_2026-11-07.md`; on the v5 split-binders drug graph and `evidence_full_v5`). Of the 46 GABA_A / glycine-receptor perturbations in the v5 evidence (35 drugs, 11 genes, 438 labelled pairs), **10 have a source stating a conductance-dominated main mechanism**: propofol and thiopental (Bieda & MacIver 2004, gabazine "failed to block the propofol-induced depression of intrinsic excitability"), etomidate (Cheng et al. 2006), isoflurane (Caraiscos et al. 2004), ganaxolone (class only, Stell et al. 2003, which names no drug), and `GABRD`, `GABRA5`, `GLRA1`, `GLRA2`, `GLRB`. They carry **38 labelled pairs, 56 reports, all `induces`**, across 19 constructs, none carried only by them. **Benzodiazepines and Z-drugs are not among them**: Nusser & Mody 2002 report zolpidem "augmented phasic inhibition by 66%, while leaving the mean tonic conductance unchanged". **The labels-and-the-head option is partly answered and cuts the wrong way.** `VM_c` sits five hops from every seed, by the one route `catalyzed_by` -> `changes_ion_pool` (Cl- pools) -> `driving_force`; a shorter conductance-independent route exists at hop 3, the `regulates_release` edges of `RCPT_GABRA1`, `RCPT_GABRB2`, `RCPT_GABRG2` (GABA, glutamate, serotonin, histamine) and `RCPT_GLRA1` (glutamate). **37 of the 46 have it; the nine that do not include four of the ten shunt cases** (`GABRA5`, `GABRD`, `GLRA2`, `GLRB`), whose only exit is the chloride pool. **No shunting-to-hyperpolarising ratio was found.** The nearest is Staley & Mody 1992, cited by 9.112: 50 percent of excitatory charge shunted with the GABA_A reversal 19 mV **above** rest, so no hyperpolarising part. **Counterweight**: Pavlov et al. 2009 find tonic GABA_A currents in CA1 pyramidal cells "exclusively affect offset and not gain".
+**Measured 7 November 2026** (Fable pass; full record `docs/records/2026-11/shunting_inhibition_count_2026-11-07.md`; on the v5 split-binders drug graph and `evidence_full_v5`). Of the 46 GABA_A / glycine-receptor perturbations in the v5 evidence (35 drugs, 11 genes, 438 labelled pairs), **10 have a source stating a conductance-dominated main mechanism**: propofol and thiopental (Bieda & MacIver 2004, gabazine "failed to block the propofol-induced depression of intrinsic excitability"), etomidate (Cheng et al. 2006), isoflurane (Caraiscos et al. 2004), ganaxolone (class only, Stell et al. 2003, which names no drug), and `GABRD`, `GABRA5`, `GLRA1`, `GLRA2`, `GLRB`. They carry **38 labelled pairs, 56 reports, all `induces`**, across 19 constructs, none carried only by them. **Benzodiazepines and Z-drugs are not among them**: Nusser & Mody 2002 report zolpidem "augmented phasic inhibition by 66%, while leaving the mean tonic conductance unchanged". **The labels-and-the-head option is partly answered and cuts the wrong way.** `VM_c` sits five hops from every seed, by the one route `catalyzed_by` -> `changes_ion_pool` (Cl- pools) -> `driving_force`; a shorter conductance-independent route exists at hop 3, the `regulates_release` edges of `RCPT_GABRA1`, `RCPT_GABRB2`, `RCPT_GABRG2` (GABA, glutamate, serotonin, histamine) and `RCPT_GLRA1` (glutamate). **37 of the 46 have it; the nine that do not include four of the ten shunt cases** (`GABRA5`, `GABRD`, `GLRA2`, `GLRB`), whose only exit is the chloride pool. **No shunting-to-hyperpolarising ratio was found.** The nearest is Staley & Mody 1992, cited by 9.112: 50 percent of excitatory charge shunted with the GABA_A reversal 19 mV **above** rest, so no hyperpolarising part. **Counterweight**: Pavlov et al. 2009 find tonic GABA_A currents in CA1 pyramidal cells "exclusively affect offset and not gain".
 
 ---
 
@@ -749,7 +749,7 @@ inhibition is the shunt.
 
 Tagged 2026-11-07, at the owner's request (decision 9.118): "I want to try representing both. Please add fable passes
 to the queue to research designs for implementing them", answering whether the model should represent chronic exposure
-or receptor-number plasticity (question 10 of `docs/tardive_dyskinesia_construct_2026-11-07.md`).
+or receptor-number plasticity (question 10 of `docs/records/2026-11/tardive_dyskinesia_construct_2026-11-07.md`).
 
 **The idea.** A perturbation now enters as a signed seed whose field settles to one readout. Nothing in the encoder or
 the readout knows how long the perturbation has lasted, so an effect that appears only after weeks of exposure cannot be
@@ -764,7 +764,7 @@ reduce the module supports symptom parameters bears on this though".
 
 **What the pass should read and answer.**
 - Whether a propagation round of the encoder corresponds to any physical time, given that the registered readout is the
-  settled field, and what `docs/relation_timescale_ordering_2026-10-26.md` (the project's record of the relations'
+  settled field, and what `docs/records/2026-10/relation_timescale_ordering_2026-10-26.md` (the project's record of the relations'
   physical timescales) allows. The owner's remark of 6 November 2026 is the readout side of the same question: "the
   contraction coefficient should either be different for each drug or be removed completely and find a way to
   determine read out timings".
@@ -777,7 +777,7 @@ reduce the module supports symptom parameters bears on this though".
   graph that is linear in the field.
 - Which labels carry an onset or a duration that a duration-aware readout could be scored on (SIDER and OnSIDES carry
   little; trial time frames and FAERS onset fields are candidates).
-- The bearing on the module-support choice (`docs/module_support_reduction_2026-11-07.md`): how many readings per
+- The bearing on the module-support choice (`docs/records/2026-11/module_support_reduction_2026-11-07.md`): how many readings per
   symptom each option can take without the parameter count growing.
 - **Added 7 November 2026 (decision 9.112's extracellular pools):** the clearance of the extracellular ion pools is a
   timescale any multi-reading design must carry. At the registered steady-state readout the extracellular pools take
@@ -832,7 +832,7 @@ every drug prescribed beside it. The FAERS reader skips a drug and symptom only 
 symptom (`indicated_symptoms_by_drug` in `mechanistic_pathway_learning/evidence/faers_disproportionality.py`, the one
 correction decision 9.96 admits). The case that raised it: benztropine, procyclidine and trihexyphenidyl carry 184, 84
 and 70 FAERS reports of tardive dyskinesia, but every one of their labels places tardive dyskinesia outside the
-indication (`docs/anticholinergic_indications_faers_2026-11-07.md`, quotes read on Fable), so the reports come from the
+indication (`docs/records/2026-11/anticholinergic_indications_faers_2026-11-07.md`, quotes read on Fable), so the reports come from the
 antipsychotic the patients are also taking.
 
 **Two forms, of different size.**
@@ -948,7 +948,7 @@ another database or from a review, counted as an independent source).
 - Some bias cannot be corrected from the project's data at all: a value never measured for any member of a class leaves
   nothing to calibrate against.
 
-**Added 20 November 2026: a literature pass (on Opus at the owner's request), verified on Fable on 24 November 2026 and corrected as below** (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`; the owner, 24 November 2026: "Item 15: yes to all"). Record: `docs/literature_bias_2026-11-20.md`. Four families of method fit here in part: a sensitivity analysis for values missing not at random (a one-sided shift of each fallback value), weighting the sourced rows toward rows like the unsourced ones, network study-bias corrections, and censored-value (Tobit) handling, which can correct a class statistic for values recorded only as a bound (given known thresholds and an assumed distribution), but not for pairs never measured or deposited, nor the single cell that holds only a bound. The ChEMBL sibling harvest of 19 November 2026 (ChEMBL_37, release 2026-05-01, binding Ki, the harvested receptor and transporter families; `docs/item37_rulings_draft_2026-11-13.md` section 19) counted 5,676 molecule-subtype cells that hold only censored values where an exact sibling value exists; censored rows among the project's own class-centre inputs have not been counted. Heckman selection models do not fit: no credible exclusion variable, and too few rows in the allosteric and channel classes (not in the aminergic harvest of 103,196 Ki values). Measured bias read: the 16% of genes reported by 1991 hold 49% of the 2015 literature; the share of records with log-value above 6 is 23.3% in ChEMBL, 52.7% in BindingDB and 79.8% in GtoPdb, and 47.1% in the part of PubChem that overlaps those databases (Isigkeit et al. 2022), while by a different measure, depositors' outcome labels over all PubChem assay results, 2.8% are active (An et al. 2025); whether a compound was tested against a target is predictable from ChEMBL itself. Its recommendations for the amendment of `docs/item37_rulings_draft_2026-11-13.md`: score held-out error weighted toward rows resembling the unsourced ones, report a one-sided sensitivity per fallback value, and stratify the held-out split on those covariates before it is fixed, which cannot be added afterwards. A class with no sourced member is not correctable by any method. Four papers were read in full; the rest as abstracts and six as bibliographic records only; its bibliography drafts are not in `docs/references.bib`; the entries are being built on Fable, with Crossref and OpenAlex as the two indexes for works PubMed does not hold (the owner, 24 November 2026).
+**Added 20 November 2026: a literature pass (on Opus at the owner's request), verified on Fable on 24 November 2026 and corrected as below** (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`; the owner, 24 November 2026: "Item 15: yes to all"). Record: `docs/records/2026-11/literature_bias_2026-11-20.md`. Four families of method fit here in part: a sensitivity analysis for values missing not at random (a one-sided shift of each fallback value), weighting the sourced rows toward rows like the unsourced ones, network study-bias corrections, and censored-value (Tobit) handling, which can correct a class statistic for values recorded only as a bound (given known thresholds and an assumed distribution), but not for pairs never measured or deposited, nor the single cell that holds only a bound. The ChEMBL sibling harvest of 19 November 2026 (ChEMBL_37, release 2026-05-01, binding Ki, the harvested receptor and transporter families; `docs/item37_rulings_draft_2026-11-13.md` section 19) counted 5,676 molecule-subtype cells that hold only censored values where an exact sibling value exists; censored rows among the project's own class-centre inputs have not been counted. Heckman selection models do not fit: no credible exclusion variable, and too few rows in the allosteric and channel classes (not in the aminergic harvest of 103,196 Ki values). Measured bias read: the 16% of genes reported by 1991 hold 49% of the 2015 literature; the share of records with log-value above 6 is 23.3% in ChEMBL, 52.7% in BindingDB and 79.8% in GtoPdb, and 47.1% in the part of PubChem that overlaps those databases (Isigkeit et al. 2022), while by a different measure, depositors' outcome labels over all PubChem assay results, 2.8% are active (An et al. 2025); whether a compound was tested against a target is predictable from ChEMBL itself. Its recommendations for the amendment of `docs/item37_rulings_draft_2026-11-13.md`: score held-out error weighted toward rows resembling the unsourced ones, report a one-sided sensitivity per fallback value, and stratify the held-out split on those covariates before it is fixed, which cannot be added afterwards. A class with no sourced member is not correctable by any method. Four papers were read in full; the rest as abstracts and six as bibliographic records only; its bibliography drafts are not in `docs/references.bib`; the entries are being built on Fable, with Crossref and OpenAlex as the two indexes for works PubMed does not hold (the owner, 24 November 2026).
 
 ---
 
@@ -1053,7 +1053,7 @@ design decision of its own.
 **Known limits (do not overstate these in writing).**
 - **No label of the study varies a carrier**, so no label trains the `sequesters` relation (`comparative_checks.py`,
   `KINDS_THAT_READ_A_TRAINED_RELATION`), and "every row of the evidence table is a (perturbation, symptom) pair with no
-  population axis" (`docs/special_population_carrier_signal.md`, generated 22 October 2026 on `evidence_full_v3`). A
+  population axis" (`docs/generated/special_population_carrier_signal.md`, generated 22 October 2026 on `evidence_full_v3`). A
   modulated free fraction would be seen, if at all, in the comparative checks, which describe the model's behaviour
   and are not a test it passes or fails.
 - The evidence is for one drug. Its largest number, the 44 per cent, comes from the full paper (van Steveninck et al.
@@ -1081,7 +1081,7 @@ than its own pool, which diagonal reaction-to-pool edges cannot carry)", and fro
 cross-terms "a stated limit of the build, not an omission". Nothing here is started.
 
 **The idea.** The pool route into `VM_c` weights each cytosolic pool by its own pump-clamped sensitivity, the diagonal
-of a 3x3 steady-state response (`docs/extracellular_pool_sensitivities_2026-11-07.md`, section 1). Two terms of the
+of a 3x3 steady-state response (`docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md`, section 1). Two terms of the
 same source model are carried by no edge: the off-diagonal shifts (a sustained inward Na+ current moves ln[Cl-]i by
 +0.1366 per uA/cm2, more than its own pool's +0.0995) and the electrogenic Na+/K+-ATPase's own current, which rises
 with cytosolic Na+. Unlike the shunt of item 10, both are linear in the pools, so both could be carried by edges with
@@ -1177,7 +1177,7 @@ owner (multiplier or pool node, which targets it reaches) and then a build of th
 Tagged 2026-11-20, proposed by an agent on Opus, not asked for by the owner. From decision 9.73, whose option (b),
 "Genebass as a gene-level soft prior for a heterozygous loss perturbation", "needs zygosity in the perturbations" (the
 row recommends against (b), on the Genebass measurement, and the choice is still the owner's), and from
-`docs/physiological_adherence_review.md` (13 October 2026, on the v4 graph), sections 11 and 14: "every gene
+`docs/records/2026-10/physiological_adherence_review.md` (13 October 2026, on the v4 graph), sections 11 and 14: "every gene
 perturbation is a complete knockout at magnitude 1". Nothing here is started.
 
 **What the evidence holds** (counted 20 November 2026 on `data/processed/evidence_full_v5`, files dated 12 November

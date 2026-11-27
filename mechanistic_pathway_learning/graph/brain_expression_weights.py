@@ -56,7 +56,7 @@ reactions use: a complex is the "and" of its subunits and `evaluate_gene_rule` a
 over raw expression. Taking it the other way round, as a minimum over the members' relative weights, composes a
 specificity measure across subunits rather than an availability: two subunits with different top classes then pull
 each other down in every class, and only 45 percent of complexes keep any class at 0.9 or above, against 69
-percent under the registered order (docs/complex_limiting_member_weight.md). A complex available nowhere is a
+percent under the registered order (docs/generated/complex_limiting_member_weight.md). A complex available nowhere is a
 complex nothing propagates through anywhere.
 
 A member with a curated alternative (decision 9.68 (a): VAMP1 beside VAMP2 as the vesicle SNARE,

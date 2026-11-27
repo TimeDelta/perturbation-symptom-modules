@@ -132,7 +132,7 @@ step "$processed/off_target_scoping/open_targets_symptom_rows.parquet" "Open Tar
   python experiments/scope_open_targets_symptom_labels.py --graph-dir "$processed/graph_full" \
     --output "$processed/off_target_scoping/open_targets_symptom_labels.json" --rows-output "$open_targets_rows"
 # docs/symptom_crosswalk.csv holds parkinsonism, the 24th symptom, so these commands build the table with it. The table
-# docs/drug_targets_any_type.md calls v3 is the same build on the crosswalk of commit 821cef5.
+# docs/records/2026-10/drug_targets_any_type.md calls v3 is the same build on the crosswalk of commit 821cef5.
 evidence_build() {
   # evidence_build SUFFIX CROSSWALK
   local suffix="$1" crosswalk="$2"

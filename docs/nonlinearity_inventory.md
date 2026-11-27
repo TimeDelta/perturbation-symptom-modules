@@ -13,7 +13,7 @@ not built (decision 9.106), so they are history and are not restated as current.
 
 ## 1. The cases
 
-Cases 1 to 6 are from `docs/physiological_adherence_review.md` (13 October 2026), whose section is named. Cases 9 and 10 were added on 2 November 2026, from decisions 9.97 and 9.108; neither has a section there.
+Cases 1 to 6 are from `docs/records/2026-10/physiological_adherence_review.md` (13 October 2026), whose section is named. Cases 9 and 10 were added on 2 November 2026, from decisions 9.97 and 9.108; neither has a section there.
 
 | # | Case | Section | Size | Status |
 |---|---|---|---|---|
@@ -75,7 +75,7 @@ Decision 4.2 (closed and built 13 October 2026) gives a complex its limiting mem
 complex node itself. The minimum is taken over non-negative expression, where it is the conjunction of the members
 and has no sign to be biased by. 1,523 of 1,681 complexes carry a gate, median 0.150. The count of 413 complexes in
 the adherence review reproduces under no reading; the three readings that do give 343, 387 and 499
-(`docs/complex_limiting_member_weight.md`).
+(`docs/generated/complex_limiting_member_weight.md`).
 
 What 4.2 does not give is conjunction in the propagation itself (case 3). The message-passing encoder takes a minimum
 over the signed field for `member_of`; the owner ruled that a signed AND is "better handled by a different control"
