@@ -9,8 +9,9 @@ Why. Three open points of the study need a number per drug that no table of the 
     (docs/off_target_scoping.md, decision 3: the 90-percent placeholder or a measured concentration);
   - a reading at the peak of a drug's concentration at its site of action (docs/label_source_review.md, section 10).
 
-What is joined, each from a published table kept under data/raw/exposure (not in git; docs/exposure_sources/ records
-where each was read and experiments/exposure_sources/ holds the scripts that transcribed it):
+What is joined, each from a published table kept under data/raw/exposure (not in git;
+docs/records/2026-10/exposure_sources/ records where each was read and experiments/exposure_sources/ holds the scripts
+that transcribed it):
 
   Lombardo et al. 2018     intravenous plasma clearance, volume of distribution, half-life, fraction unbound in plasma
   FDA drug labels          percent bound to plasma proteins, where Lombardo's table has no fraction unbound
@@ -382,12 +383,12 @@ def write_document(table: pd.DataFrame, name: str, evidence_directory: Path, out
               "| --- | --- | --- |",
               "| Schulz et al. 2020, [doi:10.1186/s13054-020-02915-5](https://doi.org/10.1186/s13054-020-02915-5) | \"This article is licensed under a Creative Commons Attribution 4.0 International License\"; \"The Creative Commons Public Domain Dedication waiver (http://creativecommons.org/publicdomain/zero/1.0/) applies to the data made available in this article, unless otherwise stated in a credit line to the data.\" | the article's permissions in PubMed Central |",
               "| Lombardo et al. 2018, [doi:10.1124/dmd.118.082966](https://doi.org/10.1124/dmd.118.082966) | **permission required.** The copyright holder is the journal's society; the article is free to read under no licence; the only licence its Crossref record carries is for text and data mining and states that a user may not \"Substantially or systematically reproduce, retain or redistribute the Dataset\". The US EPA repository the table was read from carries no permission statement for it. The table is used and not redistributed, which is what those terms permit | `docs/records/2026-10/exposure_sources/lombardo2018.md`, `docs/label_source_review.md` 13.9 |",
-              "| Benet et al. 2011, [doi:10.1208/s12248-011-9290-9](https://doi.org/10.1208/s12248-011-9290-9); Hosey et al. 2016, [doi:10.1208/s12248-015-9845-2](https://doi.org/10.1208/s12248-015-9845-2) | not open access; copyright of the journal's society. Read from the free copies in PubMed Central | `docs/records/2026-10/exposure_sources/benet2011_bddcs.md` and `hosey2016_bddcs.md` |",
+              "| Benet et al. 2011, [doi:10.1208/s12248-011-9290-9](https://doi.org/10.1208/s12248-011-9290-9); Hosey et al. 2016, [doi:10.1208/s12248-015-9845-2](https://doi.org/10.1208/s12248-015-9845-2) | not open access; copyright of the journal's society. Read from the free copies in PubMed Central | `docs/records/2026-10/exposure_sources/benet2011_bddcs.md` and `docs/records/2026-10/exposure_sources/hosey2016_bddcs.md` |",
               "| blood-to-plasma ratios | the EPA `httk` package (\"License: MIT\"); the EPA's typed copies of Paixão et al. 2012 and Uchimura et al. 2010, not checked against the articles | `docs/records/2026-10/exposure_sources/blood_to_plasma.md` |",
               "| FDA drug labels through openFDA | \"Unless otherwise noted, the content, data, documentation, code, and related materials on openFDA is public domain\" (open.fda.gov/license, read 11 October 2026); \"we ask that proper credit be given\", with the example \"Data provided by the U.S. Food and Drug Administration (https://open.fda.gov)\" (open.fda.gov/terms, read 11 October 2026) | `configs/drug_label_protein_binding.csv`, with the label's set_id and effective_time per sentence |",
               "| Kp,uu,brain | per table, in `docs/generated/effect_site_data_coverage.md` | |", "",
               "Because two of these tables are not licensed for redistribution, the joined table stays out of git. The transcription scripts (`experiments/exposure_sources/`), "
-              "the notes on each source with its addresses and checksums (`docs/exposure_sources/`) and this script reproduce it.", "",
+              "the notes on each source with its addresses and checksums (`docs/records/2026-10/exposure_sources/`) and this script reproduce it.", "",
               "## Not retrieved", "",
               "The consensus guideline for therapeutic drug monitoring in psychiatry (Hiemke et al. 2018, [doi:10.1055/s-0043-116492](https://doi.org/10.1055/s-0043-116492)) gives therapeutic reference ranges for the psychotropic drugs, "
               "and would be the better source for them. It was not read: the publisher's robots file disallows automated readers, the article is not in PubMed Central, and no open licence was found "

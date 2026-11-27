@@ -45,8 +45,8 @@ a row is added in the turn the decision is taken, edited only to close it (the i
 correction, and ids are never dropped or renumbered. `docs/decision_history.md` is its chronology, read from the git
 history of the log by `experiments/generate_decision_history.py`: the commit that first holds a row is the earliest
 the decision can have been recorded, whatever date the row claims. `docs/amendment_history.md` is the same for the
-registration, from `Amends:` trailers. `docs/data_layer_rebuild.md`, the readings under `docs/exposure_sources/` and
-the other records the register marks `append_only: true` are append-only.
+registration, from `Amends:` trailers. `docs/data_layer_rebuild.md`, the readings under
+`docs/records/2026-10/exposure_sources/` and the other records the register marks `append_only: true` are append-only.
 
 ## Where documents live (20 November 2026)
 
@@ -73,8 +73,8 @@ last point below).
 
 - `expected_location` in `mechanistic_pathway_learning/documentation.py` is the rule. It is read from the register's
   class, so no file needs a judgement of its own. A file keeps its name when it moves, and a folder moves whole under
-  its own name: `docs/mechanism_cards/<run>/` goes to `docs/generated/mechanism_cards/<run>/`, and
-  `docs/exposure_sources/` into `docs/records/2026-10/`. A family of versions moves together, as do a data file and the
+  its own name: `docs/mechanism_cards/<run>/` goes to `docs/generated/mechanism_cards/<run>/`, and the readings'
+  folder `exposure_sources/` into `docs/records/2026-10/`. A family of versions moves together, as do a data file and the
   document that explains it, and a script's inputs and its page. `docs/figures/` and `docs/study_sheet_figures/` stay
   where they are, because `figures.md` and `study_sheet.md` link into them relatively.
 - The exceptions that stay at the top, each with its reason, are `TOP_LEVEL_EXCEPTIONS` in the same module: the six

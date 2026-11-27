@@ -16,7 +16,10 @@
     "docs/README.md": {
       "class": "generated",
       "generator": "experiments/generate_docs_index.py",
-      "what": "the landing page of docs/: where to start, and every registered document by topic with its class"
+      "what": "the landing page of docs/: where to start, and every registered document by topic with its class",
+      "names_absent_paths": {
+        "docs/literature_bias_2026-11-20.md": "moved to `docs/records/2026-11/literature_bias_2026-11-20.md` on 2026-11-27 (configs/moved_paths.json); this page prints the first heading of the record docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md as its title, and that heading names the old path, which a record keeps as written"
+      }
     },
     "docs/records/2026-10/allele_perturbations.md": {
       "class": "record",
@@ -255,7 +258,8 @@
         "docs/exposure_sources/lombardo2018.md": "moved to `docs/records/2026-10/exposure_sources/lombardo2018.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
         "docs/exposure_sources/benet2011_bddcs.md": "moved to `docs/records/2026-10/exposure_sources/benet2011_bddcs.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
         "docs/exposure_sources/blood_to_plasma.md": "moved to `docs/records/2026-10/exposure_sources/blood_to_plasma.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
-        "docs/exposure_sources/hiemke2018_agnp.md": "moved to `docs/records/2026-10/exposure_sources/hiemke2018_agnp.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/exposure_sources/hiemke2018_agnp.md": "moved to `docs/records/2026-10/exposure_sources/hiemke2018_agnp.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/exposure_sources": "moved whole to `docs/records/2026-10/exposure_sources/` on 2026-11-27 (configs/moved_paths.json lists its six files); this page predates the move and is not regenerated in the move commit, so it names the old folder until its generator writes it again"
       }
     },
     "docs/generated/drug_target_leakage.md": {
@@ -1126,7 +1130,7 @@
       "class": "record",
       "recorded": "2026-11-24",
       "append_only": true,
-      "what": "Fable verification of the Opus literature pass of 20 November 2026 (docs/literature_bias_2026-11-20.md) for exploration-queue item 15: citations, quotations, numbers and appraisals checked, corrections C1 to C11 proposed and not applied, references.bib additions proposed"
+      "what": "Fable verification of the Opus literature pass of 20 November 2026 (docs/records/2026-11/literature_bias_2026-11-20.md) for exploration-queue item 15: citations, quotations, numbers and appraisals checked, corrections C1 to C11 proposed and not applied, references.bib additions proposed"
     },
     "docs/records/2026-11/item21_human_gem_sweep_2026-11-24.md": {
       "class": "record",

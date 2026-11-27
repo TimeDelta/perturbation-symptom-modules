@@ -209,7 +209,8 @@ def plan_phase(phase: int, root: Path = REPOSITORY_ROOT, only: list[str] | None 
     for old in renames:
         by_name[posixpath.basename(old)].append(old)
     name_pattern = re.compile(r"(?<![A-Za-z0-9_\-])(" + "|".join(re.escape(name) for name in sorted(by_name, key=len, reverse=True)) + r")(?![A-Za-z0-9_\-])")
-    # a folder every file of which moves ("docs/exposure_sources"), as a source may name it whole
+    # a folder every file of which moves (as docs/exposure_sources did whole in phase 2, 27 November 2026), as a source
+    # may name it whole
     folders = {posixpath.dirname(old) for old in renames if posixpath.dirname(old) != "docs"}
     folders = sorted(folder for folder in folders if all(path in renames for path in tracked if path.startswith(folder + "/")))
     folder_pattern = re.compile(r"(?<![A-Za-z0-9_\-./])(" + "|".join(re.escape(folder) for folder in folders) + r")(?![A-Za-z0-9_\-.])") if folders else None

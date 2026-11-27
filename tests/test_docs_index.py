@@ -40,7 +40,7 @@ def test_the_start_list_names_registered_documents_and_every_registered_document
 
 
 def test_links_are_relative_to_the_docs_directory():
-    assert link("docs/status.md") == "status.md" and link("docs/records/2026-10/exposure_sources/schulz2020.md") == "exposure_sources/schulz2020.md"
+    assert link("docs/status.md") == "status.md" and link("docs/records/2026-10/exposure_sources/schulz2020.md") == "records/2026-10/exposure_sources/schulz2020.md"
     assert link("README.md") == "../README.md"
 
 

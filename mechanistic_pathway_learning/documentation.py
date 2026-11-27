@@ -145,7 +145,9 @@ def expected_location(path: str, fields: dict) -> str:
     """Where the placement rule puts a registered document, from its register entry (docs/documentation_process.md,
     "Where documents live"): living and frozen documents and TOP_LEVEL_EXCEPTIONS at the top of docs/, generated
     pages in GENERATED_DIRECTORY, records in RECORDS_DIRECTORY/<the month of `recorded`>, drafts in DRAFTS_DIRECTORY.
-    A folder inside docs/ (docs/mechanism_cards/<run>/, docs/exposure_sources/) moves whole and keeps its name."""
+    A folder inside docs/ moves whole and keeps its name: docs/mechanism_cards/<run>/ went to
+    docs/generated/mechanism_cards/<run>/ on 20 November 2026, and docs/exposure_sources/ to
+    docs/records/2026-10/exposure_sources/ on 27 November 2026."""
     plain = strip_class_directory(path)
     if not plain.startswith("docs/") or plain.startswith(FIGURE_DIRECTORIES) or plain in TOP_LEVEL_EXCEPTIONS:
         return plain
