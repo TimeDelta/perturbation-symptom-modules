@@ -88,7 +88,7 @@
       "generator": "experiments/measure_binds_resource_precision.py",
       "what": "the precision of each OmniPath resource supplying binds edges against HuRI's tested space, by the method of Venkatesan et al. 2009 (decision 9.91); a report that sets no weight"
     },
-    "docs/brain_exposure_data_feasibility.md": {
+    "docs/records/2026-10/brain_exposure_data_feasibility.md": {
       "class": "record",
       "recorded": "2026-10-12",
       "append_only": false
@@ -109,7 +109,7 @@
       "reviewed": "2026-10-13",
       "as_of_commit": "e66ebc6"
     },
-    "docs/central_action_rule.md": {
+    "docs/generated/central_action_rule.md": {
       "class": "generated",
       "generator": "experiments/apply_central_action_rule.py"
     },
@@ -142,7 +142,7 @@
       "class": "generated",
       "generator": "experiments/build_complex_descriptors.py"
     },
-    "docs/complex_limiting_member_weight.md": {
+    "docs/generated/complex_limiting_member_weight.md": {
       "class": "generated",
       "generator": "experiments/label_review/complex_limiting_member_weight.py"
     },
@@ -165,13 +165,13 @@
         "docs/generated/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
       }
     },
-    "docs/coproduct_of_de_novo_split_2026-10-26.md": {
+    "docs/records/2026-10/coproduct_of_de_novo_split_2026-10-26.md": {
       "class": "record",
       "recorded": "2026-10-26",
       "append_only": true,
       "what": "the carrier relation coproduct_of mixes regeneration with de novo synthesis under one learned gain: 49 de novo against 1,030 redistribution edges on the v0.4 slice, 2 against 37 in the biopterin family, and the whole de novo biopterin route passing through one carrier-gained edge at SPR"
     },
-    "docs/ctd_notice_draft.md": {
+    "docs/drafts/ctd_notice_draft.md": {
       "class": "draft",
       "recorded": "2026-10-11"
     },
@@ -224,34 +224,45 @@
     "docs/generated/drug_administration_routes.md": {
       "class": "generated",
       "generator": "experiments/tabulate_drug_routes.py",
-      "family": "drug_administration_routes"
+      "family": "drug_administration_routes",
+      "names_absent_paths": {
+        "docs/drug_entry_nodes.md": "moved to `docs/records/2026-10/drug_entry_nodes.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
     "docs/generated/drug_administration_routes_v4.md": {
       "class": "generated",
       "generator": "experiments/tabulate_drug_routes.py",
-      "family": "drug_administration_routes"
+      "family": "drug_administration_routes",
+      "names_absent_paths": {
+        "docs/drug_entry_nodes.md": "moved to `docs/records/2026-10/drug_entry_nodes.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
-    "docs/drug_entry_nodes.md": {
+    "docs/records/2026-10/drug_entry_nodes.md": {
       "class": "record",
       "recorded": "2026-10-09",
       "append_only": false
     },
-    "docs/drug_entry_nodes_measured.md": {
+    "docs/generated/drug_entry_nodes_measured.md": {
       "class": "generated",
       "generator": "experiments/measure_drug_entry_nodes.py"
     },
-    "docs/drug_exposure_table.md": {
+    "docs/generated/drug_exposure_table.md": {
       "class": "generated",
       "generator": "experiments/build_drug_exposure_table.py",
       "names_absent_paths": {
-        "docs/effect_site_data_coverage.md": "moved to `docs/generated/effect_site_data_coverage.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/effect_site_data_coverage.md": "moved to `docs/generated/effect_site_data_coverage.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/drug_entry_nodes.md": "moved to `docs/records/2026-10/drug_entry_nodes.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/exposure_sources/lombardo2018.md": "moved to `docs/records/2026-10/exposure_sources/lombardo2018.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/exposure_sources/benet2011_bddcs.md": "moved to `docs/records/2026-10/exposure_sources/benet2011_bddcs.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/exposure_sources/blood_to_plasma.md": "moved to `docs/records/2026-10/exposure_sources/blood_to_plasma.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/exposure_sources/hiemke2018_agnp.md": "moved to `docs/records/2026-10/exposure_sources/hiemke2018_agnp.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
       }
     },
-    "docs/drug_target_leakage.md": {
+    "docs/generated/drug_target_leakage.md": {
       "class": "generated",
       "generator": "experiments/check_drug_target_leakage.py"
     },
-    "docs/drug_targets_any_type.md": {
+    "docs/records/2026-10/drug_targets_any_type.md": {
       "class": "record",
       "recorded": "2026-10-08",
       "append_only": false
@@ -291,37 +302,37 @@
       "as_of_commit": "aa35ab0",
       "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
     },
-    "docs/exposure_sources/benet2011_bddcs.md": {
+    "docs/records/2026-10/exposure_sources/benet2011_bddcs.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
       "what": "a reading of one source"
     },
-    "docs/exposure_sources/blood_to_plasma.md": {
+    "docs/records/2026-10/exposure_sources/blood_to_plasma.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
       "what": "a reading of one source"
     },
-    "docs/exposure_sources/hiemke2018_agnp.md": {
+    "docs/records/2026-10/exposure_sources/hiemke2018_agnp.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
       "what": "a reading of one source"
     },
-    "docs/exposure_sources/hosey2016_bddcs.md": {
+    "docs/records/2026-10/exposure_sources/hosey2016_bddcs.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
       "what": "a reading of one source"
     },
-    "docs/exposure_sources/lombardo2018.md": {
+    "docs/records/2026-10/exposure_sources/lombardo2018.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
       "what": "a reading of one source"
     },
-    "docs/exposure_sources/schulz2020.md": {
+    "docs/records/2026-10/exposure_sources/schulz2020.md": {
       "class": "record",
       "recorded": "2026-10-11",
       "append_only": true,
@@ -352,7 +363,7 @@
       "class": "generated",
       "generator": "experiments/build_fine_symptom_crosswalk.py"
     },
-    "docs/fixed_point_against_pharmacological_steady_state.md": {
+    "docs/records/2026-10/fixed_point_against_pharmacological_steady_state.md": {
       "class": "record",
       "recorded": "2026-10-21",
       "append_only": false,
@@ -367,9 +378,12 @@
       "recorded": "2026-10-13",
       "append_only": false
     },
-    "docs/fraction_unbound_coverage.md": {
+    "docs/generated/fraction_unbound_coverage.md": {
       "class": "generated",
-      "generator": "experiments/measure_fraction_unbound_coverage.py"
+      "generator": "experiments/measure_fraction_unbound_coverage.py",
+      "names_absent_paths": {
+        "docs/plasma_protein_binding.md": "moved to `docs/records/2026-10/plasma_protein_binding.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
     "docs/gene_protein_split.md": {
       "class": "living",
@@ -380,7 +394,7 @@
         "docs/split_slice_comparisons_merged_strata.md": "as above"
       }
     },
-    "docs/gene_protein_split_results.md": {
+    "docs/records/2026-10/gene_protein_split_results.md": {
       "class": "record",
       "recorded": "2026-10-08",
       "append_only": false
@@ -464,7 +478,8 @@
       "generator": "experiments/measure_leakage_group_rules.py",
       "family": "leakage_group_rules",
       "names_absent_paths": {
-        "docs/family_in_graph.md": "moved to `docs/generated/family_in_graph.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/family_in_graph.md": "moved to `docs/generated/family_in_graph.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/drug_target_leakage.md": "moved to `docs/generated/drug_target_leakage.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
       }
     },
     "docs/generated/leakage_group_rules_evidence_full_v2.md": {
@@ -472,7 +487,8 @@
       "generator": "experiments/measure_leakage_group_rules.py",
       "family": "leakage_group_rules",
       "names_absent_paths": {
-        "docs/family_in_graph.md": "moved to `docs/generated/family_in_graph.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/family_in_graph.md": "moved to `docs/generated/family_in_graph.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/drug_target_leakage.md": "moved to `docs/generated/drug_target_leakage.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
       }
     },
     "docs/generated/leakage_only_adversary.md": {
@@ -579,9 +595,12 @@
     },
     "docs/generated/message_passing_depth_probe.md": {
       "class": "generated",
-      "generator": "experiments/probe_message_passing_depth.py"
+      "generator": "experiments/probe_message_passing_depth.py",
+      "names_absent_paths": {
+        "docs/drug_entry_nodes_measured.md": "moved to `docs/generated/drug_entry_nodes_measured.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
-    "docs/missing_physiology_review.md": {
+    "docs/records/2026-10/missing_physiology_review.md": {
       "class": "record",
       "recorded": "2026-10-14",
       "append_only": false
@@ -638,7 +657,7 @@
       "recorded": "2026-10-17",
       "what": "options for deriving a nosology from the fitted model after the experiment, with what auto-psych-nosology can and cannot contribute; decision 9.64"
     },
-    "docs/occupancy_coverage_and_shift_transfer.md": {
+    "docs/generated/occupancy_coverage_and_shift_transfer.md": {
       "class": "generated",
       "generator": "experiments/label_review/occupancy_coverage_and_shift_transfer.py"
     },
@@ -651,7 +670,7 @@
       "class": "generated",
       "generator": "experiments/label_review/off_targets_under_the_target_split.py"
     },
-    "docs/onsides_label_slice.md": {
+    "docs/generated/onsides_label_slice.md": {
       "class": "generated",
       "generator": "experiments/build_onsides_reports.py"
     },
@@ -683,7 +702,10 @@
     },
     "docs/generated/parkinsonism_symptom.md": {
       "class": "generated",
-      "generator": "experiments/compare_parkinsonism_evidence.py"
+      "generator": "experiments/compare_parkinsonism_evidence.py",
+      "names_absent_paths": {
+        "docs/drug_targets_any_type.md": "moved to `docs/records/2026-10/drug_targets_any_type.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
     "docs/records/2026-10/pathway_test_options.md": {
       "class": "record",
@@ -694,7 +716,7 @@
       "class": "generated",
       "generator": "experiments/measure_perturbation_type_offset.py"
     },
-    "docs/pet_occupancy_feasibility.md": {
+    "docs/records/2026-10/pet_occupancy_feasibility.md": {
       "class": "record",
       "recorded": "2026-10-12",
       "append_only": false
@@ -740,7 +762,7 @@
       "class": "generated",
       "generator": "experiments/aggregate_main_model_runs.py"
     },
-    "docs/physiological_adherence_review.md": {
+    "docs/records/2026-10/physiological_adherence_review.md": {
       "class": "record",
       "recorded": "2026-10-13",
       "append_only": false
@@ -757,7 +779,10 @@
     },
     "docs/generated/placeholder_concentration_calibration.md": {
       "class": "generated",
-      "generator": "experiments/label_review/placeholder_concentration_calibration.py"
+      "generator": "experiments/label_review/placeholder_concentration_calibration.py",
+      "names_absent_paths": {
+        "docs/occupancy_coverage_and_shift_transfer.md": "moved to `docs/generated/occupancy_coverage_and_shift_transfer.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
     "docs/generated/plasma_binder_confirmatory_effect.md": {
       "class": "generated",
@@ -767,10 +792,11 @@
       "class": "generated",
       "generator": "experiments/build_plasma_binder_variant.py",
       "names_absent_paths": {
-        "docs/label_plasma_binders.md": "moved to `docs/generated/label_plasma_binders.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/label_plasma_binders.md": "moved to `docs/generated/label_plasma_binders.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/drug_entry_nodes.md": "moved to `docs/records/2026-10/drug_entry_nodes.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
       }
     },
-    "docs/plasma_protein_binding.md": {
+    "docs/records/2026-10/plasma_protein_binding.md": {
       "class": "record",
       "recorded": "2026-10-09",
       "append_only": false
@@ -811,15 +837,18 @@
     "docs/registered_core.md": {
       "class": "generated",
       "generator": "experiments/generate_registered_core.py",
-      "what": "every registered rule with its value, the reason the configuration gives, the decisions and items its text names and the code that holds it; the short way into the registration"
+      "what": "every registered rule with its value, the reason the configuration gives, the decisions and items its text names and the code that holds it; the short way into the registration",
+      "names_absent_paths": {
+        "docs/drug_target_leakage.md": "moved to `docs/generated/drug_target_leakage.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
-    "docs/regulation_sign_recuration.md": {
+    "docs/records/2026-10/regulation_sign_recuration.md": {
       "class": "record",
       "recorded": "2026-10-17",
       "append_only": true,
       "what": "a seeded sample of 16 regulation labels whose two CollecTRI releases state opposite signs, read paper by paper; decision 9.72"
     },
-    "docs/relation_timescale_ordering_2026-10-26.md": {
+    "docs/records/2026-10/relation_timescale_ordering_2026-10-26.md": {
       "class": "record",
       "recorded": "2026-10-26",
       "append_only": true,
@@ -877,7 +906,7 @@
       "append_only": true,
       "what": "the design of the soft priors (evidence below the label bar as targets and weights), its reasons, the controls and what is provisional; decision 9.50"
     },
-    "docs/special_population_carrier_signal.md": {
+    "docs/generated/special_population_carrier_signal.md": {
       "class": "generated",
       "generator": "experiments/measure_special_population_carrier_signal.py",
       "names_absent_paths": {
@@ -889,7 +918,7 @@
       "generator": "experiments/generate_status.py",
       "what": "the one page that says what is current"
     },
-    "docs/steady_state_readout_alternatives.md": {
+    "docs/records/2026-10/steady_state_readout_alternatives.md": {
       "class": "record",
       "recorded": "2026-10-20",
       "append_only": false,
@@ -900,9 +929,12 @@
       "recorded": "2026-10-14",
       "append_only": false
     },
-    "docs/target_occupancy_measured.md": {
+    "docs/generated/target_occupancy_measured.md": {
       "class": "generated",
-      "generator": "experiments/measure_target_occupancy.py"
+      "generator": "experiments/measure_target_occupancy.py",
+      "names_absent_paths": {
+        "docs/drug_exposure_table.md": "moved to `docs/generated/drug_exposure_table.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+      }
     },
     "docs/generated/target_split_options.md": {
       "class": "generated",
@@ -931,7 +963,8 @@
       "class": "generated",
       "generator": "experiments/compare_twin_runs.py",
       "names_absent_paths": {
-        "docs/module_health_results.md": "moved to `docs/generated/module_health_results.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
+        "docs/module_health_results.md": "moved to `docs/generated/module_health_results.md` on 2026-11-20 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again",
+        "docs/gene_protein_split_results.md": "moved to `docs/records/2026-10/gene_protein_split_results.md` on 2026-11-27 (configs/moved_paths.json); this page predates the move and is not regenerated in the move commit, so it names the old path until its generator writes it again"
       }
     },
     "docs/records/2026-11/brenda_calcium_comment_classification_2026-11-06.md": {
@@ -940,37 +973,37 @@
       "append_only": true,
       "what": "BRENDA's 880 human Ca2+ regulation records read into classes, per record, protein and edge, with the edge counts of three candidate rules for option (a) of decision 9.114; read on Fable"
     },
-    "docs/curation_candidates_verification_2026-11-06.md": {
+    "docs/records/2026-11/curation_candidates_verification_2026-11-06.md": {
       "class": "record",
       "recorded": "2026-11-06",
       "append_only": true,
       "what": "the 38 unverified presynaptic-receptor and oxidant curation candidates each read against its source and a second source, accepted (13), rejected (23) or still unverified (2), with the exact rows proposed for the curated tables and the decisions left to the owner; read on Fable; nothing applied to the tables"
     },
-    "docs/krebs_oxidant_literature_2026-11-07.md": {
+    "docs/records/2026-11/krebs_oxidant_literature_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "the literature of exploration item 9 (the Krebs cycle and oxidative burden): which cycle and adjacent dehydrogenases are oxidant sources or targets in mammalian and brain mitochondria, eight rows that fit the curated schema and the metabolite-driven edges that do not; read on Fable; nothing applied to the tables"
     },
-    "docs/endosomal_nhe_literature_2026-11-07.md": {
+    "docs/records/2026-11/endosomal_nhe_literature_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "the literature of exploration item 7 (endosomal Na+/H+ exchangers SLC9A6 and SLC9A9): localisation, direction and disease association, and the finding that Reactome release 98 already holds both genes in the unfetched pathway R-HSA-425986 with endosomal compartments; read on Fable; nothing applied to the graph"
     },
-    "docs/phosphosite_opposite_effects_2026-11-07.md": {
+    "docs/records/2026-11/phosphosite_opposite_effects_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "the decisive count of exploration item 4: kinase-to-substrate edges on the v5 graph whose substrate SIGNOR annotates with both activating and inhibiting residues for that kinase (34 of 84,866), the licences of the site-level sources, and the verdict by the item's own test; read on Fable"
     },
-    "docs/anticholinergic_indications_faers_2026-11-07.md": {
+    "docs/records/2026-11/anticholinergic_indications_faers_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "the label indication sentences of benztropine, trihexyphenidyl and procyclidine and what each says about tardive dyskinesia, the two readings of decision 9.96 for their FAERS reports, their current mapping, proposed curated rows and the co-prescription literature; read on Fable, with the owner's ruling added"
     },
-    "docs/tardive_dyskinesia_construct_2026-11-07.md": {
+    "docs/records/2026-11/tardive_dyskinesia_construct_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
@@ -1000,7 +1033,7 @@
       "append_only": true,
       "what": "the two primary anion-permeability papers for decision 9.112 read in full from the owner's PDFs (Bormann et al. 1987, Fatima-Shad and Barry 1993): P_HCO3/P_Cl for GABA_A and glycine receptors with methods and conditions, Lombardi et al. 2019's attribution checked, E_GABA and E_Gly recomputed, and the recommendation; read on Fable"
     },
-    "docs/extracellular_pool_sensitivities_2026-11-07.md": {
+    "docs/records/2026-11/extracellular_pool_sensitivities_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
@@ -1012,13 +1045,13 @@
       "append_only": true,
       "what": "option 2 of decision 9.119, module supports grown on the graph from learned seed nodes: the network-propagation and disease-module literature, the design on the v5 graph (relations, direction, sign, kernel, hub and currency handling), nominal and effective counts, dead gates, compute, interpretability, registered implications, and the owner's additions (a size term, not presetting K, overlapping membership, the gate start); read on Fable"
     },
-    "docs/module_support_reduction_2026-11-07.md": {
+    "docs/records/2026-11/module_support_reduction_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
       "what": "options for reducing the module-support parameters of the noisy-OR head by orders of magnitude (pathway-set supports, candidate sets, amortised and attention supports, graph smoothing, fewer modules, the published interpretable architectures), the count recomputed from the code on v5, the registered and lockbox implications and the owner's questions; read on Fable"
     },
-    "docs/shunting_inhibition_count_2026-11-07.md": {
+    "docs/records/2026-11/shunting_inhibition_count_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
@@ -1036,7 +1069,7 @@
       "append_only": true,
       "what": "the 16 kinase-to-substrate edges whose v5 sign SIGNOR disputes, read at the primary papers: 8 right, 4 wrong with proposed override rows (not applied), 1 unsigned, 3 left as is; and that 9 of the 16 rest on SIGNOR rows their cited paper does not support; read on Fable"
     },
-    "docs/collectri_sign_recuration_sample_2026-11-07.md": {
+    "docs/records/2026-11/collectri_sign_recuration_sample_2026-11-07.md": {
       "class": "record",
       "recorded": "2026-11-07",
       "append_only": true,
@@ -1059,25 +1092,25 @@
       "append_only": true,
       "what": "a critical review of the experimental design (construct, internal, statistical and external validity; registered against built) and of five framings of the experiment, run on Opus at the owner's request on 20 November 2026; unconfirmed, needs verification on Fable and the owner's reading"
     },
-    "docs/exploration_item6_design_2026-11-20.md": {
+    "docs/records/2026-11/exploration_item6_design_2026-11-20.md": {
       "class": "record",
       "recorded": "2026-11-20",
       "append_only": true,
       "what": "exploration item 6 (the fast/slow partition and the conserved-moiety constraint): design options and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
     },
-    "docs/exploration_item7_design_2026-11-20.md": {
+    "docs/records/2026-11/exploration_item7_design_2026-11-20.md": {
       "class": "record",
       "recorded": "2026-11-20",
       "append_only": true,
       "what": "exploration item 7 (endosomal pH, SLC9A6 and SLC9A9): design options and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
     },
-    "docs/exploration_item9_design_2026-11-20.md": {
+    "docs/records/2026-11/exploration_item9_design_2026-11-20.md": {
       "class": "record",
       "recorded": "2026-11-20",
       "append_only": true,
       "what": "exploration item 9 (the Krebs cycle and oxidative burden): design of a redox-state-driven oxidant source and the questions for the owner, run on Opus at the owner's request on 20 November 2026; unconfirmed"
     },
-    "docs/literature_bias_2026-11-20.md": {
+    "docs/records/2026-11/literature_bias_2026-11-20.md": {
       "class": "record",
       "recorded": "2026-11-20",
       "append_only": true,
