@@ -1195,6 +1195,11 @@
       "class": "draft",
       "recorded": "2026-11-27",
       "what": "the working log of the pass that wrote docs/drafts/amendment_fine_symptom_list_draft.md"
+    },
+    "docs/drafts/brain_expression_pipeline_map.md": {
+      "class": "draft",
+      "recorded": "2026-11-27",
+      "what": "a map of the rebuild stages, the gene nodes each adds and every reader of the brain-expression columns, for amendment item 37b part (c), with three ways to attach the values after the last stage that adds gene nodes, not chosen between; read against 342c8b8"
     }
   }
 }
