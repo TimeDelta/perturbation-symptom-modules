@@ -271,10 +271,11 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | additions
 
 
-def test_the_check_fails_when_only_the_mouse_crosswalk_is_stale(monkeypatch, tmp_path, capsys):
+def test_the_check_fails_when_either_crosswalk_file_alone_is_stale(monkeypatch, tmp_path, capsys):
     """An override keyed by an MP term id moves a row of the IMPC file alone, so --check must fail on a stale IMPC file
-    beside a current fine one; until 28 November 2026 it compared the fine file only. The build is replaced by fixed
-    rows and every path by a file under tmp_path, so neither hp.obo nor a committed file is read."""
+    beside a current fine one; until 28 November 2026 it compared the fine file only. A stale fine file beside a current
+    IMPC one fails as well. The build is replaced by fixed rows and every path by a file under tmp_path, so neither
+    hp.obo nor a committed file is read."""
     import experiments.build_fine_symptom_crosswalk as fine_builder
     fresh_fine_rows = [{column: f"{column} of the fresh build" for column in FINE_COLUMNS}]
     fresh_impc_rows = [{column: f"{column} of the fresh build" for column in IMPC_COLUMNS}]
@@ -296,6 +297,11 @@ def test_the_check_fails_when_only_the_mouse_crosswalk_is_stale(monkeypatch, tmp
     write_rows(impc_path, fresh_impc_rows, IMPC_COLUMNS)
     assert fine_builder.main() == 0
     assert "are current" in capsys.readouterr().out
+    # and the other way round, which the hp.obo test above holds only where hp.obo is fetched
+    write_rows(fine_path, [{**fresh_fine_rows[0], "hpo_ids": "an HPO id no rerun wrote"}], FINE_COLUMNS)
+    assert fine_builder.main() == 1
+    printed = capsys.readouterr().out
+    assert f"{fine_path} differs from a fresh build" in printed and f"{impc_path} differs" not in printed
 
 
 def test_the_literature_table_is_rekeyed_to_the_namesakes_without_a_row_moving():
