@@ -21,7 +21,8 @@ The rule, as ruled (decision 9.35, 24 November 2026: "Use 1.a but not on current
 right?"; decision 9.36, the same day: "2 accepted. Draw depends on graph. Oh well on the genes"):
 
 - Each seed of --seed-order, a file fixed in advance, draws the held-out set by item 25 with each side at its
-  registered fraction (target_held_out_split.two_sided_held_out_perturbations).
+  registered fraction (target_held_out_split.two_sided_held_out_perturbations, called through two_sided_held_out_draw,
+  which returns the same draw with what the options of 28 November 2026 did).
 - Each draw's label-free statistics are computed, reading no label, and compared with the ceilings of the --calibration
   files (experiments/calibrate_leakage_ceiling.py). A draw passes when every statistic is below its ceiling.
 - The first draw that passes is accepted and no later seed is examined. If none passes, nothing is written and the
@@ -59,7 +60,9 @@ defaulting to either. Until 28 November 2026 this paragraph said no ruling settl
 The draw's options (--hold-out-genes-encoding-held-out-targets, --hold-out-whole-groups-of-those-genes, --gene-side-rule;
 target_held_out_split.HeldOutDrawOptions, built 28 November 2026 from that draft's M1 and M2, none ruled) are off by
 default, so a draw without them is the draw described above. Every calibration given must record the same options
-(experiments/calibrate_leakage_ceiling.py takes the same flags), so the pseudo-draws and the draw use one rule.
+(experiments/calibrate_leakage_ceiling.py takes the same flags), so the pseudo-draws and the draw use one rule. With M1's
+closure on, the record also holds what it forced for the accepted seed (m1_closure: the forced groups, their share of
+the gene side, whether they pass the fraction, and the overshoot when they do).
 
 Usage, from the repository root (only on the owner's go-ahead):
   PYTHONPATH=. python experiments/draw_held_out_set.py --graph-dir <graph> --evidence-dir <evidence> \\
@@ -86,7 +89,7 @@ from mechanistic_pathway_learning.evaluation.leakage_ceiling import (  # noqa: E
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (  # noqa: E402
     reach_edges, reached_nodes_of_perturbations, seen_reached_node_share, seen_target_share)
 from mechanistic_pathway_learning.evaluation.target_held_out_split import (  # noqa: E402
-    REGISTERED_HELD_OUT_FRACTION, HeldOutDrawOptions, targets_of_drugs, two_sided_held_out_perturbations)
+    REGISTERED_HELD_OUT_FRACTION, HeldOutDrawOptions, TwoSidedDraw, targets_of_drugs, two_sided_held_out_draw)
 from measure_leakage_only_adversary import (  # noqa: E402
     DRAW_OPTIONS_KEY, add_held_out_draw_option_arguments, graph_file_sha256, held_out_draw_options_from_arguments)
 from score_confirmatory import MINIMUM_POSITIVES_TO_SCORE  # noqa: E402
@@ -154,11 +157,14 @@ def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str,
         reached_nodes_of_perturbation = reached_nodes_of_perturbations(
             data.perturbation_ids, data.perturbation_seeds, data.node_ids, walk_source, walk_target, reached_channel["maximum_hops"])
     held_out_of_seed: dict[int, tuple[set[str], set[str]]] = {}
+    draw_of_seed: dict[int, TwoSidedDraw] = {}
 
     def statistics_of_seed(seed: int) -> dict[str, float]:
-        held_out_ids, held_out_targets = two_sided_held_out_perturbations(
+        # two_sided_held_out_draw draws what two_sided_held_out_perturbations draws, with what the options did
+        draw_of_seed[seed] = draw = two_sided_held_out_draw(
             data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids, data.group_ids, seed,
             options=draw_options, proteins_encoded_by_gene=proteins_encoded_by_gene)
+        held_out_ids, held_out_targets = draw.held_out_ids, draw.held_out_target_ids
         held_out_of_seed[seed] = (held_out_ids, held_out_targets)
         training_ids = [perturbation_id for perturbation_id in perturbation_ids if perturbation_id not in held_out_ids]
         statistics = {}
@@ -202,6 +208,13 @@ def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str,
         "leakage_groups_with_members_on_both_sides": len(groups_inside & groups_outside),
         "perturbation_ids": sorted(held_out_ids),
     })
+    if draw_options.hold_out_whole_groups_of_those_genes:  # M1's closure: what it forced, and its overshoot if it passed
+        accepted_draw = draw_of_seed[examination["accepted_seed"]]
+        record["m1_closure"] = {"forced_groups": sorted(accepted_draw.forced_group_ids),
+                                "forced_gene_side_perturbations": len(accepted_draw.forced_gene_side_ids),
+                                "forced_share_of_the_gene_side": accepted_draw.forced_share_of_the_gene_side,
+                                "forced_groups_pass_the_fraction": accepted_draw.forced_groups_pass_the_fraction,
+                                "overshoot": accepted_draw.overshoot}
     return record
 
 

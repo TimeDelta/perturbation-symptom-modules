@@ -116,7 +116,8 @@ def registered_two_sided_draw(data, draw_seed: int, draw_options: HeldOutDrawOpt
     percent of the row mix it will meet.
 
     Since 27 November 2026 the draw itself is target_held_out_split.two_sided_held_out_perturbations, which
-    experiments/draw_held_out_set.py calls too; this keeps the name the script has always used. With draw_options (and
+    experiments/draw_held_out_set.py draws by too (since 28 November 2026 through two_sided_held_out_draw, which
+    returns the same draw with what the options did); this keeps the name the script has always used. With draw_options (and
     proteins_encoded_by_gene for the identity option) it draws by the opt-in options of 28 November 2026 instead, which
     no ruling registers; without them it draws the registered rule as before.
     """

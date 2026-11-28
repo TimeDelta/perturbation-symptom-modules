@@ -570,3 +570,28 @@ def test_the_measurement_records_the_options_it_draws_by(tmp_path, monkeypatch, 
     for written in (record, inputs):
         assert written.get(measurement.DRAW_OPTIONS_KEY) == (None if expected is None else expected.as_record())
     assert set(inputs) == set(measurement.CHECKPOINT_INPUT_KEYS) - ({measurement.DRAW_OPTIONS_KEY} if expected is None else set())
+
+
+def test_the_draw_records_what_m1_forced_for_the_accepted_seed():
+    """The accepted seed's forced groups, their share and the overshoot are in the record under M1's closure, as
+    two_sided_held_out_draw gives them; a draw without the closure records no m1_closure."""
+    from draw_held_out_set import draw_held_out_set
+    from measure_leakage_only_adversary import DRAW_OPTIONS_KEY
+    from tests.test_leakage_ceiling import DIGESTS, calibration_record
+    data = synthetic_data()  # gene GENE:G{i} encodes PROTEIN:T{i % 9}
+    encoded = {f"GENE:G{index}": {f"PROTEIN:T{index % 9}"} for index in range(28)}
+    calibration = {**calibration_record(ceiling=2.0), DRAW_OPTIONS_KEY: M1_WITH_M2.as_record()}
+    record = draw_held_out_set(data, [100, 101], [calibration], "disease_cluster", DIGESTS, M1_WITH_M2, encoded)
+    assert record["accepted_seed"] == 100
+    expected = two_sided_held_out_draw(data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids,
+                                       data.group_ids, 100, options=M1_WITH_M2, proteins_encoded_by_gene=encoded)
+    assert expected.forced_group_ids  # the case is not empty
+    assert record["perturbation_ids"] == sorted(expected.held_out_ids)
+    assert record["m1_closure"] == {"forced_groups": sorted(expected.forced_group_ids),
+                                    "forced_gene_side_perturbations": len(expected.forced_gene_side_ids),
+                                    "forced_share_of_the_gene_side": expected.forced_share_of_the_gene_side,
+                                    "forced_groups_pass_the_fraction": expected.forced_groups_pass_the_fraction,
+                                    "overshoot": expected.overshoot}
+    m2_calibration = {**calibration_record(ceiling=2.0), DRAW_OPTIONS_KEY: M2.as_record()}
+    assert "m1_closure" not in draw_held_out_set(data, [100], [m2_calibration], "disease_cluster", DIGESTS, M2)
+    assert "m1_closure" not in draw_held_out_set(data, [100], [calibration_record(ceiling=2.0)], "disease_cluster", DIGESTS)
