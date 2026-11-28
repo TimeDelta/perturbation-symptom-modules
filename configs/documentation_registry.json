@@ -1205,6 +1205,11 @@
       "class": "draft",
       "recorded": "2026-11-28",
       "what": "what the living-document reviews of 27 November 2026 could not apply, verbatim: corrections to CLAUDE.md, docs/preregistration.md and docs/research_summary.md, study-sheet suggestions, runbook steps and questions for the owner, with each checker's corrections and what is owed to Fable"
+    },
+    "docs/drafts/held_out_draw_methods_2026-11-28.md": {
+      "class": "draft",
+      "recorded": "2026-11-28",
+      "what": "draw methods that could reduce the held-out set's leakage further, against item 25's target split and the 9.35 ceiling as built in 2a28851: four recommended (the held-out target's gene held out with its disease cluster, the gene side as a seeded prefix of whole groups, nested calibration, every free definition committed before the 9.151 graph), one descriptive, the rest considered or rejected with reasons, and eighteen questions for the owner; read against 91bc9b8, not written on Fable, its literature owed"
     }
   }
 }
