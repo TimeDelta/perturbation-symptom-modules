@@ -139,11 +139,14 @@ def test_the_registered_channel_list_names_what_is_and_is_not_scored():
 
 def test_the_nearest_neighbour_tie_goes_to_the_lowest_training_row_whatever_the_order_of_the_neighbour_map():
     """Two training perturbations share one node each with the held-out one, so they tie. The copied labels are those
-    of the neighbour that came first in the ids given to fit, in either order of the neighbour map."""
+    of the neighbour that came first in the ids given to fit, in either order of the neighbour map, and when the ids
+    are given to fit in reverse order the tie follows that order rather than the ids' alphabetical one."""
     training_ids, training_outcomes = ["train_a", "train_b", "train_c"], np.array([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
     adversary = LeakageOnlyAdversary("nearest_neighbour_maximum").fit(training_ids, training_outcomes)
+    reversed_adversary = LeakageOnlyAdversary("nearest_neighbour_maximum").fit(training_ids[::-1], training_outcomes[::-1])
     for neighbour_map in ({"held_out": {"train_a": 1, "train_b": 1}}, {"held_out": {"train_b": 1, "train_a": 1}}):
         assert adversary.predict(["held_out"], neighbour_map).tolist() == [[1.0, 0.0]]
+        assert reversed_adversary.predict(["held_out"], neighbour_map).tolist() == [[0.0, 1.0]]
     # a larger weight still wins over a lower training row
     assert adversary.predict(["held_out"], {"held_out": {"train_a": 1, "train_c": 2}}).tolist() == [[1.0, 1.0]]
 
