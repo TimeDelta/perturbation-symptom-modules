@@ -80,7 +80,7 @@ import numpy as np
 from mechanistic_pathway_learning.evaluation.experiment_data import load_experiment_data, read_lockbox
 from mechanistic_pathway_learning.evaluation.negative_controls import degree_stratified_row_permutation
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import degree_strata, rank_normalise_within_groups
-from run_main_model import RESUME_CONTROL_ARGUMENTS, array_sha256, build_argument_parser
+from run_main_model import RESUME_CONTROL_ARGUMENTS, array_sha256, build_argument_parser, resolve_registered_defaults
 from run_main_model_batch import CONFIGURATIONS
 
 BASELINES = ("popularity", "degree_popularity", "type_popularity", "type_degree_popularity",
@@ -237,8 +237,15 @@ def chosen_models(head_choice: Path, lockbox: Path) -> list[str]:
 
 def expected_run_arguments(model: str, seed: int, group_by: str, lockbox: Path) -> dict:
     """The trainer arguments of a lockbox run of model as runs/full/confirmatory_lockbox.sh launches it
-    (run_main_model_batch.py --configuration model --score-lockbox), without the resume controls and the variant."""
+    (run_main_model_batch.py --configuration model --score-lockbox), without the resume controls and the variant.
+
+    The registered defaults are resolved as run_main_model.main() resolves them before it records its arguments
+    (resolve_registered_defaults), so an argument the parser leaves at None and the trainer fills from the rest of the
+    run (compartment_ph, descriptor_treatment, reversible_reactions, module_support_minimum_reach and the others) is
+    expected at the value the run records. Until 28 November 2026 they were not resolved here, so read_model_run
+    refused a correctly configured run of 93 of the 97 configurations, the tested model among them."""
     parsed = build_argument_parser().parse_args(["--group-by", group_by, *CONFIGURATIONS[model], "--lockbox", str(lockbox), "--score-lockbox", "--seed", str(seed)])
+    resolve_registered_defaults(parsed)
     return {key: value for key, value in recorded_arguments(parsed).items() if key not in RESUME_CONTROL_ARGUMENTS | VARIANT_AND_CONTENT_ARGUMENTS}
 
 

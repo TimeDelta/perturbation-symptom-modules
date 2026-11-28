@@ -246,6 +246,51 @@ def test_scorer_refuses_runs_with_other_arguments_inputs_or_permutation(tmp_path
         assert reason == expected_reason, name
 
 
+def test_scorer_accepts_every_lockbox_run_whose_arguments_are_recorded_as_the_trainer_records_them(tmp_path) -> None:
+    """The test above builds results["arguments"] from the expected dict itself, so it cannot see a difference between
+    what the scorer expects and what the trainer records. Here the recorded arguments are built as
+    run_main_model.main() builds them: the command line run_main_model_batch.py --score-lockbox launches is parsed, the
+    registered defaults are resolved (resolve_registered_defaults, which fills compartment_ph, descriptor_treatment,
+    reversible_reactions and module_support_minimum_reach, among others, from the rest of the run), and every value is
+    written as json_ready writes it. Until 28 November 2026 expected_run_arguments did not resolve the defaults, so the
+    scorer refused 93 of the 97 configurations, the tested and the robustness model among them."""
+    from run_main_model import build_argument_parser, json_ready, resolve_registered_defaults
+    from run_main_model_batch import CONFIGURATIONS
+    from score_confirmatory import expected_run_arguments, read_model_run
+    lockbox, group_by, seed, lockbox_ids = Path("configs/lockbox_v2.json"), "disease_cluster_and_targets", 0, ["P1", "P2"]
+    head_choice = json.loads((Path(__file__).resolve().parents[1] / "configs" / "head_choice.json").read_text())
+    tested_model, robustness_model = head_choice["chosen"]["linear_response"], head_choice["robustness"]["message_passing"]
+    assert {tested_model, robustness_model} <= set(CONFIGURATIONS)
+
+    def write_run_recording(model: str, directory: Path, changed_arguments: dict | None = None) -> None:
+        batch_command_line = ["--run-dir", str(directory), "--group-by", group_by, "--resume", *CONFIGURATIONS[model],
+                              "--lockbox", str(lockbox), "--score-lockbox", "--seed", str(seed)]
+        parsed_as_main_parses_them = build_argument_parser().parse_args(batch_command_line)
+        resolve_registered_defaults(parsed_as_main_parses_them)
+        recorded_as_main_records_them = {key: json_ready(value) for key, value in vars(parsed_as_main_parses_them).items()}
+        directory.mkdir()
+        (directory / "DONE").write_text("done\n")
+        (directory / "results.json").write_text(json.dumps({
+            "test_perturbation_ids": lockbox_ids, "lockbox": {"sha256": "lock"}, "label_selection_sha256": "selection", "labels_permuted": False,
+            "rewiring": None, "refit": {"epochs": 3}, "arguments": {**recorded_as_main_records_them, **(changed_arguments or {})}}))
+        np.save(directory / "test_predictions.npy", np.zeros((2, 3)))
+
+    refusal_of_configuration = {}
+    for model in CONFIGURATIONS:
+        write_run_recording(model, tmp_path / model)
+        _, reason = read_model_run(tmp_path / model, lockbox_ids, "lock", "selection", "real", require_refit=False,
+                                   expected_arguments=expected_run_arguments(model, seed, group_by, lockbox))
+        if reason != "ok":
+            refusal_of_configuration[model] = reason
+    assert refusal_of_configuration == {}
+    # the check still bites on a resolved default: a run of the tested model recorded with the rule of amendment item 39
+    # off (module_support_minimum_reach 0, the parser's default before 24 November 2026) is not the tested model
+    write_run_recording(tested_model, tmp_path / "item_39_rule_off", {"module_support_minimum_reach": 0})
+    _, reason = read_model_run(tmp_path / "item_39_rule_off", lockbox_ids, "lock", "selection", "real", require_refit=False,
+                               expected_arguments=expected_run_arguments(tested_model, seed, group_by, lockbox))
+    assert reason == "trained with other arguments than its configuration: module_support_minimum_reach 0 (expected 2)"
+
+
 def test_rewiring_keeps_an_undirected_relation_symmetric_and_every_degree() -> None:
     from collections import Counter
 
