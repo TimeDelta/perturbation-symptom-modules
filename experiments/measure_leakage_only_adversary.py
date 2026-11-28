@@ -310,7 +310,8 @@ def main() -> None:
                "label_selection_sha256": sha256_of_file(arguments.label_selection)}
     if not draw_options.is_default():  # recorded only when an option is on, so a run without them writes what it wrote
         results[DRAW_OPTIONS_KEY] = draw_options.as_record()
-    claim_checkpoint_directory(arguments.checkpoint_dir, {key: results[key] for key in CHECKPOINT_INPUT_KEYS if key in results})
+    claim_checkpoint_directory(arguments.checkpoint_dir, {key: results[key] for key in CHECKPOINT_INPUT_KEYS
+                                                          if key != DRAW_OPTIONS_KEY or key in results})
     completed_draws = 0
     for pooling_rule in arguments.pooling_rules:
         draws = []
