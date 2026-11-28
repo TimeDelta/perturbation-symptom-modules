@@ -10,8 +10,10 @@ The release is the one Reactome serves when this runs, and it is used until the 
 owner, 4 November 2026: "Go with latest until the lockbox is drawn"). After writing a release, this points
 data/raw/reactome/current at its directory, and every reader of the exports defaults to that pointer, so a build reads
 the release the fetch wrote; before 4 November 2026 the readers named v97 while this wrote v98, the release Reactome
-then served, and the neuronal build imported no pathway. Each graph's summary records the release it was built from
-(`reactome_pathways` in experiments/build_neuronal_graph_variant.py). When the lockbox is drawn the release in use is
+then served, and the neuronal build imported no pathway. The neuronal variant's summary records the release it was
+built from (`reactome_pathways` in neuronal_variant_summary.json, experiments/build_neuronal_graph_variant.py); the
+graphs derived from it do not carry that file, and reactome_release_of_graph (evaluation/leakage_ceiling.py) reaches it
+through the source each derived graph's own summary records. When the lockbox is drawn the release in use is
 pinned (docs/confirmatory_runbook.md): Reactome's content service serves only its current release, so a release that is
 not committed cannot be fetched again.
 

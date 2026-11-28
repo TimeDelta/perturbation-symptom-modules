@@ -49,10 +49,13 @@ steps are kept as written and a step that one of these changes touches says so w
   on 20 October 2026 came from a build the owner had not asked for and are not v5. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
   ("A measurement carries the graph it was taken on") points toward, is the owner's open question 9.106 (a).
 - The Reactome release is the latest Reactome serves until the lockbox is drawn (decision 9.111, 4 November 2026). **Before
-  the held-out set is drawn**, pin the release the registered graph was built from: read it from that graph's summary
-  (`reactome_pathways.reactome_release`), commit its exports under `data/` (CC0, `docs/data_sources.md`), point the readers
-  at the committed copy and make `experiments/fetch_reactome_pathways.py` refuse any other release. Reactome's content
-  service serves only its current release, so a release left uncommitted cannot be fetched again.
+  the held-out set is drawn**, pin the release the registered graph was built from: read it from the summary at the root
+  of that graph's lineage, the neuronal variant's `neuronal_variant_summary.json` (`reactome_pathways.reactome_release`),
+  since the graphs derived from it do not carry that file (`reactome_release_of_graph` in
+  `mechanistic_pathway_learning/evaluation/leakage_ceiling.py` follows the source each derived graph's own summary
+  records, checking every link), commit its exports under `data/` (CC0, `docs/data_sources.md`), point the readers at the
+  committed copy and make `experiments/fetch_reactome_pathways.py` refuse any other release. Reactome's content service
+  serves only its current release, so a release left uncommitted cannot be fetched again.
 - The Human-GEM pin is updated before the draw (decision 9.151, the owner, 24 November 2026; its status: "ruled, not
   built"). Until then it stays at v2.0.1 (commit `93e8d292a0cb`, `scripts/fetch_raw_sources.sh`), with the 82 rows of
   `configs/human_gem_corrections.csv`. The row's steps: "**Before the draw, in order:** (1) the pin moves to the latest
