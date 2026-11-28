@@ -130,6 +130,24 @@ def test_an_empty_admitted_table_is_refused_rather_than_read_as_no_filter(tmp_pa
         measure_zero_coupling(interactions_path, admitted_path, overrides_path)
 
 
+@pytest.mark.parametrize("interactions_text", ["\t".join(OMNIPATH_FIELDS) + "\n", ""], ids=["header only", "zero bytes"])
+def test_an_omnipath_table_with_no_row_is_read_as_it_is(tmp_path, interactions_text):
+    """The docstring's promise: an OmniPath table that exists but holds no row gives a record with no edge, every
+    annotated receptor absent from OmniPath. Until 28 November 2026 the run stopped with AttributeError, because
+    build_signaling_layer returns a frame with no columns when it makes no edge row."""
+    interactions_path, admitted_path, overrides_path = write_fixture_inputs(tmp_path)
+    interactions_path.write_text(interactions_text, encoding="utf-8")
+    output_path = tmp_path / "out" / "zero_coupling.json"
+    main(["--omnipath-interactions", str(interactions_path), "--admitted-coupling", str(admitted_path),
+          "--curated-edge-sign-overrides", str(overrides_path), "--output", str(output_path)])
+    record = json.loads(output_path.read_text(encoding="utf-8"))
+    assert record["signed_receptor_to_g_alpha_edges"] == {"before_the_filter": 0, "after_the_filter": 0, "dropped": 0}
+    absent_from_omnipath = record["receptors"]["no_signed_edge_before_the_filter"]["no_edge_into_a_g_alpha_and_absent_from_omnipath"]
+    assert absent_from_omnipath["receptors"] == sorted(receptor for receptor, _, _, _ in FIXTURE_ADMITTED)
+    assert record["receptors"]["signed_edge_before_and_none_after"]["count"] == 0
+    assert record["receptors"]["keeps_a_signed_edge_after_the_filter"]["count"] == 0
+
+
 def test_the_run_writes_the_record_with_the_inputs_hashes(tmp_path):
     interactions_path, admitted_path, overrides_path = write_fixture_inputs(tmp_path)
     output_path = tmp_path / "out" / "zero_coupling.json"

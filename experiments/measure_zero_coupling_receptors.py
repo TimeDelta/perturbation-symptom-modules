@@ -122,7 +122,11 @@ def gene_symbol_of_node(node_id: str) -> str | None:
 def receptor_to_g_alpha_edges(signaling_edges: pd.DataFrame, annotated_receptors: set[str]) -> dict[str, dict[str, set]]:
     """{receptor: {"signed": {(G alpha, sign)}, "unsigned": {G alpha}}} over the stored edges whose source is an
     annotated receptor and whose target is a gene of G_ALPHA_GENE_SYMBOLS, symbols compared in upper case as
-    receptor_g_alpha_edge_is_dropped compares them. A receptor with no such edge is absent."""
+    receptor_g_alpha_edge_is_dropped compares them. A receptor with no such edge is absent. A layer with no edge gives
+    {}: build_signaling_layer then returns a frame with no columns, which has no source_id to read (until 28 November
+    2026 that raised AttributeError, so an OmniPath table holding no row stopped the run)."""
+    if signaling_edges.empty:
+        return {}
     edges_by_receptor: dict[str, dict[str, set]] = defaultdict(lambda: {"signed": set(), "unsigned": set()})
     for source_id, target_id, sign in zip(signaling_edges.source_id, signaling_edges.target_id, signaling_edges.sign):
         source_symbol, target_symbol = gene_symbol_of_node(source_id), gene_symbol_of_node(target_id)
