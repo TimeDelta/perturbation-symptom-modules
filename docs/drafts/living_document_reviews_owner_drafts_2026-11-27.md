@@ -33,6 +33,7 @@ What each group leaves owed to a Fable pass, because it is reading sources, is l
 - **Old:** "`pytest tests/test_documentation_process.py -q` (the last two generators were added on 27 October and 2 November 2026; the test fails on a page any of them would write differently)."
 - **Proposed (a), true today:** "…; the test fails on a page four of them would write differently; `docs/amendment_history.md` is checked only by `python experiments/generate_amendment_history.py --check`, which no test runs yet)."
 - **Proposed (b), true once the test defect above is fixed:** "`pytest tests/test_documentation_process.py tests/test_amendment_history.py -q` (…; together they fail on a page any of them would write differently)."
+- **Added 28 November 2026, a note beside the collected text, which is unchanged:** the guards branch landed on `main` on 28 November 2026. Its commit `1976150` on `wave4/guards-and-hook` is `abb0700` on `main` ("Make the amendment-history test run the generator's --check, so a stale page fails"), and `tests/test_amendment_history.py::test_the_generated_file_is_current` now runs `python3 experiments/generate_amendment_history.py --check`. So option (b) is the true wording for `CLAUDE.md` line 312, and option (a), whose "which no test runs yet" no longer holds, is not. `CLAUDE.md` is the owner's and is not edited.
 
 ### docs/research_summary.md
 
