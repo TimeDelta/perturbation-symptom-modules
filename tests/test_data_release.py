@@ -1,12 +1,17 @@
-"""Data releases: copies, CSV twins, MedDRA term labels blanked on label-derived rows, manifest checksums verified."""
+"""Data releases: copies, CSV twins, MedDRA term labels blanked on label-derived rows, manifest checksums verified,
+and the release committed at data/releases/v0.4 still matching its own MANIFEST.json."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from mechanistic_pathway_learning.data_release import build_release, strip_licensed_term_labels, verify_release
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+COMMITTED_RELEASE = REPOSITORY_ROOT / "data" / "releases" / "v0.4"
 
 
 def write_inputs(root: Path) -> tuple[Path, Path]:
@@ -105,3 +110,14 @@ def test_ctd_page_addresses_drop_the_mesh_prefix() -> None:
 
     assert ctd_chemical_page("MESH:D000077443") == "http://ctdbase.org/detail.go?type=chem&acc=D000077443"
     assert ctd_disease_page("D001008") == "http://ctdbase.org/detail.go?type=disease&db=MESH&acc=D001008"
+
+
+def test_the_committed_release_still_matches_its_manifest() -> None:
+    """The tests above verify releases built in tmp_path; this one verifies the release the repository commits, so an
+    edited, missing or stray file under data/releases/v0.4 fails here instead of waiting for a reader to run
+    verify_release (added 28 November 2026). A release directory absent from the checkout is skipped; one that is
+    present without its MANIFEST.json fails, because verify_release reports the missing manifest as a problem."""
+    if not COMMITTED_RELEASE.is_dir():
+        pytest.skip(f"{COMMITTED_RELEASE} is not in this checkout, so there is no committed release to check against "
+                    "its manifest")
+    assert verify_release(COMMITTED_RELEASE) == []
