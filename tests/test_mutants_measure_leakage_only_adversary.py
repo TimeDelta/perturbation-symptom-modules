@@ -37,7 +37,7 @@ def test_a_draw_that_holds_out_nothing_or_trains_on_nothing_is_not_usable(monkey
     and summarise averages "over the usable draws"."""
     data = synthetic_data()
     held_out = set(data.perturbation_ids) if which == "everything" else set()
-    monkeypatch.setattr(measurement, "registered_two_sided_draw", lambda data, draw_seed: (held_out, set()))
+    monkeypatch.setattr(measurement, "registered_two_sided_draw", lambda data, draw_seed, *draw_option_arguments: (held_out, set()))
     assert measurement.one_draw(data, 100, "base_rate_shrunk_mean", 10) == {"draw_seed": 100, "usable": False}
 
 
