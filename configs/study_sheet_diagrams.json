@@ -38,17 +38,17 @@
         "decision:9.81": "33511840655b15385ceead94c46564812f35535d9f08c2259a764f5d07a905c9",
         "decision:9.90": "ccce749f0ad03394723a3cb6df6ce9719e885bfeb071ab8f4668e8ea3b1ae0b7",
         "file:experiments/run_main_model_batch.py": "9064c6c3814d68d2f0d1ad9e16c8918d9be8ac4ac31f9437ba79cebbf4783d8c",
-        "file:scripts/rebuild_data_layer.sh": "a91fadd4772fb445d03e8c5d74912db452650e5ee104d0cea2191724d1b1ab87",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "0e45b1a15a04bee1b10600a9d19a7ebb7e5c93358c3441c911310faac1970d0a",
+        "file:scripts/rebuild_data_layer.sh": "4177b11d18d487cd22e690f6c50956effeb0f2ff678e0f88aa94d1771753bc48",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "c1a380303aeeeda244158de32d15e340bf836db7430c63bbe68c32b17002e1ec",
         "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b488df1504f14cbde7c43cafb45dfcf000ef5dbfcced77b7d6976adb4be84d2c",
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "17280e6b50f4e397e737422af6e3706e220281a303bfc953dce3bc15c5e476ce",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
+        "file:experiments/score_confirmatory.py": "d7cc9bfbd4c297a7e5513ae80a7bfed1d6412e421f772ce4eede7600e5c96e09",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-28",
-      "checked_at_commit": "a70f311",
+      "checked_at_commit": "afb90f9",
       "partner": "64d7b2e6-81e2"
     },
     "2d0e94ac-2bbc": {
@@ -83,13 +83,13 @@
         "item:25": "d50aeab3f3fed752b2360fc87716fdef672fc48dea76637f7495ed1c0992cc9a",
         "item:26": "eef717ea6f3b0aab4c6924210f7fe746bb2300fa3692593be349a3bcc6f5ccad",
         "item:38": "366e6ef6dc2abab7bb7fafef4b8771339402bd51c385dbe4ce54caeaa4992baa",
-        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
+        "file:experiments/score_confirmatory.py": "d7cc9bfbd4c297a7e5513ae80a7bfed1d6412e421f772ce4eede7600e5c96e09",
         "file:experiments/run_main_model.py": "3d879678e54e7135b3b44e16cc5d4780c4a2ac7a2bc614942c4e06c22cd47821",
         "file:experiments/run_baselines.py": "427b892b4a957c226dc929c90b54b82cb5bb4ec9eeeb9cb5ba637add8e8f8b57",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
-      "checked": "2026-11-27",
-      "checked_at_commit": "eec6e85"
+      "checked": "2026-11-28",
+      "checked_at_commit": "afb90f9"
     },
     "236f9823-56fb": {
       "title": "What the graph holds, as decided (v5 and 9.112 additions dashed)",
@@ -599,17 +599,17 @@
         "item:37o": "c2b27e0c25a6146f96f6af086ce0cfa7631fae726415c4b519e10bd19ddff362",
         "item:40": "ca591844df64736fc223e9cbc5be22e970afb973ba2a5dbe63a54a4ed982dbf1",
         "file:experiments/run_main_model_batch.py": "9064c6c3814d68d2f0d1ad9e16c8918d9be8ac4ac31f9437ba79cebbf4783d8c",
-        "file:scripts/rebuild_data_layer.sh": "a91fadd4772fb445d03e8c5d74912db452650e5ee104d0cea2191724d1b1ab87",
-        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "0e45b1a15a04bee1b10600a9d19a7ebb7e5c93358c3441c911310faac1970d0a",
+        "file:scripts/rebuild_data_layer.sh": "4177b11d18d487cd22e690f6c50956effeb0f2ff678e0f88aa94d1771753bc48",
+        "file:mechanistic_pathway_learning/evidence/assemble_evidence_table.py": "c1a380303aeeeda244158de32d15e340bf836db7430c63bbe68c32b17002e1ec",
         "file:mechanistic_pathway_learning/evidence/curated_drug_wiring.py": "b488df1504f14cbde7c43cafb45dfcf000ef5dbfcced77b7d6976adb4be84d2c",
         "file:mechanistic_pathway_learning/evidence/curated_label_events.py": "6245a8874d2020c44c0a90913f30ab71842ccf412682ff239eb8a85a349d6e94",
         "file:mechanistic_pathway_learning/models/linear_response_encoder.py": "17280e6b50f4e397e737422af6e3706e220281a303bfc953dce3bc15c5e476ce",
         "file:mechanistic_pathway_learning/models/noisy_or_pathway_module_model.py": "5d421cc4d9751dcb3bec04933bba1c75bec23061559829482347563af57f8778",
-        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c",
+        "file:experiments/score_confirmatory.py": "d7cc9bfbd4c297a7e5513ae80a7bfed1d6412e421f772ce4eede7600e5c96e09",
         "file:configs/registered_rules.json": "de67e4e7e587fb490f192648be808911b431a3682fd2607c6178aa07c1ca39df"
       },
       "checked": "2026-11-28",
-      "checked_at_commit": "a70f311"
+      "checked_at_commit": "afb90f9"
     },
     "a2c305c9-428b": {
       "title": "Robustness and exploratory arms, as decided (9.122)",
@@ -779,10 +779,10 @@
       "fingerprints": {
         "decision:1.1": "b607f24aee8938b891a8e4694cf9a8cbe99eb032b87b1d459c5a69a64a3c03ee",
         "item:38": "366e6ef6dc2abab7bb7fafef4b8771339402bd51c385dbe4ce54caeaa4992baa",
-        "file:experiments/score_confirmatory.py": "28e2c38825123bdd70b6c42eb81e850b25b0ab96a635fdb476eabab3c0d7d86c"
+        "file:experiments/score_confirmatory.py": "d7cc9bfbd4c297a7e5513ae80a7bfed1d6412e421f772ce4eede7600e5c96e09"
       },
-      "checked": "2026-11-27",
-      "checked_at_commit": "7fed611"
+      "checked": "2026-11-28",
+      "checked_at_commit": "afb90f9"
     },
     "mtp7zsmsxgy.36818": {
       "title": "how genes and drugs seed",
