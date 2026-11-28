@@ -12,8 +12,8 @@ import pytest
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
-    reach_edges, reached_nodes_of_perturbations, registered_channel_list, seen_reached_node_share)
-from mechanistic_pathway_learning.evaluation.target_held_out_split import two_sided_held_out_perturbations
+    reach_edges, reached_nodes_of_perturbations, registered_channel_list, seen_reached_node_share, seen_target_share)
+from mechanistic_pathway_learning.evaluation.target_held_out_split import targets_of_drugs, two_sided_held_out_perturbations
 from tests.test_leakage_ceiling import DIGESTS, calibration_record
 from tests.test_measure_leakage_only_adversary import synthetic_data, write_graph_directory
 
@@ -111,6 +111,32 @@ def test_the_record_counts_the_held_out_set_as_the_docstring_lists(monkeypatch):
     assert record["kept_positives_by_symptom"] == positives
     assert record["symptoms_in_the_macro_average"] == sorted(symptom for symptom, count in positives.items() if count >= smallest_counted)
     assert record["leakage_groups_with_members_on_both_sides"] == len(groups_inside & groups_outside) > 0
+
+
+def test_the_target_statistic_of_a_draw_is_over_its_held_out_drugs():
+    """The docstring: "Each draw's label-free statistics are computed, reading no label, and compared with the ceilings";
+    seen_target_share is "over the held-out drugs, the share of their mechanism targets that a training drug also has".
+    (Added by the checker of 28 November 2026: a mutant computing it over the training portion survived.)"""
+    data = synthetic_data()
+    targets = targets_of_drugs(data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids)
+    seed = next(candidate for candidate in range(100, 140)
+                if seen_target_share(targets, held_out_and_training(data, candidate)[0]) != seen_target_share(targets, held_out_and_training(data, candidate)[2]))
+    held_out_ids, _, _ = held_out_and_training(data, seed)
+    record = draw_script.draw_held_out_set(data, [seed], [calibration_record(ceiling=2.0)], "disease_cluster", DIGESTS)
+    assert record["examined_seeds"][0]["statistics"] == {"seen_target_share": pytest.approx(seen_target_share(targets, held_out_ids))}
+
+
+def test_the_record_counts_the_held_out_and_the_development_perturbations_as_draw_lockbox_does():
+    """The held-out set is written in experiments/draw_lockbox.py's format (sourcing_sample's docstring: "the format
+    experiments/draw_lockbox.py writes (configs/lockbox_v2.json), which experiments/draw_held_out_set.py also writes"),
+    where num_perturbations counts the held-out set and num_development_perturbations the rest. (Added by the checker
+    of 28 November 2026: a mutant swapping the two survived, since the existing test checks only their sum.)"""
+    data = synthetic_data()
+    held_out_ids, _, training_ids = held_out_and_training(data, 100)
+    assert len(held_out_ids) != len(training_ids)
+    record = draw_script.draw_held_out_set(data, [100], [calibration_record(ceiling=2.0)], "disease_cluster", DIGESTS)
+    assert record["perturbation_ids"] == sorted(held_out_ids)
+    assert (record["num_perturbations"], record["num_development_perturbations"]) == (len(held_out_ids), len(training_ids))
 
 
 # ---------------------------------------------------------------- the command

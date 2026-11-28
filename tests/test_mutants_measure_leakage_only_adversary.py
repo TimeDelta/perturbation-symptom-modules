@@ -1,9 +1,10 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/measure_leakage_only_adversary.py, in
 registered_two_sided_draw, one_draw and main's pseudo-draw loop, that tests/test_measure_leakage_only_adversary.py and
 tests/test_leakage_ceiling.py let survive (hand-made mutation testing; the mutants and which test kills each are listed
-in the session's report). Each test checks what the script's docstrings say it does. The last one, added with the fix
-of _restrict on the same day, was found by reading the code rather than by a surviving mutant. Synthetic data only:
-nothing here reads a real graph."""
+in the session's report). Each test checks what the script's docstrings say it does. The test of the development rows,
+added with the fix of _restrict on the same day, was found by reading the code rather than by a surviving mutant; the
+tests after it were added by the checker of that branch, for mutants of its own that every earlier test let survive,
+and they reach summarise as well. Synthetic data only: nothing here reads a real graph."""
 import dataclasses
 import json
 import sys
@@ -16,10 +17,12 @@ import pytest
 import experiments.measure_leakage_only_adversary as measurement
 from mechanistic_pathway_learning.evaluation.experiment_data import PER_PERTURBATION_ARRAYS, PER_PERTURBATION_LISTS
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
-    LeakageOnlyAdversary, neighbours_through_the_channels, reached_nodes_of_perturbations, seed_nodes_of_perturbations,
+    POOLING_RULES, LeakageOnlyAdversary, neighbours_through_the_channels, reached_nodes_of_perturbations, seed_nodes_of_perturbations,
     seen_reached_node_share, seen_target_share)
-from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import macro_statistic
+from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import (
+    macro_statistic, paired_bootstrap_macro_difference, paired_bootstrap_micro_difference)
 from mechanistic_pathway_learning.evaluation.target_held_out_split import targets_of_drugs
+from mechanistic_pathway_learning.models.baselines.popularity_baseline import PopularityBaseline
 from tests.test_measure_leakage_only_adversary import synthetic_data, write_graph_directory
 
 DRUG_GENE = [("drug", "gene")]
@@ -192,3 +195,97 @@ def test_leaving_out_the_lockbox_cuts_every_per_perturbation_field_to_the_rows_k
         else:
             np.testing.assert_array_equal(getattr(restricted, name), np.asarray(getattr(data, name))[kept_rows], err_msg=name)
     assert restricted.node_ids == data.node_ids and restricted.edge_source is data.edge_source
+
+
+# ---------------------------------------------------------------- added by the checker of the same day
+# Mutants written by the checker (not among the 306 of the report) that every test above let survive: the adversary
+# scored with the default pooling rule whatever rule was asked for, the micro reading stored from the macro one, type
+# popularity read as plain popularity, degree-scaled popularity given other rows' degrees, and a summary over the
+# unusable draws as well.
+
+
+def held_out_and_training_rows(data, seed):
+    held_out_ids, _ = measurement.registered_two_sided_draw(data, seed)
+    held_out = [identifier for identifier in data.perturbation_ids if identifier in held_out_ids]
+    training = [identifier for identifier in data.perturbation_ids if identifier not in held_out_ids]
+    return (held_out, training, np.array([data.perturbation_ids.index(identifier) for identifier in held_out]),
+            np.array([data.perturbation_ids.index(identifier) for identifier in training]))
+
+
+def data_with_degrees_and_type_rates():
+    """synthetic_data with seed degrees that differ between perturbations and drugs positive more often than genes, so
+    that popularity, degree-scaled popularity and type popularity order the held-out rows three different ways."""
+    data = synthetic_data()
+    generator = np.random.default_rng(11)
+    is_drug = np.array([kind == "drug" for kind in data.perturbation_types])
+    outcomes = (generator.random(data.outcomes.shape) < np.where(is_drug, 0.6, 0.25)[:, None]).astype(float)
+    return dataclasses.replace(data, node_degree=np.arange(1.0, len(data.node_ids) + 1.0), outcomes=outcomes, weights=outcomes)
+
+
+@pytest.mark.parametrize("pooling_rule", POOLING_RULES)
+def test_a_draw_scores_the_adversary_with_the_pooling_rule_it_is_given(pooling_rule):
+    """one_draw takes the pooling rule, main writes one set of draws per --pooling-rules entry, and
+    experiments/calibrate_leakage_ceiling.py fits the draws of the --pooling-rule it is given, "the adversary is meant
+    to be the strongest lookup, which is a reading across them": so a rule's draws are that rule's adversary."""
+    data = data_with_degrees_and_type_rates()
+    seed = 100
+    held_out, training, held_rows, training_rows = held_out_and_training_rows(data, seed)
+    neighbours = neighbours_through_the_channels(held_out, training, seed_nodes_of_perturbations(data.perturbation_ids, data.perturbation_seeds,
+                                                                                                data.node_ids))
+    macro = macro_statistic()
+
+    def macro_auprc_of(rule):
+        adversary = LeakageOnlyAdversary(rule).fit(training, data.outcomes[training_rows], data.label_mask[training_rows])
+        return float(macro(adversary.predict(held_out, neighbours), data.outcomes[held_rows], data.label_mask[held_rows]))
+
+    by_rule = {rule: macro_auprc_of(rule) for rule in POOLING_RULES}
+    assert len({round(value, 12) for value in by_rule.values()}) == len(POOLING_RULES)  # the three rules part on this draw
+    draw = measurement.one_draw(data, seed, pooling_rule, 5)
+    assert draw["pooling_rule"] == pooling_rule and draw["adversary_macro_auprc"] == pytest.approx(by_rule[pooling_rule])
+
+
+def test_each_advantage_is_the_adversary_against_that_baseline_on_the_held_out_rows():
+    """The module docstring: the adversary's "advantage over each registered baseline is read in macro and micro AUPRC
+    with the paired bootstrap"; one_draw: over "popularity, degree-scaled popularity and type popularity", type
+    popularity being fitted on the training rows of each held-out row's own type (the comparator the pooled reading
+    needs) and degree-scaled popularity scaling each held-out row by its own seed degree."""
+    data = data_with_degrees_and_type_rates()
+    seed = 100
+    held_out, training, held_rows, training_rows = held_out_and_training_rows(data, seed)
+    neighbours = neighbours_through_the_channels(held_out, training, seed_nodes_of_perturbations(data.perturbation_ids, data.perturbation_seeds,
+                                                                                                data.node_ids))
+    adversary_scores = LeakageOnlyAdversary().fit(training, data.outcomes[training_rows], data.label_mask[training_rows]).predict(held_out, neighbours)
+    outcomes_held, mask_held = data.outcomes[held_rows], data.label_mask[held_rows]
+    outcomes_training, mask_training = data.outcomes[training_rows], data.label_mask[training_rows]
+
+    def seed_degrees(rows):
+        return np.array([float(data.node_degree[data.perturbation_seeds[row]].sum()) for row in rows])
+
+    kinds_training, kinds_held = np.array(data.perturbation_types)[training_rows], np.array(data.perturbation_types)[held_rows]
+    type_scores = np.zeros(outcomes_held.shape)
+    for kind in set(kinds_held.tolist()):
+        fitted = PopularityBaseline().fit(outcomes_training[kinds_training == kind], None, mask_training[kinds_training == kind])
+        type_scores[kinds_held == kind] = fitted.predict(int((kinds_held == kind).sum()))
+    baselines = {"popularity": PopularityBaseline().fit(outcomes_training, None, mask_training).predict(len(held_rows)),
+                 "degree_popularity": PopularityBaseline(scale_by_degree=True).fit(outcomes_training, seed_degrees(training_rows), mask_training)
+                 .predict(len(held_rows), seed_degrees(held_rows)),
+                 "type_popularity": type_scores}
+
+    draw = measurement.one_draw(data, seed, "base_rate_shrunk_mean", 5)
+    for name, baseline_scores in baselines.items():
+        expected_macro = paired_bootstrap_macro_difference(adversary_scores, baseline_scores, outcomes_held, num_bootstrap=1, mask=mask_held)
+        expected_micro = paired_bootstrap_micro_difference(adversary_scores, baseline_scores, outcomes_held, num_bootstrap=1, mask=mask_held)
+        assert draw[f"macro_advantage_over_{name}"] == pytest.approx(expected_macro["difference"]), name
+        assert draw[f"micro_advantage_over_{name}"] == pytest.approx(expected_micro["difference"]), name
+    # the readings differ here, so a draw that read one baseline or one metric in place of another fails above
+    assert len({round(draw[f"{metric}_advantage_over_{name}"], 12) for name in baselines for metric in ("macro", "micro")}) == 6
+
+
+def test_the_summary_is_over_the_usable_draws_only():
+    """summarise: "Means and ranges over the usable draws, per reading"."""
+    draws = [{"draw_seed": 0, "usable": False},
+             {"draw_seed": 1, "usable": True, "seen_target_share": 0.25},
+             {"draw_seed": 2, "usable": True, "seen_target_share": 0.75}]
+    summary = measurement.summarise(draws)
+    assert summary["usable_draws"] == 2
+    assert summary["seen_target_share"] == {"mean": 0.5, "minimum": 0.25, "maximum": 0.75, "draws": 2}

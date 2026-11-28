@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
+from mechanistic_pathway_learning.evaluation.leakage_only_adversary import registered_channel_list
 from tests.test_leakage_ceiling import measurement_record
 from tests.test_measure_leakage_only_adversary import write_graph_directory
 
@@ -120,3 +121,30 @@ def test_a_statistic_that_reads_labels_is_refused_even_when_every_draw_records_i
     with pytest.raises(ValueError, match="statistic must be one of .*the label-free ones, not 'adversary_macro_auprc'"):
         calibration_script.calibrate(measurement, "base_rate_shrunk_mean", "adversary_macro_auprc",
                                      "drug_stratum_macro_advantage_over_type_popularity", 0.05, "least_squares_line", 6)
+
+
+# ---------------------------------------------------------------- added by the checker of the same day
+# Two mutants the checker wrote (not among the 306 of the report) survived every test above: main not calling
+# refuse_another_graph, and calibrate recording no channel list.
+
+
+def test_the_command_refuses_a_measurement_made_on_another_graph_and_writes_nothing(tmp_path, monkeypatch):
+    """The module docstring: "this refuses a measurement whose graph files, evidence table or label selection differ
+    from the ones named here, which are the draw's"; refuse_another_graph is tested on its own above, this is the
+    command."""
+    inputs = measured_inputs(tmp_path)
+    (inputs["graph"] / "edges.parquet").write_bytes(b"the graph rebuilt since")
+    output = tmp_path / "calibration.json"
+    monkeypatch.setattr(sys, "argv", command(inputs, output))
+    with pytest.raises(ValueError, match="graph_file_sha256 differs"):
+        calibration_script.main()
+    assert not output.exists()
+
+
+def test_the_calibration_carries_the_channels_the_measurement_scored():
+    """The module docstring: "which channels the measurement scored is copied into the output from the measurement,
+    which recorded them"; experiments/draw_held_out_set.py computes the draw's statistics with that channel list."""
+    channels = registered_channel_list(2, [("gene", "gene"), ("drug", "gene")], "stored_without_currency_out_edges")
+    measurement = measurement_record(channels=channels)
+    result = calibration_script.calibrate(measurement, *FIT, "drug_stratum_macro_advantage_over_type_popularity", 0.05, "least_squares_line", 6)
+    assert result["channels"] == channels and result["channels"] != registered_channel_list()

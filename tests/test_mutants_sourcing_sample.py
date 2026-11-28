@@ -104,3 +104,15 @@ def test_a_strata_record_without_a_sidecar_is_read_and_named_by_its_digest(tmp_p
     assert record["inputs"] == {"held_out_set": str(inputs["held_out"]), "held_out_set_sha256": file_sha256(inputs["held_out"]),
                                 "strata_record": str(inputs["record"]), "strata_record_sha256": file_sha256(inputs["record"]),
                                 "cells": str(inputs["cells"]), "cells_sha256": file_sha256(inputs["cells"])}
+
+
+def test_each_sample_row_names_the_drawn_cells_own_stratum_era_count_and_year(cells):
+    """draw_sourcing_sample: "A sample row names its quota cell, its stratum and era, its count and earliest year".
+    (Added by the checker of 28 November 2026: a mutant writing the year into record_count survived.)"""
+    sample, _ = draw(cells)
+    assert len(sample)
+    joined = sample.merge(cells, on=["perturbation_id", "symptom"], suffixes=("", "_of_the_cell"), validate="many_to_one")
+    assert (joined.record_count == joined.record_count_of_the_cell.astype(int)).all()
+    assert (joined.earliest_record_year == joined.earliest_record_year_of_the_cell.astype(int)).all()
+    assert (joined.stratum == joined[CHOICES["stratum_reading"]]).all() and (joined.era == joined[CHOICES["era_reading"]]).all()
+    assert (joined.perturbation_type == joined.perturbation_type_of_the_cell).all()
