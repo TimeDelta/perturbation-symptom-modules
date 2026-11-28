@@ -12,7 +12,8 @@ and every assignment is listed with how it was made.
 
 Usage:
   python experiments/build_fine_symptom_crosswalk.py
-  python experiments/build_fine_symptom_crosswalk.py --check   # exit 1 when the committed files differ from a fresh build
+  python experiments/build_fine_symptom_crosswalk.py --check   # exit 1 when either committed crosswalk file (the fine
+                                                               # one or the IMPC one) differs from a fresh build
 """
 from __future__ import annotations
 
@@ -170,18 +171,25 @@ def main() -> int:
     parser.add_argument("--obo", type=Path, default=DEFAULT_OBO)
     parser.add_argument("--sider-side-effects", type=Path, default=DEFAULT_SIDER_SIDE_EFFECTS)
     parser.add_argument("--page", type=Path, default=DEFAULT_PAGE)
-    parser.add_argument("--check", action="store_true", help="compare a fresh build with the committed files and change nothing")
+    parser.add_argument("--check", action="store_true", help="compare a fresh build with the two committed crosswalk files (not the page, whose stamp dates the build) and change nothing")
     arguments = parser.parse_args()
     fine_rows, assignments, impc_rows, extra_roots = build(arguments.obo, arguments.sider_side_effects)
     kept_together = checked_kept_together(read_rows(COARSE_CROSSWALK_PATH), HpoVocabulary.from_obo(arguments.obo))
     if arguments.check:
-        committed = read_rows(FINE_CROSSWALK_PATH) if FINE_CROSSWALK_PATH.exists() else []
-        fresh = [{column: row.get(column, "") for column in FINE_COLUMNS} for row in fine_rows]
-        committed = [{column: row.get(column, "") for column in FINE_COLUMNS} for row in committed]
-        if fresh != committed:
-            print(f"{FINE_CROSSWALK_PATH} differs from a fresh build; rerun without --check")
+        # both crosswalk files: an override keyed by an MP term id moves only a row of the IMPC file. Until 28 November
+        # 2026 only the fine crosswalk was compared, so a stale IMPC file passed. The page is not compared: its stamp
+        # carries the date and commit of the build.
+        stale_paths = []
+        for committed_path, fresh_rows, columns in ((FINE_CROSSWALK_PATH, fine_rows, FINE_COLUMNS), (IMPC_FINE_PATH, impc_rows, IMPC_COLUMNS)):
+            committed_rows = read_rows(committed_path) if committed_path.exists() else []
+            fresh_rows_on_the_columns = [{column: row.get(column, "") for column in columns} for row in fresh_rows]
+            committed_rows_on_the_columns = [{column: row.get(column, "") for column in columns} for row in committed_rows]
+            if fresh_rows_on_the_columns != committed_rows_on_the_columns:
+                print(f"{committed_path} differs from a fresh build; rerun without --check")
+                stale_paths.append(committed_path)
+        if stale_paths:
             return 1
-        print(f"{FINE_CROSSWALK_PATH} is current")
+        print(f"{FINE_CROSSWALK_PATH} and {IMPC_FINE_PATH} are current")
         return 0
     write_rows(FINE_CROSSWALK_PATH, fine_rows, FINE_COLUMNS)
     write_rows(IMPC_FINE_PATH, impc_rows, IMPC_COLUMNS)

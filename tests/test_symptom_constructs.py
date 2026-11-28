@@ -250,7 +250,9 @@ def test_rows_round_trip_through_the_writer_and_the_page_lists_every_assignment(
 
 
 def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs():
-    """The derived files are generated: a change to the coarse crosswalk, the additions or the overrides without a rerun fails here."""
+    """The two derived crosswalk files, the fine one and the IMPC one, are generated: a change to the coarse crosswalk, the
+    coarse IMPC crosswalk, the additions or the overrides without a rerun fails here (--check has compared the IMPC file
+    too since 28 November 2026; the next test holds that without hp.obo). The page is not compared."""
     import subprocess
     root = Path(__file__).resolve().parents[1]
     if not (root / "data/raw/hpo/hp.obo").exists() or not (root / "data/raw/sider_4.1/meddra_all_se.tsv.gz").exists():
@@ -267,6 +269,33 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     assert len(fine) == sum(1 if row["target_symptom"] in kept_together else max(1, len([part for part in row["hpo_ids"].split(";") if part]))
                             for row in coarse) + len(additions) + len(extra_roots)
     assert {row["coarse_symptom"] for row in fine} == {row["target_symptom"] for row in coarse} | additions
+
+
+def test_the_check_fails_when_only_the_mouse_crosswalk_is_stale(monkeypatch, tmp_path, capsys):
+    """An override keyed by an MP term id moves a row of the IMPC file alone, so --check must fail on a stale IMPC file
+    beside a current fine one; until 28 November 2026 it compared the fine file only. The build is replaced by fixed
+    rows and every path by a file under tmp_path, so neither hp.obo nor a committed file is read."""
+    import experiments.build_fine_symptom_crosswalk as fine_builder
+    fresh_fine_rows = [{column: f"{column} of the fresh build" for column in FINE_COLUMNS}]
+    fresh_impc_rows = [{column: f"{column} of the fresh build" for column in IMPC_COLUMNS}]
+    fine_path, impc_path, coarse_path = tmp_path / "fine.csv", tmp_path / "impc_fine.csv", tmp_path / "coarse.csv"
+    write_rows(coarse_path, [], fine_builder.CROSSWALK_COLUMNS)
+    write_rows(fine_path, fresh_fine_rows, FINE_COLUMNS)
+    write_rows(impc_path, [{**fresh_impc_rows[0], "validity": "a validity no rerun wrote"}], IMPC_COLUMNS)
+    monkeypatch.setattr(fine_builder, "FINE_CROSSWALK_PATH", fine_path)
+    monkeypatch.setattr(fine_builder, "IMPC_FINE_PATH", impc_path)
+    monkeypatch.setattr(fine_builder, "COARSE_CROSSWALK_PATH", coarse_path)
+    monkeypatch.setattr(fine_builder, "build", lambda obo, sider: (fresh_fine_rows, [], fresh_impc_rows, []))
+    monkeypatch.setattr(fine_builder, "HpoVocabulary", type("NoVocabulary", (), {"from_obo": staticmethod(lambda obo: None)}))
+    monkeypatch.setattr(fine_builder, "checked_kept_together", lambda coarse_rows, vocabulary: [])
+    monkeypatch.setattr(sys, "argv", ["build_fine_symptom_crosswalk.py", "--check"])
+
+    assert fine_builder.main() == 1
+    printed = capsys.readouterr().out
+    assert f"{impc_path} differs from a fresh build" in printed and f"{fine_path} differs" not in printed
+    write_rows(impc_path, fresh_impc_rows, IMPC_COLUMNS)
+    assert fine_builder.main() == 0
+    assert "are current" in capsys.readouterr().out
 
 
 def test_the_literature_table_is_rekeyed_to_the_namesakes_without_a_row_moving():
