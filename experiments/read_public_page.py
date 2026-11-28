@@ -364,8 +364,9 @@ class PublicPageReader:
         (_robots_answer). The installed standard library's
         urllib.robotparser assumes complete disallow for a 5xx (its comment cites RFC 9309, section 2.3.1.4); 429 is
         taken with them because it asks the reader to wait, which a page requested straight after it would not do
-        (TRANSIENT_STATUS_CODES). Until 28 November 2026 such an answer was cached as None, and every page of the host
-        was read as if it served none."""
+        (TRANSIENT_STATUS_CODES), although that library allows every page on a 429, as on any 4xx but 401 and 403 (its
+        comment cites RFC 9309, section 2.3.1.3), so here this reader is the stricter of the two. Until 28 November 2026
+        such an answer was cached as None, and every page of the host was read as if it served none."""
         if host not in self.robots_file_by_host:
             robots_answer = self._request_robots_file(host)
             if robots_answer is None:
@@ -385,8 +386,8 @@ class PublicPageReader:
 
     def _robots_answer(self, address: str) -> tuple[str | None, str | None]:
         """(why the address may not be read, or None; the note on the robots file to record, or None). RobotsFileNotKnown
-        is raised on to read(), which reports it as transient when its status is (TRANSIENT_STATUS_CODES), except for an
-        address read past its robots file (robots_rule_exemption), which is read with the answer recorded."""
+        is raised on to read(), which reports it as transient when its status is one of TRANSIENT_STATUS_CODES, except
+        for an address read past its robots file (robots_rule_exemption), which is read with the answer recorded."""
         host = urllib.parse.urlsplit(address).hostname or ""
         try:
             robots_file_text = self.robots_file_of_host(host)
