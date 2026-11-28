@@ -14,6 +14,9 @@ from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics imp
 # data/raw/chembl/targets.json. Running `bash scripts/rebuild_data_layer.sh slice` is not only that block: like every
 # stage it first runs the shared raw fetches, graph builds and evidence tables whose outputs are missing, so on a disk
 # without them it runs for hours and writes the directory names the registered rebuild will write (decision 9.106).
+# Since 27 November 2026 it stops instead after the first of them: scripts/fetch_raw_sources.sh exits 1, so no slice
+# table is written, until the cluster types of the pinned HPA release have a cell class (decision 9.155 (1); the usage
+# comment of scripts/rebuild_data_layer.sh says why).
 MERGED_GRAPH = Path("data/processed/graph")
 SPLIT_GRAPH = Path("data/processed/graph_split")
 EVIDENCE = Path("data/processed/evidence")

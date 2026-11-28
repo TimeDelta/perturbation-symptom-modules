@@ -96,9 +96,10 @@ DRUG_ENTRY_COLUMNS: tuple[str, ...] = ("perturbation_id", "drug_node_id", "targe
 # configs/drug_target_additions.csv (map_drug_targets_to_graph_nodes, "A ruled addition"), or a curated target of
 # configs/curated_drug_targets.csv or of the role "mechanism" rows of configs/psychiatric_drug_additions_v4_draft.csv,
 # read for a drug whose ChEMBL route gives no target and for the drugs of the curated label route
-# (evidence/curated_drug_wiring.py, decision 9.117); the rows of each table name their sources. The evidence table's
-# seeds do not say which of these a target came from, so one string serves every mechanism edge. The string names
-# only the first two (since 21 November 2026); it is left as it is because a change to it changes the graph's edges
+# (evidence/curated_drug_wiring.py, decision 9.117; configs/curated_drug_targets.csv is decision 9.121 C3); the rows of
+# each table name their sources. The evidence table's seeds do not say which of these a target came from, so one string
+# serves every mechanism edge. The string names only the first two (since 21 November 2026); it is left as it is
+# because a change to it changes the graph's edges
 MECHANISM_EVIDENCE = "drug mechanism (ChEMBL or a ruled addition), moved from the perturbation's seeds"
 CARRIAGE_EVIDENCE_PREFIX = "plasma carrier of the drug"
 CLEARANCE_EVIDENCE_PREFIX = "enzyme that clears the drug"
