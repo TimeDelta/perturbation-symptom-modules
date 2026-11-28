@@ -8,8 +8,9 @@ This script is that fallback with its limits written into code, so that a resear
   1. the site's robots file is read first, and a page it disallows for automated readers is left unread. A site
      that serves no robots file places no restriction, which is what the protocol says, so that is read;
      --treat-missing-robots-as-refusal restores the stricter behaviour this script started with. A redirect is
-     followed by this script, one hop at a time, and every limit here is applied again at each address it reaches
-     (REDIRECT_STATUS_CODES): the robots file of a host a redirect leads to binds as the first host's does;
+     followed by this script, one hop at a time, and every limit here is applied again at each address it reaches,
+     a robots file's own redirects included (REDIRECT_STATUS_CODES): the robots file of a host a redirect leads to
+     binds as the first host's does;
   2. a page that answers with a check that the visitor is human is reported as refused and not saved. A status that
      says the service is busy or down rather than closed to this reader (429, 503, and 500 and a timeout with them)
      is reported as transient and not as a refusal, so the caller may wait and request the same address on the same
@@ -86,8 +87,9 @@ TRANSIENT_STATUS_CODES = frozenset({429, 500, 503})
 # pass of decision 9.99 (batch 5, 27 November 2026) found doi.org addresses saved as nature.com articles that
 # nature.com's robots file disallows. Now each hop is a request of its own, refused or read under the same limits as
 # the first. A robots file is itself fetched through its redirects, as RFC 9309 (section 2.3.1.2) says a crawler
-# should, up to MAXIMUM_ROBOTS_FILE_REDIRECTS, past which it is taken as not served; a redirect of the robots file away
-# from https leaves the page unread (PublicPageReader._request_robots_file).
+# should, up to MAXIMUM_ROBOTS_FILE_REDIRECTS, past which it is taken as not served; a redirect of the robots file to an
+# address reason_address_is_not_requested refuses (away from https, among others) is not requested and leaves the page
+# unread (PublicPageReader._request_robots_file).
 REDIRECT_STATUS_CODES = frozenset({301, 302, 303, 307, 308})
 MAXIMUM_PAGE_REDIRECTS = 10  # urllib's own limit (HTTPRedirectHandler.max_redirections)
 MAXIMUM_ROBOTS_FILE_REDIRECTS = 5
@@ -308,10 +310,11 @@ class PublicPageReader:
 
     def _request_robots_file(self, host: str) -> tuple[int, bytes] | None:
         """Status and body of the host's robots file, through at most MAXIMUM_ROBOTS_FILE_REDIRECTS redirects (RFC 9309,
-        section 2.3.1.2); None when it redirects further than that. A redirect away from https raises, so that the page
-        is left unread, as one whose robots file cannot be requested is: this reader requests only https and so cannot
-        read the rules served there. From 27 to 28 November 2026 such a redirect returned None, which dropped the site's
-        rules as if it served none (before 27 November urllib followed it to http and read them)."""
+        section 2.3.1.2); None when it redirects further than that. Each hop is held to reason_address_is_not_requested,
+        as every page address is: a hop it refuses (away from https, to a requested-block host, ...) is not requested
+        and raises, so that the page is left unread, as one whose robots file cannot be requested is. Until 28 November
+        2026 a hop was checked for https alone, and from 27 November a hop away from https returned None, which dropped
+        the site's rules as if it served none (before 27 November urllib followed it to http and read them)."""
         robots_address = f"https://{host}/robots.txt"
         for _ in range(MAXIMUM_ROBOTS_FILE_REDIRECTS + 1):
             self._wait_for_host(urllib.parse.urlsplit(robots_address).hostname or "")
@@ -319,8 +322,9 @@ class PublicPageReader:
                 status_code, _, body = request_bytes(robots_address)
                 return status_code, body
             except RedirectAnswer as redirect:
-                if urllib.parse.urlsplit(redirect.location).scheme != "https":
-                    raise RuntimeError(f"it redirected to {redirect.location}, and only https addresses are read") from None
+                reason_hop_is_not_requested = reason_address_is_not_requested(redirect.location)
+                if reason_hop_is_not_requested:
+                    raise RuntimeError(f"it redirected to {redirect.location}, and {reason_hop_is_not_requested}") from None
                 robots_address = redirect.location
         return None
 
@@ -346,7 +350,7 @@ class PublicPageReader:
         host = urllib.parse.urlsplit(address).hostname or ""
         try:
             robots_file_text = self.robots_file_of_host(host)
-        except Exception as error:  # noqa: BLE001 - a network failure, or a redirect away from https, is reported, not raised
+        except Exception as error:  # noqa: BLE001 - a network failure, or a redirect not requested, is reported, not raised
             return f"the robots file could not be requested ({error})", None
         if robots_file_text is None:
             # The Robots Exclusion Protocol says an absent robots file places no restriction, so treating one as a

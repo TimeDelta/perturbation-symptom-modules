@@ -417,6 +417,38 @@ def test_a_robots_file_that_redirects_away_from_https_leaves_the_page_unread(tmp
     assert not any(tmp_path.iterdir())
 
 
+@pytest.mark.parametrize("robots_file_redirect_target, expected_reason", [
+    ("https://api.cellxgene.cziscience.com/curation/v1/collections", "requested block"),
+    ("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/aspirin/JSON", "measured pKa records only"),
+    ("https://www.example.org/robots.txt?contact=someone%40example.org", "e-mail address"),
+])
+def test_every_limit_holds_on_an_address_a_robots_file_redirects_to(tmp_path, monkeypatch, robots_file_redirect_target,
+                                                                     expected_reason):
+    """Until 28 November 2026 a redirect of the robots file was checked for https alone, so it could lead the reader
+    to request an address that reason_address_is_not_requested refuses: a host the owner ruled a requested block,
+    PubChem outside its pKa records, or an address carrying an e-mail address. Such a hop is not requested, and the
+    page is left unread."""
+    reader, requested = reader_with_redirects(
+        tmp_path, monkeypatch, {"https://example.org/robots.txt": robots_file_redirect_target}, {})
+    record = reader.read("https://example.org/page")
+    assert record["read"] is False, record
+    assert "robots file could not be requested" in record["reason"] and expected_reason in record["reason"]
+    assert requested == ["https://example.org/robots.txt"]
+    assert not any(tmp_path.iterdir())
+
+
+def test_a_robots_file_may_redirect_to_the_robots_file_of_a_host_that_is_otherwise_not_requested(tmp_path, monkeypatch):
+    """reason_address_is_not_requested lets the robots file of a requested-block host be read, and so does a robots
+    file's redirect to it: its rules then bind the page as any robots file's do."""
+    blocked_hosts_robots_file = "https://api.cellxgene.cziscience.com/robots.txt"
+    reader, requested = reader_with_redirects(
+        tmp_path, monkeypatch, {"https://example.org/robots.txt": blocked_hosts_robots_file},
+        {"api.cellxgene.cziscience.com": "User-agent: *\nDisallow: /closed/\n"})
+    assert reader.read("https://example.org/open/page")["read"] is True
+    assert reader.read("https://example.org/closed/page")["read"] is False
+    assert requested == ["https://example.org/robots.txt", blocked_hosts_robots_file, "https://example.org/open/page"]
+
+
 def test_request_bytes_hands_a_redirect_back_instead_of_following_it(monkeypatch):
     """Against a local server, with no proxy: the answer to a redirect is RedirectAnswer with the target made
     absolute, and the target is not requested."""
