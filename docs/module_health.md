@@ -53,3 +53,13 @@ the slice in turn: a faster leak learning rate, mean pooling over the module sup
 
 The reading goes to the user, who decides whether the confirmatory_v2 configurations take the fix. A pass on the slice
 is a development reading and confirms nothing.
+
+**Added 27 November 2026.** The readings are docs/generated/module_health_results.md (the weighted start) and
+docs/generated/module_health_fast_leak_results.md (the faster leak, the rule's next candidate), both taken on the slice
+graph on 8 October 2026. By their own readings of that day neither passes the rule for either encoder, and the second
+page records that the next candidate, mean pooling over the module support, had not been started ("work paused at the
+user's request"). The registration records the leak start as the
+user's decision of 8 October 2026 (docs/preregistration.md, amendment of 8 October 2026: "Ya. Start at the
+optimum."), and since amendment item 23 (13 October 2026) `--start-at-weighted-optimum` is the trainer's default and
+part of the registered model (`V4_SHARED_MODEL` of experiments/run_main_model_batch.py), with the leaks at a learning
+rate of 0.0002.

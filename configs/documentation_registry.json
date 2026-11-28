@@ -355,8 +355,8 @@
     },
     "docs/figures.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/file_index.md": {
       "class": "generated",
@@ -391,8 +391,8 @@
     },
     "docs/gene_protein_split.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86",
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85",
       "names_absent_paths": {
         "docs/split_slice_comparisons.md": "the table the commands the document gives would write (experiments/compare_twin_runs.py --markdown-output); no commit has held it, as the document says",
         "docs/split_slice_comparisons_merged_strata.md": "as above"
@@ -611,8 +611,8 @@
     },
     "docs/module_health.md": {
       "class": "living",
-      "reviewed": "2026-10-08",
-      "as_of_commit": "517d5c5"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/generated/module_health_fast_leak_results.md": {
       "class": "generated",

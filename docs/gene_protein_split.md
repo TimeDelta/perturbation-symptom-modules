@@ -1,7 +1,8 @@
 # Gene and protein nodes: the split and the gene-to-protein mapping
 
 Written on 8 October 2026 and revised the same day after the user's corrections (gene descriptors limited to the brain
-expression columns; one protein node per entry where one gene has several; seed masking included). The split is built
+expression columns; one protein node per entry where one gene has several, narrowed later that day to the entries data
+tell apart, point 1 below; seed masking included). The split is built
 into new directories (section "Built"); no existing graph directory was regenerated. When this was written no
 confirmatory configuration used the split; since 9 October 2026 the confirmatory_v2 configurations read its
 plasma-binder variant, and the registered model reads the v5 drug and allele graph built on it (section "Not changed").
@@ -79,6 +80,16 @@ Defects found:
    knockout of one leaves the other's route to the protein. A gene listed by several entries gets one protein node per
    entry, each with its own encodes edge (CDKN2A to PROTEIN:CDKN2A:P42771 and PROTEIN:CDKN2A:Q8N726). Isoforms inside an
    entry and peptides cut from one precursor are not represented, since no source resolves them.
+   **Narrowed the same day** (commit 92085e7, 8 October 2026; the user's words are quoted in the docstring of
+   mechanistic_pathway_learning/graph/gene_protein_split.py, which describes the build as it stands): a gene with
+   several entries is split only where data tell its entries apart. Entries named by the same records (an edge end whose
+   source resolves entries, or a ChEMBL target) form one group; a gene with two or more groups gets one protein node per
+   group and leaves out the entries no record names, and every other gene with several entries keeps one protein node
+   for all of them (the four GNAS products, DDIT3 with its upstream ORF peptide), which takes the mean of its entries'
+   descriptor rows (place_descriptors_on_split). On graph_full_neuronal_split that leaves CALCA alone with several
+   protein nodes (the correction at the end of this document). Where point 2 and the section "Built" speak of every
+   entry, of copies per entry (twice for CDKN2A, four times for GNAS) or of 84 nodes for the 37 genes, they describe the
+   first build, of the morning of 8 October 2026.
 2. **Edges of a gene with several entries** (default, for the user). An edge end goes to the entries its source names
    (OmniPath and CollecTRI accession columns, Reactome entity members); where the source names none of the gene's
    entries or does not resolve entries, it goes to every entry, since which product is meant is not known. A drug acting
@@ -94,6 +105,12 @@ Defects found:
    "CCL3L1; CCL3L3", "CCL4L1; CCL4L2") stand for that entry and join its protein node. The other 110 get one protein
    node each, without protein descriptors. Retyping the 19 ChEBI compounds as metabolites and remapping the unreviewed
    accessions and outdated symbols to current HGNC symbols remain open for the user.
+   **Changed in the build the same day** (commit 92085e7, 8 October 2026): a gene symbol no reviewed entry lists is
+   resolved to the entry it names when it is an accession, or to the entries of the current HGNC symbol it previously
+   was (35 nodes on graph_full_neuronal_split that day; GBA is GBA1), and a gene node still without a reviewed entry
+   (75 that day: ChEBI identifiers, viral and unreviewed proteins) gets no protein node and keeps its edges, as in the
+   merged graph. No record says whether that resolution settles the remapping above for the user; the retyping of the
+   ChEBI compounds is not built.
 4. **Leakage groups.** Groups are built from the evidence's own gene nodes, so folds and lockbox membership stay as
    drawn (a test and the full-graph check below confirm it).
 5. **Descriptors** (the user's decision: the gene's descriptors "would be limited to only the brain expression
@@ -127,7 +144,11 @@ Defects found:
    rewired in H2."), which is what the default already does. Rewiring swaps edges within each relation. Swapping
    encodes edges keeps every degree but joins gene X to protein Y, so a knockout would reach Y's descriptors, and H2
    would then also measure scrambled identity beside scrambled wiring. --rewire-encodes swaps them and is not used.
-9. **Message passing gets one more layer,** since a knockout reaches the protein layer one hop later.
+9. **Message passing gets one more layer,** since a knockout reaches the protein layer one hop later. Since 13 October
+   2026 the registered message passing repeats one shared layer until its state settles (amendment items 7 and 8:
+   `--relation-parameterisation shared_low_rank` and `--fixed-point-tolerance` 0.001, the trainer's defaults), so the
+   layer count is read only when `--fixed-point-tolerance none` fixes the number of rounds
+   (experiments/run_main_model_batch.py, above `V4_SHARED_MODEL`).
 
 ## Degree strata on the split (measured)
 
@@ -183,13 +204,18 @@ Consequences of the user's decision:
   graph"; amendment of 9 October 2026 (fourth)), which is what `FULL_GRAPH_ARGUMENTS_V2` of
   experiments/run_main_model_batch.py names. The registered model since the amendments of 12 and 13 October 2026 (the
   v4 flags, `--num-layers 3` the trainer's default) reads the v5 drug and allele graph built on that variant,
-  graph_full_neuronal_split_binders_drugs_v5 (scripts/rebuild_data_layer.sh), which the registered code has not yet
-  built: the directories of that name written on 20 October 2026 came from a build the owner had not asked for and are
-  not v5 (decision 9.106). The degree check on the full split graph
-  is done and `encodes` is held fixed in the H2 rewiring (point 8 above, the user's second amendment of 9 October
-  2026); the development pilots on the split graph come before any lockbox run.
+  graph_full_neuronal_split_binders_drugs_v5 (scripts/rebuild_data_layer.sh). The directories of that name written on
+  20 October 2026 came from a build the owner had not asked for and are not v5 (decision 9.106). A graph of that name
+  was built on 5 November 2026 and rebuilt on 12 November 2026 from graph_full_neuronal down
+  (docs/data_layer_rebuild.md), both times with the registered `--membrane-potential computed_from_the_pools`; decision
+  9.112's change to that layer is not yet built, and the graph is rebuilt again when it is (decision 9.106). The degree
+  check on the full split graph is done and `encodes` is held fixed in the H2 rewiring (point 8 above, the user's
+  second amendment of 9 October 2026); the development pilots on the split graph come before any lockbox run.
 
 ## Built (8 October 2026, new directories only)
+
+The counts of this section are those of the first build, of the morning of 8 October 2026; the narrowing of point 1
+(commit 92085e7) and the correction at the end of this document rebuilt graph_full_neuronal_split the same day.
 
 experiments/build_gene_protein_split.py (library: mechanistic_pathway_learning/graph/gene_protein_split.py) wrote:
 - data/processed/graph_split, from the slice graph:
@@ -248,6 +274,15 @@ the protein nodes, which is what a protein node should carry for an entity-only 
 
 ## Slice runs (job split_slice, after module_fix_slice)
 
+**What the job ran (corrected 27 November 2026).** The arms and commands of this section are the plan as first queued
+on 8 October 2026. Commit 92085e7, the same day, rested the split arms on the module-fix twins without the weighted
+start (`SLICE_GATE_TIME_SCALES_MESSAGE_PASSING` and `SLICE_GATE_TIME_SCALES_LINEAR_RESPONSE`) and paired each split arm
+with a merged twin that reads the descriptor copy with the protein descriptors of the genes the split resolves (the
+`_descriptors_resolved` configurations), so that each pair carries the same descriptor values. Those are the
+configurations experiments/run_main_model_batch.py holds; the
+`_weighted_start_descriptors` names below are in none. The split_slice job trained the four arms of 92085e7 (20 of 20
+folds), and its readings, with the commands that took them, are docs/records/2026-10/gene_protein_split_results.md.
+
 Five disease-cluster folds, seed 0, each arm with --start-at-weighted-optimum and the slice brain expression descriptors
 (experiments/run_main_model_batch.py):
 - message passing with seed masking on the merged slice (2 layers) against the split slice (3 layers, so knockouts reach
@@ -261,7 +296,8 @@ The readings, fixed before the runs, are paired five-fold differences in macro a
 (experiments/compare_twin_runs.py) and the module-health readings of docs/module_health.md
 (experiments/module_health.py). The slice is metabolic: its knockouts reach reactions through one encodes edge and no
 protein interactions, so it tests the descriptor placement and the extra hop, not the protein layer of the full graph.
-They are development readings and go to the user, who decides whether the confirmatory configurations move to the split.
+They are development readings and go to the user, who decides whether the confirmatory configurations move to the split
+(they decided on 9 October 2026 that they do: section "Not changed").
 
 The merged and split arms differ in three arguments (graph, layer count and descriptor table), so their difference
 reads the split as a whole, not one change. The within-degree-strata reading is taken twice, with strata from the split
@@ -283,9 +319,11 @@ The last two pairs read the brain expression descriptors (with seed masking for 
 under the module fix.
 
 docs/split_slice_comparisons.md and docs/split_slice_comparisons_merged_strata.md are the two tables these commands
-write; no commit has held either, so the job's readings are not in this repository. Whatever they show, they are
+would write; no commit has held either. The readings of the job as it ran are in
+docs/records/2026-10/gene_protein_split_results.md (the note at the head of this section). Whatever they show, they are
 readings of the slice graphs built on 8 October 2026 (data/processed/graph_split and data/processed/graph) and carry
-that graph and date when reported (CLAUDE.md, "A measurement carries the graph it was taken on").
+that graph and date when reported (CLAUDE.md, "A measurement carries the graph it was taken on"). A command run now
+writes its page under docs/generated/ (docs/documentation_process.md, "Where documents live", 20 November 2026).
 
 ## Correction of 8 October 2026 (late): complex accessions
 

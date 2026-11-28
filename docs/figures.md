@@ -23,6 +23,10 @@ of those builds are reported as history only is the owner's open question 9.106 
 been redrawn on it, and since 9.112 will change the membrane-potential layer and force another rebuild, redrawing them
 waits for that build.
 
+**Added 27 November 2026.** The graph of that name was rebuilt on 12 November 2026 from `graph_full_neuronal` down
+(`docs/data_layer_rebuild.md`: 49,864 nodes and 275,194 edges), still with the registered `computed_from_the_pools`;
+decision 9.112's rebuild is still owed (decision 9.106). No figure has been drawn on either November build.
+
 ## 1. The model
 
 ![model pipeline](figures/model_pipeline.png)
@@ -32,11 +36,19 @@ owner, 13 October 2026: "all of the v4 stuff should be ON by default") with a no
 encoders, on the v5 tables. A perturbation is an allele of a gene or a drug. Since decision 9.54 a gene's loss of
 function and its gains are separate perturbations: a loss of function or an untyped allele seeds -1 at the gene, a
 hypermorphic gain +1, and HTT's CAG expansion is a node of its own with four cited edges (figure 11). A drug is a node
-of its own, joined to its targets by its ChEMBL mechanism edges, with an ablation arm that seeds the targets instead
-(the user, 10 October 2026). The message-passing encoder runs 3 layers of typed messages with the relations shared
-through a rank-2 factorisation. The linear-response encoder propagates to a fixed point (tolerance 0.001, at most 60
-rounds) over the signed adjacency of each relation, with a learned gain per relation, positive input weights, cofactor
-relations, reversible reactions and compartment pH; each cell class reads the settled state scaled by its limiting step
+of its own, joined by mechanism edges to the nodes it would otherwise be seeded on, with an ablation arm that seeds the
+targets instead (the user, 10 October 2026). Those targets are its ChEMBL mechanism targets; for a drug whose ChEMBL
+route gives none, the curated mechanism targets of `configs/psychiatric_drug_additions_v4_draft.csv` and
+`configs/curated_drug_targets.csv` (decisions 9.117 and 9.121, wired on 8 November 2026 and read by the v5 rebuild of
+12 November 2026); and, since 20 November 2026, the ruled additions of `configs/drug_target_additions.csv` (its first
+rows are cocaine's dopamine, serotonin and noradrenaline transporters), which postdate that rebuild. The drawing of
+17 October 2026 predates both routes and reads "ChEMBL mechanism edges". The message-passing encoder repeats one layer
+of typed messages, the relations shared through a rank-2 factorisation (amendment item 8), until the relative change of
+its state falls below 0.001 (amendment item 7; its `--num-layers 3` is read only under `--fixed-point-tolerance none`);
+the drawing of 17 October 2026 reads "3 layers of typed messages". The linear-response encoder propagates to a fixed
+point (tolerance 0.001, at most 60 rounds) over the signed adjacency of each relation, with a learned gain per
+relation, positive input weights, cofactor relations, reversible reactions and compartment pH; each cell class reads
+the settled state scaled by its limiting step
 (figure 2). The registered normalisation is the per-seed forward cone (`--normalisation forward_cone`, decision 9.16,
 registered 20 October 2026): each edge is divided by its destination's in-degree over every relation, counting only the
 edges whose source the seed can reach. The drawing of 17 October 2026 still reads "normalised by total in-degree", the
@@ -47,9 +59,15 @@ states the registered rules without a text edit; the drawing waits for the v5 gr
 Both read the difference field. The node descriptors are read under the registered
 seed masking, so a perturbation's own nodes, their encodes partners and a drug node's targets read only their
 structural and expression columns. Labels are better_v2 on the fine constructs (figure 3; 38 when the figure was drawn,
-39 since decision 9.74 split akathisia from restlessness, merged 20 October 2026); trial arms, FAERS and IMPC knockouts
-enter the reliability fit as soft classes and never as labels (decision 9.48). Every kept pair is counted once under
-the positive-unlabelled likelihood (registered 24 October 2026, decision 9.90). Folds are grouped by disease cluster
+39 since decision 9.74 split akathisia from restlessness, merged 20 October 2026, and 42 in
+`docs/symptom_crosswalk_fine.csv` since decisions 9.115 and 9.116 added tardive, orofacial and extrapyramidal
+dyskinesia on 7 November 2026, the crosswalk the v5 rebuild of 12 November 2026 read); trial arms, FAERS and IMPC
+knockouts enter the reliability fit as soft classes and never as labels (decision 9.48). Every kept pair is counted
+once under the positive-unlabelled likelihood (registered 24 October 2026, decision 9.90). No module of the tested
+model holds a node that fewer than 2 distinct seed nodes of the run's training rows can reach along the edges the
+linear-response encoder propagates along (`module_support_minimum_reach`, 2 in `configs/registered_rules.json`,
+registered 24 November 2026 as amendment item 39, decision 9.150); the robustness model runs without it, and the
+drawing of 17 October 2026 predates it. Folds are grouped by disease cluster
 and drug targets; the held-out set on v5 is drawn on the owner's go-ahead (decision 1.1). The edge priors of decision
 9.57 are built and off in the registered model; the hard gates of decision 9.62 are built (figures 12 to 16) and act
 only when the edge priors are on. Every count is read from the graph and the summaries when the figure is drawn.
@@ -75,9 +93,10 @@ class, x_k / (max_j x_j + 1 nCPM) (mechanistic_pathway_learning/graph/brain_expr
 ![label selection](figures/label_selection.png)
 
 The better_v2 selection on the v5 tables as drawn on 17 October 2026: 38 fine constructs (decision 9.58; 39 since
-decision 9.74, whose akathisia construct a redrawn figure will show) and the allele perturbations (decision 9.54). Gene
-pairs are kept at HPO frequency 0.30 or more; drug pairs at label frequency 1 percent or more or when both SIDER and
-OnSIDES list them. 4,448 of 8,123 positive pairs are kept. A pair set aside is masked out of the loss and every metric;
+decision 9.74 and 42 since decisions 9.115 and 9.116, whose constructs a redrawn figure will show) and the allele
+perturbations (decision 9.54). Gene pairs are kept at HPO frequency 0.30 or more; drug pairs at label frequency
+1 percent or more or when both SIDER and OnSIDES list them. 4,448 of 8,123 positive pairs are kept. A pair set aside
+is masked out of the loss and every metric;
 it is not a negative. Also masked are the pairs whose only evidence is grade C (a human association) and the kept drug
 pairs never more frequent on the drug than on placebo in a label that gives both arms (70 on v5). Intellectual
 disability is the largest construct by far, 1,243 kept pairs (decision 9.61 is about it). Anhedonia, abulia,
@@ -88,11 +107,16 @@ needs.
 
 ![dopaminergic class](figures/dopaminergic_class.png)
 
-The Human Protein Atlas single-nucleus cluster types have no dopaminergic type, so dopamine neuron markers peak at a
-few nCPM in unrelated types (SLC6A3 at 0.6 in splatter neurons). Cluster 395 of the same atlas (Siletti et al. 2023),
+The 34 single-nucleus cluster types of the Human Protein Atlas release the figure read (the release read until
+23 November 2026) have no dopaminergic type, so dopamine neuron markers peak at a few nCPM in unrelated types (SLC6A3
+at 0.6 in splatter neurons). Cluster 395 of the same atlas (Siletti et al. 2023),
 summed from 872 nuclei and scaled to HPA's nCPM with a trimmed mean of log ratios, carries TH, SLC6A3 and SLC18A2 at
 hundreds of nCPM and GAD1 and AQP4 below 3. Data: CC BY 4.0 (Siletti et al. 2023, via CZ CELLxGENE) and HPA (CC BY
 4.0 as docs/data_sources.md records it since 20 October 2026; this line read "CC BY-SA 4.0" until then).
+
+**Added 27 November 2026.** Decision 9.155 moves the build to the HPA release fetched on 23 November 2026, whose
+cluster-type file has 48 types, one of them named `dopaminergic`, none yet mapped to a cell class
+(`docs/data_layer_rebuild.md`, addition of 27 November 2026). The figure has not been drawn on that release.
 
 ## 5. Slice pilot: one-change comparisons
 
@@ -106,10 +130,11 @@ exclude zero, about the 2.1 that 41 uncorrected intervals give by chance, and bo
 blocks: dropping the gene block scores below dropping the protein block, -0.025 [-0.040, -0.010], and dropping the
 gene-derived reaction block scores below it too, -0.030 [-0.046, -0.015]. Three within-strata intervals exclude zero (descriptors in message passing,
 -0.020; the same gene-against-protein pair, -0.022; the neuronal graph under the noisy-OR head, -0.019).
-docs/generated/twin_comparisons.md has the numbers. The module-fix and gene-and-protein-split arms (runs/module_fix) are read in
-docs/generated/module_health_results.md and docs/generated/module_health_fast_leak_results.md; the split_slice job's comparison tables
-(docs/gene_protein_split.md, "Slice runs") are in no commit. These are readings of the slice pilot of 6 to 8 October
-2026 and are history under decision 9.82.
+docs/generated/twin_comparisons.md has the numbers. The module-fix arms (runs/module_fix) are read in
+docs/generated/module_health_results.md and docs/generated/module_health_fast_leak_results.md, and the
+gene-and-protein-split arms the split_slice job trained in docs/records/2026-10/gene_protein_split_results.md; the two
+comparison tables of the plan in docs/gene_protein_split.md ("Slice runs") are in no commit. These are readings of the
+slice pilot of 6 to 8 October 2026 and are history under decision 9.82.
 
 ## 6. Slice pilot: baselines and models
 
@@ -171,7 +196,9 @@ the argument.
 in 22 relations, by sign, and the same edges by the source layer they come from (OmniPath signalling, Human-GEM
 metabolism, CollecTRI transcription, the gene-to-protein split, Reactome complexes and sets, BRENDA enzyme regulation,
 the drug mechanism and sequestration edges, the electrical edges, the curated neuronal and redox edges, plasma carriage
-and the allele's edges). `docs/graph_summary.md` gives the same counts as tables.
+and the allele's edges). `docs/graph_summary.md` gives counts of this kind as tables, but of
+`graph_full_neuronal_split_binders_drugs_v4` as generated on 16 October 2026 (49,796 nodes of 7 types and 268,954
+edges), one node and four edges fewer than the figure.
 
 ## 11. Alleles as perturbations
 

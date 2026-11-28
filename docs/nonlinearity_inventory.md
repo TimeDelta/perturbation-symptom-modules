@@ -8,8 +8,11 @@ the repository's own, taken on `data/processed/graph_full_neuronal_split_binders
 280,966 edges) on 21 October 2026 unless another source is named. Written 21 October 2026; read against the
 repository at 7104489 on 25 October 2026. **Read against the repository again on 2 November 2026** (the review
 below): two cases are added, 9 and 10, both of which the owner has since ruled on in part, and the counts of 21
-October 2026 are left as they are because the build they were taken on is not the current graph and the real v5 is
-not built (decision 9.106), so they are history and are not restated as current.
+October 2026 are left as they are because the build they were taken on is not the current graph and the real v5 was
+not built then (decision 9.106), so they are history and are not restated as current. A graph named
+`graph_full_neuronal_split_binders_drugs_v5` has since been built, on 5 November 2026, and rebuilt on 12 November 2026
+from `graph_full_neuronal` down (`docs/data_layer_rebuild.md`), still with the registered `computed_from_the_pools`,
+and decision 9.112's rebuild is owed (decision 9.106); this document's counts are restated on neither build.
 
 ## 1. The cases
 
@@ -91,7 +94,10 @@ over the signed field for `member_of`; the owner ruled that a signed AND is "bet
   decision 9.16); the message-passing encoder divides by edge counts, per relation.
 - Readouts differ: `channel_expansion` with `output_gate` and `descriptor_gate`, against `base_node_state` with
   `feature_projection` and `descriptor_projection`.
-- The message-passing encoder has a fixed-point mode, off by default, allowed only with `shared_low_rank` weights.
+- The message-passing encoder has a fixed-point mode, allowed only with `shared_low_rank` weights. It is off in the
+  encoder's own defaults and on in the trainer's (`--relation-parameterisation shared_low_rank` and
+  `--fixed-point-tolerance` 0.001, amendment items 7 and 8), so the registered robustness model runs to a fixed point
+  and reads its `--num-layers 3` only under `--fixed-point-tolerance none`.
 
 ## 6. Registration
 
@@ -127,8 +133,8 @@ Until 22 October 2026 `tested_models` named the noisy-OR configurations of both 
 **Added 2 November 2026, from the review**: question 2 above, how conjunction is controlled, is no longer only about
 the 542 obligate complexes. Case 9 needs the same device for a different reason, and the owner has chosen a conjunction
 relation for it (9.97), so whatever is built has to serve both or the project carries two mechanisms for one shape.
-Cases 2 and 4 are the same family again. A design pass of 2 November 2026 is setting out the options with their costs
-against the contraction bound.
+Cases 2 and 4 are the same family again. A design pass of 2 November 2026 was then setting out the options with their
+costs against the contraction bound; the design work that followed is recorded in decision 9.81.
 
 Settled since the inventory was written: whether the message-passing encoder leaves the tested models. It left them on
 22 October 2026 (decision 9.77) and stays as a robustness reading under `robustness_models`, not as a tested model
