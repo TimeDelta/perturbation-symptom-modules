@@ -99,6 +99,20 @@ def test_an_isotonic_ceiling_is_flagged_inside_the_observed_range():
     assert statistic_ceiling(curve, 0.02) == {"ceiling": pytest.approx(0.25), "within_observed_range": True, "status": "ceiling"}
 
 
+def test_an_isotonic_plateau_at_the_threshold_puts_the_ceiling_where_the_plateau_starts():
+    """statistic_ceiling: the statistic "at which the fitted advantage reaches one_standard_error", and the module
+    docstring: a draw passes strictly below the ceiling "since the advantage must stay *below* one standard error".
+    Pooling the falling pair (0.75, 0.5) gives a plateau at 0.625 from 0.3 to 0.4; at one standard error 0.625 the fit
+    reaches it at 0.3, so a draw at 0.35, whose fitted advantage is one standard error, does not pass. (Added by the
+    checker of 28 November 2026: the mutant reading the first knot strictly above the threshold, noted as equivalent,
+    puts the ceiling at 0.4, the plateau's end.)"""
+    curve = fit_advantage_curve([0.1, 0.2, 0.3, 0.4, 0.5], [0.0, 0.25, 0.75, 0.5, 1.0], "isotonic_increasing")
+    assert curve["knot_statistics"] == pytest.approx([0.1, 0.2, 0.3, 0.4, 0.5])
+    assert curve["knot_advantages"] == pytest.approx([0.0, 0.25, 0.625, 0.625, 1.0])
+    assert statistic_ceiling(curve, 0.625) == {"ceiling": pytest.approx(0.3), "within_observed_range": True, "status": "ceiling"}
+    assert draw_passes({"share": 0.35}, {"share": statistic_ceiling(curve, 0.625)["ceiling"]})[0] is False
+
+
 # ---------------------------------------------------------------- acceptance
 
 
