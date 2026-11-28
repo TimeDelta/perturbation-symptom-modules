@@ -1002,6 +1002,22 @@ def test_the_resting_ph_values_cover_every_compartment_the_graph_names():
     assert all(why.startswith(("review", "reasoned")) for _, why in RESTING_PH_BY_COMPARTMENT.values())
 
 
+def test_the_weight_is_centred_on_rest_and_the_resting_ph_docstring_does_not_call_that_unbuilt():
+    """The weight already centres every pH-activity curve on its compartment's resting state (1 at rest, with no resting
+    value read), so that centring needs none of the constants. The docstring of 27 November 2026 listed it as an
+    unbuilt use of them (corrected 28 November 2026); the unbuilt use that needs them is the sourced per-enzyme optimum
+    decision 9.135 puts to the owner."""
+    import mechanistic_pathway_learning.graph.compartment_resting_ph as compartment_resting_ph_module
+
+    encoder = build_ph_encoder(sensitivity=1.0)
+    with torch.no_grad():
+        weight_at_rest = encoder.compartment_ph_weight(torch.zeros(6, 1, 1))  # [N, B, C], every deviation 0
+    assert torch.equal(weight_at_rest, torch.ones_like(weight_at_rest))
+    docstring = " ".join(compartment_resting_ph_module.__doc__.split())
+    assert "optima centred on a compartment's resting pH (ruling S3b of item 37, not built)" not in docstring
+    assert "per-enzyme pH optima from sourced values" in docstring and "decision 9.135" in docstring
+
+
 def test_the_ph_weight_breaks_positive_homogeneity_which_is_the_registered_cost():
     """A sensitivity where the weight is neither 1 nor saturated: on this chain the proton deviation is of order 1, so
     sensitivity 1 puts the weight near 0.74 and leaves it responsive in both directions."""

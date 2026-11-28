@@ -17,9 +17,12 @@ No code reads these values yet (checked 27 November 2026: only a test imports th
 where sensitivity * deviation is the fractional change in [H+], so the sensitivity stays learned (the model's
 deviations are in arbitrary units). Each reaction's optimum is taken as its own compartment's resting state, so the
 resting value cancels out of the weight (graph/compartment_ph.py has the reasoning). The values are kept for the uses
-that need an absolute pH: the drug ionisation named above, and enzyme pH optima centred on a compartment's resting pH
-(ruling S3b of item 37, not built). Until 27 November 2026 this paragraph said the weight read the resting value, which
-it never did.
+that need an absolute pH: the drug ionisation named above, and per-enzyme pH optima from sourced values, the
+physiological option decision 9.135 (ruling S3b of item 37) puts to the owner, not built: the weight would then compare
+each enzyme's optimum with the compartment's absolute pH, its resting value plus the shift. Centring every curve on its
+compartment's resting state is what the weight already does, and it needs no value here; until 28 November 2026 this
+paragraph listed that centring as the unbuilt use. Until 27 November 2026 it said the weight read the resting value,
+which it never did.
 
 **Provenance, per value, because they are not all of one kind.** The values marked `review` are from a curated
 database entry read on 13 October 2026, whose primary source is the review it names; the ones marked `reasoned` are
