@@ -10,21 +10,28 @@
 # $CLAUDE_PROJECT_DIR. The fingerprint is the SHA-256 of every tracked and untracked, not ignored, .py file under those
 # two directories, kept per checkout in its git directory; a passing run records the fingerprint it started from, so a
 # change made while the suite ran is tested by the next one. Concurrent runs in one checkout are serialised by a lock:
-# a hook that finds the lock held leaves the work to the run already going. Exit 2 (a failing suite) wakes the session
-# that finished, through asyncRewake, with pytest's FAILED and ERROR lines and its summary line; every other outcome
-# exits 0.
+# a hook that finds the lock held leaves the work to the run already going. Exit 2 (a suite that failed or crashed)
+# wakes the session that finished, through asyncRewake, with pytest's FAILED and ERROR lines and its summary line, or
+# for a crash with its exit status and what it printed; every other outcome exits 0.
 #
 # Two outcomes are nothing to report, and exit 0 without waking anyone or recording a pass (so the next run tests the
-# code again). A checkout that no longer exists: a workflow can delete an agent's worktree while the hook is still
-# fingerprinting it or running its suite, and on 28 November 2026 that gave "line 34: <path>: No such file or
-# directory" from the fingerprint's read of a vanished file (line 34 of the hook as it then was) and then a failure
-# report with no test output in it. And a pytest run that reported no result at all: no FAILED or ERROR line, no
-# summary line ("1 failed, 2 passed in ..."), and none of the reports pytest gives when it stops before running a test
-# (a conftest that would not import, an internal error), as when Python could not start in a deleted directory or
-# pytest was killed. That includes a suite that crashes the interpreter (a segfault) in a checkout that still exists:
-# it wakes nobody, and since no pass is recorded it runs again, as silently, at every later stop until a run passes. A
-# conftest that would not import still wakes the session, with the end of pytest's output, since that is a broken
-# suite and not a missing one.
+# code again). A checkout that no longer exists, whatever pytest's exit status: a workflow can delete an agent's
+# worktree while the hook is still fingerprinting it or running its suite, and on 28 November 2026 that gave "line 34:
+# <path>: No such file or directory" from the fingerprint's read of a vanished file (line 34 of the hook as it then
+# was) and then a failure report with no test output in it. And, in a checkout that still exists, a run that did not
+# crash (next paragraph) and in which pytest reported no result at all: no FAILED or ERROR line, no summary line ("1
+# failed, 2 passed in ..."), and none of the reports pytest gives when it stops before running a test (a conftest that
+# would not import, an internal error), as when Python could not start ("Fatal Python error: error evaluating path",
+# exit status 1, which is what it gives in a deleted directory).
+#
+# A crash is reported by its exit status, whatever pytest printed, when the checkout still exists: python3 killed by a
+# signal (bash's status 128 + the signal's number: 139 for a segfault, 137 for SIGKILL, which is what the kernel's
+# out-of-memory killer sends), or pytest's INTERNAL_ERROR (3) or USAGE_ERROR (4), the code it also gives when a conftest
+# will not import (pytest's ExitCode enum, read in _pytest/config/__init__.py of the installed pytest 9.1.1 on 28
+# November 2026). The report names the status and the signal and gives what pytest printed: the 25 lines from Python's
+# first "Fatal Python error" line, where faulthandler's dump names the crashing frame first, else the last 25 lines.
+# Until this was added on 28 November 2026, such a run fell under the no-result rule above: a segfault or a kill woke
+# nobody, and since no pass is recorded it ran again, as silently, at every later stop.
 #
 # CLAUDE_SUITE_HOOK_DRY_RUN=1 prints what the hook would do and runs nothing. tests/test_suite_hook.py uses it, and a
 # stub python3 on PATH, to test the hook without running the real suite.
@@ -74,15 +81,49 @@ fi
 flock -n 9 || exit 0  # a suite is already running in this checkout
 
 output_file="$(mktemp)"
-if OMP_NUM_THREADS=1 PYTHONPATH=. nice -n 15 python3 -m pytest -q -p no:cacheprovider > "$output_file" 2>&1; then
+# The braces' 2>/dev/null silences bash's own notice of a child that a signal killed ("<this script>: line N: <pid>
+# Segmentation fault ..."), which would otherwise go to the hook's stderr; the crash report below names the signal.
+{ OMP_NUM_THREADS=1 PYTHONPATH=. nice -n 15 python3 -m pytest -q -p no:cacheprovider > "$output_file" 2>&1; } 2>/dev/null
+pytest_exit_status=$?
+if [ "$pytest_exit_status" -eq 0 ]; then
     { printf '%s\n' "$fingerprint" > "$fingerprint_file"; } 2>/dev/null
     rm -f "$output_file"
     exit 0
 fi
-if ! checkout_still_exists \
-    || ! grep -qE '^(FAILED|ERROR|INTERNALERROR)|^ImportError while loading conftest|[0-9]+ (passed|failed|errors?)\b|no tests ran' "$output_file"; then
+if ! checkout_still_exists; then
     rm -f "$output_file"
-    exit 0  # the checkout was deleted while its suite ran, or pytest reported no result: nothing to report
+    exit 0  # the checkout was deleted while its suite ran: nothing to report, whatever pytest's exit status
+fi
+
+# A crash, by its exit status: above 128 is bash's 128 + the number of the signal that killed python3, and 3 and 4 are
+# pytest's ExitCode.INTERNAL_ERROR and ExitCode.USAGE_ERROR.
+crash_cause=""
+if [ "$pytest_exit_status" -gt 128 ]; then
+    signal_number=$((pytest_exit_status - 128))
+    signal_name="$(kill -l "$signal_number" 2>/dev/null)"
+    crash_cause="python3 was killed by signal $signal_number${signal_name:+ (SIG$signal_name)}"
+elif [ "$pytest_exit_status" -eq 3 ]; then
+    crash_cause="pytest stopped with its internal-error code (ExitCode.INTERNAL_ERROR)"
+elif [ "$pytest_exit_status" -eq 4 ]; then
+    crash_cause="pytest stopped with its usage-error code (ExitCode.USAGE_ERROR), as when a conftest will not import"
+fi
+if [ -n "$crash_cause" ]; then
+    crash_output="$(grep -m1 -A24 '^Fatal Python error' "$output_file")"  # faulthandler names the crashing frame first
+    [ -n "$crash_output" ] || crash_output="$(tail -25 "$output_file")"
+    {
+        echo "The full test suite crashed in $checkout_root after the code changed (run by .claude/hooks/run-suite-if-code-changed.sh):"
+        echo "exit status $pytest_exit_status, $crash_cause. What it printed:"
+        printf '%s\n' "$crash_output"
+    } >&2
+    rm -f "$output_file"
+    exit 2
+fi
+
+# INTERNALERROR and the conftest report normally come with status 3 and 4, reported above; they are kept here for a
+# plugin that ends the run with a code of its own, which pytest's ExitCode allows.
+if ! grep -qE '^(FAILED|ERROR|INTERNALERROR)|^ImportError while loading conftest|[0-9]+ (passed|failed|errors?)\b|no tests ran' "$output_file"; then
+    rm -f "$output_file"
+    exit 0  # pytest reported no result and did not crash: nothing to report
 fi
 report="$(grep -E "^(FAILED|ERROR)|passed|failed" "$output_file" | tail -25)"
 [ -n "$report" ] || report="$(tail -25 "$output_file")"  # pytest stopped before running a test; show what it said

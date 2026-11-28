@@ -177,8 +177,10 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   `.claude/hooks/run-suite-if-code-changed.sh`, which tests the checkout the hook input names, so an agent in a
   worktree is tested in its worktree, only when that checkout's `.py` files under `mechanistic_pathway_learning/` and
   `tests/` differ from the last passing run's, one run per checkout at a time, and wakes the session when the suite
-  fails. Since 28 November 2026 a checkout deleted while the hook ran, and a run in which pytest reported no result,
-  wake nobody and record no pass (`tests/test_suite_hook.py`).
+  fails. Since 28 November 2026 a checkout deleted while the hook ran, and a run in which pytest reported no result
+  and did not crash, wake nobody and record no pass, while a crash in a checkout that still exists (python3 killed by
+  a signal, or pytest's internal-error or usage-error exit status) wakes the session with its exit status
+  (`tests/test_suite_hook.py`).
 - When a generated document is regenerated, its generator writes the stamp; a generator that does not yet (most of
   the generated documents predate the stamp; `docs/status.md` counts them) is given it at its next change by calling
   `provenance_stamp` from `mechanistic_pathway_learning/documentation.py`.

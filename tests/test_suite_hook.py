@@ -5,8 +5,10 @@ Each test makes a throwaway git checkout holding mechanistic_pathway_learning/ a
 with a stub `python3` first on PATH, so "the suite" is a shell script that prints what the case needs and exits as
 pytest would. The cases that matter are the ones of 28 November 2026, when a workflow deleted an agent's worktree
 while the hook ran and the hook woke the session with "The full test suite failed" and no test output: a checkout
-that is gone, or a run that reported no result, is nothing to report (exit 0), while a failing suite and a conftest
-that would not import still wake the session (exit 2).
+that is gone, or a run that reported no result and did not crash, is nothing to report (exit 0), while a failing
+suite, a conftest that would not import, and a crash (python3 killed by a signal, or pytest's internal-error code 3)
+still wake the session (exit 2). The crash cases were added later on 28 November 2026, after the no-result rule had
+been found to keep a segfault or a kill in a checkout that still exists as quiet as a deleted checkout.
 """
 from __future__ import annotations
 
@@ -138,14 +140,77 @@ def test_a_failing_suite_still_wakes_the_session_with_its_result(tmp_path):
 
 
 def test_a_conftest_that_will_not_import_still_wakes_the_session(tmp_path):
-    """pytest stops before running a test and prints no summary line (exit 4); that is a broken suite, not a missing
-    one, so it is reported with the end of what pytest said."""
+    """pytest stops before running a test and prints no summary line, with its usage-error code 4; that is a broken
+    suite, not a missing one, so it is reported as a crash, with the exit status and the end of what pytest said."""
     checkout = make_checkout(tmp_path)
     stub_directory = stub_suite(tmp_path, "echo \"ImportError while loading conftest '$PWD/tests/conftest.py'.\"\n"
                                           'echo "E   ModuleNotFoundError: No module named \'missing\'"\nexit 4\n')
     result = run_hook(checkout, stub_directory)
     assert result.returncode == 2, result
     assert "ImportError while loading conftest" in result.stderr and "ModuleNotFoundError" in result.stderr
+    assert "exit status 4" in result.stderr and "ExitCode.USAGE_ERROR" in result.stderr
+
+
+BASH_NOTICE_OF_A_KILLED_CHILD = "run-suite-if-code-changed.sh: line"  # "<script>: line N: <pid> Segmentation fault ..."
+
+
+def test_a_suite_that_segfaults_wakes_the_session_with_the_signal_and_the_crashing_frame(tmp_path):
+    """The stub prints what faulthandler prints after a segfault (the crashing frame first, then more frames than the
+    last 25 lines would leave room for) and kills itself with SIGSEGV, so bash sees status 139. Measured on 28 November
+    2026 with a real test that read address 0 under pytest 9.1.1: status 139, that dump, and no summary line."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'ulimit -c 0\n'
+                                          'echo "Fatal Python error: Segmentation fault"\necho ""\n'
+                                          'echo "Current thread 0x00007f (most recent call first):"\n'
+                                          'echo "  File \\"tests/test_example.py\\", line 2 in test_example"\n'
+                                          'frame=0\nwhile [ $frame -lt 30 ]; do\n'
+                                          '    echo "  File \\"pluggy/_callers.py\\", line 121 in _multicall"\n'
+                                          '    frame=$((frame + 1))\ndone\n'
+                                          'kill -s SEGV $$\n')
+    result = run_hook(checkout, stub_directory)
+    assert result.returncode == 2, result
+    assert "The full test suite crashed in" in result.stderr
+    assert "exit status 139, python3 was killed by signal 11 (SIGSEGV)" in result.stderr
+    assert 'File "tests/test_example.py", line 2 in test_example' in result.stderr, \
+        "the report starts at faulthandler's first line, where the crashing frame is, not at the last 25 lines"
+    assert BASH_NOTICE_OF_A_KILLED_CHILD not in result.stderr, "bash's own notice of the signal is silenced"
+    assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
+
+
+def test_a_suite_killed_with_sigkill_wakes_the_session_with_the_signal(tmp_path):
+    """SIGKILL is what the kernel's out-of-memory killer sends; nothing can catch it, so pytest prints no last word
+    and the report shows the end of its progress output."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'echo "....................  [ 40%]"\nkill -s KILL $$\n')
+    result = run_hook(checkout, stub_directory)
+    assert result.returncode == 2, result
+    assert "exit status 137, python3 was killed by signal 9 (SIGKILL)" in result.stderr
+    assert "....................  [ 40%]" in result.stderr
+    assert BASH_NOTICE_OF_A_KILLED_CHILD not in result.stderr, "bash's own notice of the signal is silenced"
+    assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
+
+
+def test_an_internal_error_exit_wakes_the_session_even_when_the_output_shows_no_result(tmp_path):
+    """Exit status 3 is pytest's ExitCode.INTERNAL_ERROR. The stub's output holds none of the lines the no-result rule
+    looks for (no INTERNALERROR line, no summary), so only the exit status makes this a report."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'echo "Traceback (most recent call last):"\n'
+                                          'echo "RuntimeError: a plugin failed outside any test"\nexit 3\n')
+    result = run_hook(checkout, stub_directory)
+    assert result.returncode == 2, result
+    assert "exit status 3, pytest stopped with its internal-error code (ExitCode.INTERNAL_ERROR)" in result.stderr
+    assert "RuntimeError: a plugin failed outside any test" in result.stderr
+    assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
+
+
+def test_a_suite_killed_in_a_checkout_that_was_deleted_wakes_nobody(tmp_path):
+    """A crash is reported only while the checkout exists: the stub deletes it and then kills itself with SIGSEGV."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'ulimit -c 0\nrm -rf "$CHECKOUT_TO_REMOVE"\nkill -s SEGV $$\n')
+    result = run_hook(checkout, stub_directory, extra_env={"CHECKOUT_TO_REMOVE": str(checkout)})
+    assert not checkout.exists(), "the stub suite was not run"
+    assert result.returncode == 0 and "The full test suite" not in result.stderr, result
+    assert BASH_NOTICE_OF_A_KILLED_CHILD not in result.stderr, "bash's own notice of the signal is silenced"
 
 
 def test_a_passing_suite_records_its_fingerprint_and_is_not_rerun_on_the_same_code(tmp_path):
