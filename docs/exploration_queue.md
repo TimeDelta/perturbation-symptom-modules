@@ -103,9 +103,9 @@ Item 13 (co-prescription in FAERS) stays parked by the owner's ruling and is not
 Tagged 2026-10-22.
 
 **The idea.** Build the matrix of first-order sensitivities of each labeled outcome node to each of the 3,795
-sign-disputed edges, one adjoint solve per labeled outcome against a cached factorization of (I - A). Its numerical
-rank, with tolerance set by label noise, upper-bounds how many independent directions the entire branch multiverse
-can move predictions in. If that rank is small relative to 3,795, most of the apparent combinatorial explosion is
+sign-disputed edges (the count of decision 9.72, measured 17 October 2026), one adjoint solve per labeled outcome
+against a cached factorization of (I - A). Its numerical rank, with tolerance set by label noise, upper-bounds how
+many independent directions the entire branch multiverse can move predictions in. If that rank is small relative to 3,795, most of the apparent combinatorial explosion is
 bookkeeping rather than distinct scientific questions.
 
 **Two companion reductions.**
@@ -138,10 +138,10 @@ as circuit degeneracy or only an analogy.
 
 Tagged 2026-10-22.
 
-The current recuration rests on 11 decidable pairs, with the stored sign right on 7
-(`docs/records/2026-10/regulation_sign_recuration.md`). The posterior interval runs roughly 0.35 to 0.85, too wide to set a
-latent-sign prior from. A larger seeded sample is cheap and would be worth more than further analysis of the
-existing 11.
+When this item was tagged, the recuration rested on 11 decidable pairs, with the stored sign right on 7
+(`docs/records/2026-10/regulation_sign_recuration.md`). The posterior interval ran roughly 0.35 to 0.85, too wide to set a
+latent-sign prior from. A larger seeded sample was cheap and would be worth more than further analysis of the
+existing 11; one was read on 7 November 2026 and pooled with them (the addition below).
 
 
 **Added 7 November 2026.** A second seeded sample was read on Fable: seed 20261107, 30 labels from each stratum of the frame rebuilt on the v5 build of 5 November 2026 (2,166 labels whose releases state opposite signs, 1,688 following CollecTRI2 and 478 the 2023 release; the 16 already read excluded). 60 pairs, 38 decidable, the stored sign right for 17. **Pooled with the 11 of 17 October: 24 of 49, 0.49; exact 95% interval 0.34 to 0.64; Beta(1,1) posterior mean 0.49, 95% 0.36 to 0.63**, half the width of before. The interval straddles 0.5: on a disputed label the stored sign is no better than a coin flip, so a latent-sign prior for these labels would sit near 0.5, or near 0.6 for CollecTRI2's sign and 0.4 for the 2023 release's (right for 30 and 19 of 49; the 2023 sign decided from a paper 11 of 22, its default 12 of 24). Neither this item nor the record states a width standard, so whether that is narrow enough is the owner's call; the reading of the pass is that more sampling would sharpen a prior that is already nearly flat. Nine verdicts are judgement calls flagged with their alternative (scored the other way: 22 of 42, 0.38 to 0.67). The sample, the quotes and the 108 bib entries are in the dated addition at the end of `docs/records/2026-10/regulation_sign_recuration.md` and the record `docs/records/2026-11/collectri_sign_recuration_sample_2026-11-07.md`.
@@ -187,7 +187,7 @@ the qualifying exam"; `CLAUDE.md`, "Modelling"), as item 4's status records.
 ## 4. Protein phosphorylation as an explicit relation or as site nodes
 
 Tagged 2026-10-26. Owner's question. Answered on Opus from repository files and general knowledge; no literature
-pass on Fable yet.
+pass on Fable when it was tagged (the Fable count and readings of 7 November 2026 are below).
 
 **Where it stands in the graph.** Kinase effects enter as OmniPath `activates` and `inhibits` edges.
 `configs/go_not_edge_rules.csv`: "no relation of the graph states phosphorylation (OmniPath's activates and inhibits
@@ -223,9 +223,12 @@ touch perturbed genes or lie on paths to labelled symptoms. If the count is smal
 qualifying exam and the 9.97 cyclase handoff. The owner, 27 October 2026: "i disagree with gating things behind the
 qualifying exam because this project IS the qualifying exam. i just need to make sure it doesn't go too far for me to
 be able to understand the project", so what bounds an item is whether the owner can follow it, not the exam. The
-cyclase handoff is worked through: both of 9.97's questions were ruled on 2 November 2026 and no Gi/o-to-cyclase edge
-changes on them; what remains of 9.97 is the form of the G beta gamma conjunction and, after the rebuild, the sign
-sweep of 9.86 before 9.80 is decided.
+cyclase handoff is worked through. As this line read on 4 November 2026, both of 9.97's questions were ruled on 2
+November 2026 and no Gi/o-to-cyclase edge changes on them, and what remained of 9.97 was the form of the G beta gamma
+conjunction and, after the rebuild, the sign sweep of 9.86 before 9.80 is decided. *Added 27 November 2026*, from
+9.97's row: the conjunction's form was ruled on 8 November 2026 with the pass's edge proposals (its status: "ruled 8
+November 2026: both questions and the edge proposals; the edge changes and the evidence family wait for the batched
+rebuild, then the sign sweep of 9.86 and 9.80").
 
 **The decisive count, measured 7 November 2026 on v5 (Fable).** SIGNOR 4.0, October 2026 release (CC BY 4.0,
 "SIGNOR 4.0 is licensed under Creative Commons Attribution 4.0 International", signor.uniroma2.it/documentation,
@@ -504,7 +507,9 @@ separated; whether endosomal pH becomes a node or stays inside the pH weight; an
 registered-model matter.
 
 **Status.** Parked. Measure first, on the current graph: SLC9A6's and SLC9A9's edges out and reach, and whether a
-perturbation of either gets past its own protein.
+perturbation of either gets past its own protein. *Added 27 November 2026*: that measurement was made on 7 November
+2026 and a design pass ran on 20 November 2026 (both below); what remains is the owner's ruling on the design, then a
+build (the priority order above).
 
 **Measured 7 November 2026 on `graph_full_neuronal_split_binders_drugs_v5` (engineering, on Opus; started at the
 owner's request).** SLC9A6 has no node in the graph: no edge source of the build names it (not Human-GEM's gene
@@ -609,7 +614,7 @@ non-PV cortical neurons at about half the PV level of VAMP1 mRNA (`chung2024rbfo
 
 **Added 7 November 2026 (Fable): the proteome check.** The second cheap check was run as far as open sources allow. Carlyle et al. 2017's per-protein table was not reached (`carlyle2017multiregional`: Nature's article page and its static-content ESM files refuse automated readers, the PMC supplement is figures only, and PRIDE PXD005445 holds raw files and a 6.2 GB MaxQuant archive). ProteomicsDB (`samaras2020proteomicsdb`, read by its API, log10 intensities, VAMP1 P23763 against VAMP2 P63027 in the same sample) gives a VAMP1 share VAMP1/(VAMP1+VAMP2) of 0.35 and 0.44 in the two adult frontal cortex samples of `kim2014draft` and 0.15 in whole brain in `wang2019deep` (fetal brain 0.19 and 0.39). A third cortex sample holds VAMP2 only. Limits: the intensity's definition (iBAQ by default) is not confirmed from ProteomicsDB's own documentation; VAMP1 and VAMP2 share tryptic peptides; two cortex samples. The whole-brain value matches the 0.145 mRNA share; the cortex values are 2 to 3 times higher. Not a measured per-cell-type share.
 
-**Checked on the Allen aggregates, 7 November 2026 (Fable).** The published per-cluster medians and 25-75% trimmed means of log2 CPM for the Yao et al. 2021 cortex and hippocampus atlas were read (`yao2021taxonomy`; Allen terms of use: noncommercial research with citation). On SMART-seq the Vamp1/(Vamp1+Vamp2) share of summed cluster CPM is **Pvalb 0.13, Sst 0.05 to 0.06, Sst Chodl 0.03, Sncg 0.03, L5 IT 0.03, L5 PT 0.04 to 0.05, against Vip 0.005 to 0.02, Lamp5 0.004 to 0.009, L2/3 IT 0.005 and L6 CT 0.002 to 0.006**; Vamp2 is near-uniform. So whole-cell mouse data put the MGE interneurons, not interneurons as a class, 10 to 25 times above L2/3 IT and L6 CT, where HPA's human nuclear shares are nearly flat (0.04 to 0.08 against 0.03 to 0.11): the direction the item asked about holds for Pvalb, but the larger disagreement is the excitatory side (5 to 20 times below HPA), with species, platform and compartment confounded. Only Pvalb reaches 0.145. The 10x aggregates read near 0 for most clusters because Vamp1 is detected in under half a cluster's cells (4,125 against 8,894 genes per cell), a detection floor; a mean-CPM share needs the per-cell matrices (over 3 GB, not fetched).
+**Checked on the Allen aggregates, 7 November 2026 (Fable).** The published per-cluster medians and 25-75% trimmed means of log2 CPM for the Yao et al. 2021 cortex and hippocampus atlas were read (`yao2021taxonomy`, which has no entry in `docs/references.bib` yet, an entry owed to a Fable pass; Allen terms of use: noncommercial research with citation). On SMART-seq the Vamp1/(Vamp1+Vamp2) share of summed cluster CPM is **Pvalb 0.13, Sst 0.05 to 0.06, Sst Chodl 0.03, Sncg 0.03, L5 IT 0.03, L5 PT 0.04 to 0.05, against Vip 0.005 to 0.02, Lamp5 0.004 to 0.009, L2/3 IT 0.005 and L6 CT 0.002 to 0.006**; Vamp2 is near-uniform. So whole-cell mouse data put the MGE interneurons, not interneurons as a class, 10 to 25 times above L2/3 IT and L6 CT, where HPA's human nuclear shares are nearly flat (0.04 to 0.08 against 0.03 to 0.11): the direction the item asked about holds for Pvalb, but the larger disagreement is the excitatory side (5 to 20 times below HPA), with species, platform and compartment confounded. Only Pvalb reaches 0.145. The 10x aggregates read near 0 for most clusters because Vamp1 is detected in under half a cluster's cells (4,125 against 8,894 genes per cell), a detection floor; a mean-CPM share needs the per-cell matrices (over 3 GB, not fetched).
 
 **What would need an owner ruling.** Whether a per-transmitter share replaces the single share, once one is measured.
 The owner's call on keeping 0.145 is open in decision 9.68.
@@ -642,7 +647,8 @@ today, measured on the curated tables at `main` `d0a9c7d` on 28 October 2026 (ta
   This is engineering and needed the v5 build, made on 5 November 2026; it was done on 7 November 2026 (below).
 - A Fable pass on the literature: which cycle enzymes are themselves oxidant sources in human or mammalian
   mitochondria, which are oxidant targets beyond ACO2, and whether the effect of cycle flux on respiratory-chain
-  superoxide is stated with a sign that a graph edge could carry. Nothing on this page asserts any of it yet.
+  superoxide is stated with a sign that a graph edge could carry. Nothing on this page asserted any of it when the
+  item was tagged; the pass ran on 7 November 2026 (below).
 
 **Known limits (do not overstate these in writing).**
 - Oxidant production by the respiratory chain depends on the redox state of its carriers and on membrane potential,
@@ -746,7 +752,8 @@ inhibition is the shunt.
   describes, which 9.81 has not ruled on.
 
 **Known limits (do not overstate these in writing).**
-- Nothing here is measured. Which perturbations act mainly by shunt is unread, and so is whether any label depends on it.
+- When this item was tagged nothing here was measured: which perturbations act mainly by shunt was unread, and so was
+  whether any label depends on it. The count of 7 November 2026 below has since been taken.
 - The Kaila et al. 2014 quotation is from the author manuscript; the published text at nature.com answered a check that
   the visitor is human and is unread.
 
@@ -873,8 +880,9 @@ tagged. *Added 27 November 2026*: the query ran on 20 November 2026 (the priorit
 November 2026 curated the six drugs whose ChEMBL row is a plain MODULATOR (gabapentin, pregabalin, levetiracetam,
 brivaracetam, cariprazine, pentazocine) and bupropion's nicotinic antagonism:
 `docs/records/2026-11/item14_drug_target_curation_2026-11-24.md`, whose findings say which values rest on one source
-family. Its source reading ran on Fable; two write-up passes fell back to Opus and stopped, and its closing section,
-which stands where the draft above it differs, was written on Fable from the log. What it leaves to the owner is its
+family. The first pass's source reading and the second pass's verification ran on Fable, and each pass then fell back
+from Fable and stopped (the first to Opus, at its write-up step); its closing section, which stands where the draft
+above it differs, was written on Fable by a third pass from the log. What it leaves to the owner is its
 section 3; none of it has a decision id, and the pass changed nothing in the repository.
 
 **The idea.** A drug's row in `drug_entry_nodes.parquet` is a target, a sign and a magnitude, taken from ChEMBL's
@@ -891,7 +899,7 @@ is fixed. A sweep would look for the rest of them rather than wait for each to s
 | amphetamine | SLC18A2 **-1**, the same as tetrabenazine | a transported substrate that **requires** VMAT2 working; the two are antagonists at that target | 9.127 |
 | methamphetamine | SLC6A2, SLC6A3, SLC6A4 all **-1** | a releasing agent, as amphetamine is at **+1**; the two closest congeners are written oppositely, and the -1 rows cannot drive the `catalyzes_reverse_transport` reactions built for this mechanism | 9.127 |
 | fenfluramine | HTR1D +1, HTR2C +1, SIGMAR1 -1, **no transporter edge at all** | the EMA summary of product characteristics calls it "a serotonin releasing agent"; the US label names only 5-HT2 and calls the mechanism unknown, so the agencies differ | 9.127 |
-| bupropion | SLC6A2 -1, SLC6A3 -1 | the transporter rows are right (it is a noradrenaline-dopamine reuptake inhibitor, not an SNRI); its **nicotinic receptor antagonism**, thought to underlie the smoking-cessation use, is not carried. **Unverified**: no source was read for it, and whether ChEMBL files a mechanism row was not checked | this item only |
+| bupropion | SLC6A2 -1, SLC6A3 -1 | the transporter rows are right (it is a noradrenaline-dopamine reuptake inhibitor, not an SNRI); its **nicotinic receptor antagonism**, thought to underlie the smoking-cessation use, is not carried. **Unverified** when the item was tagged: no source was read for it, and whether ChEMBL files a mechanism row was not checked. *Verified 24 November 2026*: three independent sources show a non-competitive nicotinic antagonism, and ChEMBL_37 files no nicotinic mechanism row (finding 5 of the item 14 record) | this item; the item 14 record |
 | tramadol | the mu opioid receptor only | SERT and NET are missing, and so is the higher mu affinity of its metabolite O-desmethyltramadol | 9.121 C5 |
 | zopiclone | a ChEMBL complex of 9 GABA-A subunits, **no gamma subunit** | the site both its labels describe needs gamma; eszopiclone's complex holds 16 subunits, so the magnitude also spreads 1/9 against 1/16 | 9.121 C5 |
 | dextroamphetamine | a VMAT2 row the racemate's record lacks | the difference between the enantiomers is overstated by it | 9.121 C5 |
@@ -900,9 +908,10 @@ is fixed. A sweep would look for the rest of them rather than wait for each to s
 | budipine | MAO-B held out | Eltze et al. 1999 against Klockgether et al. 1996, who found no dopaminergic action in vivo | 9.121 C3 |
 | pizotifen | SERT held out | its one label places the uptake inhibition in platelets, so it is probably not a central row | 9.121 C3 |
 
-**What the sweep would be.** Over the 230 drug perturbations, find the drugs whose label states a mechanism the target
-table does not carry, and the drugs whose action type the sign mapping flattens. Two routes, and the first is cheap:
-compare each drug's label mechanism section against its target rows, which the project already reads for registered
+**What the sweep would be.** Over the drug perturbations (230 when this item was tagged; the `evidence_full_v5` of
+12 November 2026 holds 260 drugs, `docs/data_layer_rebuild.md`), find the drugs whose label states a mechanism the
+target table does not carry, and the drugs whose action type the sign mapping flattens. Two routes, and the first is
+cheap: compare each drug's label mechanism section against its target rows, which the project already reads for registered
 rule 14 (`experiments/read_label_central_action.py` fetches those sections and caches them); and check each drug whose
 ChEMBL action type is a substrate, a releasing agent or a modulator rather than an inhibitor or an agonist, which is a
 query over `data/raw/chembl/mechanisms.json`. Research, so on Fable; the rows would go to
@@ -920,8 +929,9 @@ with a single action has no config route (section 2 of the item 14 record).
   tetrabenazine wrong. So a sweep finds the cases but does not by itself fix the ones that need a mechanism.
 - **A drug the sweep corrects moves the perturbation set**, which falls before the held-out draw (9.69's note), so it is
   outcome-blind only while the lockbox is undrawn.
-- **The table above is a list of the cases that happened to surface**, not a measured count, and one row of it is
-  unverified. The sweep's first job is to say how many there are.
+- **The table above is a list of the cases that happened to surface**, not a measured count, and one row of it was
+  unverified until the pass of 24 November 2026 (finding 5 of the item 14 record). The sweep's first job is to say
+  how many there are.
 
 
 ---
@@ -973,7 +983,7 @@ another database or from a review, counted as an independent source).
 - Some bias cannot be corrected from the project's data at all: a value never measured for any member of a class leaves
   nothing to calibrate against.
 
-**Added 20 November 2026: a literature pass (on Opus at the owner's request), verified on Fable on 24 November 2026 and corrected as below** (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`; the owner, 24 November 2026: "Item 15: yes to all"). Record: `docs/records/2026-11/literature_bias_2026-11-20.md`. Four families of method fit here in part: a sensitivity analysis for values missing not at random (a one-sided shift of each fallback value), weighting the sourced rows toward rows like the unsourced ones, network study-bias corrections, and censored-value (Tobit) handling, which can correct a class statistic for values recorded only as a bound (given known thresholds and an assumed distribution), but not for pairs never measured or deposited, nor the single cell that holds only a bound. The ChEMBL sibling harvest of 19 November 2026 (ChEMBL_37, release 2026-05-01, binding Ki, the harvested receptor and transporter families; `docs/item37_rulings_draft_2026-11-13.md` section 19) counted 5,676 molecule-subtype cells that hold only censored values where an exact sibling value exists; censored rows among the project's own class-centre inputs have not been counted. Heckman selection models do not fit: no credible exclusion variable, and too few rows in the allosteric and channel classes (not in the aminergic harvest of 103,196 Ki values). Measured bias read: the 16% of genes reported by 1991 hold 49% of the 2015 literature; the share of records with log-value above 6 is 23.3% in ChEMBL, 52.7% in BindingDB and 79.8% in GtoPdb, and 47.1% in the part of PubChem that overlaps those databases (Isigkeit et al. 2022), while by a different measure, depositors' outcome labels over all PubChem assay results, 2.8% are active (An et al. 2025); whether a compound was tested against a target is predictable from ChEMBL itself. Its recommendations for the amendment of `docs/item37_rulings_draft_2026-11-13.md`: score held-out error weighted toward rows resembling the unsourced ones, report a one-sided sensitivity per fallback value, and stratify the held-out split on those covariates before it is fixed, which cannot be added afterwards. A class with no sourced member is not correctable by any method. Four papers were read in full; the rest as abstracts and six as bibliographic records only; its bibliography drafts are not in `docs/references.bib`; the entries are being built on Fable, with Crossref and OpenAlex as the two indexes for works PubMed does not hold (the owner, 24 November 2026).
+**Added 20 November 2026: a literature pass (on Opus at the owner's request), verified on Fable on 24 November 2026 and corrected as below** (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`; the owner, 24 November 2026: "Item 15: yes to all"). Record: `docs/records/2026-11/literature_bias_2026-11-20.md`. Four families of method fit here in part: a sensitivity analysis for values missing not at random (a one-sided shift of each fallback value), weighting the sourced rows toward rows like the unsourced ones, network study-bias corrections, and censored-value (Tobit) handling, which can correct a class statistic for values recorded only as a bound (given known thresholds and an assumed distribution), but not for pairs never measured or deposited, nor the single cell that holds only a bound. The ChEMBL sibling harvest of 19 November 2026 (ChEMBL_37, release 2026-05-01, binding Ki, the harvested receptor and transporter families; `docs/item37_rulings_draft_2026-11-13.md` section 19) counted 5,676 molecule-subtype cells that hold only censored values where an exact sibling value exists; censored rows among the project's own class-centre inputs have not been counted. Heckman selection models do not fit: no credible exclusion variable, and too few rows in the allosteric and channel classes (not in the aminergic harvest of 103,196 Ki values). Measured bias read: the 16% of genes reported by 1991 hold 49% of the 2015 literature; the share of records with log-value above 6 is 23.3% in ChEMBL, 52.7% in BindingDB and 79.8% in GtoPdb, and 47.1% in the part of PubChem that overlaps those databases (Isigkeit et al. 2022), while by a different measure, depositors' outcome labels over all PubChem assay results, 2.8% are active (An et al. 2025); whether a compound was tested against a target is predictable from ChEMBL itself. Its recommendations for the amendment of `docs/item37_rulings_draft_2026-11-13.md`: score held-out error weighted toward rows resembling the unsourced ones, report a one-sided sensitivity per fallback value, and stratify the held-out split on those covariates before it is fixed, which cannot be added afterwards. A class with no sourced member is not correctable by any method. Four papers were read in full; the rest as abstracts and six as bibliographic records only; its bibliography drafts were not in `docs/references.bib` when this addition was written; the entries were built on Fable, with Crossref and OpenAlex as the two indexes for works PubMed does not hold (the owner, 24 November 2026), and added to `docs/references.bib` the same day (`b252002`: 32 new entries and 3 upgraded).
 
 ---
 
@@ -1525,7 +1535,8 @@ transport relation to either is an edge of a graph, which the repository does no
 
 **What the structural version would cost.** A barrier compartment with its own endothelial transport edges is a change
 to the graph's compartment model, of the size of item 22 and item 3, and it would need a source for every transport
-edge it adds. It is placed last but one for that reason, and because no claim the project makes is waiting on it: the
+edge it adds. It was placed last but one for that reason when it was tagged (24th of 26 since item 27 was placed
+last on 23 November 2026), and because no claim the project makes is waiting on it: the
 exposure question that would have motivated it is already answered by Kp,uu,brain.
 
 ## 27. Hypothesis mining as the objective, once the localized-perturbation labels are harvested

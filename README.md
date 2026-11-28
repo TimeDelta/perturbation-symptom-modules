@@ -143,7 +143,7 @@ pytest
 ## Layout
 
 ```
-docs/            the living documents (experiment design, symptom crosswalk with HPO exclusions, curated pathway modules, data sources) and the decision log
+docs/            the living documents (experiment design, data sources and the rest), the decision log, and the build tables that move to configs/ at the next data-layer rebuild (symptom crosswalk with HPO exclusions, curated pathway modules)
   generated/     pages and tables a script writes
   records/       dated records, a folder per month
   drafts/        text for the owner to act on
