@@ -264,12 +264,51 @@ def test_a_source_rebuilt_since_the_derived_graph_is_refused(tmp_path):
         reactome_release_of_graph(chain["neuronal_binders"], relative_to=tmp_path)
 
 
+def test_the_splits_link_to_its_source_is_checked_by_its_row_and_gene_counts(tmp_path):
+    chain = registered_chain(tmp_path)
+    # one node more in the source: the row counts the split recorded of its input no longer match
+    write_parquet_graph(chain["neuronal"], ["gene", "gene", "metabolite", "reaction", "reaction"], ["catalyzes", "produces", "produces"])
+    with pytest.raises(ValueError, match="by the source's row counts of nodes, edges and gene nodes .*its nodes_before is 4 where the files give 5"):
+        reactome_release_of_graph(chain["split"], relative_to=tmp_path)
+    # as many rows as before and one gene fewer: only the gene count sees it
+    write_parquet_graph(chain["neuronal"], ["gene", "metabolite", "metabolite", "reaction"], ["catalyzes", "produces", "produces"])
+    with pytest.raises(ValueError, match="by the source's row counts of nodes, edges and gene nodes .*its gene_nodes is 2 where the files give 1"):
+        reactome_release_of_graph(chain["split"], relative_to=tmp_path)
+
+
+def test_a_copy_of_the_splits_summary_is_told_from_the_directorys_own(tmp_path):
+    chain = registered_chain(tmp_path)
+    # a drug entry variant built straight on the split carries a copy of split_summary.json, which describes the split
+    drugs = build_drugs(tmp_path, chain["split"], "graph_full_neuronal_split_drugs")
+    assert (drugs / "split_summary.json").exists()
+    found = reactome_release_of_graph(drugs, relative_to=tmp_path)
+    assert found["reactome_release"] == "98"
+    assert [link["summary"] for link in found["lineage"]] == ["drug_entry_summary.json", "split_summary.json"]
+    # and the split's own summary, once it no longer describes the split's files, is not taken for its own
+    summary = json.loads((chain["split"] / "split_summary.json").read_text())
+    summary["edges_per_relation"]["encodes"] += 1
+    (chain["split"] / "split_summary.json").write_text(json.dumps(summary))
+    with pytest.raises(ValueError, match="split_summary.json does not describe this directory's graph files .*edges_per_relation"):
+        reactome_release_of_graph(chain["split"], relative_to=tmp_path)
+
+
+def test_a_drug_variant_whose_graph_files_changed_after_its_summary_is_refused(tmp_path):
+    chain = registered_chain(tmp_path)
+    nodes = pd.read_parquet(chain["drugs_v5"] / "nodes.parquet")
+    nodes.loc[0, "node_type"] = "metabolite"  # same rows, other content: only the digests its summary records see it
+    nodes.to_parquet(chain["drugs_v5"] / "nodes.parquet")
+    with pytest.raises(ValueError, match="drug_entry_summary.json does not describe this directory's graph files .*nodes_sha256"):
+        reactome_release_of_graph(chain["drugs_v5"], relative_to=tmp_path)
+
+
 def test_an_ambiguous_or_circular_lineage_is_refused(tmp_path):
     chain = registered_chain(tmp_path)
     nodes, edges = pd.read_parquet(chain["drugs_v5"] / "nodes.parquet"), pd.read_parquet(chain["drugs_v5"] / "edges.parquet")
     (chain["drugs_v5"] / "plasma_binder_summary.json").write_text(json.dumps({
         "source_graph": f"{PROCESSED}/graph_full_neuronal_split", "nodes": len(nodes), "edges_before": len(edges) - 1, "edges_after": len(edges)}))
-    with pytest.raises(ValueError, match="ambiguous"):
+    # matched on the refusal's own words: pytest names tmp_path after this test, so a bare "ambiguous" matches any
+    # message that quotes a path
+    with pytest.raises(ValueError, match="is ambiguous: plasma_binder_summary.json and drug_entry_summary.json each describe its graph files"):
         reactome_release_of_graph(chain["drugs_v5"], relative_to=tmp_path)
     first, second = tmp_path / "first", tmp_path / "second"
     for directory, other in ((first, second), (second, first)):

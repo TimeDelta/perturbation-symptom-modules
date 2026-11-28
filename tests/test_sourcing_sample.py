@@ -16,7 +16,7 @@ import pytest
 from mechanistic_pathway_learning.evaluation.research_strata_and_eras import (
     assign_strata_and_eras, file_sha256, validated_cell_search_table, write_cells, write_record)
 from mechanistic_pathway_learning.evaluation.sourcing_sample import (
-    DRAW_ORDERS, ERA_READINGS, QUOTA_UNITS, SAMPLE_SIZE_PER_STRATUM, STRATUM_READINGS, draw_sourcing_sample,
+    DRAW_ORDERS, ERA_READINGS, QUOTA_UNITS, SAMPLE_SIZE_PER_STRATUM, STRATUM_READINGS, _quota_generator, draw_sourcing_sample,
     draw_sourcing_sample_from_files, held_out_perturbation_ids)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "experiments"))
@@ -137,6 +137,15 @@ def test_a_generator_per_quota_cell_keeps_each_quota_cell_apart_from_the_others(
     assert drawn(cells, "one_generator_per_quota_cell") == drawn(genes, "one_generator_per_quota_cell")
     # with one generator the combination and drug quota cells, which come first, move where the gene quota cells start in its stream
     assert drawn(cells, "one_generator_in_quota_order") != drawn(genes, "one_generator_in_quota_order")
+
+
+def test_a_quota_cells_own_generator_is_seeded_by_the_seed_and_its_name():
+    # seeded by the seed alone, two quota cells with as many candidates would draw the same positions
+    more, fewer = "gene | research_stratum=more", "gene | research_stratum=fewer"
+    first = _quota_generator(11, more).permutation(50)
+    assert (_quota_generator(11, more).permutation(50) == first).all()
+    assert not (_quota_generator(11, fewer).permutation(50) == first).all()
+    assert not (_quota_generator(12, more).permutation(50) == first).all()
 
 
 def test_apart_draws_a_type_by_stratum_and_by_era_separately_in_reporting_order(cells):
