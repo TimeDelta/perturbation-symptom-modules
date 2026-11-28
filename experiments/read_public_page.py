@@ -51,6 +51,7 @@ import hashlib
 import html
 import json
 import re
+import string
 import sys
 import time
 import urllib.error
@@ -276,7 +277,9 @@ OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS = urllib.request.build_opener(DoNotFollowR
 
 def request_bytes(address: str) -> tuple[int, str, bytes]:
     """Status code, content type and body of one GET. An HTTP error status is returned, not raised; a redirect is not
-    followed but raised as RedirectAnswer, with its target made absolute. The HTTPError holds the answer's connection
+    followed but raised as RedirectAnswer, with its target percent-encoded as urllib's own redirect handler encodes it
+    (HTTPRedirectHandler.http_error_302) and made absolute. From 27 to 28 November 2026 the target was not encoded, so
+    a Location with a space or a non-ASCII character failed at the next hop. The HTTPError holds the answer's connection
     open, so it is closed on both paths (after its body is read on the error path) rather than left to garbage
     collection."""
     request = urllib.request.Request(address, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml,text/plain,application/pdf;q=0.9,*/*;q=0.5"})
@@ -287,6 +290,9 @@ def request_bytes(address: str) -> tuple[int, str, bytes]:
         try:
             location = error.headers.get("Location") if error.headers else None
             if error.code in REDIRECT_STATUS_CODES and location:
+                # http.client decodes a header as ISO-8859-1: this recovers the bytes sent and percent-encodes the
+                # non-ASCII ones and characters such as a space, leaving what is already encoded ("%" is punctuation)
+                location = urllib.parse.quote(location, encoding="iso-8859-1", safe=string.punctuation)
                 raise RedirectAnswer(error.code, urllib.parse.urljoin(address, location)) from None
             return error.code, error.headers.get("Content-Type", "") if error.headers else "", error.read() or b""
         finally:

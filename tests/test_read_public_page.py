@@ -484,6 +484,51 @@ def test_request_bytes_hands_a_redirect_back_instead_of_following_it(monkeypatch
         server.server_close()
 
 
+@pytest.mark.parametrize("location_header, expected_target_path", [
+    ("/the article.html", "/the%20article.html"),  # a space
+    ("/caf\xc3\xa9.html", "/caf%C3%A9.html"),  # the UTF-8 bytes of "café", which http.client decodes as ISO-8859-1
+    ("/caf%C3%A9.html", "/caf%C3%A9.html"),  # already encoded, so not encoded twice
+])
+def test_request_bytes_percent_encodes_a_redirect_target_as_urllib_did(monkeypatch, location_header, expected_target_path):
+    """From 27 to 28 November 2026 the target of a redirect was made absolute but not percent-encoded, so a Location with a
+    space or a non-ASCII character made the next hop fail (http.client.InvalidURL, "URL can't contain control
+    characters"), where urllib's own redirect handler, which followed redirects before 27 November 2026, encodes it.
+    Against a local server, with no proxy: the target is encoded as that handler encodes it, and the next hop reaches
+    the page."""
+    import http.server
+    import threading
+    import urllib.request
+
+    class RedirectingHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):  # noqa: N802
+            if self.path == "/start":
+                self.send_response(302)
+                self.send_header("Location", location_header)
+                self.end_headers()
+                return
+            self.send_response(200 if self.path == expected_target_path else 404)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"the article")
+
+        def log_message(self, *arguments):
+            pass
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), RedirectingHandler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    monkeypatch.setattr(read_public_page, "OPENER_THAT_DOES_NOT_FOLLOW_REDIRECTS",
+                        urllib.request.build_opener(urllib.request.ProxyHandler({}), read_public_page.DoNotFollowRedirects))
+    try:
+        server_address = f"http://127.0.0.1:{server.server_address[1]}"
+        with pytest.raises(read_public_page.RedirectAnswer) as raised:
+            read_public_page.request_bytes(f"{server_address}/start")
+        assert raised.value.location == f"{server_address}{expected_target_path}"
+        assert read_public_page.request_bytes(raised.value.location) == (200, "text/plain", b"the article")
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
 class BodyThatRecordsItsClosing:
     """A stand-in for the connection an HTTPError holds: it serves a body and records whether it was closed."""
 
