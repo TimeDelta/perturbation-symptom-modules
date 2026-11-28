@@ -103,6 +103,19 @@ def test_a_checkout_deleted_while_its_suite_runs_wakes_nobody(tmp_path):
     assert result.returncode == 0 and "The full test suite failed" not in result.stderr, result
 
 
+def test_a_checkout_deleted_after_its_suite_reported_failures_wakes_nobody(tmp_path):
+    """A worktree removed late in a run leaves pytest reporting the tests whose files went as failures, with a summary
+    line, so the output alone looks like a failing suite; only the check that the checkout still exists, made after
+    the run, keeps this from waking the session. The case above cannot tell that check from the no-result one, since
+    its stub prints no result (added 28 November 2026, when removing that check left every other case passing)."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'echo "FAILED tests/test_example.py::test_example - FileNotFoundError"\n'
+                                          'echo "1 failed in 0.10s"\nrm -rf "$CHECKOUT_TO_REMOVE"\nexit 1\n')
+    result = run_hook(checkout, stub_directory, extra_env={"CHECKOUT_TO_REMOVE": str(checkout)})
+    assert not checkout.exists(), "the stub suite was not run"
+    assert result.returncode == 0 and "The full test suite failed" not in result.stderr, result
+
+
 def test_a_run_that_reported_no_result_wakes_nobody_and_records_no_pass(tmp_path):
     checkout = make_checkout(tmp_path)
     stub_directory = stub_suite(tmp_path, 'echo "Fatal Python error: error evaluating path" >&2\nexit 1\n')

@@ -17,11 +17,14 @@
 # Two outcomes are nothing to report, and exit 0 without waking anyone or recording a pass (so the next run tests the
 # code again). A checkout that no longer exists: a workflow can delete an agent's worktree while the hook is still
 # fingerprinting it or running its suite, and on 28 November 2026 that gave "line 34: <path>: No such file or
-# directory" from the fingerprint and then a failure report with no test output in it. And a pytest run that reported
-# no result at all: no FAILED or ERROR line, no summary line ("1 failed, 2 passed in ..."), and none of the reports
-# pytest gives when it stops before running a test (a conftest that would not import, an internal error), as when
-# Python could not start in a deleted directory or pytest was killed. A conftest that would not import still wakes the
-# session, with the end of pytest's output, since that is a broken suite and not a missing one.
+# directory" from the fingerprint's read of a vanished file (line 34 of the hook as it then was) and then a failure
+# report with no test output in it. And a pytest run that reported no result at all: no FAILED or ERROR line, no
+# summary line ("1 failed, 2 passed in ..."), and none of the reports pytest gives when it stops before running a test
+# (a conftest that would not import, an internal error), as when Python could not start in a deleted directory or
+# pytest was killed. That includes a suite that crashes the interpreter (a segfault) in a checkout that still exists:
+# it wakes nobody, and since no pass is recorded it runs again, as silently, at every later stop until a run passes. A
+# conftest that would not import still wakes the session, with the end of pytest's output, since that is a broken
+# suite and not a missing one.
 #
 # CLAUDE_SUITE_HOOK_DRY_RUN=1 prints what the hook would do and runs nothing. tests/test_suite_hook.py uses it, and a
 # stub python3 on PATH, to test the hook without running the real suite.
