@@ -111,6 +111,50 @@ def test_a_timed_out_request_is_transient_and_another_failure_is_not(tmp_path, m
     assert not read_public_page.is_timeout(urllib.error.URLError(ConnectionRefusedError("refused")))
 
 
+@pytest.mark.parametrize("robots_status_code, expect_transient", [(503, True), (500, True), (429, True), (502, False)])
+def test_a_robots_file_answered_with_a_server_error_or_429_leaves_the_page_unread(tmp_path, monkeypatch,
+                                                                                   robots_status_code, expect_transient):
+    """Until 28 November 2026 a robots file that answered 429 or a server error was cached as not served, so the page
+    and every later page of the host were read as if the site had no robots file. Its rules are not known, so the page
+    is not read, nothing is cached, and the record says to wait and retry when the status is one the owner ruled not a
+    refusal (TRANSIENT_STATUS_CODES), as it does for a page."""
+    requested = []
+
+    def answer(address):
+        requested.append(address)
+        if address.endswith("/robots.txt"):
+            return robots_status_code, "text/html", b"<html><body>Service Unavailable</body></html>"
+        return 200, "text/html", b"<html><body>The article.</body></html>"
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    reader = read_public_page.PublicPageReader(tmp_path)
+    record = reader.read("https://busy.example.org/page.html")
+    assert record["read"] is False, record
+    assert f"robots file answered HTTP {robots_status_code}" in record["reason"]
+    assert record.get("transient", False) is expect_transient
+    if expect_transient:
+        assert "not a refusal" in record["reason"] and "same address on this same host" in record["reason"]
+    assert reader.read("https://busy.example.org/other.html")["read"] is False
+    assert requested == ["https://busy.example.org/robots.txt", "https://busy.example.org/robots.txt"]
+    assert not any(tmp_path.iterdir())
+
+
+def test_a_host_read_past_its_robots_file_is_read_when_its_robots_file_answers_a_server_error(tmp_path, monkeypatch):
+    """A host read past its robots file on a ruling of the owner's is read whatever the rules say, so rules not known
+    do not hold it back; the robots file's answer is still recorded beside the page."""
+    def answer(address):
+        if address.endswith("/robots.txt"):
+            return 503, "text/html", b"<html><body>Service Unavailable</body></html>"
+        return 200, "text/plain", b"IntAct release notes"
+
+    monkeypatch.setattr(read_public_page, "request_bytes", answer)
+    monkeypatch.setattr(read_public_page, "SECONDS_BETWEEN_REQUESTS_TO_ONE_HOST", 0.0)
+    record = read_public_page.PublicPageReader(tmp_path).read("https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README")
+    assert record["read"] is True, record
+    assert "answered HTTP 503" in record["robots_file"] and "don't refuse FTP from EBI" in record["robots_file"]
+
+
 def test_a_refused_address_makes_no_request(tmp_path):
     reader = read_public_page.PublicPageReader(tmp_path)
     record = reader.read("http://example.org/page")

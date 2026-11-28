@@ -7,7 +7,10 @@ This script is that fallback with its limits written into code, so that a resear
 
   1. the site's robots file is read first, and a page it disallows for automated readers is left unread. A site
      that serves no robots file places no restriction, which is what the protocol says, so that is read;
-     --treat-missing-robots-as-refusal restores the stricter behaviour this script started with. A redirect is
+     --treat-missing-robots-as-refusal restores the stricter behaviour this script started with. A robots file that
+     answers 429 or a server error (5xx) has not said whether it has rules, so the page is not read then
+     (RobotsFileNotKnown), unless its host is one read past its robots file (below); for 429, 500 and 503 the record
+     is transient, as in limit 2. A redirect is
      followed by this script, one hop at a time, and every limit here is applied again at each address it reaches,
      a robots file's own redirects included (REDIRECT_STATUS_CODES): the robots file of a host a redirect leads to
      binds as the first host's does;
@@ -256,6 +259,16 @@ def is_timeout(error: BaseException) -> bool:
     return isinstance(error, urllib.error.URLError) and isinstance(getattr(error, "reason", None), TimeoutError)
 
 
+class RobotsFileNotKnown(Exception):
+    """The robots file answered 429 or a server error (5xx), so its rules are not known and the page is not read then,
+    unless it is read past its robots file (PublicPageReader.robots_file_of_host and _robots_answer); nothing is
+    cached, so a later request asks for the robots file again."""
+
+    def __init__(self, status_code: int) -> None:
+        super().__init__(f"HTTP {status_code}")
+        self.status_code = status_code
+
+
 class RedirectAnswer(Exception):
     """The server answered with a redirect, which the caller follows (or refuses) as a request of its own."""
 
@@ -335,13 +348,23 @@ class PublicPageReader:
         return None
 
     def robots_file_of_host(self, host: str) -> str | None:
-        """The host's robots rules as text; an empty string when it has none; None when it would not serve them."""
+        """The host's robots rules as text; an empty string when it has none; None when it would not serve them.
+
+        A robots file that answers 429 or a server error (5xx) has not said whether it has rules, so RobotsFileNotKnown
+        is raised and nothing is cached: the page is not read then, unless it is read past its robots file
+        (_robots_answer). The installed standard library's
+        urllib.robotparser assumes complete disallow for a 5xx (its comment cites RFC 9309, section 2.3.1.4); 429 is
+        taken with them because it asks the reader to wait, which a page requested straight after it would not do
+        (TRANSIENT_STATUS_CODES). Until 28 November 2026 such an answer was cached as None, and every page of the host
+        was read as if it served none."""
         if host not in self.robots_file_by_host:
             robots_answer = self._request_robots_file(host)
             if robots_answer is None:
                 self.robots_file_by_host[host] = None
                 return None
             status_code, body = robots_answer
+            if status_code in TRANSIENT_STATUS_CODES or 500 <= status_code < 600:
+                raise RobotsFileNotKnown(status_code)
             robots_file_text = body.decode("utf-8", errors="replace")
             if status_code == 404:
                 self.robots_file_by_host[host] = ""
@@ -352,10 +375,18 @@ class PublicPageReader:
         return self.robots_file_by_host[host]
 
     def _robots_answer(self, address: str) -> tuple[str | None, str | None]:
-        """(why the address may not be read, or None; the note on the robots file to record, or None)."""
+        """(why the address may not be read, or None; the note on the robots file to record, or None). RobotsFileNotKnown
+        is raised on to read(), which reports it as transient when its status is (TRANSIENT_STATUS_CODES), except for an
+        address read past its robots file (robots_rule_exemption), which is read with the answer recorded."""
         host = urllib.parse.urlsplit(address).hostname or ""
         try:
             robots_file_text = self.robots_file_of_host(host)
+        except RobotsFileNotKnown as robots_file_not_known:
+            exemption = robots_rule_exemption(address)
+            if exemption is None:
+                raise
+            # a host read past its robots file is read whatever the rules say, so rules not known do not hold it back
+            return None, f"answered HTTP {robots_file_not_known.status_code}; read under the ruling of {exemption}"
         except Exception as error:  # noqa: BLE001 - a network failure, or a redirect not requested, is reported, not raised
             return f"the robots file could not be requested ({error})", None
         if robots_file_text is None:
@@ -386,7 +417,18 @@ class PublicPageReader:
             refusal_reason = reason_address_is_not_requested(current_address)
             if refusal_reason:
                 return record | {"reason": on_redirect + refusal_reason}
-            robots_refusal, robots_note = self._robots_answer(current_address)
+            try:
+                robots_refusal, robots_note = self._robots_answer(current_address)
+            except RobotsFileNotKnown as robots_file_not_known:
+                robots_status_code = robots_file_not_known.status_code
+                if robots_status_code not in TRANSIENT_STATUS_CODES:
+                    return record | {"reason": on_redirect + f"the robots file answered HTTP {robots_status_code}, so its "
+                                                              f"rules are not known and the page is not read"}
+                return record | {"reason": on_redirect + f"the robots file answered HTTP {robots_status_code}, which is "
+                                                          f"not a refusal, but its rules are not known, so the page is not read "
+                                                          f"now; wait and request this same address on this same host "
+                                                          f"again, rather than a cache, a mirror or another host",
+                                 "transient": True}
             if robots_refusal:
                 return record | {"reason": on_redirect + robots_refusal}
             if robots_note:
