@@ -127,11 +127,13 @@ CHALLENGE_MARKERS = (
 PASSIVE_TELEMETRY_SCRIPT = re.compile(r"<script\b[^>]*>(?:(?!</script>).)*?/cdn-cgi/challenge-platform/scripts/jsd/(?:(?!</script>).)*?</script>",
                                       re.S | re.I)
 # A redirect whose target path ends in a login form's name (login, log-in, sign_in, logon, with or without an extension
-# such as .jsp) is a refusal. CLAUDE.md records that GtoPdb's target pages "answer 302 to `/login.jsp`" and that "its
-# website login stays a refusal", and that "a check that the visitor is human or a login stays a refusal". A plain login
-# form carries none of the CHALLENGE_MARKERS, so until 28 November 2026 the reader followed such a redirect and saved the
-# form as the page read. A login form served at the address requested itself is not caught by this.
-LOGIN_FORM_PATH = re.compile(r"/(?:log[-_]?in|sign[-_]?in|log[-_]?on)(?:\.[a-z]+)?/?$", re.I)
+# such as .jsp, and with or without the path parameters a server appends after a semicolon, such as ";jsessionid=...",
+# which urlsplit leaves in the path) is a refusal. CLAUDE.md records that GtoPdb's target pages "answer 302 to
+# `/login.jsp`" and that "its website login stays a refusal", and that "a check that the visitor is human or a login
+# stays a refusal". A plain login form carries none of the CHALLENGE_MARKERS, so until 28 November 2026 the reader
+# followed such a redirect and saved the form as the page read. A login form served at the address requested itself is
+# not caught by this.
+LOGIN_FORM_PATH = re.compile(r"/(?:log[-_]?in|sign[-_]?in|log[-_]?on)(?:\.[a-z]+)?/?(?:;[^/]*)?$", re.I)
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
 # The hosts read past a robots rule, each with the ruling that admits it. The match is on the exact host name, so
 # www.ebi.ac.uk and every other host of either organisation keeps its own robots rules.

@@ -433,6 +433,10 @@ def test_every_limit_on_the_first_address_holds_on_an_address_a_redirect_reaches
     ("https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=1", "https://www.guidetopharmacology.org/login.jsp"),
     ("https://journal.example.org/article/7", "https://journal.example.org/accounts/login/?next=/article/7"),
     ("https://journal.example.org/article/7", "https://journal.example.org/users/sign_in"),
+    # path parameters after a semicolon, which urlsplit leaves in the path
+    ("https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=1",
+     "https://www.guidetopharmacology.org/login.jsp;jsessionid=0123456789ABCDEF0123456789ABCDEF"),
+    ("https://journal.example.org/article/7", "https://journal.example.org/accounts/login/;jsessionid=0123ABCD?next=/article/7"),
 ])
 def test_a_redirect_to_a_login_form_is_a_refusal_and_the_form_is_not_read(tmp_path, monkeypatch, start_address, login_address):
     """CLAUDE.md records that GtoPdb's target pages "answer 302 to `/login.jsp`" and that "its website login stays a
