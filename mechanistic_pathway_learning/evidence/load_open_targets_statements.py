@@ -165,11 +165,19 @@ def perturbations_of_target_by_direction(gene_perturbation_ids: set[str]) -> dic
     The owner, 24 November 2026, on the proposal that inhibition statements join the loss-of-function allele and
     activation statements the gain-of-function allele, as closer to physiology: "1 yes please fix". Inhibition of a
     target lowers its activity, as the gene's own perturbation does (the bare gene symbol, seeded -1: its loss of
-    function, or an untyped allele under --allele-perturbations); activation raises it, as the hypermorphic
-    "<gene>|gain_of_function" allele does (seeded +1, allele_mechanisms.GAIN_OF_FUNCTION_SUFFIX). A table without
-    that allele, which is every table built without --allele-perturbations, gives an activation statement nothing to
-    join. Until 24 November 2026 every statement joined the bare gene symbol whatever its direction, so an activation
-    statement attached to the gene's loss of function.
+    function, or an untyped allele under --allele-perturbations; for the exception on v4, see below); activation
+    raises it, as the hypermorphic "<gene>|gain_of_function" allele does (seeded +1,
+    allele_mechanisms.GAIN_OF_FUNCTION_SUFFIX). A table without that allele, which is every table built without
+    --allele-perturbations, gives an activation statement nothing to join. Until 24 November 2026 every statement
+    joined the bare gene symbol whatever its direction, so an activation statement attached to the gene's loss of
+    function.
+
+    The exception: this function reads perturbation ids, not the sign each is seeded with. A table built with
+    --seed-gain-of-function-genes-positive, v4 among them, seeds +1 the bare symbol of a gene whose every causal
+    association behind its reports is Orphanet's gain-of-function type (assemble_evidence_table.seed_monogenic_reports),
+    and that bare symbol still takes the gene's inhibition statements here, so on such a table an inhibition statement
+    can join a perturbation that raises its target. Found in the review of 28 November 2026 and left for the owner,
+    since the fix changes what the v4 build writes.
     """
     joins = {}
     for perturbation_id in gene_perturbation_ids:

@@ -131,9 +131,13 @@ fi
 # table it built carried the class. Every assembler call in this script but one takes the assembler's default
 # --weighting grade, under which the fit sets the reliability_posterior column and no observation's weight, so there
 # the class moves that column and adds its rows to evidence_reports.parquet; the one is evidence_full_v5_reliability
-# (--weighting reliability, since 24 November 2026), where the fit also sets each pair's weight. A statement joins the perturbation that moves its
-# target the same way (since 24 November 2026), so on v4, which has no gain-of-function alleles, an activation
-# statement joins nothing. The two v3 tables are not passed it: they reproduce builds that predate the
+# (--weighting reliability, since 24 November 2026), where the fit also sets each pair's weight. Since 24 November 2026
+# a statement joins by its direction (load_open_targets_statements.perturbations_of_target_by_direction): inhibition
+# the bare gene symbol, activation the "<gene>|gain_of_function" allele, so on v4, which has no such allele, an
+# activation statement joins nothing. On v4 the bare symbol of a gene that --seed-gain-of-function-genes-positive seeds
+# +1 still takes that gene's inhibition statements, so there an inhibition statement can join a perturbation that
+# raises its target (found in the review of 28 November 2026 and left for the owner, since the fix changes what the v4
+# build writes). The two v3 tables are not passed it: they reproduce builds that predate the
 # decision of 13 October 2026, which the preregistration enters "at the v4 rebuild".
 open_targets_rows="$processed/off_target_scoping/open_targets_symptom_rows.parquet"
 # the step names its output in full, not by the variable, so experiments/check_rebuild_inputs.py can resolve it
