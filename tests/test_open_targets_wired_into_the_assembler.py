@@ -66,6 +66,43 @@ def test_the_emitted_report_names_the_class_and_carries_a_positive_value():
     assert report["symptom"] == "psychosis"
 
 
+def test_the_comment_on_the_inactive_guard_states_the_measurement_of_14_october_as_dated_history():
+    """The comment beside the inactive guard justifies it by the measurement of 14 October 2026, taken when every
+    statement joined the bare gene symbol. Since the direction join of 24 November 2026 that count is not what the
+    class emits, so the comment states it in the past tense with its date (CLAUDE.md, Code: history is kept only when
+    it is framed as history, with a date)."""
+    comment_lines_of_assemble = [line.strip()[1:].strip() for line in inspect.getsource(assemble_evidence_table.assemble).splitlines()
+                                 if line.strip().startswith("#")]
+    comments_of_assemble_as_one_text = " ".join(comment_lines_of_assemble)  # a phrase wrapped over two lines reads whole
+    assert "the class emits 14 reports" not in comments_of_assemble_as_one_text
+    assert "Measured before choosing, on 14 October 2026" in comments_of_assemble_as_one_text
+    assert "the class emitted 14 reports" in comments_of_assemble_as_one_text
+
+
+def test_of_the_four_items_the_guard_comment_names_only_the_inhibition_statement_joins_without_the_gain_of_function_allele():
+    """What the comment says the direction join did to the four items of 14 October: GABRA1 depressed_mood, HTR2A
+    cognitive_impairment and HTR2A psychosis are activation statements in the curation, so on a table without the
+    `<gene>|gain_of_function` allele (every table built without --allele-perturbations) they join nothing, and SLC6A4
+    anxiety, an inhibition statement, still joins the bare gene."""
+    import pandas as pd
+    from mechanistic_pathway_learning.evidence.load_open_targets_statements import FINE_CONSTRUCT_MAP_PATH
+
+    items_named_in_the_comment = {("GABRA1", "depressed_mood"), ("HTR2A", "cognitive_impairment"),
+                                  ("HTR2A", "psychosis"), ("SLC6A4", "anxiety")}
+    curated_rows = pd.read_csv(FINE_CONSTRUCT_MAP_PATH, dtype=str)
+    statements_of_the_named_items = [a_statement(row.target, row.direction, row.coarse_symptom)
+                                     for row in curated_rows.itertuples()
+                                     if (row.target, row.coarse_symptom) in items_named_in_the_comment]
+    assert sorted((statement.target, statement.symptom, statement.direction) for statement in statements_of_the_named_items) == [
+        ("GABRA1", "depressed_mood", "activation"), ("HTR2A", "cognitive_impairment", "activation"),
+        ("HTR2A", "psychosis", "activation"), ("SLC6A4", "anxiety", "inhibition")]
+    joins_without_a_gain_of_function_allele = perturbations_of_target_by_direction({"GABRA1", "HTR2A", "SLC6A4"})
+    items_with_a_positive_report = {(target, symptom, "induces") for target, symptom in items_named_in_the_comment}
+    reports = reliability_reports(statements_of_the_named_items, items_with_a_positive_report,
+                                  joins_without_a_gain_of_function_allele)
+    assert [(report["perturbation_id"], report["symptom"]) for report in reports] == [("SLC6A4", "anxiety")]
+
+
 def test_each_direction_joins_the_allele_that_moves_the_target_the_same_way():
     """The owner, 24 November 2026: "1 yes please fix", on joining inhibition statements to the loss-of-function
     allele and activation statements to the gain-of-function allele. Before, both joined the bare gene symbol, so

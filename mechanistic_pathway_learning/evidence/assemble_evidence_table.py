@@ -916,12 +916,22 @@ def assemble(
     #
     # ONE GUARD IS INACTIVE HERE AND THAT IS THE CHOICE THE OWNER MADE. `reliability_reports` also skips a pair the
     # label selection has relabelled an evidenced negative, but that set is computed downstream in
-    # evaluation/experiment_data.py and does not exist inside this function. Measured before choosing: the class
-    # emits 14 reports, no existing source's sensitivity moves by as much as 1e-5, no item's posterior moves by
-    # more than 0.0019, and exactly 4 of the touched items are pairs the selection flags `masks_a_negative`
+    # evaluation/experiment_data.py and does not exist inside this function. Measured before choosing, on 14 October
+    # 2026, when every statement joined the bare gene symbol whatever its direction
+    # (experiments/measure_open_targets_reliability_effect.py, whose default input was then the evidence_full_v4 of
+    # that date; the open_targets_reliability_effect.json it wrote does not record the table it read): the
+    # class emitted 14 reports, no existing source's sensitivity moved by as much as 1e-5, no item's posterior moved by
+    # more than 0.0019, and exactly 4 of the touched items were pairs the selection flags `masks_a_negative`
     # (GABRA1 depressed_mood, HTR2A cognitive_impairment, HTR2A psychosis, SLC6A4 anxiety). Threading the set
     # across the module boundary would have guarded those 4 items and changed nothing measurable, so option (a)
     # was taken and the inactive guard is recorded here rather than left to be discovered.
+    #
+    # Since 24 November 2026 a statement joins by its direction (perturbations_of_target_by_direction), and the
+    # JSON still holds the run of 14 October. Of the 4 items, the three from activation statements (GABRA1
+    # depressed_mood, HTR2A cognitive_impairment, HTR2A psychosis: configs/open_targets_fine_constructs.csv) join
+    # nothing on a table without the `<gene>|gain_of_function` allele, which is every table built without
+    # --allele-perturbations, v4 among them; SLC6A4 anxiety, an inhibition statement, still joins the bare gene. The
+    # count a build appends is the "Open Targets target safety: ... reliability reports appended" line printed below.
     open_targets_report_count = 0
     if open_targets_scoped_rows_path is not None:
         items_with_a_positive_report = {
