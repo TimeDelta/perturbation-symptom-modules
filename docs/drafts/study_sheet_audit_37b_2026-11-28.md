@@ -49,10 +49,21 @@ container's disk on 28 November 2026:
 - The pineal lane needs GEO GSE100472's counts, which the owner supplied, at `data/raw/geo/GSE100472`
   (`graph/peripheral_cell_classes.py` branch line 99; an absent directory adds no pineal class, branch line 208).
   They are not on this disk either (`data/raw/geo/` holds only GSE217837), which was so before the branch too.
-  So a build on this disk today would have **22 lanes**: no pituitary and no pineal lane.
+- The ten HPA lanes need HPA's single-nucleus cluster-type table in a release whose cluster types
+  `CELL_CLASS_OF_CLUSTER_TYPE` maps (`graph/brain_expression_descriptors.py` main lines 53-72: the 34 types of the
+  release read until 23 November 2026, pooled into the ten classes). The table on this disk is the release decision
+  9.155 took on 27 November 2026 (SHA-256 `b24e46d4`, 48 cluster types), none of which that mapping names, so
+  `hpa_cell_class_table` (main lines 106-110) raises "cluster types with no cell class" (run on this disk's table on
+  28 November 2026 by the checker of this draft) and `experiments/build_cell_class_weights.py` stops there (branch
+  line 49), before any class is built. Decision 9.155 lists the mapping as owed before a rebuild. This holds at
+  `c24727c` too, for the 17 lanes the built diagram draws today.
+
+So no build on this disk today gives any lanes at all. Once the 48 types are mapped, a build here without the
+pituitary table and the pineal counts would have **22 lanes** (29 less the six pituitary lanes and the pineal), if
+the mapping keeps the ten HPA classes, which is decision 9.155's to settle.
 
 The proposals below draw the 29 the code defines and say where it depends on a source; section 8 asks the owner
-whether the built diagram should draw 29 or what a build on today's disk gives.
+whether the built diagram should draw 29 or what a build on a given disk gives.
 
 Unchanged by the branch, and used below: the shared extracellular pool averages every class except `all_cells`
 (`experiments/run_main_model.py` main line 410); the channel count is classes times `--channels-per-cell-class`
@@ -127,12 +138,15 @@ the member removals of 37a (iii) (the muscle-type nicotinic subunits) and of 37a
 of `REACTOME_ENTITY_MEMBERS_REMOVED` in `experiments/build_neuronal_graph_variant.py` (main lines 109-146, commit
 `2c3696d`, 27 November 2026), applied under every `--membrane-potential` build. The rest is not built:
 `mechanistic_pathway_learning/graph/reactome_import.py` still gives a pore reaction the class of its first catalyst
-gene in sorted order (main line 695), which 37a (i) replaces.
+gene in sorted order (main line 695), which 37a (i) replaces, and the same comment in
+`experiments/build_neuronal_graph_variant.py` names as owed and not coded the seven anoctamins `RCT_2684901` loses
+under 37a (v) and the six Kir2, Kir4 and Kir5 genes that leave Reactome's GIRK entity (main lines 127-129).
 
-Proposed: two new lines after `d37-c`, before the closing line (viewBox from 762 to about 798):
+Proposed: `d37-c` ends with a semicolon, "... the sequesters weight from the carrier's share (item 37j);", so that
+the list runs on, and two new lines follow it, before the closing line (viewBox from 762 to about 798):
 
 - new `d37-e`: "pore reactions take the classes their catalysts assemble, one node and one weight per co-assembled population,"
-- new `d37-f`: "and a pore on no central cell class is left out (item 37a; its ruled member removals are in code since 27 Nov)"
+- new `d37-f`: "and a pore on no central cell class is left out (item 37a; some of its member removals are in code since 27 Nov)"
 
 ## 6. Gap before the branch: diagram `c642a74c-b09e` labels cluster 398 "noradrenergic (LC)"
 
@@ -140,7 +154,7 @@ Current text (quoted): `lane4-c` "noradrenergic (LC)". The class is atlas cluste
 `mechanistic_pathway_learning/graph/siletti_cluster_classes.py` (branch lines 36-37, main lines 34-35, unchanged since
 commit `4eeb923` of 21 October 2026) says "the class is the brainstem noradrenergic and adrenergic neurons together (A1,
 A2, C1, C2 and the locus coeruleus), not the locus coeruleus alone"; the same docstring gives the cluster as "Splat_398,
-2,093 nuclei, medulla 86.6 percent and pons 12.8 percent by dissection" (branch lines 27-28).
+2,093 nuclei, medulla 86.6 percent and pons 12.8 percent by dissection" (branch lines 28-29, main lines 26-27).
 
 Proposed: if the branch lands, the label moves to `note-c` as "noradrenergic (brainstem, cluster 398)" (section 2). If
 the correction is made first, on its own: `lane4-c` "noradrenergic (LC)" becomes "brainstem noradrenergic".
@@ -188,9 +202,11 @@ the doc.
 ## 8. For the owner
 
 1. Approve, change or refuse the corrections of sections 2 to 6. Nothing is applied until you answer.
-2. Whether the built diagram `c642a74c-b09e` draws the 29 lanes the code defines (proposed) or what a build on today's
-   disk gives: 22 lanes, with no pituitary lane until HPA's single-cell-type table is fetched and pinned, and no
-   pineal lane until the owner-supplied GEO GSE100472 counts are on the disk again.
+2. Whether the built diagram `c642a74c-b09e` draws the 29 lanes the code defines (proposed) or what a build on a
+   given disk gives. On this disk no build runs until decision 9.155's 48 HPA cluster types are mapped (section 1),
+   which is so for the 17 lanes the diagram draws today as well; after that, a build here would have 22 lanes, with
+   no pituitary lane until HPA's single-cell-type table is fetched and pinned, and no pineal lane until the
+   owner-supplied GEO GSE100472 counts are on the disk again.
 3. For `098c9a09-8f0f`, the smaller wording change of section 3 or the alternative that leaves the lanes to the built
    diagram.
 4. Section 5 reads 37a's coded member removals as built, by the same reading as section 1. If so, whether the built
