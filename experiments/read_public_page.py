@@ -278,6 +278,12 @@ class RobotsFileNotKnown(Exception):
         self.status_code = status_code
 
 
+class RobotsFileRedirectNotRequested(RuntimeError):
+    """A redirect of the robots file went to an address this reader does not request (away from https, to a
+    requested-block host, ...), so its rules cannot be read: the page is left unread, unless it is read past its robots
+    file (PublicPageReader._robots_answer), which is read with this answer recorded."""
+
+
 class RedirectAnswer(Exception):
     """The server answered with a redirect, which the caller follows (or refuses) as a request of its own."""
 
@@ -340,7 +346,8 @@ class PublicPageReader:
         """Status and body of the host's robots file, through at most MAXIMUM_ROBOTS_FILE_REDIRECTS redirects (RFC 9309,
         section 2.3.1.2); None when it redirects further than that. Each hop is held to reason_address_is_not_requested,
         as every page address is: a hop it refuses (away from https, to a requested-block host, ...) is not requested
-        and raises, so that the page is left unread, as one whose robots file cannot be requested is. Until 28 November
+        and raises RobotsFileRedirectNotRequested, so that the page is left unread, as one whose robots file cannot be
+        requested is, unless it is read past its robots file. Until 28 November
         2026 a hop was checked for https alone, and from 27 November a hop away from https returned None, which dropped
         the site's rules as if it served none (before 27 November urllib followed it to http and read them)."""
         robots_address = f"https://{host}/robots.txt"
@@ -352,7 +359,8 @@ class PublicPageReader:
             except RedirectAnswer as redirect:
                 reason_hop_is_not_requested = reason_address_is_not_requested(redirect.location)
                 if reason_hop_is_not_requested:
-                    raise RuntimeError(f"it redirected to {redirect.location}, and {reason_hop_is_not_requested}") from None
+                    raise RobotsFileRedirectNotRequested(
+                        f"it redirected to {redirect.location}, and {reason_hop_is_not_requested}") from None
                 robots_address = redirect.location
         return None
 
@@ -387,7 +395,9 @@ class PublicPageReader:
     def _robots_answer(self, address: str) -> tuple[str | None, str | None]:
         """(why the address may not be read, or None; the note on the robots file to record, or None). RobotsFileNotKnown
         is raised on to read(), which reports it as transient when its status is one of TRANSIENT_STATUS_CODES, except
-        for an address read past its robots file (robots_rule_exemption), which is read with the answer recorded."""
+        for an address read past its robots file (robots_rule_exemption), which is read with the answer recorded. The
+        same exception holds for a robots file whose redirect this reader does not request
+        (RobotsFileRedirectNotRequested): such an address is read, and every other one is left unread."""
         host = urllib.parse.urlsplit(address).hostname or ""
         try:
             robots_file_text = self.robots_file_of_host(host)
@@ -397,6 +407,13 @@ class PublicPageReader:
                 raise
             # a host read past its robots file is read whatever the rules say, so rules not known do not hold it back
             return None, f"answered HTTP {robots_file_not_known.status_code}; read under the ruling of {exemption}"
+        except RobotsFileRedirectNotRequested as redirect_not_requested:
+            exemption = robots_rule_exemption(address)
+            if exemption is None:
+                return f"the robots file could not be requested ({redirect_not_requested})", None
+            # As at 27 November 2026, when such a redirect dropped the rules, a host read past its robots file is read;
+            # the hop itself is still not requested, and the answer is recorded beside the page
+            return None, f"could not be requested ({redirect_not_requested}); read under the ruling of {exemption}"
         except Exception as error:  # noqa: BLE001 - a network failure, or a redirect not requested, is reported, not raised
             return f"the robots file could not be requested ({error})", None
         if robots_file_text is None:

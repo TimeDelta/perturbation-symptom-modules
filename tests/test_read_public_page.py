@@ -491,6 +491,19 @@ def test_a_robots_file_that_redirects_away_from_https_leaves_the_page_unread(tmp
     assert not any(tmp_path.iterdir())
 
 
+def test_a_host_read_past_its_robots_file_is_read_when_that_file_redirects_away_from_https(tmp_path, monkeypatch):
+    """The owner's rulings read ftp.ebi.ac.uk past its robots file ("don't refuse FTP from EBI", 22 October 2026). From
+    27 November 2026 such a redirect dropped the rules and the page was read; the stricter handling of 28 November left
+    it unread on every host. On an exempt host the page is read again, the http hop is still not requested, and the
+    answer is recorded beside the page."""
+    reader, requested = reader_with_redirects(
+        tmp_path, monkeypatch, {"https://ftp.ebi.ac.uk/robots.txt": "http://ftp.ebi.ac.uk/robots.txt"}, {})
+    record = reader.read("https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README")
+    assert record["read"] is True, record
+    assert "only https" in record["robots_file"] and "don't refuse FTP from EBI" in record["robots_file"]
+    assert requested == ["https://ftp.ebi.ac.uk/robots.txt", "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/README"]
+
+
 @pytest.mark.parametrize("robots_file_redirect_target, expected_reason", [
     ("https://api.cellxgene.cziscience.com/curation/v1/collections", "requested block"),
     ("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/aspirin/JSON", "measured pKa records only"),
