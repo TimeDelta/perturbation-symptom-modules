@@ -12,8 +12,8 @@ bootstrap; the user's decisions of 8 October 2026 and the amendments that record
 second-family run starts before the module fix is decided (step 0).
 
 What has changed since the steps below were written (8 and 9 October 2026), as `configs/registered_rules.json`,
-`configs/head_choice.json` and `docs/open_decisions.md` record it; the steps are kept as written and a step that one of
-these changes touches says so where it applies:
+`configs/head_choice.json`, `docs/open_decisions.md` and the amendments of `docs/preregistration.md` record it; the
+steps are kept as written and a step that one of these changes touches says so where it applies:
 
 - One tested model, not two. The user dropped the sigmoid head on 8 October 2026, which left the noisy-OR head of each
   encoder; on 22 October 2026 the message-passing encoder moved out of the tested family to a robustness reading
@@ -27,7 +27,10 @@ these changes touches says so where it applies:
 - The held-out set is not drawn. The lockbox the steps name, configs/lockbox_v2.json, was drawn on the evidence_full_v2
   table; the registration since 12 October 2026 (amendment items 1, 2 and 25) rebuilds the table (v4, then the v5 fine
   constructs) and redraws the held-out set on it by the target partition of item 25, only on the owner's go-ahead and
-  under the leakage ceiling of decision 9.35 (decisions 1.1 and 1.2). The registered model is the v4 flags of
+  under the leakage ceiling of decision 9.35 (decisions 1.1 and 1.2). Decision 9.35's status since 24 November 2026
+  reads "ruled 24 November 2026, not built: the one-standard-error adversary", and its cell ends "The draw is made
+  after the Human-GEM update of 9.151, on the graph built from it. Registering the rule is an amendment item, owed
+  before the draw." The registered model is the v4 flags of
   experiments/run_main_model_batch.py (`V4_LINEAR_RESPONSE_MODEL`, `V4_MESSAGE_PASSING_MODEL`), which the trainer's
   defaults equal, on the v5 tables and the graph `graph_full_neuronal_split_binders_drugs_v5`. The confirmatory_v2
   configurations below (graph_full_neuronal_split_binders, evidence_full_v2, better_v2, lockbox_v2) are the family as
@@ -37,17 +40,60 @@ these changes touches says so where it applies:
 - The membrane potential is computed from the pools (decision 9.87, 26 October 2026): the registered rule
   `membrane_potential_build` is `computed_from_the_pools`, and `scripts/rebuild_data_layer.sh` passes it to every
   neuronal variant it builds, so the graph a run reads is the one that script writes.
-- The v5 graph named above was built by `scripts/rebuild_data_layer.sh` on 5 November 2026
-  (`graph_full_neuronal_split_binders_drugs_v5`, decision 9.106). It carries the membrane-potential layer that decision
-  9.112 ruled on and has not built, so it is rebuilt from `graph_full_neuronal` when 9.112 is built, and no run reads it
-  as the registered graph before then. The directories of that name written on 20 October 2026 came from a build the
-  owner had not asked for and are not v5. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
+- The graph named above, `graph_full_neuronal_split_binders_drugs_v5`, was built by `scripts/rebuild_data_layer.sh` on
+  5 November 2026 (decision 9.106) and rebuilt on 12 November 2026 from `graph_full_neuronal` down, still with
+  `computed_from_the_pools` (`docs/data_layer_rebuild.md`, "The rebuild of 12 November 2026"). Both builds carry the
+  membrane-potential layer that decision 9.112 ruled on and has not built, so 9.112's rebuild from `graph_full_neuronal`
+  is still owed, and no run reads the graph as the registered graph before then. The directories of that name written
+  on 20 October 2026 came from a build the owner had not asked for and are not v5. Whether the measurements taken on the 20 October build are reported as history only, as `CLAUDE.md`
   ("A measurement carries the graph it was taken on") points toward, is the owner's open question 9.106 (a).
 - The Reactome release is the latest Reactome serves until the lockbox is drawn (decision 9.111, 4 November 2026). **Before
   the held-out set is drawn**, pin the release the registered graph was built from: read it from that graph's summary
   (`reactome_pathways.reactome_release`), commit its exports under `data/` (CC0, `docs/data_sources.md`), point the readers
   at the committed copy and make `experiments/fetch_reactome_pathways.py` refuse any other release. Reactome's content
   service serves only its current release, so a release left uncommitted cannot be fetched again.
+- The Human-GEM pin is updated before the draw (decision 9.151, the owner, 24 November 2026; its status: "ruled, not
+  built"). Until then it stays at v2.0.1 (commit `93e8d292a0cb`, `scripts/fetch_raw_sources.sh`), with the 82 rows of
+  `configs/human_gem_corrections.csv`. The row's steps: "**Before the draw, in order:** (1) the pin moves to the latest
+  upstream release then published, not `develop`; (2) the corrections table is re-anchored to it, a row upstream now
+  agrees with dropped and a row it still differs on kept, so the owner's earlier rulings (NAAA's compartment, MAR20093
+  under Q5d) stand against upstream; (3) a graph is built on the new release, and the changes that touch transmitter or
+  calcium nodes or lie on a route to a labelled node are counted on it and adjudicated one by one through the
+  corrections table, two sources where possible; (4) the rest are adopted on upstream's authority and disclosed as a
+  limitation; (5) the graph is rebuilt, and the draw is made on it."
+- The labels' likelihood is positive-unlabelled (decision 9.90; the registered default since 24 October 2026, commit
+  `039bbd8`, amendment item 34d). The registered rule `label_likelihood` is `positive_unlabelled`: "Every pair the label
+  selection keeps is counted once, at its code length under a positive-unlabelled likelihood
+  (models/positive_unlabelled_likelihood.py)". It is the default of `experiments/run_main_model.py --label-likelihood`
+  and is named in `V4_SHARED_MODEL`; the weighted loss of amendment item 3 it replaces is the `--label-likelihood
+  weighted` arm.
+- Module supports have a minimum reach (amendment item 39, registered 24 November 2026; decision 9.150, the owner's
+  ruling of 22 November 2026). The registered rule `module_support_minimum_reach` is 2: "No module of the tested model
+  holds a node that fewer than 2 distinct seed nodes of the run's training rows (the refit's rows in a refit) can
+  reach", with the code location "experiments/run_main_model.py --module-support-minimum-reach, resolved by
+  resolve_registered_defaults to 2 for the linear-response encoder with the noisy-OR head and to 0 otherwise".
+  `V4_LINEAR_RESPONSE_MODEL` names `--module-support-minimum-reach 2`. Row 9.150's status: "the robustness model runs
+  without it, a disclosed limitation of item 39 (g); every run before that date was made without the rule".
+- Items 37, 38 and 40 were also registered after 7 November 2026. They are cited here by number, date and the status
+  their rows give; what each changes in the steps below is not stated here.
+  - Item 37 (amendment of 23 November 2026, sub-items 37a to 37o). Decision 9.132's status: "registered 23 Nov 2026;
+    open: the eight `[R n]` rules (`[R 7]` withdrawn), the nineteen `[P n]` values, and the records and rebuild listed
+    here".
+  - Item 38 (amendment of 23 November 2026 (second)). The part of decision 9.131's status dated that day: "23 Nov, the
+    owner: hypothesis mining and the recovery of causal hypotheses are not claimed for now and need a separate
+    experiment with its own held-out draw; the date a pair was established is not irrelevant and is reported apart,
+    descriptively, dated by the earliest record of the pair's literature search". The engineering of its readings (d)
+    and (g) was built on 27 November 2026 on synthetic tables (commit `c2f10a7`:
+    `experiments/write_research_strata_and_eras.py`, `experiments/score_research_strata_and_eras.py` and
+    `mechanistic_pathway_learning/evaluation/research_strata_and_eras.py`); that commit lists as not built "a step for
+    these scripts in docs/confirmatory_runbook.md", and item 38 says "The search of (g) is owed after the rebuild and
+    before the draw."
+  - Item 40 (amendment of 24 November 2026 (second); it amends 37f (7)). Decision 9.153's status: "ruled 24 November
+    2026 and registered as item 40; not built: it is built with 37f's encoder; owed before the build: the pilot of
+    item 40 (7), which proposes the tolerance and the time budget for the owner". The planted-network part of that
+    pilot was built and run on 27 November 2026 (commits `23aef69` and `d637572`,
+    `docs/records/2026-11/exposure_ramp_pilot_2026-11-27.md`); its confirmatory-graph part, and the tolerance and time
+    budget it proposes, are not done.
 
 ## Steps
 

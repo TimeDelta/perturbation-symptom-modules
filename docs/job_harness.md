@@ -75,7 +75,10 @@ stage finished; registering `rebuild_v5_november_12` on 12 November 2026 re-enab
 prompts, by `update_trigger`, with the new job's name, commit, stage logs and markers. Creating four more would have
 left one session holding eight routines on four schedules, each firing a check-in that runs the same resume script,
 and the pause rule would then disable only the four an arriving prompt happens to name. The ids, the schedules and the
-run history are the rows of the table above; nothing was created and nothing was deleted.
+run history are the rows of the table above; nothing was created and nothing was deleted. The same four were repointed
+the same way on 23 November 2026, by `update_trigger`, for the job `fetch_raw_sources` of that day (the raw fetch
+recorded in `docs/data_layer_rebuild.md`, addition of 27 November 2026); again no routine was created or deleted, so
+the table's rows are unchanged.
 
 **The pause rule** (the user's instruction of 9 October 2026: "Update the harness so that when there are no running
 jobs, the check-ins get paused and only restarted when there are running jobs please"). The routines exist only to
@@ -108,7 +111,9 @@ reports each; arm one background wait per unfinished job against that job's own 
 to the owner, starting no next stage without the owner's go-ahead in their own message. They do not pull while a
 registered job is running, because a pull could change a shell script under it (`CLAUDE.md`, Jobs) or the code a
 later step of a build runs, so that one build mixes two commits; they pull once no job runs. The documents their
-prompts name are `CLAUDE.md`, `docs/status.md`, `docs/open_decisions.md`, `docs/data_layer_rebuild.md` and this page.
+prompts of 4 and 12 November 2026 named are `CLAUDE.md`, `docs/status.md`, `docs/open_decisions.md`,
+`docs/data_layer_rebuild.md` and this page; the prompts written on 23 November 2026 name `docs/data_sources.md` in
+place of `docs/data_layer_rebuild.md`.
 
 The October routines, paused since 9 October 2026, pulled first and named docs/confirmatory_runbook.md,
 docs/preregistration.md, docs/records/2026-10/graph_content_null_results.md, docs/records/2026-10/membrane_potential_reach.md and

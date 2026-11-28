@@ -161,8 +161,8 @@
     },
     "docs/confirmatory_runbook.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0",
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85",
       "names_absent_paths": {
         "docs/generated/confirmatory_results.md": "written by experiments/score_confirmatory.py when the confirmatory run is scored; not yet run",
         "docs/generated/phase2_baselines_lockbox_v2_development.md": "written by experiments/run_baselines.py for the lockbox v2 development baselines; not yet committed"
@@ -294,8 +294,8 @@
     },
     "docs/experiment_design.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0",
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85",
       "names_absent_paths": {
         "docs/qualifying_exam.md": "named as the write-up the design feeds; never created in the repository (no commit has held it)"
       }
@@ -434,8 +434,8 @@
     },
     "docs/job_harness.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/records/2026-10/knowledge_graph_practices_review.md": {
       "class": "record",
@@ -589,8 +589,8 @@
     },
     "docs/membrane_potential_constants.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "0c44f86"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/records/2026-10/membrane_potential_reach.md": {
       "class": "record",
