@@ -52,8 +52,8 @@ grouping of the gene side, and must be the one the calibration's pseudo-draws us
 keeps disease_cluster_and_targets for the confirmatory reading (docs/preregistration.md: "`group_by` therefore stays
 `disease_cluster_and_targets` for the confirmatory reading", with the family grouping a development sensitivity
 reading). docs/drafts/held_out_draw_methods_2026-11-28.md (M1, not ruled) proposes disease_cluster for this draw,
-because under item 25 that grouping also joins drugs that share a target, so a group can land on both sides, which
-read_lockbox refuses. So this script, itself an unreviewed draft, takes the grouping from the caller rather than
+because under item 25 disease_cluster_and_targets also joins drugs that share a target, so a group can land on both
+sides, which read_lockbox refuses. So this script, itself an unreviewed draft, takes the grouping from the caller rather than
 defaulting to either. Until 28 November 2026 this paragraph said no ruling settles the grouping.
 
 The draw's options (--hold-out-genes-encoding-held-out-targets, --hold-out-whole-groups-of-those-genes, --gene-side-rule;
@@ -178,8 +178,8 @@ def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str,
               "group_by": group_by, "seed_order": seeds, "accepted_seed": examination["accepted_seed"],
               "examined_seeds": examination["examined"], "ceilings": ceilings, "channels": channels}
     if not draw_options.is_default():  # recorded only when an option is on, so a draw without them records what it did
-        record["rule"]["split"] += ("; with the draft options of 28 November 2026, which no ruling registers "
-                                    "(target_held_out_split.HeldOutDrawOptions)")
+        record["rule"]["split"] += ("; changed by the draft options of 28 November 2026 that held_out_draw_options "
+                                    "names, which no ruling registers (target_held_out_split.HeldOutDrawOptions)")
         record["rule"][DRAW_OPTIONS_KEY] = record[DRAW_OPTIONS_KEY] = draw_options.as_record()
     if examination["accepted_seed"] is None:
         return record

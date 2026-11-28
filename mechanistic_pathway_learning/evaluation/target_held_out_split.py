@@ -217,7 +217,7 @@ def two_sided_held_out_draw(perturbation_ids, perturbation_types, perturbation_s
                             proteins_encoded_by_gene: Mapping[str, Iterable[str]] | None = None) -> TwoSidedDraw:
     """two_sided_held_out_perturbations with what the options did: the perturbations held out with their targets, M1's
     forced groups and their overshoot. With options None or HeldOutDrawOptions() it draws exactly what
-    two_sided_held_out_perturbations drew before the options existed (tests/test_target_held_out_split.py holds a copy
+    two_sided_held_out_perturbations drew before the options existed (tests/test_held_out_draw_options.py holds a copy
     of that code and checks it). proteins_encoded_by_gene is required with hold_out_genes_encoding_held_out_targets; on
     a merged graph it is the empty map.
 

@@ -111,9 +111,9 @@ def registered_two_sided_draw(data, draw_seed: int, draw_options: HeldOutDrawOpt
     Corrected 14 October 2026 after the owner asked "i thought gene perturbations were also being included in the
     lockbox draw ...". They are, and an earlier version of this script drew the drug side only: `held_out_perturbations`
     pulls a gene in only when its own node is a held-out drug **target**, and on a gene/protein-split graph a gene
-    node is a drug target only for a target gene the split gave no protein node, so every pseudo-draw held out 39, 22
-    or 30 drugs and **zero** genes. Since 1,414 of the
-    1,636 perturbations are genes, the adversary was being scored on 2 percent of the row mix it will meet.
+    node is a drug target only for a target gene the split gave no protein node; every pseudo-draw held out 39, 22 or
+    30 drugs and **zero** genes. Since 1,414 of the 1,636 perturbations are genes, the adversary was being scored on 2
+    percent of the row mix it will meet.
 
     Since 27 November 2026 the draw itself is target_held_out_split.two_sided_held_out_perturbations, which
     experiments/draw_held_out_set.py calls too; this keeps the name the script has always used. With draw_options (and
