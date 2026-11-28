@@ -164,11 +164,12 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   `experiments/generate_decision_history.py`, `experiments/generate_amendment_history.py`,
   `experiments/generate_registered_core.py` (one entry per registered rule, added 27 October 2026) and
   `experiments/generate_file_index.py` (every file under `docs/`, added 2 November 2026), then
-  `pytest tests/test_documentation_process.py -q`, which fails on any of their pages left stale. The decision log and
-  the pages generated from it go in two commits, the log first, because `docs/decision_history.md` records the hash of
-  the commit that first holds each row (`CLAUDE.md`, Documents); the three generators that read the git log refuse a
-  shallow clone unless given `--allow-shallow`. The `.claude/settings.json` hook runs that test file and
-  `tests/test_amendment_history.py` after an edit to a Markdown file under `docs/`, to `README.md`, `CLAUDE.md`,
+  `pytest tests/test_documentation_process.py tests/test_amendment_history.py -q`, which together fail on any of
+  their pages left stale (the second file has run the amendment history's `--check` since 28 November 2026). The
+  decision log and the pages generated from it go in two commits, the log first, because `docs/decision_history.md`
+  records the hash of the commit that first holds each row (`CLAUDE.md`, Documents); the three generators that read
+  the git log refuse a shallow clone unless given `--allow-shallow`. The `.claude/settings.json` hook runs both test
+  files after an edit to a Markdown file under `docs/`, to `README.md`, `CLAUDE.md`,
   `configs/documentation_registry.json` or `configs/registered_rules.json`, so a stale page is reported in the same
   turn that made it stale. Since 20 November 2026 the full suite runs once when a session or a subagent finishes, not
   after every code edit (the owner: "can you stop it from running the full suite for every code edit and only do it

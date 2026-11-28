@@ -2,13 +2,15 @@
 
 The owner's design: a byte-exact copy of the registration as it stood on 15 October, never edited, plus a history
 generated from commit trailers. These tests hold up both halves — the baseline against its recorded digest, and the
-parser against the trailer shapes it has to survive.
+parser against the trailer shapes it has to survive — and hold the committed docs/amendment_history.md to what the
+generator writes from the git log now.
 """
 from __future__ import annotations
 
 import hashlib
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -102,7 +104,16 @@ def test_the_rendered_history_says_an_empty_list_is_not_proof_that_nothing_chang
 
 def test_the_generated_file_is_current():
     """--check in test form: a committed history that no longer matches the log is a stale artifact of the kind this
-    whole mechanism exists to stop."""
+    whole mechanism exists to stop.
+
+    It runs experiments/generate_amendment_history.py --check the way tests/test_documentation_process.py runs the
+    other generators, so the comparison is the generator's own (the page against a fresh rendering, the provenance
+    stamp left out). In a shallow clone the generator refuses and names the fix, `git fetch --depth=1000 origin main`,
+    so the test fails there instead of passing on a truncated log. Until 28 November 2026 the test only checked that the
+    file existed and that its first line said "do not edit by hand", so a stale page passed."""
     generated = REPOSITORY_ROOT / "docs" / "amendment_history.md"
     assert generated.exists(), "run experiments/generate_amendment_history.py"
     assert "do not edit by hand" in generated.read_text().splitlines()[0]
+    result = subprocess.run(["python3", "experiments/generate_amendment_history.py", "--check"], cwd=REPOSITORY_ROOT,
+                            capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin"})
+    assert result.returncode == 0, result.stdout + result.stderr
