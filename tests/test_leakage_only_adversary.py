@@ -135,3 +135,57 @@ def test_the_registered_channel_list_names_what_is_and_is_not_scored():
         registered_channel_list(None, [("gene", "gene")], None)
     with pytest.raises(ValueError):
         registered_channel_list(2, [("gene", "gene")], None)
+
+
+def test_the_nearest_neighbour_tie_goes_to_the_lowest_training_row_whatever_the_order_of_the_neighbour_map():
+    """Two training perturbations share one node each with the held-out one, so they tie. The copied labels are those
+    of the neighbour that came first in the ids given to fit, in either order of the neighbour map."""
+    training_ids, training_outcomes = ["train_a", "train_b", "train_c"], np.array([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
+    adversary = LeakageOnlyAdversary("nearest_neighbour_maximum").fit(training_ids, training_outcomes)
+    for neighbour_map in ({"held_out": {"train_a": 1, "train_b": 1}}, {"held_out": {"train_b": 1, "train_a": 1}}):
+        assert adversary.predict(["held_out"], neighbour_map).tolist() == [[1.0, 0.0]]
+    # a larger weight still wins over a lower training row
+    assert adversary.predict(["held_out"], {"held_out": {"train_a": 1, "train_c": 2}}).tolist() == [[1.0, 1.0]]
+
+
+NEAREST_NEIGHBOUR_IN_ONE_PROCESS = """
+import json
+import numpy as np
+from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (LeakageOnlyAdversary, leaked_neighbours,
+                                                                             neighbours_through_the_channels)
+training_ids, training_outcomes = ["train_a", "train_b"], np.array([[1.0, 0.0], [0.0, 1.0]])
+adversary = LeakageOnlyAdversary("nearest_neighbour_maximum").fit(training_ids, training_outcomes)
+# shared seed node channel: the held-out drug targets X and Y, each training drug one of them
+seed_nodes = {"held_out": frozenset({"protein:X", "protein:Y"}), "train_a": frozenset({"protein:X"}), "train_b": frozenset({"protein:Y"})}
+seed_channel = adversary.predict(["held_out"], leaked_neighbours(["held_out"], training_ids, seed_nodes))
+# reached-node channel: the held-out gene's walk reaches two reactions, each training gene's walk one of them
+gene_seeds = {"held_out": frozenset({"gene:H"}), "train_a": frozenset({"gene:A"}), "train_b": frozenset({"gene:B"})}
+reached = {"held_out": frozenset({"gene:H", "reaction:R1", "reaction:R2"}), "train_a": frozenset({"gene:A", "reaction:R1"}),
+           "train_b": frozenset({"gene:B", "reaction:R2"})}
+reached_channel = adversary.predict(["held_out"], neighbours_through_the_channels(
+    ["held_out"], training_ids, gene_seeds, reached, {identifier: "gene" for identifier in reached}, [("gene", "gene")]))
+print(json.dumps({"seed_channel": seed_channel.tolist(), "reached_channel": reached_channel.tolist()}))
+"""
+
+
+def test_the_nearest_neighbour_scores_do_not_depend_on_the_process_string_hashing():
+    """The neighbour map is built by iterating frozensets of node-id strings, whose order Python randomises per process
+    (PYTHONHASHSEED). Until 28 November 2026 nearest_neighbour_maximum took the first maximum in that order, so on
+    this interpreter hash seeds 0 to 3 copied different neighbours on both channels. Each hash seed runs in its own
+    process, all at once."""
+    import json
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    repository_root = str(Path(__file__).resolve().parents[1])
+    processes = {hash_seed: subprocess.Popen([sys.executable, "-c", NEAREST_NEIGHBOUR_IN_ONE_PROCESS], cwd=repository_root,
+                                             env={**os.environ, "PYTHONHASHSEED": str(hash_seed), "PYTHONPATH": repository_root},
+                                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                 for hash_seed in range(4)}
+    scores_of_hash_seed = {}
+    for hash_seed, process in processes.items():
+        standard_output, standard_error = process.communicate(timeout=300)
+        assert process.returncode == 0, standard_error
+        scores_of_hash_seed[hash_seed] = json.loads(standard_output)
+    assert all(scores == {"seed_channel": [[1.0, 0.0]], "reached_channel": [[1.0, 0.0]]} for scores in scores_of_hash_seed.values()), scores_of_hash_seed

@@ -67,6 +67,10 @@ from mechanistic_pathway_learning.models.forward_cone_divisor import forward_rea
 # neighbours is near-binary, and a near-binary score ranks badly whatever information it holds, so an unshrunk
 # adversary understates the leak through its score scale rather than through the channel. A shrunk score is also
 # continuous with the fallback, since a perturbation with no neighbour lands on the base rate exactly.
+# nearest_neighbour_maximum copies the labels of the neighbour sharing the most nodes; neighbours tied on that count go
+# to the one first in the ids given to fit, so the copy does not depend on the order of the neighbour map, which
+# follows the iteration of frozensets of node-id strings and so changes from one process to the next (PYTHONHASHSEED).
+# Until 28 November 2026 a tie went to the first in that order.
 POOLING_RULES = ("base_rate_shrunk_mean", "shared_node_weighted_mean", "nearest_neighbour_maximum")
 # weight given to the base rate in the shrunk mean, in units of one shared node: one neighbour sharing one node moves
 # the score halfway from the base rate to that neighbour's label. A node shared through the reached-node channel counts
@@ -311,7 +315,10 @@ class LeakageOnlyAdversary:
         return self
 
     def predict(self, held_out_ids, neighbours: dict[str, dict[str, int]]) -> np.ndarray:
-        """[num_held_out, num_symptoms]. A held-out perturbation with no leaked neighbour takes the training base rate."""
+        """[num_held_out, num_symptoms]. A held-out perturbation with no leaked neighbour takes the training base rate.
+
+        Under nearest_neighbour_maximum, neighbours tied on the largest weight go to the lowest training row (the order
+        of the ids given to fit), so the score does not depend on the order of the neighbour map."""
         if self.symptom_base_rate is None or self.training_kept_positive is None:
             raise RuntimeError("fit before predict")
         scores = np.tile(self.symptom_base_rate, (len(held_out_ids), 1))
@@ -330,7 +337,10 @@ class LeakageOnlyAdversary:
             neighbour_labels = self.training_kept_positive[rows_of_neighbours]
             weight_vector = np.asarray(weights, dtype=float)
             if self.pooling_rule == "nearest_neighbour_maximum":
-                scores[row] = neighbour_labels[int(np.argmax(weights))]
+                largest_weight = max(weights)
+                lowest_training_row_with_the_largest_weight = min(
+                    training_row for training_row, weight in zip(rows_of_neighbours, weights) if weight == largest_weight)
+                scores[row] = self.training_kept_positive[lowest_training_row_with_the_largest_weight]
             elif self.pooling_rule == "shared_node_weighted_mean":
                 scores[row] = (neighbour_labels * weight_vector[:, None]).sum(axis=0) / weight_vector.sum()
             else:  # base_rate_shrunk_mean
