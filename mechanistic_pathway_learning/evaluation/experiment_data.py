@@ -366,6 +366,19 @@ def read_protein_of_gene(graph_directory: Path) -> dict[str, list[str]]:
     return table.groupby("gene_node_id", sort=False).protein_node_id.agg(list).to_dict()
 
 
+def read_proteins_encoded_by_gene(graph_directory: Path) -> dict[str, set[str]]:
+    """gene node id -> every protein node id it encodes on a split graph: every row of gene_to_protein.parquet, the
+    encodes edges of the split, and not only the drug_target rows read_protein_of_gene keeps, since those say which of a
+    gene's protein nodes a drug acting on the gene seeds and not which genes encode a protein. Empty for a merged
+    graph. The held-out draw's identity option reads it (target_held_out_split.HeldOutDrawOptions)."""
+    path = Path(graph_directory) / GENE_TO_PROTEIN_FILE
+    if not path.exists():
+        return {}
+    table = pd.read_parquet(path, columns=["gene_node_id", "protein_node_id"])
+    return {str(gene_node_id): set(map(str, protein_node_ids))
+            for gene_node_id, protein_node_ids in table.groupby("gene_node_id", sort=False).protein_node_id}
+
+
 def drug_seeds_on_proteins(triples: list, protein_of_gene: dict[str, list[str]]) -> list:
     """A drug acts on proteins: each target gene node is replaced by its protein nodes, with the target's sign and
     magnitude. When two target genes encode one shared protein node, the first triple is kept, so the node is seeded

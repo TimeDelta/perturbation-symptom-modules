@@ -34,6 +34,14 @@ that finds draws without that file (a directory written before 27 November 2026)
 output would record this run's digests over draws made on other inputs, which is what
 experiments/calibrate_leakage_ceiling.py checks the graph by.
 
+The draw's options. --hold-out-genes-encoding-held-out-targets, --hold-out-whole-groups-of-those-genes and
+--gene-side-rule are the opt-in options of target_held_out_split.HeldOutDrawOptions (built 28 November 2026 from
+docs/drafts/held_out_draw_methods_2026-11-28.md, M1 and M2; none is ruled), off by default, so a run without them is the
+run it was before. A run with any of them on records them in its output (held_out_draw_options), must name its own
+--checkpoint-dir, --json-output and --markdown-output as a reached-node run does, and is what
+experiments/calibrate_leakage_ceiling.py and experiments/draw_held_out_set.py check their own options against, so the
+pseudo-draws and the draw use one rule.
+
 Why pseudo-draws and not the real one. The adversary needs the held-out labels to be *scored*, which the lockbox
 forbids before `runs/confirmatory/SCORED` exists. Development pseudo-draws under the same rule need no lockbox label, so
 this runs before the draw. The pseudo-draw seeds are 0 to --num-draws - 1; experiments/draw_held_out_set.py refuses a
@@ -54,14 +62,16 @@ from pathlib import Path
 import numpy as np
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
-from mechanistic_pathway_learning.evaluation.experiment_data import EVIDENCED_NEGATIVE_ARRAYS, GENE_TO_PROTEIN_FILE, load_experiment_data
+from mechanistic_pathway_learning.evaluation.experiment_data import (
+    EVIDENCED_NEGATIVE_ARRAYS, GENE_TO_PROTEIN_FILE, load_experiment_data, read_proteins_encoded_by_gene)
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
     LeakageOnlyAdversary, POOLING_RULES, REACH_EDGE_SETS, channel_breakdown, neighbours_through_the_channels,
     reach_edges, reached_nodes_of_perturbations, registered_channel_list, seed_nodes_of_perturbations,
     seen_reached_node_share, seen_target_share)
 from mechanistic_pathway_learning.evaluation.ranking_and_calibration_metrics import (
     macro_statistic, micro_auprc, paired_bootstrap_macro_difference, paired_bootstrap_micro_difference)
-from mechanistic_pathway_learning.evaluation.target_held_out_split import targets_of_drugs, two_sided_held_out_perturbations
+from mechanistic_pathway_learning.evaluation.target_held_out_split import (
+    GENE_SIDE_RULES, HeldOutDrawOptions, targets_of_drugs, two_sided_held_out_perturbations)
 from mechanistic_pathway_learning.graph.drug_entry_nodes import DRUG_ENTRY_FILE
 from mechanistic_pathway_learning.models.baselines.popularity_baseline import PopularityBaseline
 
@@ -92,30 +102,37 @@ def graph_file_sha256(graph_directory: Path) -> dict[str, str]:
     return digests
 
 
-def registered_two_sided_draw(data, draw_seed: int) -> tuple[set[str], set[str]]:
+def registered_two_sided_draw(data, draw_seed: int, draw_options: HeldOutDrawOptions | None = None,
+                              proteins_encoded_by_gene=None) -> tuple[set[str], set[str]]:
     """The held-out set as the registration actually draws it: **each side at its own registered fraction** (item 25,
     "the genes by the registered disease-cluster grouping and the drugs by the rule below, one seventh of each rather
     than one seventh of the whole").
 
     Corrected 14 October 2026 after the owner asked "i thought gene perturbations were also being included in the
     lockbox draw ...". They are, and an earlier version of this script drew the drug side only: `held_out_perturbations`
-    pulls a gene in only when its own node is a held-out drug **target**, and no gene node is a drug target on a
-    gene/protein-split graph, so every pseudo-draw held out 39, 22 or 30 drugs and **zero** genes. Since 1,414 of the
+    pulls a gene in only when its own node is a held-out drug **target**, and on a gene/protein-split graph a gene
+    node is a drug target only for a target gene the split gave no protein node, so every pseudo-draw held out 39, 22
+    or 30 drugs and **zero** genes. Since 1,414 of the
     1,636 perturbations are genes, the adversary was being scored on 2 percent of the row mix it will meet.
 
     Since 27 November 2026 the draw itself is target_held_out_split.two_sided_held_out_perturbations, which
-    experiments/draw_held_out_set.py calls too; this keeps the name the script has always used.
+    experiments/draw_held_out_set.py calls too; this keeps the name the script has always used. With draw_options (and
+    proteins_encoded_by_gene for the identity option) it draws by the opt-in options of 28 November 2026 instead, which
+    no ruling registers; without them it draws the registered rule as before.
     """
     return two_sided_held_out_perturbations(data.perturbation_ids, data.perturbation_types, data.perturbation_seeds,
-                                            data.node_ids, data.group_ids, draw_seed)
+                                            data.node_ids, data.group_ids, draw_seed, options=draw_options,
+                                            proteins_encoded_by_gene=proteins_encoded_by_gene)
 
 
 def one_draw(data, draw_seed: int, pooling_rule: str, num_bootstrap: int, reached_nodes_of_perturbation=None,
-             reached_node_type_pairs=None) -> dict:
+             reached_node_type_pairs=None, draw_options: HeldOutDrawOptions | None = None,
+             proteins_encoded_by_gene=None) -> dict:
     """One pseudo-draw: the adversary's advantage over popularity, degree-scaled popularity and type popularity, the
     channel counts and the label-free statistics. Without reached_nodes_of_perturbation the adversary has the shared
-    seed node channel alone, as in every run before 27 November 2026."""
-    held_out_ids, held_out_targets = registered_two_sided_draw(data, draw_seed)
+    seed node channel alone, as in every run before 27 November 2026. draw_options are passed to
+    registered_two_sided_draw (off by default)."""
+    held_out_ids, held_out_targets = registered_two_sided_draw(data, draw_seed, draw_options, proteins_encoded_by_gene)
     held_out_rows = np.array([index for index, perturbation_id in enumerate(data.perturbation_ids) if str(perturbation_id) in held_out_ids], dtype=int)
     training_rows = np.array([index for index, perturbation_id in enumerate(data.perturbation_ids) if str(perturbation_id) not in held_out_ids], dtype=int)
     if held_out_rows.size == 0 or training_rows.size == 0:
@@ -260,7 +277,10 @@ def main() -> None:
     parser.add_argument("--markdown-output", type=Path, default=None,
                         help="defaults to docs/generated/leakage_only_adversary.md for the shared seed node run; "
                              "required with --reached-node-hops")
+    add_held_out_draw_option_arguments(parser)
     arguments = parser.parse_args()
+    draw_options = held_out_draw_options_from_arguments(parser, arguments)
+    refuse_shared_run_paths_for_draw_options(parser, arguments, draw_options)
     reached_node_type_pairs = resolve_channel_arguments(parser, arguments)
 
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by,
@@ -275,6 +295,8 @@ def main() -> None:
         walk_source, walk_target = reach_edges(data.edge_source, data.edge_target, data.is_currency, arguments.reached_node_edges)
         reached_nodes_of_perturbation = reached_nodes_of_perturbations(
             data.perturbation_ids, data.perturbation_seeds, data.node_ids, walk_source, walk_target, arguments.reached_node_hops)
+    proteins_encoded_by_gene = (read_proteins_encoded_by_gene(arguments.graph_dir)
+                                if draw_options.hold_out_genes_encoding_held_out_targets else None)
 
     results = {"pooling_rules": {}, "excluded_lockbox_perturbations": len(excluded_lockbox_perturbations),
                "evidence_dir": str(arguments.evidence_dir), "graph_dir": str(arguments.graph_dir),
@@ -286,7 +308,9 @@ def main() -> None:
                "graph_file_sha256": graph_file_sha256(arguments.graph_dir),
                "evidence_records_sha256": sha256_of_file(arguments.evidence_dir / "evidence_records.parquet"),
                "label_selection_sha256": sha256_of_file(arguments.label_selection)}
-    claim_checkpoint_directory(arguments.checkpoint_dir, {key: results[key] for key in CHECKPOINT_INPUT_KEYS})
+    if not draw_options.is_default():  # recorded only when an option is on, so a run without them writes what it wrote
+        results[DRAW_OPTIONS_KEY] = draw_options.as_record()
+    claim_checkpoint_directory(arguments.checkpoint_dir, {key: results[key] for key in CHECKPOINT_INPUT_KEYS if key in results})
     completed_draws = 0
     for pooling_rule in arguments.pooling_rules:
         draws = []
@@ -296,7 +320,7 @@ def main() -> None:
                 draws.append(json.loads(checkpoint_path.read_text()))
                 continue
             draw = one_draw(data, draw_seed, pooling_rule, arguments.num_bootstrap, reached_nodes_of_perturbation,
-                            reached_node_type_pairs)
+                            reached_node_type_pairs, draw_options, proteins_encoded_by_gene)
             checkpoint_path.write_text(json.dumps(draw, indent=1) + "\n")
             draws.append(draw)
             completed_draws += 1
@@ -314,10 +338,50 @@ def main() -> None:
 SHARED_SEED_NODE_RUN_DEFAULTS = {"checkpoint_dir": Path("runs/leakage_only_adversary_draws"),
                                  "json_output": Path("docs/generated/leakage_only_adversary.json"),
                                  "markdown_output": Path("docs/generated/leakage_only_adversary.md")}
-# What a checkpointed draw depends on besides its pooling rule and seed, which name its file.
+# What a checkpointed draw depends on besides its pooling rule and seed, which name its file. DRAW_OPTIONS_KEY is in
+# a run's inputs only when one of the draw's options is on, so a directory written before 28 November 2026 still
+# serves a run without them and refuses a run with them.
 CHECKPOINT_INPUTS_FILE = "checkpoint_inputs.json"
+DRAW_OPTIONS_KEY = "held_out_draw_options"
 CHECKPOINT_INPUT_KEYS = ("graph_file_sha256", "evidence_records_sha256", "label_selection_sha256", "group_by",
-                         "num_bootstrap", "lockbox_excluded", "excluded_lockbox_perturbations", "channels")
+                         "num_bootstrap", "lockbox_excluded", "excluded_lockbox_perturbations", "channels",
+                         DRAW_OPTIONS_KEY)
+
+
+def add_held_out_draw_option_arguments(parser) -> None:
+    """The three flags of target_held_out_split.HeldOutDrawOptions, off by default. experiments/calibrate_leakage_ceiling.py
+    and experiments/draw_held_out_set.py add the same flags, so a measurement, its calibration and the draw state one rule."""
+    parser.add_argument("--hold-out-genes-encoding-held-out-targets", action="store_true",
+                        help="draft option, not ruled: also hold out a gene perturbation whose gene encodes a held-out "
+                             "target protein (gene_to_protein.parquet; changes nothing on a merged graph)")
+    parser.add_argument("--hold-out-whole-groups-of-those-genes", action="store_true",
+                        help="draft option M1, not ruled: hold out the whole leakage group of each gene perturbation held "
+                             "out with a held-out target, counted first on the gene side; needs the option above")
+    parser.add_argument("--gene-side-rule", choices=list(GENE_SIDE_RULES), default="fold_zero",
+                        help="fold_zero (the rule as it stands) or seeded_group_prefix (draft option M2, not ruled)")
+
+
+def held_out_draw_options_from_arguments(parser, arguments) -> HeldOutDrawOptions:
+    """The options the three flags of add_held_out_draw_option_arguments name; a combination they refuse is a usage error."""
+    try:
+        return HeldOutDrawOptions(hold_out_genes_encoding_held_out_targets=arguments.hold_out_genes_encoding_held_out_targets,
+                                  hold_out_whole_groups_of_those_genes=arguments.hold_out_whole_groups_of_those_genes,
+                                  gene_side_rule=arguments.gene_side_rule)
+    except ValueError as error:
+        parser.error(str(error))
+
+
+def refuse_shared_run_paths_for_draw_options(parser, arguments, draw_options: HeldOutDrawOptions) -> None:
+    """A run with a draw option on must name its own checkpoint directory and outputs, as a reached-node run must, so it
+    neither resumes from the shared seed node run's checkpoints nor overwrites the committed record of 14 October 2026."""
+    if draw_options.is_default():
+        return
+    missing = [f"--{name.replace('_', '-')}" for name in SHARED_SEED_NODE_RUN_DEFAULTS if getattr(arguments, name) is None]
+    if missing:
+        parser.error(f"a run with a draw option on must name {', '.join(missing)}")
+    for name, default in SHARED_SEED_NODE_RUN_DEFAULTS.items():
+        if Path(getattr(arguments, name)).resolve() == default.resolve():
+            parser.error(f"--{name.replace('_', '-')} {default} belongs to the shared seed node run; name another path")
 
 
 def claim_checkpoint_directory(checkpoint_dir: Path, inputs: dict) -> None:
@@ -399,7 +463,8 @@ def _restrict(data, keep: list[int]):
 
 
 def _markdown(results: dict, arguments) -> str:
-    """The page. Without the reached-node channel it writes the page of 14 October 2026 word for word, which is what
+    """The page. Without the reached-node channel and the draw's options it writes the page of 14 October 2026 word for
+    word (a draw option on adds one paragraph naming it, _draw_options_lines), which is what
     docs/generated/leakage_only_adversary.md holds; that page's comparison with "H1's registered requirement of a 0.05
     macro and micro difference" and its account of route transfer as "the hypothesis under test rather than a leak" are
     history (the floor was removed on 15 October 2026, and decision 9.36 put sharing within k hops into the adversary on
@@ -410,7 +475,7 @@ def _markdown(results: dict, arguments) -> str:
     lines = ["# The leakage-only adversary (generated by experiments/measure_leakage_only_adversary.py)", "",
              f"Evidence {arguments.evidence_dir}, label selection {arguments.label_selection}, graph {arguments.graph_dir}; "
              f"{arguments.num_draws} pseudo-draws of the item 25 rule at the registered held-out fraction, "
-             f"{arguments.num_bootstrap} bootstrap resamples per reading.", "",
+             f"{arguments.num_bootstrap} bootstrap resamples per reading.", "", *_draw_options_lines(results),
              "The adversary knows two things: which training perturbations share a seed node with the held-out "
              "perturbation, and the training labels. No edge, no propagation, no descriptor. It is handed the leaked "
              "labels directly, so its advantage is an upper bound on what any model could take from this channel by "
@@ -427,6 +492,16 @@ def _markdown(results: dict, arguments) -> str:
               "measured and must not be: bounding it would bound the study's own subject. A channel outside both "
               "descriptions is a disclosed limitation."]
     return "\n".join(lines)
+
+
+def _draw_options_lines(results: dict) -> list[str]:
+    """A paragraph naming the draw's options when one is on; nothing otherwise, so the page of a run without them is
+    unchanged."""
+    if DRAW_OPTIONS_KEY not in results:
+        return []
+    options = ", ".join(f"{name} {value}" for name, value in results[DRAW_OPTIONS_KEY].items())
+    return [f"The draw used the draft options of 28 November 2026, which no ruling registers ({options}; "
+            "target_held_out_split.HeldOutDrawOptions), so these are not pseudo-draws of the registered rule.", ""]
 
 
 def _summary_tables(results: dict) -> list[str]:
@@ -450,7 +525,7 @@ def _markdown_with_the_reached_node_channel(results: dict, arguments) -> str:
     lines = ["# The leakage-only adversary with the reached-node channel (generated by experiments/measure_leakage_only_adversary.py)", "",
              f"Evidence {arguments.evidence_dir}, label selection {arguments.label_selection}, graph {arguments.graph_dir}; "
              f"{arguments.num_draws} pseudo-draws of the item 25 rule at the registered held-out fraction, "
-             f"{arguments.num_bootstrap} bootstrap resamples per reading.", "",
+             f"{arguments.num_bootstrap} bootstrap resamples per reading.", "", *_draw_options_lines(results),
              "The adversary knows two things: which training perturbations reach the held-out perturbation through the "
              "channels below, and the training labels. No edge weight or sign, no propagation, no descriptor. It is "
              "handed the leaked labels directly, so its advantage is an upper bound on what any model could take from "

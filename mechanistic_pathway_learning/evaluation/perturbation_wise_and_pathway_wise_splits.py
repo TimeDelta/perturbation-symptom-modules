@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import random
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from datetime import date
 
 
@@ -23,11 +23,17 @@ def assign_grouped_folds(
     group_identifiers: Sequence[str],
     num_folds: int,
     random_seed: int = 0,
+    groups_placed_in_fold_zero: Collection[str] = (),
 ) -> dict[str, int]:
     """Return perturbation identifier -> fold index, keeping each group inside one fold.
 
     Groups are assigned greedily, largest first with ties shuffled, to the fold that
     currently holds the fewest perturbations, which balances fold sizes.
+
+    groups_placed_in_fold_zero are put in fold 0 before that balance starts, and every
+    other group is then placed as above with them counted in fold 0's size. It is empty
+    by default, which is what every caller before 28 November 2026 drew; the held-out
+    draw's M1 closure option uses it (evaluation/target_held_out_split.py).
     """
     if len(perturbation_identifiers) != len(group_identifiers):
         raise ValueError("perturbation_identifiers and group_identifiers must have the same length")
@@ -42,6 +48,13 @@ def assign_grouped_folds(
     fold_sizes = [0] * num_folds
     fold_by_perturbation: dict[str, int] = {}
     for group_identifier in group_order:
+        if group_identifier in groups_placed_in_fold_zero:
+            for perturbation_identifier in members_by_group[group_identifier]:
+                fold_by_perturbation[perturbation_identifier] = 0
+            fold_sizes[0] += len(members_by_group[group_identifier])
+    for group_identifier in group_order:
+        if group_identifier in groups_placed_in_fold_zero:
+            continue
         smallest_fold = min(range(num_folds), key=lambda fold_index: fold_sizes[fold_index])
         for perturbation_identifier in members_by_group[group_identifier]:
             fold_by_perturbation[perturbation_identifier] = smallest_fold

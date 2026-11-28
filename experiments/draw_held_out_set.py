@@ -45,9 +45,21 @@ perturbations on both sides: item 25 holds a drug out by its targets, so such a 
 refuses a lockbox that has one.
 How the runs that read the lockbox treat that is not settled here.
 
-What it leaves to the caller, because no ruling settles it, each a required argument with no default: the inputs
-(--graph-dir, --evidence-dir, --label-selection), --group-by (the grouping of the gene side, which must be the one the
-calibration's pseudo-draws used), --seed-order, --calibration (which ceilings the draw is checked against) and --output.
+What it leaves to the caller, each a required argument with no default: the inputs (--graph-dir, --evidence-dir,
+--label-selection), --group-by, --seed-order, --calibration (which ceilings the draw is checked against) and --output.
+No ruling settles the inputs, the seed order or the calibrations, which is why they have no default. --group-by is the
+grouping of the gene side, and must be the one the calibration's pseudo-draws used. The registration of 9 October 2026
+keeps disease_cluster_and_targets for the confirmatory reading (docs/preregistration.md: "`group_by` therefore stays
+`disease_cluster_and_targets` for the confirmatory reading", with the family grouping a development sensitivity
+reading). docs/drafts/held_out_draw_methods_2026-11-28.md (M1, not ruled) proposes disease_cluster for this draw,
+because under item 25 that grouping also joins drugs that share a target, so a group can land on both sides, which
+read_lockbox refuses. So this script, itself an unreviewed draft, takes the grouping from the caller rather than
+defaulting to either. Until 28 November 2026 this paragraph said no ruling settles the grouping.
+
+The draw's options (--hold-out-genes-encoding-held-out-targets, --hold-out-whole-groups-of-those-genes, --gene-side-rule;
+target_held_out_split.HeldOutDrawOptions, built 28 November 2026 from that draft's M1 and M2, none ruled) are off by
+default, so a draw without them is the draw described above. Every calibration given must record the same options
+(experiments/calibrate_leakage_ceiling.py takes the same flags), so the pseudo-draws and the draw use one rule.
 
 Usage, from the repository root (only on the owner's go-ahead):
   PYTHONPATH=. python experiments/draw_held_out_set.py --graph-dir <graph> --evidence-dir <evidence> \\
@@ -67,22 +79,27 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from mechanistic_pathway_learning.data_release import sha256_of_file  # noqa: E402
-from mechanistic_pathway_learning.evaluation.experiment_data import GROUPING_COLUMNS, load_experiment_data  # noqa: E402
+from mechanistic_pathway_learning.evaluation.experiment_data import (  # noqa: E402
+    GROUPING_COLUMNS, load_experiment_data, read_proteins_encoded_by_gene)
 from mechanistic_pathway_learning.evaluation.leakage_ceiling import (  # noqa: E402
     first_passing_seed, reactome_release_of_graph, validated_seed_order)
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (  # noqa: E402
     reach_edges, reached_nodes_of_perturbations, seen_reached_node_share, seen_target_share)
 from mechanistic_pathway_learning.evaluation.target_held_out_split import (  # noqa: E402
-    REGISTERED_HELD_OUT_FRACTION, targets_of_drugs, two_sided_held_out_perturbations)
-from measure_leakage_only_adversary import graph_file_sha256  # noqa: E402
+    REGISTERED_HELD_OUT_FRACTION, HeldOutDrawOptions, targets_of_drugs, two_sided_held_out_perturbations)
+from measure_leakage_only_adversary import (  # noqa: E402
+    DRAW_OPTIONS_KEY, add_held_out_draw_option_arguments, graph_file_sha256, held_out_draw_options_from_arguments)
 from score_confirmatory import MINIMUM_POSITIVES_TO_SCORE  # noqa: E402
 
 
-def ceilings_of_calibrations(calibrations: list[dict], group_by: str, input_digests: dict) -> tuple[dict[str, float], dict]:
+def ceilings_of_calibrations(calibrations: list[dict], group_by: str, input_digests: dict,
+                             draw_options: HeldOutDrawOptions | None = None) -> tuple[dict[str, float], dict]:
     """statistic -> ceiling over the calibrations, and the channel list they share, after refusing any calibration
-    made on other inputs, with another grouping, without a finite ceiling, or with channels the others do not share."""
+    made on other inputs, with another grouping or other draw options (None: the rule as it stands), without a finite
+    ceiling, or with channels the others do not share."""
     if not calibrations:
         raise ValueError("the draw is checked against at least one calibration")
+    draw_options = draw_options or HeldOutDrawOptions()
     ceilings: dict[str, float] = {}
     channels = calibrations[0]["channels"]
     for calibration in calibrations:
@@ -91,6 +108,10 @@ def ceilings_of_calibrations(calibrations: list[dict], group_by: str, input_dige
                 raise ValueError(f"a calibration's {key} differs from the draw's inputs; decision 9.35 fits the curve on the graph the draw is made on")
         if calibration.get("group_by") != group_by:
             raise ValueError(f"a calibration's pseudo-draws grouped the gene side by {calibration.get('group_by')!r}, not {group_by!r}")
+        calibrated_options = HeldOutDrawOptions.from_record(calibration.get(DRAW_OPTIONS_KEY))
+        if calibrated_options != draw_options:
+            raise ValueError(f"a calibration's pseudo-draws were drawn with the draw options {calibrated_options.as_record()}, "
+                             f"not {draw_options.as_record()}; the pseudo-draws and the draw use one rule")
         if calibration["channels"] != channels:
             raise ValueError("the calibrations were measured with different channels; the draw computes its statistics with one set")
         ceiling = calibration["ceiling"]
@@ -107,11 +128,14 @@ def reached_node_channel(channels: dict) -> dict | None:
     return next((channel for channel in channels["scored"] if channel["channel"] == "reached_node"), None)
 
 
-def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str, input_digests: dict) -> dict:
+def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str, input_digests: dict,
+                      draw_options: HeldOutDrawOptions | None = None, proteins_encoded_by_gene=None) -> dict:
     """The examination of the seed order and, when a seed passes, the held-out set it draws. Reads no label until a
     seed is accepted; then it counts the kept positives inside the held-out set, as experiments/draw_lockbox.py did,
-    which fixes the symptoms of the macro average before anything is scored."""
-    ceilings, channels = ceilings_of_calibrations(calibrations, group_by, input_digests)
+    which fixes the symptoms of the macro average before anything is scored. draw_options (and
+    proteins_encoded_by_gene for the identity option) are the draft options of the module docstring, off by default."""
+    draw_options = draw_options or HeldOutDrawOptions()
+    ceilings, channels = ceilings_of_calibrations(calibrations, group_by, input_digests, draw_options)
     seeds = validated_seed_order(seed_order)
     pseudo_draw_seeds = {int(seed) for calibration in calibrations for seed in calibration["pseudo_draw_seeds"]}
     repeated = sorted(set(seeds) & pseudo_draw_seeds)
@@ -133,7 +157,8 @@ def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str,
 
     def statistics_of_seed(seed: int) -> dict[str, float]:
         held_out_ids, held_out_targets = two_sided_held_out_perturbations(
-            data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids, data.group_ids, seed)
+            data.perturbation_ids, data.perturbation_types, data.perturbation_seeds, data.node_ids, data.group_ids, seed,
+            options=draw_options, proteins_encoded_by_gene=proteins_encoded_by_gene)
         held_out_of_seed[seed] = (held_out_ids, held_out_targets)
         training_ids = [perturbation_id for perturbation_id in perturbation_ids if perturbation_id not in held_out_ids]
         statistics = {}
@@ -152,6 +177,10 @@ def draw_held_out_set(data, seed_order, calibrations: list[dict], group_by: str,
                                      "ceilings; no later seed is examined (decision 9.35)"},
               "group_by": group_by, "seed_order": seeds, "accepted_seed": examination["accepted_seed"],
               "examined_seeds": examination["examined"], "ceilings": ceilings, "channels": channels}
+    if not draw_options.is_default():  # recorded only when an option is on, so a draw without them records what it did
+        record["rule"]["split"] += ("; with the draft options of 28 November 2026, which no ruling registers "
+                                    "(target_held_out_split.HeldOutDrawOptions)")
+        record["rule"][DRAW_OPTIONS_KEY] = record[DRAW_OPTIONS_KEY] = draw_options.as_record()
     if examination["accepted_seed"] is None:
         return record
     held_out_ids, held_out_targets = held_out_of_seed[examination["accepted_seed"]]
@@ -187,7 +216,9 @@ def main() -> None:
     parser.add_argument("--calibration", type=Path, nargs="+", required=True,
                         help="files written by experiments/calibrate_leakage_ceiling.py; a draw passes when it is below every ceiling")
     parser.add_argument("--output", type=Path, required=True, help="the held-out set's record; refused if it exists")
+    add_held_out_draw_option_arguments(parser)
     arguments = parser.parse_args()
+    draw_options = held_out_draw_options_from_arguments(parser, arguments)
     if arguments.output.exists():
         raise SystemExit(f"{arguments.output} exists; a held-out set is drawn once and is not overwritten")
     seed_order = json.loads(arguments.seed_order.read_text())
@@ -198,7 +229,10 @@ def main() -> None:
     reactome_release = reactome_release_of_graph(arguments.graph_dir)
     data = load_experiment_data(arguments.graph_dir, arguments.evidence_dir, group_by=arguments.group_by,
                                label_selection=arguments.label_selection)
-    record = draw_held_out_set(data, seed_order, calibrations, arguments.group_by, input_digests)
+    proteins_encoded_by_gene = (read_proteins_encoded_by_gene(arguments.graph_dir)
+                                if draw_options.hold_out_genes_encoding_held_out_targets else None)
+    record = draw_held_out_set(data, seed_order, calibrations, arguments.group_by, input_digests, draw_options,
+                               proteins_encoded_by_gene)
     if record["accepted_seed"] is None:
         print(json.dumps({key: record[key] for key in ("seed_order", "examined_seeds", "ceilings")}, indent=1))
         raise SystemExit("no seed of the order passes every ceiling; nothing was written, and what follows is the owner's")

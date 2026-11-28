@@ -35,14 +35,17 @@ def test_every_held_out_drug_carries_a_mechanism_training_never_saw():
         assert all(missing for missing in unseen.values()), seed
 
 
-def test_a_gene_perturbation_of_a_held_out_target_goes_with_it():
+def test_a_gene_perturbation_seeding_a_held_out_target_goes_with_it():
     """Otherwise the model learns the node's effect from the gene and is credited for it on the drug, which is the leak
-    merge_drugs_with_their_targets was written to stop."""
+    merge_drugs_with_their_targets was written to stop. The match is by seed node, as on a merged graph, where the drug
+    and the gene seed one node; on a split graph the default leaves the gene in training, which
+    tests/test_held_out_draw_options.py checks with the identity option that holds it out."""
     nodes = ["PROTEIN:A", "PROTEIN:B"]
     ids, kinds, seeds = ["d1", "d2", "gB"], ["drug", "drug", "gene"], [[0], [1], [1]]
     held, held_targets = held_out_perturbations(ids, kinds, seeds, nodes, seed=0, held_out_fraction=0.5)
     assert ("gB" in held) == ("PROTEIN:B" in held_targets)
-    # and through an explicit gene-node map, for a split graph where the gene seeds its own node
+    # and through the gene-node map when it names the target node itself; no loader writes such a map, and a gene node
+    # in it never matches a protein target (tests/test_held_out_draw_options.py)
     held_mapped, held_mapped_targets = held_out_perturbations(
         ids, kinds, [[0], [1], []], nodes, seed=0, held_out_fraction=0.5,
         gene_node_of_perturbation={"gB": "PROTEIN:B"})

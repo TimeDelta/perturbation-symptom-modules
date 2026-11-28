@@ -37,8 +37,13 @@ overtook that for sharing within k hops. Sharing reached only by a longer walk i
 `registered_channel_list` names it, so that a channel found later is a disclosed limitation and not grounds for a
 redraw (9.35).
 
-What item 25 closes and what it leaves open. `target_held_out_split` holds out every drug sharing a held-out target and
-the gene perturbation of a held-out target, so neither reaches training. It does **not** hold out the gene perturbations
+What item 25 closes and what it leaves open. `target_held_out_split` holds out every drug sharing a held-out target, so
+none reaches training. It holds out the gene perturbation of a held-out target only when that perturbation seeds the
+target's own node, which is so on a merged graph and not on a gene/protein-split graph, where a drug seeds protein
+nodes and the gene perturbation its gene node: there the default leaves the gene perturbation of a held-out protein
+target in training, and only the opt-in `HeldOutDrawOptions.hold_out_genes_encoding_held_out_targets` (built 28
+November 2026, not ruled) holds it out, matching the gene to the protein it encodes. Until 28 November 2026 this
+paragraph said that gene perturbation is held out on every graph. It does **not** hold out the gene perturbations
 of a held-out drug's **other** targets, nor the drugs that share those: a drug with three targets of which one is held
 out keeps two mechanisms in training, which the registration states as the price of keeping the label exact. So this
 channel is open by design and the adversary is what measures its worth. `channel_breakdown` reports the two sides

@@ -43,6 +43,12 @@ What it leaves to the caller, because no ruling settles it, each a required argu
 - **--num-pseudo-draws**, checked against the measurement, so the count is stated by the caller and not inherited
   from the measurement script's default.
 
+The draw's options (--hold-out-genes-encoding-held-out-targets, --hold-out-whole-groups-of-those-genes, --gene-side-rule;
+target_held_out_split.HeldOutDrawOptions, built 28 November 2026 and not ruled) are off by default. They state the rule
+the measurement's pseudo-draws were drawn by, a measurement drawn by another is refused (one without a record of them
+was drawn by the rule as it stands), and the calibration records them when one is on, so that
+experiments/draw_held_out_set.py, which takes the same flags, refuses a ceiling fitted on another rule.
+
 It writes one JSON file and refuses to overwrite one.
 
 Usage, from the repository root:
@@ -69,15 +75,24 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mechanistic_pathway_learning.data_release import sha256_of_file  # noqa: E402
 from mechanistic_pathway_learning.evaluation.leakage_ceiling import CURVE_FORMS, fit_advantage_curve, statistic_ceiling  # noqa: E402
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import POOLING_RULES  # noqa: E402
-from measure_leakage_only_adversary import graph_file_sha256  # noqa: E402
+from mechanistic_pathway_learning.evaluation.target_held_out_split import HeldOutDrawOptions  # noqa: E402
+from measure_leakage_only_adversary import (  # noqa: E402
+    DRAW_OPTIONS_KEY, add_held_out_draw_option_arguments, graph_file_sha256, held_out_draw_options_from_arguments)
 
 LABEL_FREE_STATISTICS = ("seen_target_share", "seen_reached_node_share")
 ADVANTAGE_KEY = re.compile(r"^(drug_stratum_|gene_stratum_)?(macro|micro)_advantage_over_(popularity|degree_popularity|type_popularity)$")
 
 
 def calibrate(measurement: dict, pooling_rule: str, statistic: str, advantage: str, one_standard_error: float,
-              curve_form: str, num_pseudo_draws: int) -> dict:
-    """The fit and its inversion from a measurement's records, with the points used and the draws left out."""
+              curve_form: str, num_pseudo_draws: int, draw_options: HeldOutDrawOptions | None = None) -> dict:
+    """The fit and its inversion from a measurement's records, with the points used and the draws left out.
+    draw_options are the draw's options the caller states (None: the rule as it stands); a measurement whose
+    pseudo-draws were drawn by other options is refused."""
+    draw_options = draw_options or HeldOutDrawOptions()
+    measured_options = HeldOutDrawOptions.from_record(measurement.get(DRAW_OPTIONS_KEY))
+    if measured_options != draw_options:
+        raise ValueError(f"the measurement's pseudo-draws were drawn with the draw options {measured_options.as_record()}, "
+                         f"not the {draw_options.as_record()} stated; the calibration and the draw use one rule")
     if statistic not in LABEL_FREE_STATISTICS:
         raise ValueError(f"statistic must be one of {LABEL_FREE_STATISTICS}, the label-free ones, not {statistic!r}")
     if not ADVANTAGE_KEY.match(advantage):
@@ -101,12 +116,15 @@ def calibrate(measurement: dict, pooling_rule: str, statistic: str, advantage: s
         else:
             points.append({"draw_seed": seed, "statistic": float(draw[statistic]), "advantage": float(draw[advantage])})
     curve = fit_advantage_curve([point["statistic"] for point in points], [point["advantage"] for point in points], curve_form)
-    return {"pooling_rule": pooling_rule, "statistic": statistic, "advantage": advantage,
-            "one_standard_error": float(one_standard_error), "curve": curve,
-            "ceiling": statistic_ceiling(curve, one_standard_error), "points": points, "pseudo_draws_left_out": left_out,
-            "pseudo_draw_seeds": measurement.get("pseudo_draw_seeds", list(range(num_pseudo_draws))),
-            "channels": measurement["channels"], "group_by": measurement.get("group_by"),
-            "lockbox_excluded": measurement.get("lockbox_excluded")}
+    record = {"pooling_rule": pooling_rule, "statistic": statistic, "advantage": advantage,
+              "one_standard_error": float(one_standard_error), "curve": curve,
+              "ceiling": statistic_ceiling(curve, one_standard_error), "points": points, "pseudo_draws_left_out": left_out,
+              "pseudo_draw_seeds": measurement.get("pseudo_draw_seeds", list(range(num_pseudo_draws))),
+              "channels": measurement["channels"], "group_by": measurement.get("group_by"),
+              "lockbox_excluded": measurement.get("lockbox_excluded")}
+    if not draw_options.is_default():  # recorded only when an option is on, as the measurement records them
+        record[DRAW_OPTIONS_KEY] = draw_options.as_record()
+    return record
 
 
 def refuse_another_graph(measurement: dict, graph_directory: Path, evidence_directory: Path, label_selection: Path) -> None:
@@ -138,7 +156,9 @@ def main() -> None:
     parser.add_argument("--curve-form", choices=list(CURVE_FORMS), required=True)
     parser.add_argument("--num-pseudo-draws", type=int, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    add_held_out_draw_option_arguments(parser)
     arguments = parser.parse_args()
+    draw_options = held_out_draw_options_from_arguments(parser, arguments)
     if arguments.output.exists():
         raise SystemExit(f"{arguments.output} exists; a calibration is written once, so name another path")
     if not arguments.standard_error_source.strip():
@@ -152,7 +172,7 @@ def main() -> None:
               "label_selection": str(arguments.label_selection), "label_selection_sha256": measurement["label_selection_sha256"],
               "standard_error_source": arguments.standard_error_source}
     record.update(calibrate(measurement, arguments.pooling_rule, arguments.statistic, arguments.advantage,
-                            arguments.one_standard_error, arguments.curve_form, arguments.num_pseudo_draws))
+                            arguments.one_standard_error, arguments.curve_form, arguments.num_pseudo_draws, draw_options))
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     with open(arguments.output, "x") as handle:
         handle.write(json.dumps(record, indent=1) + "\n")
