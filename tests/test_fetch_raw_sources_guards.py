@@ -100,3 +100,38 @@ def test_a_cluster_type_the_code_does_not_map_is_named(tmp_path, region_table_pa
     assert len(problems) == 1
     assert "cluster types with no cell class" in problems[0]
     assert "a cluster type of a later release" in problems[0]
+
+
+def test_with_the_dopaminergic_reference_a_release_without_it_is_named(tmp_path, region_table_path):
+    """--with-dopaminergic-reference (28 November 2026): a cluster-type file the base graph's readers accept but
+    experiments/build_dopaminergic_expression.py cannot scale against is named at fetch time."""
+    from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE
+    mapped_cluster_type_other_than_the_reference = next(
+        cluster_type for cluster_type in sorted(CELL_CLASS_OF_CLUSTER_TYPE) if cluster_type != REFERENCE_CLUSTER_TYPE)
+    cluster_type_table_path = write_zipped_table(tmp_path / "rna_single_nuclei_cluster_type.tsv.zip", pd.DataFrame({
+        "Gene": ["ENSG01"], "Gene name": ["A"], "Cluster type": [mapped_cluster_type_other_than_the_reference], "nCPM": [3.0]}))
+    assert problems_reading_hpa_downloads(region_table_path, cluster_type_table_path) == [], "without the flag, as before"
+    problems = problems_reading_hpa_downloads(region_table_path, cluster_type_table_path, check_dopaminergic_reference=True)
+    assert len(problems) == 1
+    assert f"reference cluster type {REFERENCE_CLUSTER_TYPE!r}" in problems[0]
+    assert mapped_cluster_type_other_than_the_reference in problems[0]
+
+
+def test_with_the_dopaminergic_reference_a_release_holding_it_reads(tmp_path, region_table_path):
+    from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE
+    assert REFERENCE_CLUSTER_TYPE in CELL_CLASS_OF_CLUSTER_TYPE
+    cluster_type_table_path = write_zipped_table(tmp_path / "rna_single_nuclei_cluster_type.tsv.zip", pd.DataFrame({
+        "Gene": ["ENSG01"], "Gene name": ["A"], "Cluster type": [REFERENCE_CLUSTER_TYPE], "nCPM": [3.0]}))
+    assert problems_reading_hpa_downloads(region_table_path, cluster_type_table_path, check_dopaminergic_reference=True) == []
+
+
+def test_the_script_asks_for_the_dopaminergic_reference_under_with_cellxgene_alone():
+    """The flag is set from the script's own block, run by bash, and the HPA check is given it."""
+    flag_block = re.search(r'^hpa_check_dopaminergic_reference_flag="".*?^fi\n', FETCH_SCRIPT_TEXT, re.MULTILINE | re.DOTALL).group(0)
+    for with_cellxgene, expected_flag in (("yes", "--with-dopaminergic-reference"), ("no", "")):
+        bash_source = f'set -u\nwith_cellxgene="{with_cellxgene}"\n{flag_block}printf "%s" "$hpa_check_dopaminergic_reference_flag"\n'
+        completed = subprocess.run(["bash", "-c", bash_source], capture_output=True, text=True, check=True)
+        assert completed.stdout == expected_flag, with_cellxgene
+    check_line = next(line for line in FETCH_SCRIPT_TEXT.splitlines() if "experiments/check_hpa_downloads.py --region-table" in line)
+    assert check_line.rstrip().endswith("$hpa_check_dopaminergic_reference_flag; then")
+    assert FETCH_SCRIPT_TEXT.index(flag_block) < FETCH_SCRIPT_TEXT.index(check_line)

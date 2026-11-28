@@ -12,10 +12,20 @@ It reads, and changes nothing. It exits 1 and names the problem when the region 
 cluster-type file has a cluster type with no cell class; scripts/fetch_raw_sources.sh then writes an UNREADABLE row
 to its report and exits 1 at the end.
 
+--with-dopaminergic-reference (28 November 2026) also runs the reader of experiments/build_dopaminergic_expression.py,
+which needs the cluster-type file to hold rows of the cluster type it scales atlas cluster 395 against
+(REFERENCE_CLUSTER_TYPE, "splatter", which the release pinned since 27 November 2026 does not have). Only the
+descriptors stage of scripts/rebuild_data_layer.sh runs that step, after fetching with --with-cellxgene, so
+scripts/fetch_raw_sources.sh passes the flag under --with-cellxgene alone: checked on every fetch, it would stop the
+default graphs stage, which never reads the reference. Without the flag the check covers the readers of the base graph,
+which every stage builds first; with it, the dopaminergic step's as well. Until 28 November 2026 the check had no such
+flag, so a release without the reference passed it and stopped the descriptors stage at the dopaminergic step instead.
+
 Usage:
   PYTHONPATH=. python experiments/check_hpa_downloads.py \
     --region-table data/raw/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip \
-    --cluster-type-table data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip
+    --cluster-type-table data/raw/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip \
+    [--with-dopaminergic-reference]
 """
 from __future__ import annotations
 
@@ -27,8 +37,10 @@ from mechanistic_pathway_learning.graph.brain_expression_descriptors import (
     hpa_cell_class_table, hpa_region_table, read_zipped_table)
 
 
-def problems_reading_hpa_downloads(region_table_path: Path, cluster_type_table_path: Path) -> list[str]:
-    """What stops the build's HPA readers on these two files, one message per problem; empty when both read."""
+def problems_reading_hpa_downloads(region_table_path: Path, cluster_type_table_path: Path,
+                                   check_dopaminergic_reference: bool = False) -> list[str]:
+    """What stops the build's HPA readers on these two files, one message per problem; empty when both read.
+    check_dopaminergic_reference adds the reader of the dopaminergic step (--with-dopaminergic-reference)."""
     problems = []
     try:
         region_columns = hpa_region_table(read_zipped_table(region_table_path)).columns
@@ -40,6 +52,13 @@ def problems_reading_hpa_downloads(region_table_path: Path, cluster_type_table_p
         hpa_cell_class_table(read_zipped_table(cluster_type_table_path))
     except Exception as error:
         problems.append(f"{cluster_type_table_path}: {type(error).__name__}: {error}")
+    if check_dopaminergic_reference:
+        try:
+            # imported here, not at the top: the step's module imports h5py, which only the descriptors stage needs
+            from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE, reference_cluster_type_profile
+            reference_cluster_type_profile(read_zipped_table(cluster_type_table_path), REFERENCE_CLUSTER_TYPE)
+        except Exception as error:
+            problems.append(f"{cluster_type_table_path}: {type(error).__name__}: {error}")
     return problems
 
 
@@ -47,8 +66,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--region-table", type=Path, required=True, help="rna_brain_region_hpa.tsv.zip")
     parser.add_argument("--cluster-type-table", type=Path, required=True, help="rna_single_nuclei_cluster_type.tsv.zip")
+    parser.add_argument("--with-dopaminergic-reference", action="store_true",
+                        help="also check the cluster type experiments/build_dopaminergic_expression.py scales against")
     arguments = parser.parse_args()
-    problems = problems_reading_hpa_downloads(arguments.region_table, arguments.cluster_type_table)
+    problems = problems_reading_hpa_downloads(arguments.region_table, arguments.cluster_type_table,
+                                              check_dopaminergic_reference=arguments.with_dopaminergic_reference)
     for problem in problems:
         print(f"UNREADABLE {problem}", file=sys.stderr)
     if not problems:

@@ -30,7 +30,8 @@
 #   dissections holding cluster 395 (1.24 GB), which the dopaminergic cell class needs
 #   (experiments/build_dopaminergic_expression.py), and, since 20 November 2026 (commit cb4f6c9), the twelve files
 #   holding cluster 400 (the Splatter supercluster file and eleven dissections, 8.39 GB), for the forebrain cholinergic
-#   classes of amendment item 37b, which no build script reads yet.
+#   classes of amendment item 37b, which no build script reads yet. Since 28 November 2026 it also has the HPA check ask
+#   for the cluster type the dopaminergic class is scaled against (the comment above the HPA fetch below).
 set -uo pipefail
 repository_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repository_root"
@@ -157,12 +158,20 @@ fetch "$raw_directory/gtex/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.g
 # (decision 9.155: "Just use the new one"); until then the pins were 108fb699 and a287c1ab, the release of 7 October.
 # The address serves the current release, so the files are then read with the build's own readers (experiments/check_hpa_downloads.py): a release whose cluster types
 # CELL_CLASS_OF_CLUSTER_TYPE does not name is reported UNREADABLE here rather than at the base graph of a rebuild.
+# Since 28 November 2026, under --with-cellxgene, which the descriptors stage of scripts/rebuild_data_layer.sh passes
+# before it runs experiments/build_dopaminergic_expression.py, the check also asks for the cluster type that step scales
+# against, so a release without it is reported here rather than at that step. The other stages fetch without the flag
+# and never run that step, so the check does not stop them for it.
+hpa_check_dopaminergic_reference_flag=""
+if [ "$with_cellxgene" = "yes" ]; then
+  hpa_check_dopaminergic_reference_flag="--with-dopaminergic-reference"
+fi
 hpa_region_table_path="$raw_directory/hpa/rna_brain_region_hpa/rna_brain_region_hpa.tsv.zip"
 hpa_cluster_type_table_path="$raw_directory/hpa/rna_single_nuclei_cluster_type/rna_single_nuclei_cluster_type.tsv.zip"
 fetch "$hpa_region_table_path" "https://www.proteinatlas.org/download/tsv/rna_brain_region_hpa.tsv.zip" a6cd5e1423085c56f673ee4771f5dbca9a0ef4ecb257d7efa3f06b7887b4340d
 fetch "$hpa_cluster_type_table_path" "https://www.proteinatlas.org/download/tsv/rna_single_nuclei_cluster_type.tsv.zip" b24e46d48e12a8c2944cfe3c48191d62b1c93f207cd8f78d6a942d5ed7870edf
 if [ -s "$hpa_region_table_path" ] && [ -s "$hpa_cluster_type_table_path" ] \
-  && ! PYTHONPATH=. python experiments/check_hpa_downloads.py --region-table "$hpa_region_table_path" --cluster-type-table "$hpa_cluster_type_table_path"; then
+  && ! PYTHONPATH=. python experiments/check_hpa_downloads.py --region-table "$hpa_region_table_path" --cluster-type-table "$hpa_cluster_type_table_path" $hpa_check_dopaminergic_reference_flag; then
   printf '%s\t-\t-\t-\tUNREADABLE\n' "$hpa_cluster_type_table_path" >> "$report_path"
 fi
 

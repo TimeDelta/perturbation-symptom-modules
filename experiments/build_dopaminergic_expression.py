@@ -10,8 +10,17 @@ dopaminergic cluster. Four dissections hold most of its nuclei: SN-RN, SN, PAG-D
 
 Steps: sum the UMI counts of the cluster's nuclei per gene; keep the genes of HPA's cluster-type table (the same
 Ensembl ids); counts per million over those genes; divide by trimmed_mean_scale_factor against HPA's splatter cluster
-type (the supercluster cluster 395 belongs to), so the column sits on the scale of the other cell classes. Only the
-cluster's rows are read from each file (h5py, row slices of the compressed sparse matrix), so memory stays small.
+type (REFERENCE_CLUSTER_TYPE, the supercluster cluster 395 belongs to), so the column sits on the scale of the other
+cell classes. Only the cluster's rows are read from each file (h5py, row slices of the compressed sparse matrix), so
+memory stays small.
+
+The release used since 27 November 2026 (decision 9.155) has no cluster type named "splatter". On it the script stops
+before reading any count file, naming the missing reference type and the types the file holds
+(reference_cluster_type_profile, since 28 November 2026; until then it read every count file and then stopped inside
+trimmed_mean_scale_factor with "no gene reaches minimum_value in both profiles", which named the wrong cause). Which
+reference the class is scaled against on that release is not chosen, and decision 9.155 does not list it among what it
+owes. experiments/check_hpa_downloads.py makes the same check at fetch time when given --with-dopaminergic-reference,
+which scripts/fetch_raw_sources.sh passes under --with-cellxgene.
 
 Usage:
   python experiments/build_dopaminergic_expression.py \
@@ -44,6 +53,18 @@ def categorical_column(group: h5py.Group, name: str) -> np.ndarray:
         categories = column["categories"][:].astype(str)
         return categories[column["codes"][:]]
     return column[:].astype(str)
+
+
+def reference_cluster_type_profile(cluster_type_table: pd.DataFrame, reference_cluster_type: str) -> pd.Series:
+    """Gene-indexed nCPM of the reference cluster type in HPA's cluster-type table, the profile the cluster is scaled
+    against. A table with no row of that type is refused here, by name, because trimmed_mean_scale_factor given an empty
+    reference refuses with "no gene reaches minimum_value in both profiles", which does not say the type is missing."""
+    rows_of_the_reference_type = cluster_type_table[cluster_type_table["Cluster type"] == reference_cluster_type]
+    if rows_of_the_reference_type.empty:
+        cluster_types_in_the_table = sorted(cluster_type_table["Cluster type"].astype(str).unique())
+        raise ValueError(f"the HPA cluster-type table has no row of the reference cluster type {reference_cluster_type!r} "
+                         f"(--reference-cluster-type); its {len(cluster_types_in_the_table)} cluster types are {cluster_types_in_the_table}")
+    return rows_of_the_reference_type.set_index("Gene")["nCPM"].astype(float)
 
 
 def cluster_counts(h5ad_path: Path, cluster_id: str) -> tuple[pd.Series, dict]:
@@ -85,6 +106,9 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("data/processed/brain_expression/dopaminergic_siletti_cluster395.parquet"))
     arguments = parser.parse_args()
 
+    # the HPA table first, so a release without the reference cluster type is refused before the count files are read
+    hpa = read_zipped_table(arguments.hpa_cluster_type)
+    reference = reference_cluster_type_profile(hpa, arguments.reference_cluster_type)
     total_counts, descriptions, symbols = None, [], {}
     for path in arguments.h5ad:
         counts, description = cluster_counts(path, arguments.cluster_id)
@@ -93,8 +117,6 @@ def main() -> None:
         total_counts = counts if total_counts is None else total_counts.add(counts, fill_value=0.0)
         print(json.dumps(description), flush=True)
 
-    hpa = read_zipped_table(arguments.hpa_cluster_type)
-    reference = hpa[hpa["Cluster type"] == arguments.reference_cluster_type].set_index("Gene")["nCPM"].astype(float)
     hpa_genes = pd.Index(hpa["Gene"].unique())
     counts_on_hpa_genes = total_counts.reindex(hpa_genes).fillna(0.0)
     cpm = counts_per_million(counts_on_hpa_genes)
