@@ -221,6 +221,22 @@ def test_an_internal_error_exit_wakes_the_session_even_when_the_output_shows_no_
     assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
 
 
+def test_an_internal_error_with_a_plugins_own_exit_code_still_wakes_the_session(tmp_path):
+    """A plugin can end the run with a code of its own: measured on 28 November 2026 with a conftest whose
+    pytest_sessionstart raised and whose pytest_internalerror called pytest.exit(returncode=7), pytest 9.1.1 gave status
+    7, INTERNALERROR lines and no summary line. The crash rule does not take status 7, so only the INTERNALERROR line
+    makes this a report."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'echo "INTERNALERROR> Traceback (most recent call last):"\n'
+                                          'echo "INTERNALERROR> RuntimeError: a plugin failed at session start"\n'
+                                          'echo "Exit: leaving with a code of my own"\nexit 7\n')
+    result = run_hook(checkout, stub_directory)
+    assert result.returncode == 2, result
+    assert "The full test suite failed in" in result.stderr
+    assert "INTERNALERROR> RuntimeError: a plugin failed at session start" in result.stderr
+    assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
+
+
 def test_a_suite_killed_in_a_checkout_that_was_deleted_wakes_nobody(tmp_path):
     """A crash is reported only while the checkout exists: the stub deletes it and then kills itself with SIGSEGV."""
     checkout = make_checkout(tmp_path)

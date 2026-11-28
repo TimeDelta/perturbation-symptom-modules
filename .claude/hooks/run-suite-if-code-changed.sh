@@ -127,8 +127,11 @@ if [ -n "$crash_cause" ]; then
     exit 2
 fi
 
-# INTERNALERROR and the conftest report normally come with status 3 and 4, reported above; they are kept here for a
-# plugin that ends the run with a code of its own, which pytest's ExitCode allows.
+# INTERNALERROR normally comes with status 3, reported above, and is kept here for a plugin that ends the run with a
+# code of its own, which pytest's ExitCode allows: a conftest whose pytest_sessionstart raised and whose
+# pytest_internalerror called pytest.exit(returncode=7) gave status 7, INTERNALERROR lines and no summary line (measured
+# on 28 November 2026). The conftest report comes only with status 4 in pytest 9.1.1, whose main() returns USAGE_ERROR
+# right after printing it, and is kept here as it was.
 if ! grep -qE '^(FAILED|ERROR|INTERNALERROR)|^ImportError while loading conftest|[0-9]+ (passed|failed|errors?)\b|no tests ran' "$output_file"; then
     rm -f "$output_file"
     exit 0  # pytest reported no result and did not crash: nothing to report
