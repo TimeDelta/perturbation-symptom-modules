@@ -63,7 +63,7 @@ import numpy as np
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
 from mechanistic_pathway_learning.evaluation.experiment_data import (
-    EVIDENCED_NEGATIVE_ARRAYS, GENE_TO_PROTEIN_FILE, load_experiment_data, read_proteins_encoded_by_gene)
+    GENE_TO_PROTEIN_FILE, load_experiment_data, read_proteins_encoded_by_gene, restrict_to_perturbations)
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
     LeakageOnlyAdversary, POOLING_RULES, REACH_EDGE_SETS, channel_breakdown, neighbours_through_the_channels,
     reach_edges, reached_nodes_of_perturbations, registered_channel_list, seed_nodes_of_perturbations,
@@ -451,17 +451,15 @@ def resolve_channel_arguments(parser, arguments) -> list[tuple[str, str]] | None
 
 
 def _restrict(data, keep: list[int]):
-    """A copy of the experiment data holding only the given perturbation rows."""
-    import dataclasses
-    per_perturbation_lists = ("perturbation_ids", "perturbation_labels", "perturbation_types", "group_ids",
-                              "perturbation_seeds", "perturbation_signs", "perturbation_magnitudes")
-    changes = {name: [getattr(data, name)[index] for index in keep] for name in per_perturbation_lists}
-    for name in ("outcomes", "weights", "label_mask", "frequencies", "evidence_dates", "evidence_date_is_publication",
-                 "evidenced_negative", "placebo_negative_weight_matrix", *EVIDENCED_NEGATIVE_ARRAYS):
-        value = getattr(data, name, None)
-        if value is not None:
-            changes[name] = np.asarray(value)[keep]
-    return dataclasses.replace(data, **changes)
+    """A copy of the experiment data holding only the given perturbation rows, by
+    experiment_data.restrict_to_perturbations, which slices every per-perturbation field. Until 28 November 2026 this
+    sliced a list of its own, which left in_metabolic_layer, masked_for_soft_evidence, evidenced_negative_power,
+    perturbation_target_seeds, perturbation_parts and perturbation_seed_parts at their full length; one_draw reads none
+    of them (nor label_selection_summary, to which restrict_to_perturbations adds the counts after the restriction), so
+    the change gives every measurement the numbers it gave before."""
+    kept_perturbation_mask = np.zeros(len(data.perturbation_ids), dtype=bool)
+    kept_perturbation_mask[np.asarray(keep, dtype=int)] = True
+    return restrict_to_perturbations(data, kept_perturbation_mask)
 
 
 def _markdown(results: dict, arguments) -> str:

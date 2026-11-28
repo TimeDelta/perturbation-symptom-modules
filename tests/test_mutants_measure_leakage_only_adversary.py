@@ -1,8 +1,10 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/measure_leakage_only_adversary.py, in
 registered_two_sided_draw, one_draw and main's pseudo-draw loop, that tests/test_measure_leakage_only_adversary.py and
 tests/test_leakage_ceiling.py let survive (hand-made mutation testing; the mutants and which test kills each are listed
-in the session's report). Each test checks what the script's docstrings say it does. Synthetic data only: nothing here
-reads a real graph."""
+in the session's report). Each test checks what the script's docstrings say it does. The last one, added with the fix
+of _restrict on the same day, was found by reading the code rather than by a surviving mutant. Synthetic data only:
+nothing here reads a real graph."""
+import dataclasses
 import json
 import sys
 from pathlib import Path
@@ -12,6 +14,7 @@ import numpy as np
 import pytest
 
 import experiments.measure_leakage_only_adversary as measurement
+from mechanistic_pathway_learning.evaluation.experiment_data import PER_PERTURBATION_ARRAYS, PER_PERTURBATION_LISTS
 from mechanistic_pathway_learning.evaluation.leakage_only_adversary import (
     LeakageOnlyAdversary, neighbours_through_the_channels, reached_nodes_of_perturbations, seed_nodes_of_perturbations,
     seen_reached_node_share, seen_target_share)
@@ -158,3 +161,34 @@ def test_the_lockbox_perturbations_are_left_out_of_every_pseudo_draw(tmp_path, m
     assert all(len(perturbation_ids) == len(synthetic_data().perturbation_ids) - 3 for _, perturbation_ids in seen)
     results = json.loads((tmp_path / "k0.json").read_text())
     assert results["excluded_lockbox_perturbations"] == 3 and results["lockbox_excluded"] == str(lockbox)
+
+
+# ---------------------------------------------------------------- the development rows
+
+
+def test_leaving_out_the_lockbox_cuts_every_per_perturbation_field_to_the_rows_kept():
+    """_restrict: "A copy of the experiment data holding only the given perturbation rows". Until 28 November 2026 it
+    sliced a list of its own, which left in_metabolic_layer and five other per-perturbation fields at their full length
+    while outcomes was cut; experiment_data.PER_PERTURBATION_LISTS and PER_PERTURBATION_ARRAYS name every such field."""
+    data = synthetic_data()
+    number_of_perturbations, number_of_symptoms = data.outcomes.shape
+    seed_parts = [np.zeros(len(seed), dtype=int) for seed in data.perturbation_seeds]
+    data = dataclasses.replace(
+        data, in_metabolic_layer=np.arange(number_of_perturbations) % 2 == 0,
+        masked_for_soft_evidence=np.arange(number_of_perturbations * number_of_symptoms).reshape(data.outcomes.shape) % 3 == 0,
+        evidenced_negative_power=np.arange(number_of_perturbations * number_of_symptoms, dtype=float).reshape(data.outcomes.shape),
+        perturbation_target_seeds=[seed + 100 for seed in data.perturbation_seeds],
+        perturbation_parts=[[f"part of {identifier}"] for identifier in data.perturbation_ids], perturbation_seed_parts=seed_parts)
+    kept_rows = [row for row in range(number_of_perturbations) if row % 3 != 1]
+    restricted = measurement._restrict(data, kept_rows)
+    for name in PER_PERTURBATION_LISTS + ("perturbation_target_seeds", "perturbation_parts", "perturbation_seed_parts"):
+        kept_values, expected_values = getattr(restricted, name), [getattr(data, name)[row] for row in kept_rows]
+        assert len(kept_values) == len(kept_rows), name
+        for kept_value, expected_value in zip(kept_values, expected_values):
+            np.testing.assert_array_equal(kept_value, expected_value)
+    for name in PER_PERTURBATION_ARRAYS:
+        if getattr(data, name) is None:
+            assert getattr(restricted, name) is None, name
+        else:
+            np.testing.assert_array_equal(getattr(restricted, name), np.asarray(getattr(data, name))[kept_rows], err_msg=name)
+    assert restricted.node_ids == data.node_ids and restricted.edge_source is data.edge_source
