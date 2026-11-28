@@ -619,3 +619,11 @@ supply is absent.
   graph, which bears on the linear-response encoder's fixed point. Flagged for the owner; no row is withheld on that
   ground alone, since `CLAUDE.md` puts physiology above numerical convenience and a numerical objection would need
   its own stated justification.
+
+## Added 28 November 2026: a wrong citation key
+
+The review of Chalifoux, Faerman and Mailloux 2023 (PMID 37898400) is cited above as `chalifoux2023pdhkgdh`, in the
+peer-review paragraph and in the note of the proposed `yan2013dldhinactivation` entry. The entry this record proposes
+for it, and the one `docs/references.bib` holds, has the key `chalifoux2023pdhkgdhperoxide`; no entry has ever had the
+shorter key. The note of `yan2013dldhinactivation` in `docs/references.bib` carried the shorter key too and was
+corrected there on 28 November 2026. The text above is left as it was committed.

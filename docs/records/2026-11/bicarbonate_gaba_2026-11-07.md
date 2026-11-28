@@ -629,3 +629,11 @@ the owner the same day and read on Fable; that reading is `docs/anion_permeabili
 this record's draft entry for `fatimashad1993anion` and its description of that paper as closed. A per-cell-class
 chloride search was then started; decision 9.112's bicarbonate sub-question waits on it, with the owner's fallback
 (keep E_Cl, bicarbonate stated as a limit) if the data are not there.
+
+## Added 28 November 2026: a wrong citation key
+
+Section 6 names `dusterwald2018biophysical` among the keys "already there" in `docs/references.bib`. No entry of that
+file has ever had that key; the entry meant, Düsterwald et al. 2018 in *eLife* (PMID 30260315), the source of the
+registered membrane-potential constants, is `dusterwald2018chloride`. The note of `selfe2024alloptical` in
+`docs/references.bib`, added from this pass, carried the same wrong key and was corrected there on 28 November 2026.
+The text above is left as it was committed.
