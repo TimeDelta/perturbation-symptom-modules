@@ -3,13 +3,17 @@ right?") and the draw it gates, built with every open definition left to the cal
 here draws a held-out set or reads a real graph. The measurement's own tests, of the reached-node channel's arguments,
 the k = 0 equivalence, graph_file_sha256 and the checkpoint guard, are in tests/test_measure_leakage_only_adversary.py."""
 import json
+import shutil
 import sys
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from mechanistic_pathway_learning.data_release import sha256_of_file
 from mechanistic_pathway_learning.evaluation.leakage_ceiling import (
+    GRAPH_BUILD_SUMMARIES,
+    REACTOME_RELEASE_SUMMARY,
     draw_passes,
     first_passing_seed,
     fit_advantage_curve,
@@ -106,20 +110,200 @@ def test_the_seed_order_must_be_whole_numbers_without_a_repeat():
 # ---------------------------------------------------------------- the graph the draw is made on
 
 
-def write_graph_with_summary(directory: Path, summary: dict) -> Path:
-    write_graph_directory(directory)
-    (directory / "neuronal_variant_summary.json").write_text(json.dumps(summary))
+# Fixture graphs laid out as the builders of the registered chain lay theirs out (scripts/rebuild_data_layer.sh), under
+# a stand-in repository root, each with the summary its builder writes and only the keys reactome_release_of_graph
+# reads, its source recorded as the relative path the builder was given.
+
+PROCESSED = "data/processed"
+
+
+def write_parquet_graph(directory: Path, node_types: list[str], relations: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    directory.mkdir(parents=True, exist_ok=True)
+    nodes = pd.DataFrame({"node_id": [f"N{position}" for position in range(len(node_types))], "node_type": node_types})
+    edges = pd.DataFrame({"source_id": ["N0"] * len(relations), "target_id": ["N1"] * len(relations), "relation_type": relations})
+    nodes.to_parquet(directory / "nodes.parquet")
+    edges.to_parquet(directory / "edges.parquet")
+    (directory / "relation_types.json").write_text(json.dumps(sorted(set(relations))))
+    return nodes, edges
+
+
+def value_counts(table: pd.DataFrame, column: str) -> dict:
+    return {str(value): int(count) for value, count in table[column].value_counts().items()}
+
+
+def build_neuronal(root: Path, name="graph_full_neuronal", release=98) -> Path:
+    directory = root / PROCESSED / name
+    nodes, edges = write_parquet_graph(directory, ["gene", "gene", "metabolite", "reaction"], ["catalyzes", "produces", "produces"])
+    summary = {"base_graph": f"{PROCESSED}/graph_full_manganese", "nodes_by_type": value_counts(nodes, "node_type"),
+               "edges_by_relation": value_counts(edges, "relation_type")}
+    if release is not None:
+        summary["reactome_pathways"] = {"reactome_release": release, "pathways": {}}
+    (directory / "neuronal_variant_summary.json").write_text(json.dumps(summary, indent=1))
+    (directory / "node_descriptors_summary.json").write_text(json.dumps({"rows": 4}))
     return directory
 
 
-def test_the_reactome_release_is_read_from_the_graph_summary_or_refused(tmp_path):
-    graph = write_graph_with_summary(tmp_path / "graph", {"reactome_pathways": {"reactome_release": 98, "pathways": {}}})
-    assert reactome_release_of_graph(graph) == {"reactome_release": "98", "read_from": ["neuronal_variant_summary.json"]}
+def build_split(root: Path, source: Path, name="graph_full_neuronal_split") -> Path:
+    directory = root / PROCESSED / name
+    source_nodes, source_edges = pd.read_parquet(source / "nodes.parquet"), pd.read_parquet(source / "edges.parquet")
+    nodes, edges = write_parquet_graph(directory, list(source_nodes.node_type) + ["protein", "protein"],
+                                       list(source_edges.relation_type) + ["encodes", "encodes"])
+    pd.DataFrame({"gene_node_id": ["N0", "N1"], "protein_node_id": ["N4", "N5"]}).to_parquet(directory / "gene_to_protein.parquet")
+    (directory / "split_summary.json").write_text(json.dumps({
+        "gene_nodes": int((source_nodes.node_type == "gene").sum()), "edges_before": len(source_edges), "edges_after": len(edges),
+        "edges_per_relation": value_counts(edges, "relation_type"), "graph_dir": str(source.relative_to(root)),
+        "output_dir": str(directory.relative_to(root)), "nodes_before": len(source_nodes), "nodes_after": len(nodes)}, indent=1))
+    return directory
+
+
+def build_binders(root: Path, source: Path) -> Path:
+    directory = source.parent / f"{source.name}_binders"  # build_plasma_binder_variant.py's own naming
+    source_nodes, source_edges = pd.read_parquet(source / "nodes.parquet"), pd.read_parquet(source / "edges.parquet")
+    nodes, edges = write_parquet_graph(directory, list(source_nodes.node_type), list(source_edges.relation_type) + ["binds"])
+    for copied in ("node_descriptors_summary.json", "gene_to_protein.parquet"):  # its COPIED_FILES that the fixture holds
+        if (source / copied).exists():
+            shutil.copyfile(source / copied, directory / copied)
+    (directory / "plasma_binder_summary.json").write_text(json.dumps({
+        "edges_added": 1, "source_graph": str(source.relative_to(root)), "nodes": len(nodes), "edges_before": len(source_edges),
+        "edges_after": len(edges)}, indent=1))
+    return directory
+
+
+def build_drugs(root: Path, source: Path, name: str) -> Path:
+    directory = root / PROCESSED / name
+    source_nodes, source_edges = pd.read_parquet(source / "nodes.parquet"), pd.read_parquet(source / "edges.parquet")
+    for source_file in sorted(source.iterdir()):  # build_drug_entry_node_variant.py copies every file it does not rewrite
+        if source_file.is_file() and source_file.name not in ("nodes.parquet", "edges.parquet", "relation_types.json"):
+            directory.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source_file, directory / source_file.name)
+    write_parquet_graph(directory, list(source_nodes.node_type) + ["drug"], list(source_edges.relation_type) + ["targets"])
+    (directory / "drug_entry_summary.json").write_text(json.dumps({
+        "source_graph": str(source.relative_to(root)), "source_nodes_sha256": sha256_of_file(source / "nodes.parquet"),
+        "source_edges_sha256": sha256_of_file(source / "edges.parquet"), "nodes_sha256": sha256_of_file(directory / "nodes.parquet"),
+        "edges_sha256": sha256_of_file(directory / "edges.parquet")}, indent=1))
+    return directory
+
+
+def registered_chain(root: Path) -> dict[str, Path]:
+    neuronal = build_neuronal(root)
+    split = build_split(root, neuronal)
+    split_binders = build_binders(root, split)
+    return {"neuronal": neuronal, "split": split, "neuronal_binders": build_binders(root, neuronal),
+            "split_binders": split_binders, "drugs_v5": build_drugs(root, split_binders, "graph_full_neuronal_split_binders_drugs_v5")}
+
+
+def test_the_reactome_release_is_found_on_every_graph_of_the_registered_chain(tmp_path):
+    chain = registered_chain(tmp_path)
+    expected_links = {"neuronal": [], "split": ["split_summary.json"], "neuronal_binders": ["plasma_binder_summary.json"],
+                      "split_binders": ["plasma_binder_summary.json", "split_summary.json"],
+                      "drugs_v5": ["drug_entry_summary.json", "plasma_binder_summary.json", "split_summary.json"]}
+    for graph, links in expected_links.items():
+        found = reactome_release_of_graph(chain[graph], relative_to=tmp_path)
+        assert found["reactome_release"] == "98"
+        assert found["read_from"] == str(chain["neuronal"] / "neuronal_variant_summary.json")
+        assert [link["summary"] for link in found["lineage"]] == links
+        if links:
+            assert Path(found["lineage"][0]["graph_dir"]) == chain[graph]
+            assert Path(found["lineage"][-1]["source_graph_dir"]) == chain["neuronal"]
+    drugs = reactome_release_of_graph(chain["drugs_v5"], relative_to=tmp_path)["lineage"]
+    # the drug variant holds a copy of the binders' summary, and its own summary is told from it by what each records of its output
+    assert (chain["drugs_v5"] / "plasma_binder_summary.json").exists()
+    assert drugs[0]["source_recorded_as"] == f"{PROCESSED}/graph_full_neuronal_split_binders"
+    assert "SHA-256" in drugs[0]["link_checked_by"] and "row counts" in drugs[1]["link_checked_by"] and "row counts" in drugs[2]["link_checked_by"]
+
+
+def test_a_relative_source_is_resolved_against_the_working_directory_by_default(tmp_path, monkeypatch):
+    chain = registered_chain(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert reactome_release_of_graph(Path(PROCESSED) / "graph_full_neuronal_split_binders_drugs_v5")["reactome_release"] == "98"
+    monkeypatch.chdir(chain["split"])  # elsewhere the recorded paths lead nowhere, and that is refused, not searched for
+    with pytest.raises(ValueError, match="cannot be followed"):
+        reactome_release_of_graph(chain["drugs_v5"])
+
+
+def test_a_graph_without_a_recorded_lineage_is_refused(tmp_path):
+    write_parquet_graph(tmp_path / "bare", ["gene", "gene"], ["catalyzes"])
+    with pytest.raises(ValueError, match="lineage of .* is not recorded"):
+        reactome_release_of_graph(tmp_path / "bare", relative_to=tmp_path)
+    with pytest.raises(ValueError, match="holds no nodes.parquet"):
+        reactome_release_of_graph(tmp_path / "missing", relative_to=tmp_path)
+    chain = registered_chain(tmp_path)
+    summary = json.loads((chain["split"] / "split_summary.json").read_text())
+    del summary["graph_dir"]
+    (chain["split"] / "split_summary.json").write_text(json.dumps(summary))
+    with pytest.raises(ValueError, match="names no graph it was built from"):
+        reactome_release_of_graph(chain["split_binders"], relative_to=tmp_path)
+
+
+def test_a_summary_that_does_not_describe_its_directory_is_not_its_own(tmp_path):
+    chain = registered_chain(tmp_path)
+    neuronal = json.loads((chain["neuronal"] / "neuronal_variant_summary.json").read_text())
+    neuronal["nodes_by_type"]["gene"] += 1
+    (chain["neuronal"] / "neuronal_variant_summary.json").write_text(json.dumps(neuronal))
+    with pytest.raises(ValueError, match="does not describe this directory's graph files"):
+        reactome_release_of_graph(chain["split"], relative_to=tmp_path)
+
+
+def test_a_source_rebuilt_since_the_derived_graph_is_refused(tmp_path):
+    chain = registered_chain(tmp_path)
+    edges = pd.read_parquet(chain["split_binders"] / "edges.parquet")
+    edges.loc[0, "target_id"] = "N2"  # same rows, other content: only a digest sees it
+    edges.to_parquet(chain["split_binders"] / "edges.parquet")
+    with pytest.raises(ValueError, match="is not the graph .* was built from, by the SHA-256"):
+        reactome_release_of_graph(chain["drugs_v5"], relative_to=tmp_path)
+    write_parquet_graph(chain["neuronal"], ["gene", "gene", "gene", "metabolite", "reaction"], ["catalyzes", "produces", "produces"])
+    with pytest.raises(ValueError, match="row counts"):
+        reactome_release_of_graph(chain["neuronal_binders"], relative_to=tmp_path)
+
+
+def test_an_ambiguous_or_circular_lineage_is_refused(tmp_path):
+    chain = registered_chain(tmp_path)
+    nodes, edges = pd.read_parquet(chain["drugs_v5"] / "nodes.parquet"), pd.read_parquet(chain["drugs_v5"] / "edges.parquet")
+    (chain["drugs_v5"] / "plasma_binder_summary.json").write_text(json.dumps({
+        "source_graph": f"{PROCESSED}/graph_full_neuronal_split", "nodes": len(nodes), "edges_before": len(edges) - 1, "edges_after": len(edges)}))
+    with pytest.raises(ValueError, match="ambiguous"):
+        reactome_release_of_graph(chain["drugs_v5"], relative_to=tmp_path)
+    first, second = tmp_path / "first", tmp_path / "second"
+    for directory, other in ((first, second), (second, first)):
+        nodes, edges = write_parquet_graph(directory, ["gene", "protein"], ["encodes"])
+        (directory / "split_summary.json").write_text(json.dumps({
+            "graph_dir": str(other), "nodes_before": 2, "edges_before": 1, "gene_nodes": 1, "nodes_after": 2, "edges_after": 1,
+            "edges_per_relation": {"encodes": 1}}))
+    with pytest.raises(ValueError, match="returns to"):
+        reactome_release_of_graph(first, relative_to=tmp_path)
+
+
+def test_a_neuronal_summary_without_a_release_is_refused(tmp_path):
+    neuronal = build_neuronal(tmp_path, release=None)
     with pytest.raises(ValueError, match="9.111"):
-        reactome_release_of_graph(write_graph_directory(tmp_path / "bare"))
-    (graph / "other_summary.json").write_text(json.dumps({"reactome_pathways": {"reactome_release": "99"}}))
-    with pytest.raises(ValueError, match="different Reactome releases"):
-        reactome_release_of_graph(graph)
+        reactome_release_of_graph(build_split(tmp_path, neuronal), relative_to=tmp_path)
+
+
+REPOSITORY = Path(__file__).resolve().parents[1]
+
+
+def test_the_builders_still_write_the_summaries_and_keys_the_lineage_reads():
+    # what each builder's source must still say for GRAPH_BUILD_SUMMARIES to describe what it writes
+    written = {
+        "neuronal_variant_summary.json": ["base_graph=", "reactome_pathways=", "nodes_by_type=", "edges_by_relation="],
+        "split_summary.json": ['"graph_dir": str(arguments.graph_dir)', '"nodes_before"', '"nodes_after"', '"edges_before"',
+                               '"edges_after"', '"gene_nodes"', '"edges_per_relation"'],
+        "plasma_binder_summary.json": ["source_graph=str(graph_directory)", "nodes=len(new_nodes)", "edges_before=len(edges)",
+                                       "edges_after=len(new_edges)"],
+        "drug_entry_summary.json": ["source_graph=str(arguments.graph_dir)", "source_nodes_sha256=", "source_edges_sha256=",
+                                    "nodes_sha256=", "edges_sha256="],
+    }
+    assert set(written) == set(GRAPH_BUILD_SUMMARIES) and REACTOME_RELEASE_SUMMARY in written
+    for summary_name, keys in written.items():
+        builder = GRAPH_BUILD_SUMMARIES[summary_name]["builder"]
+        text = (REPOSITORY / builder).read_text()
+        if summary_name == "split_summary.json":  # the split's counts are made in the module the builder calls
+            text += (REPOSITORY / "mechanistic_pathway_learning/graph/gene_protein_split.py").read_text()
+        if summary_name == "plasma_binder_summary.json":
+            assert "new_nodes = nodes.copy()" in (REPOSITORY / "mechanistic_pathway_learning/graph/plasma_binding.py").read_text()
+        assert summary_name in text, f"{builder} no longer names {summary_name}"
+        for key in keys:
+            assert key in text, f"{builder} no longer writes {key} into {summary_name}"
 
 
 # ---------------------------------------------------------------- the calibration

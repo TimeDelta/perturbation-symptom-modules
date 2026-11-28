@@ -3,11 +3,14 @@
 **Status: an unreviewed draft** (written 27 November 2026 and pushed the same day at the owner's request, "Just merge
 and push everything. I'll review it later"; until then it was held on a local branch for the owner to read first). It
 encodes readings of 9.35 the owner has not confirmed, its open definitions are listed in the message of the commit that
-added it, and two known defects are not fixed: reactome_release_of_graph reads the release from
-graph_full_neuronal/neuronal_variant_summary.json, which no graph derived from that one carries, so on the registered
-chain it raises and the draw cannot run; and ceilings_of_calibrations applies a least-squares ceiling extrapolated
-beyond every pseudo-draw (statistic_ceiling's within_observed_range is False) as it applies one inside them. Nothing
-here has been run on real data and no held-out set has been drawn with it.
+added it, and one known defect is not fixed: ceilings_of_calibrations (experiments/draw_held_out_set.py) applies a
+least-squares ceiling extrapolated beyond every pseudo-draw (statistic_ceiling's within_observed_range is False) as it
+applies one inside them. A second defect this paragraph named on 27 November 2026 was fixed on 28 November 2026, and
+the fix is as unreviewed as the rest: reactome_release_of_graph read the release only from a summary in the graph's own
+directory, which graph_full_neuronal (neuronal_variant_summary.json) alone holds, so on the registered chain it raised
+and the draw could not run; it now follows the source graph each derived graph's own summary records, checking every
+link, back to the summary that holds the release. Nothing here has been run on real data and no held-out set has been
+drawn with it.
 
 What is ruled (decision 9.35, 24 November 2026; the owner: "Use 1.a but not on current graph. On graph at time of draw,
 right?"). A leakage-only adversary (`evaluation/leakage_only_adversary.py`) predicts each held-out symptom from the
@@ -164,27 +167,164 @@ def first_passing_seed(seed_order, statistics_of_seed, ceilings: dict[str, float
     return {"accepted_seed": None, "examined": examined}
 
 
-def reactome_release_of_graph(graph_directory: Path) -> dict:
-    """The Reactome release the graph was built from, read from its summary (decision 9.111: when the lockbox is
-    drawn the release in use is pinned, "read from the registered graph's summary").
+# The summaries the graph builders of the registered chain write (scripts/rebuild_data_layer.sh: graph_full_neuronal,
+# its gene and protein split, the plasma binders on either, and the drug entry variants on the split's binders), by
+# file name. Only the neuronal variant's records the Reactome release. Each other one records the graph it was built
+# from under source_key, as the path its builder was given, which is relative to the repository root the scripts are
+# run from. A summary is a directory's own when what it records of its builder's output matches the directory's graph
+# files: that tells it from the copies of the source's summaries that experiments/build_drug_entry_node_variant.py
+# makes (it copies every file of the source it does not rewrite), whose record of their output describes the source.
+# The link to the source is checked by what the summary records of the builder's input: digests for the drug entry
+# variant, row counts for the split and the binders, whose builders record no digest of their input.
+# tests/test_leakage_ceiling.py checks that each builder named here still writes the summary file and the keys read.
+REACTOME_RELEASE_SUMMARY = "neuronal_variant_summary.json"
+GRAPH_BUILD_SUMMARIES = {
+    REACTOME_RELEASE_SUMMARY: {"builder": "experiments/build_neuronal_graph_variant.py", "source_key": None},
+    "split_summary.json": {"builder": "experiments/build_gene_protein_split.py", "source_key": "graph_dir"},
+    "plasma_binder_summary.json": {"builder": "experiments/build_plasma_binder_variant.py", "source_key": "source_graph"},
+    "drug_entry_summary.json": {"builder": "experiments/build_drug_entry_node_variant.py", "source_key": "source_graph"},
+}
 
-    experiments/build_neuronal_graph_variant.py writes it as reactome_pathways.reactome_release in
-    neuronal_variant_summary.json; any JSON summary directly in the directory carrying that key is read. Refuses a
-    directory where none does, and one where two summaries name different releases, rather than guess."""
-    directory = Path(graph_directory)
-    release_of_summary: dict[str, str] = {}
-    for path in sorted(directory.glob("*.json")):
+
+def _row_count(path: Path) -> int:
+    import pyarrow.parquet as parquet_module
+
+    return int(parquet_module.read_metadata(path).num_rows)
+
+
+def _value_counts(path: Path, column: str) -> dict[str, int]:
+    import pandas as pd
+
+    return {str(value): int(count) for value, count in pd.read_parquet(path, columns=[column])[column].value_counts().items()}
+
+
+def _mismatches(summary: dict, from_the_files: dict) -> list[str]:
+    """One sentence per key whose recorded value differs from what the files give, or that the summary does not record."""
+    problems = []
+    for key, value in from_the_files.items():
+        if key not in summary:
+            problems.append(f"it records no {key}")
+        elif summary[key] != value:
+            problems.append(f"its {key} is {summary[key]!r} where the files give {value!r}")
+    return problems
+
+
+def _own_output_mismatches(summary_name: str, summary: dict, directory: Path) -> list[str]:
+    """Empty when what the summary records of its builder's output matches the graph files of directory."""
+    from mechanistic_pathway_learning.data_release import sha256_of_file
+
+    nodes, edges = directory / "nodes.parquet", directory / "edges.parquet"
+    if summary_name == REACTOME_RELEASE_SUMMARY:
+        from_the_files = {"nodes_by_type": _value_counts(nodes, "node_type"), "edges_by_relation": _value_counts(edges, "relation_type")}
+    elif summary_name == "split_summary.json":
+        from_the_files = {"nodes_after": _row_count(nodes), "edges_after": _row_count(edges),
+                          "edges_per_relation": _value_counts(edges, "relation_type")}
+    elif summary_name == "plasma_binder_summary.json":
+        from_the_files = {"nodes": _row_count(nodes), "edges_after": _row_count(edges)}
+    else:
+        from_the_files = {"nodes_sha256": sha256_of_file(nodes), "edges_sha256": sha256_of_file(edges)}
+    return _mismatches(summary, from_the_files)
+
+
+def _source_link_mismatches(summary_name: str, summary: dict, source: Path) -> tuple[str, list[str]]:
+    """How the link from a derived graph to its recorded source is checked, and what fails the check (empty when the
+    source holds the graph the summary says its builder read)."""
+    from mechanistic_pathway_learning.data_release import sha256_of_file
+
+    nodes, edges = source / "nodes.parquet", source / "edges.parquet"
+    if summary_name == "drug_entry_summary.json":
+        return ("the SHA-256 of the source's nodes.parquet and edges.parquet",
+                _mismatches(summary, {"source_nodes_sha256": sha256_of_file(nodes), "source_edges_sha256": sha256_of_file(edges)}))
+    if summary_name == "split_summary.json":
+        return ("the source's row counts of nodes, edges and gene nodes (the split's builder records no digest of its input)",
+                _mismatches(summary, {"nodes_before": _row_count(nodes), "edges_before": _row_count(edges),
+                                      "gene_nodes": _value_counts(nodes, "node_type").get("gene", 0)}))
+    return ("the source's row counts of nodes and edges (the binders' builder records no digest of its input and adds no node)",
+            _mismatches(summary, {"nodes": _row_count(nodes), "edges_before": _row_count(edges)}))
+
+
+def _own_summary(directory: Path) -> tuple[str, dict]:
+    """The one summary of GRAPH_BUILD_SUMMARIES that is directory's own, refusing a directory with none or several."""
+    for required in ("nodes.parquet", "edges.parquet"):
+        if not (directory / required).is_file():
+            raise ValueError(f"{directory} holds no {required}, so it is not a graph directory")
+    own, not_own = [], []
+    for name in GRAPH_BUILD_SUMMARIES:
+        path = directory / name
+        if not path.is_file():
+            continue
         try:
             summary = json.loads(path.read_text())
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            not_own.append(f"{name} is not JSON ({error})")
             continue
-        pathways = summary.get("reactome_pathways") if isinstance(summary, dict) else None
-        if isinstance(pathways, dict) and pathways.get("reactome_release") is not None:
-            release_of_summary[path.name] = str(pathways["reactome_release"])
-    if not release_of_summary:
-        raise ValueError(f"no summary in {directory} records reactome_pathways.reactome_release; decision 9.111 needs the "
-                         "release the graph was built from, read from the graph's summary")
-    releases = set(release_of_summary.values())
-    if len(releases) != 1:
-        raise ValueError(f"the summaries in {directory} name different Reactome releases: {release_of_summary}")
-    return {"reactome_release": releases.pop(), "read_from": sorted(release_of_summary)}
+        if not isinstance(summary, dict):
+            not_own.append(f"{name} is not a JSON object")
+            continue
+        problems = _own_output_mismatches(name, summary, directory)
+        if problems:
+            not_own.append(f"{name} does not describe this directory's graph files ({'; '.join(problems)})")
+        else:
+            own.append((name, summary))
+    if not own:
+        raise ValueError(f"the lineage of {directory} is not recorded: no summary there that a builder of the registered chain "
+                         f"writes ({', '.join(GRAPH_BUILD_SUMMARIES)}) describes its graph files"
+                         + (f"; {'; '.join(not_own)}" if not_own else ""))
+    if len(own) > 1:
+        raise ValueError(f"the lineage of {directory} is ambiguous: {' and '.join(name for name, _ in own)} each describe its "
+                         "graph files, so which build wrote them is not recorded")
+    return own[0]
+
+
+def reactome_release_of_graph(graph_directory: Path, relative_to: Path | None = None) -> dict:
+    """The Reactome release the graph was built from (decision 9.111: when the lockbox is drawn the release in use is
+    pinned, "read from the registered graph's summary").
+
+    experiments/build_neuronal_graph_variant.py records it as reactome_pathways.reactome_release in
+    neuronal_variant_summary.json, and no graph built from that one carries the file. So the release is read by
+    following the graph's lineage (GRAPH_BUILD_SUMMARIES): the directory's own summary names the graph it was built
+    from, the link is checked by what that summary records of its input, and so on back to the neuronal variant's
+    summary. A recorded path that is relative is resolved against relative_to, by default the working directory: the
+    builders record the path they were given, from the repository root they are run from, and the draw is run from it
+    too.
+
+    Refuses, rather than guess: a directory with no own summary or with several; a recorded source that is missing;
+    one that no longer matches what the summary recorded of it (rebuilt since); a lineage that returns to a graph
+    already visited; and a neuronal summary that records no release.
+
+    Returns {"reactome_release": the release as a string, "read_from": the path of the summary that records it,
+    "lineage": one entry per link followed, from the graph given back to the neuronal variant, each naming the graph,
+    its own summary, that summary's builder, the source as recorded and as resolved, and what the link was checked
+    by}; the lineage is empty when the graph given is the neuronal variant itself."""
+    base = Path.cwd() if relative_to is None else Path(relative_to)
+    directory = Path(graph_directory)
+    lineage: list[dict] = []
+    visited: set[Path] = set()
+    while True:
+        visited.add(directory.resolve())
+        name, summary = _own_summary(directory)
+        source_key = GRAPH_BUILD_SUMMARIES[name]["source_key"]
+        if source_key is None:
+            pathways = summary.get("reactome_pathways")
+            release = pathways.get("reactome_release") if isinstance(pathways, dict) else None
+            if release is None:
+                raise ValueError(f"{directory / name} records no reactome_pathways.reactome_release; decision 9.111 needs the "
+                                 "release the graph was built from, read from the graph's summary")
+            return {"reactome_release": str(release), "read_from": str(directory / name), "lineage": lineage}
+        recorded = summary.get(source_key)
+        if not isinstance(recorded, str) or not recorded:
+            raise ValueError(f"the lineage of {directory} is not recorded: {name} names no graph it was built from ({source_key})")
+        source = Path(recorded) if Path(recorded).is_absolute() else base / recorded
+        if source.resolve() in visited:
+            raise ValueError(f"the lineage of {graph_directory} returns to {source}, a graph already visited")
+        for required in ("nodes.parquet", "edges.parquet"):
+            if not (source / required).is_file():
+                raise ValueError(f"{directory / name} records its source graph as {recorded!r}, and {source} holds no {required}; "
+                                 "the lineage cannot be followed")
+        checked_by, problems = _source_link_mismatches(name, summary, source)
+        if problems:
+            raise ValueError(f"{source} is not the graph {directory} was built from, by {checked_by} as {name} records them "
+                             f"(was it rebuilt since?): {'; '.join(problems)}")
+        lineage.append({"graph_dir": str(directory), "summary": name, "builder": GRAPH_BUILD_SUMMARIES[name]["builder"],
+                        "source_recorded_as": recorded, "source_graph_dir": str(source), "link_checked_by": checked_by})
+        directory = source

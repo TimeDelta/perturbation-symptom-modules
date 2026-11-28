@@ -4,11 +4,13 @@ nothing has been drawn with it).
 **Status: an unreviewed draft** (written 27 November 2026 and pushed the same day at the owner's request, "Just merge
 and push everything. I'll review it later"; until then it was held on a local branch for the owner to read first). It
 encodes readings of 9.35 the owner has not confirmed, its open definitions are listed in the message of the commit that
-added it, and two known defects are not fixed: reactome_release_of_graph reads the release from
-graph_full_neuronal/neuronal_variant_summary.json, which no graph derived from that one carries, so on the registered
-chain it raises and the draw cannot run; and ceilings_of_calibrations applies a least-squares ceiling extrapolated
-beyond every pseudo-draw (statistic_ceiling's within_observed_range is False) as it applies one inside them. Nothing
-here has been run on real data and no held-out set has been drawn with it.
+added it, and one known defect is not fixed: ceilings_of_calibrations applies a least-squares ceiling extrapolated
+beyond every pseudo-draw (statistic_ceiling's within_observed_range is False) as it applies one inside them. A second
+defect this paragraph named on 27 November 2026 was fixed on 28 November 2026, and the fix is as unreviewed as the
+rest: reactome_release_of_graph read the release only from a summary in the graph's own directory, which
+graph_full_neuronal (neuronal_variant_summary.json) alone holds, so on the registered chain it raised and the draw
+could not run; it now follows the source graph each derived graph's own summary records, checking every link, back to
+the summary that holds the release. Nothing here has been run on real data and no held-out set has been drawn with it.
 
 The draw is made only on the owner's go-ahead (decision 1.1: "Don't finalize the lockbox until I've given the go
 ahead"), after the Human-GEM update of decision 9.151 and on the graph built from it, and after the amendment item that
@@ -36,9 +38,11 @@ What it records (one JSON file): the perturbation ids and the fields experiments
 experiment_data.read_lockbox read (label_selection_sha256, evidence_records_sha256, group_by,
 symptoms_in_the_macro_average), the rule, the seed order and its SHA-256, every seed examined with its statistics, the
 accepted seed, the held-out targets, the channel list, each calibration with its SHA-256 and ceiling, the SHA-256 of
-the graph files read, and the Reactome release read from the graph's summary (decision 9.111: the release in use is
-pinned when the lockbox is drawn). It also counts the leakage groups of --group-by that hold perturbations on both sides:
-item 25 holds a drug out by its targets, so such a group can exist, and read_lockbox refuses a lockbox that has one.
+the graph files read, and the Reactome release with the lineage it was read through (reactome_release_of_graph,
+which follows the source each derived graph's summary records back to the neuronal variant's summary; decision 9.111:
+the release in use is pinned when the lockbox is drawn). It also counts the leakage groups of --group-by that hold
+perturbations on both sides: item 25 holds a drug out by its targets, so such a group can exist, and read_lockbox
+refuses a lockbox that has one.
 How the runs that read the lockbox treat that is not settled here.
 
 What it leaves to the caller, because no ruling settles it, each a required argument with no default: the inputs
