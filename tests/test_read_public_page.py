@@ -402,6 +402,21 @@ def test_a_robots_file_is_read_through_its_redirects(tmp_path, monkeypatch):
     assert requested == ["https://example.org/robots.txt", "https://www.example.org/robots.txt"]
 
 
+def test_a_robots_file_that_redirects_away_from_https_leaves_the_page_unread(tmp_path, monkeypatch):
+    """From 27 to 28 November 2026 a robots file that redirected to http was taken as not served, so the rules the site
+    serves there were dropped and the page was read as if the site had no robots file. This reader requests only
+    https, so it cannot read those rules: the page is left unread, as a page whose robots file cannot be requested is,
+    and the http address is not requested."""
+    reader, requested = reader_with_redirects(
+        tmp_path, monkeypatch, {"https://old.example.org/robots.txt": "http://old.example.org/robots.txt"},
+        {"old.example.org": "User-agent: *\nDisallow: /\n"})
+    record = reader.read("https://old.example.org/closed/page.html")
+    assert record["read"] is False, record
+    assert "robots file could not be requested" in record["reason"] and "only https" in record["reason"]
+    assert requested == ["https://old.example.org/robots.txt"]
+    assert not any(tmp_path.iterdir())
+
+
 def test_request_bytes_hands_a_redirect_back_instead_of_following_it(monkeypatch):
     """Against a local server, with no proxy: the answer to a redirect is RedirectAnswer with the target made
     absolute, and the target is not requested."""
