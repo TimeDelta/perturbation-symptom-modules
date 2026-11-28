@@ -212,6 +212,14 @@ def test_the_reactome_release_is_found_on_every_graph_of_the_registered_chain(tm
     assert "SHA-256" in drugs[0]["link_checked_by"] and "row counts" in drugs[1]["link_checked_by"] and "row counts" in drugs[2]["link_checked_by"]
 
 
+def test_a_zero_count_a_categorical_column_records_is_not_a_mismatch(tmp_path):
+    chain = registered_chain(tmp_path)
+    neuronal = json.loads((chain["neuronal"] / "neuronal_variant_summary.json").read_text())
+    neuronal["nodes_by_type"]["protein"] = 0
+    (chain["neuronal"] / "neuronal_variant_summary.json").write_text(json.dumps(neuronal))
+    assert reactome_release_of_graph(chain["split"], relative_to=tmp_path)["reactome_release"] == "98"
+
+
 def test_a_relative_source_is_resolved_against_the_working_directory_by_default(tmp_path, monkeypatch):
     chain = registered_chain(tmp_path)
     monkeypatch.chdir(tmp_path)

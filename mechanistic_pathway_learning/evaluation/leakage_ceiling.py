@@ -195,16 +195,21 @@ def _row_count(path: Path) -> int:
 def _value_counts(path: Path, column: str) -> dict[str, int]:
     import pandas as pd
 
-    return {str(value): int(count) for value, count in pd.read_parquet(path, columns=[column])[column].value_counts().items()}
+    return {str(value): int(count) for value, count in pd.read_parquet(path, columns=[column])[column].value_counts().items() if count}
 
 
 def _mismatches(summary: dict, from_the_files: dict) -> list[str]:
-    """One sentence per key whose recorded value differs from what the files give, or that the summary does not record."""
+    """One sentence per key whose recorded value differs from what the files give, or that the summary does not record.
+    A recorded count per type or relation is compared without its zero entries, which a categorical column's
+    value_counts gives and the files do not."""
     problems = []
     for key, value in from_the_files.items():
+        recorded = summary.get(key)
+        if isinstance(value, dict) and isinstance(recorded, dict):
+            recorded = {str(name): count for name, count in recorded.items() if count}
         if key not in summary:
             problems.append(f"it records no {key}")
-        elif summary[key] != value:
+        elif recorded != value:
             problems.append(f"its {key} is {summary[key]!r} where the files give {value!r}")
     return problems
 
