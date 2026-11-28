@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/score_research_strata_and_eras.py that
 tests/test_research_strata_and_eras.py lets survive (hand-made mutation testing; the mutants and which test kills each
-are listed in the session's report). Each test checks what the script's docstrings say it does. Synthetic tables and a
+were listed in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what the script's docstrings say it does. Synthetic tables and a
 toy graph only: no real held-out set is scored."""
 from __future__ import annotations
 

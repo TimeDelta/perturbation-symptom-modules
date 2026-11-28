@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of mechanistic_pathway_learning/evaluation/leakage_only_adversary.py
 that tests/test_leakage_only_adversary.py and the tests reading the adversary let survive (hand-made mutation testing;
-the mutants and which test kills each are listed in the session's report). Each test checks what a docstring or
+the mutants and which test kills each were listed in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what a docstring or
 comment of the module says the code does. Synthetic graphs only."""
 import numpy as np
 import pytest

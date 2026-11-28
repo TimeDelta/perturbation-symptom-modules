@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of mechanistic_pathway_learning/evaluation/sourcing_sample.py that
 tests/test_sourcing_sample.py lets survive (hand-made mutation testing; the mutants and which test kills each are listed
-in the session's report). Each test checks what the module docstring says the code does; the open definitions stay
+in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what the module docstring says the code does; the open definitions stay
 arguments. Synthetic tables only: no real held-out set is read and nothing real is drawn."""
 from __future__ import annotations
 

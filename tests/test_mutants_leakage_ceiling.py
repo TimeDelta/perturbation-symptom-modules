@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of mechanistic_pathway_learning/evaluation/leakage_ceiling.py that the
 tests of tests/test_leakage_ceiling.py let survive (hand-made mutation testing; the mutants and which test kills each
-are listed in the session's report). Each test checks what a docstring of the module says the code does; none treats
+were listed in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what a docstring of the module says the code does; none treats
 an open choice of the draft as registered. Synthetic data only."""
 import json
 

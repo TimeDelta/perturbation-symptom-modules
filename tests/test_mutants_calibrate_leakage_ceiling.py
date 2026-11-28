@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/calibrate_leakage_ceiling.py that
 tests/test_leakage_ceiling.py lets survive (hand-made mutation testing; the mutants and which test kills each are listed
-in the session's report). Each test checks what the script's docstrings say it does; its open definitions stay
+in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what the script's docstrings say it does; its open definitions stay
 required arguments. Synthetic records only: nothing here calibrates a real ceiling."""
 import json
 import sys

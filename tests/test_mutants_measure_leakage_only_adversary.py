@@ -1,7 +1,7 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/measure_leakage_only_adversary.py, in
 registered_two_sided_draw, one_draw and main's pseudo-draw loop, that tests/test_measure_leakage_only_adversary.py and
 tests/test_leakage_ceiling.py let survive (hand-made mutation testing; the mutants and which test kills each are listed
-in the session's report). Each test checks what the script's docstrings say it does. The test of the development rows,
+in the working report of the session of 28 November 2026, which is outside the repository). Each test checks what the script's docstrings say it does. The test of the development rows,
 added with the fix of _restrict on the same day, was found by reading the code rather than by a surviving mutant; the
 tests after it were added by the checker of that branch, for mutants of its own that every earlier test let survive,
 and they reach summarise as well. Synthetic data only: nothing here reads a real graph."""

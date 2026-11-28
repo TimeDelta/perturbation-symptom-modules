@@ -1,6 +1,6 @@
 """Tests added on 28 November 2026 to kill mutants of mechanistic_pathway_learning/evaluation/research_strata_and_eras.py
 that tests/test_research_strata_and_eras.py lets survive (hand-made mutation testing; the mutants and which test kills
-each are listed in the session's report). Each test checks the schema or a rule the module docstring states. Synthetic
+each were listed in the working report of the session of 28 November 2026, which is outside the repository). Each test checks the schema or a rule the module docstring states. Synthetic
 tables only."""
 from __future__ import annotations
 

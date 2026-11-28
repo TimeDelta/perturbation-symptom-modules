@@ -1,5 +1,5 @@
 """Tests added on 28 November 2026 to kill mutants of experiments/draw_held_out_set.py that tests/test_leakage_ceiling.py
-lets survive (hand-made mutation testing; the mutants and which test kills each are listed in the session's report).
+lets survive (hand-made mutation testing; the mutants and which test kills each were listed in the working report of the session of 28 November 2026, which is outside the repository).
 Each test checks what the script's docstrings say it does; its open definitions stay required arguments. Synthetic data
 only: nothing here draws a held-out set from a real graph."""
 import dataclasses
