@@ -89,7 +89,8 @@ Defects found:
    descriptor rows (place_descriptors_on_split). On graph_full_neuronal_split that leaves CALCA alone with several
    protein nodes (the correction at the end of this document). Where point 2 and the section "Built" speak of every
    entry, of copies per entry (twice for CDKN2A, four times for GNAS) or of 84 nodes for the 37 genes, they describe the
-   first build, of the morning of 8 October 2026.
+   per-entry build of the morning of 8 October 2026 (commit 08d2360), which replaced the first build of one protein node
+   per gene (commit 44b73e1).
 2. **Edges of a gene with several entries** (default, for the user). An edge end goes to the entries its source names
    (OmniPath and CollecTRI accession columns, Reactome entity members); where the source names none of the gene's
    entries or does not resolve entries, it goes to every entry, since which product is meant is not known. A drug acting
@@ -214,8 +215,9 @@ Consequences of the user's decision:
 
 ## Built (8 October 2026, new directories only)
 
-The counts of this section are those of the first build, of the morning of 8 October 2026; the narrowing of point 1
-(commit 92085e7) and the correction at the end of this document rebuilt graph_full_neuronal_split the same day.
+The counts of this section are those of the per-entry build of the morning of 8 October 2026 (commit 08d2360), not of
+the first build of one protein node per gene that the degree section above names; the narrowing of point 1 (commit
+92085e7) and the correction at the end of this document rebuilt graph_full_neuronal_split the same day.
 
 experiments/build_gene_protein_split.py (library: mechanistic_pathway_learning/graph/gene_protein_split.py) wrote:
 - data/processed/graph_split, from the slice graph:
@@ -322,8 +324,10 @@ docs/split_slice_comparisons.md and docs/split_slice_comparisons_merged_strata.m
 would write; no commit has held either. The readings of the job as it ran are in
 docs/records/2026-10/gene_protein_split_results.md (the note at the head of this section). Whatever they show, they are
 readings of the slice graphs built on 8 October 2026 (data/processed/graph_split and data/processed/graph) and carry
-that graph and date when reported (CLAUDE.md, "A measurement carries the graph it was taken on"). A command run now
-writes its page under docs/generated/ (docs/documentation_process.md, "Where documents live", 20 November 2026).
+that graph and date when reported (CLAUDE.md, "A measurement carries the graph it was taken on"). The commands above
+name their pages under docs/ as they were queued; since 20 November 2026 a page a script writes goes under
+docs/generated/ (docs/documentation_process.md, "Where documents live"), so a re-run would pass a --markdown-output
+there.
 
 ## Correction of 8 October 2026 (late): complex accessions
 
