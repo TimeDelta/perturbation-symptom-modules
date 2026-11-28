@@ -28,8 +28,10 @@
 # signal (bash's status 128 + the signal's number: 139 for a segfault, 137 for SIGKILL, which is what the kernel's
 # out-of-memory killer sends), or pytest's INTERNAL_ERROR (3) or USAGE_ERROR (4), the code it also gives when a conftest
 # will not import (pytest's ExitCode enum, read in _pytest/config/__init__.py of the installed pytest 9.1.1 on 28
-# November 2026). The report names the status and the signal and gives what pytest printed: the 25 lines from Python's
-# first "Fatal Python error" line, where faulthandler's dump names the crashing frame first, else the last 25 lines.
+# November 2026). The report names the status and the signal and gives what pytest printed: the 25 lines from the line
+# where Python's "Fatal Python error" first appears, where faulthandler's dump names the crashing frame first, else the
+# last 25 lines. That line does not start with it when a test ran before the crash, since pytest's progress dots have no
+# newline yet ("...Fatal Python error: Segmentation fault", measured on 28 November 2026).
 # Until this was added on 28 November 2026, such a run fell under the no-result rule above: a segfault or a kill woke
 # nobody, and since no pass is recorded it ran again, as silently, at every later stop.
 #
@@ -108,7 +110,7 @@ elif [ "$pytest_exit_status" -eq 4 ]; then
     crash_cause="pytest stopped with its usage-error code (ExitCode.USAGE_ERROR), as when a conftest will not import"
 fi
 if [ -n "$crash_cause" ]; then
-    crash_output="$(grep -m1 -A24 '^Fatal Python error' "$output_file")"  # faulthandler names the crashing frame first
+    crash_output="$(grep -m1 -A24 'Fatal Python error' "$output_file")"  # unanchored: progress dots can precede it
     [ -n "$crash_output" ] || crash_output="$(tail -25 "$output_file")"
     {
         echo "The full test suite crashed in $checkout_root after the code changed (run by .claude/hooks/run-suite-if-code-changed.sh):"

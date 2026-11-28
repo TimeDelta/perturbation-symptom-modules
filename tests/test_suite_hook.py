@@ -154,12 +154,18 @@ def test_a_conftest_that_will_not_import_still_wakes_the_session(tmp_path):
 BASH_NOTICE_OF_A_KILLED_CHILD = "run-suite-if-code-changed.sh: line"  # "<script>: line N: <pid> Segmentation fault ..."
 
 
-def test_a_suite_that_segfaults_wakes_the_session_with_the_signal_and_the_crashing_frame(tmp_path):
+@pytest.mark.parametrize("progress_dots_before_the_crash", ["", "..."],
+                         ids=["crash_in_the_first_test", "crash_after_three_passing_tests"])
+def test_a_suite_that_segfaults_wakes_the_session_with_the_signal_and_the_crashing_frame(
+        tmp_path, progress_dots_before_the_crash):
     """The stub prints what faulthandler prints after a segfault (the crashing frame first, then more frames than the
     last 25 lines would leave room for) and kills itself with SIGSEGV, so bash sees status 139. Measured on 28 November
-    2026 with a real test that read address 0 under pytest 9.1.1: status 139, that dump, and no summary line."""
+    2026 with a real test that read address 0 under pytest 9.1.1: status 139, that dump, and no summary line. When
+    tests passed before the crash, pytest's progress dots have no newline yet and the dump begins on their line
+    ("...Fatal Python error: Segmentation fault", measured the same day after three passing tests)."""
     checkout = make_checkout(tmp_path)
     stub_directory = stub_suite(tmp_path, 'ulimit -c 0\n'
+                                          f'printf "{progress_dots_before_the_crash}"\n'
                                           'echo "Fatal Python error: Segmentation fault"\necho ""\n'
                                           'echo "Current thread 0x00007f (most recent call first):"\n'
                                           'echo "  File \\"tests/test_example.py\\", line 2 in test_example"\n'
