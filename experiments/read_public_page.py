@@ -22,7 +22,8 @@ This script is that fallback with its limits written into code, so that a resear
   3. an address that carries a personal identifier (an e-mail address) is not requested;
   4. every page read is saved with its address, time and SHA-256, in a directory that holds nothing else.
 
-It does not log in, solve challenges, or use caches and mirrors of a page that refused it.
+It does not log in, solve challenges, or use caches and mirrors of a page that refused it, and a redirect to a login
+form is reported as a refusal (LOGIN_FORM_PATH), as CLAUDE.md classes a login.
 
 Three hosts are read past their robots file, each on a ruling of the owner's, over https only; the robots file is
 still read and its answer recorded beside the page, and limits 2 to 4 hold there as everywhere else. Each exception is
@@ -125,6 +126,12 @@ CHALLENGE_MARKERS = (
 # which still match after this script is set aside.
 PASSIVE_TELEMETRY_SCRIPT = re.compile(r"<script\b[^>]*>(?:(?!</script>).)*?/cdn-cgi/challenge-platform/scripts/jsd/(?:(?!</script>).)*?</script>",
                                       re.S | re.I)
+# A redirect whose target path ends in a login form's name (login, log-in, sign_in, logon, with or without an extension
+# such as .jsp) is a refusal. CLAUDE.md records that GtoPdb's target pages "answer 302 to `/login.jsp`" and that "its
+# website login stays a refusal", and that "a check that the visitor is human or a login stays a refusal". A plain login
+# form carries none of the CHALLENGE_MARKERS, so until 28 November 2026 the reader followed such a redirect and saved the
+# form as the page read. A login form served at the address requested itself is not caught by this.
+LOGIN_FORM_PATH = re.compile(r"/(?:log[-_]?in|sign[-_]?in|log[-_]?on)(?:\.[a-z]+)?/?$", re.I)
 DEFAULT_OUTPUT_DIRECTORY = Path("data/raw/public_pages")
 # The hosts read past a robots rule, each with the ruling that admits it. The match is on the exact host name, so
 # www.ebi.ac.uk and every other host of either organisation keeps its own robots rules.
@@ -408,7 +415,8 @@ class PublicPageReader:
     def read(self, address: str) -> dict:
         """One record per address: whether it was read, why not when it was not, and where the page was saved. A
         redirect is followed here, one hop at a time, and each address it reaches is refused or read under every
-        limit the first address was (REDIRECT_STATUS_CODES); the record lists the hops under "redirects"."""
+        limit the first address was (REDIRECT_STATUS_CODES), and a redirect to a login form is a refusal
+        (LOGIN_FORM_PATH); the record lists the hops under "redirects"."""
         record: dict = {"address": address, "read": False, "requested_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         current_address = address
         redirects: list[dict] = []
@@ -442,6 +450,9 @@ class PublicPageReader:
                 record["redirects"] = redirects
                 if len(redirects) > MAXIMUM_PAGE_REDIRECTS:
                     return record | {"reason": f"more than {MAXIMUM_PAGE_REDIRECTS} redirects"}
+                if LOGIN_FORM_PATH.search(urllib.parse.urlsplit(redirect.location).path):
+                    return record | {"reason": f"the address redirected to {redirect.location}, a login form, and a login "
+                                               f"is a refusal (this reader does not log in)"}
                 current_address = redirect.location
                 continue
             except Exception as error:  # noqa: BLE001

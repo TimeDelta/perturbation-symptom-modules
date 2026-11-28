@@ -429,6 +429,32 @@ def test_every_limit_on_the_first_address_holds_on_an_address_a_redirect_reaches
     assert not any(tmp_path.iterdir())
 
 
+@pytest.mark.parametrize("start_address, login_address", [
+    ("https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=1", "https://www.guidetopharmacology.org/login.jsp"),
+    ("https://journal.example.org/article/7", "https://journal.example.org/accounts/login/?next=/article/7"),
+    ("https://journal.example.org/article/7", "https://journal.example.org/users/sign_in"),
+])
+def test_a_redirect_to_a_login_form_is_a_refusal_and_the_form_is_not_read(tmp_path, monkeypatch, start_address, login_address):
+    """CLAUDE.md records that GtoPdb's target pages "answer 302 to `/login.jsp`" and that "its website login stays a
+    refusal". Until 28 November 2026 the reader followed such a redirect and, with no robots file served and no
+    challenge marker in a plain login form, saved the form as the page read. The hop is recorded, the form is not
+    requested, and nothing is saved."""
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {start_address: login_address}, {})
+    record = reader.read(start_address)
+    assert record["read"] is False, record
+    assert "login form" in record["reason"] and "refusal" in record["reason"]
+    assert record["redirects"] == [{"from": start_address, "status_code": 302, "to": login_address}]
+    assert login_address not in requested
+    assert not any(tmp_path.iterdir())
+
+
+def test_a_redirect_to_a_page_that_only_mentions_a_login_is_followed(tmp_path, monkeypatch):
+    start_address, help_address = "https://journal.example.org/help", "https://journal.example.org/help/how-to-login"
+    reader, requested = reader_with_redirects(tmp_path, monkeypatch, {start_address: help_address}, {})
+    assert reader.read(start_address)["read"] is True
+    assert help_address in requested
+
+
 def test_a_redirect_loop_is_cut_off(tmp_path, monkeypatch):
     first, second = "https://a.example.org/one", "https://a.example.org/two"
     reader, requested = reader_with_redirects(tmp_path, monkeypatch, {first: second, second: first}, {})
