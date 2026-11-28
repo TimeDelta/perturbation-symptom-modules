@@ -1,15 +1,20 @@
 # Exploration queue
 
 Ideas parked for later so they stop taking up working memory. Nothing here is registered or required for the
-confirmatory analysis, and nothing here is started. An item names what it would change, what it would cost and the
-limits that must not be overstated when it is written up.
+confirmatory analysis. When this page was written on 26 October 2026 nothing on it was started; passes have run on
+several items since, each recorded under its item with its date. An item names what it would change, what it would
+cost and the limits that must not be overstated when it is written up.
 
 This document moved into the repository on 26 October 2026 from the Project note `claude/exploration_queue.md`
 (**that note was deleted on 27 October 2026**, when the owner ruled the repository the single source of truth: "Everything should rely on the repo moving forward"; it is named here as the provenance of this page and not as a document to read),
 under the owner's standing rule that sources are recorded in the repository. Items 1 to 4 are carried over as they
 were tagged; items 5 and 6 are new, both added on 26 October 2026, items 7 and 8 were added on 27 October 2026, item 9 on 28 October 2026, item 10 on 4 November 2026, and items 11, 12 and 13 on 7 November 2026.
+Since then item 14 was added on 9 November 2026, item 15 on 18 November, item 16 on 19 November, items 17 to 23 on
+20 November, items 24 and 25 on 21 November, item 26 on 22 November and item 27 on 23 November 2026.
 
-Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026. Item 8's literature, read on Opus on 24 October
+Checked against `main` at `0b976bf` on 26 October 2026, and again at `0fd0139` on 4 November 2026; reviewed against
+the repository at `aa35ab0` on 7 November 2026 and at `eec6e85` on 27 November 2026 (the register,
+`configs/documentation_registry.json`, holds the last review's date and commit). Item 8's literature, read on Opus on 24 October
 2026, and item 5's, read on Opus on 26 October 2026, were both rechecked on Fable on 7 November 2026
 (`lee2015cytoplasmic` bears on Rbfox1 targets in general, not on VAMP1, which rests on `vuong2018rbfox1`; item 8's
 entries say so); both items are parked, so nothing relies on them.
@@ -38,12 +43,16 @@ ordering. you can just overwrite existing order").
    applied to unsourced ones (class centres, sibling medians, shared offsets, the carrier-share classes), which is the
    case item 15 describes. Its literature pass ran on 20 November 2026 on Opus at the owner's request and needs
    verification on Fable before it is relied on (the owner: "just note the literature pass as needing fable
-   verification later").
+   verification later"). *Added 27 November 2026*: it was verified on Fable on 24 November 2026
+   (`docs/records/2026-11/item15_literature_bias_verification_2026-11-24.md`; item 15 below).
 2. **Item 14, the curation sweep over the drug target table.** Its query ran on 20 November 2026 through the corrected
    readers (90 of the 260 v5 drugs fall in a category; six get sign 0 from a plain MODULATOR row with no curated
    override, queued for Fable curation on 21 November 2026); the count of affected edges waits on the rebuild.
+   *Added 27 November 2026*: the curation of the six, and of bupropion's nicotinic antagonism, ran on 24 November
+   2026 (`docs/records/2026-11/item14_drug_target_curation_2026-11-24.md`; item 14 below).
 3. **Item 21, the Human-GEM sweep** (new, unconfirmed): the systematic form of the correction rows ruled one by one on
-   20 November 2026; its corrections belong in the graph version those rows already force.
+   20 November 2026; its corrections belong in the graph version those rows already force. *Added 27 November
+   2026*: swept on Fable on 24 November 2026 and ruled the same day as decision 9.151, not built (item 21 below).
 4. **Item 18, the cross-ion shifts and the pump's own current at `VM_c`** (new, unconfirmed): linear and cheap, from
    the model the build already cites, and it corrects the pool weights the pore build is wiring now.
 5. **Item 7, endosomal pH.** Measured 7 November 2026; designed on Opus on 20 November 2026 (unconfirmed); what remains
@@ -169,7 +178,9 @@ affinity, which is a data-layer change reviewed like any other edge prior, not a
 - A new encoder amends the confirmatory family, which since 22 October 2026 is one tested model (the
   linear-response encoder; decision 9.77), and with it the multiplicity budget.
 
-**Status.** Parked behind the qualifying exam.
+**Status.** Parked; 25th in the priority order of 20 November 2026 above. Until 27 November 2026 this line read
+"Parked behind the qualifying exam", which the owner's ruling of 27 October 2026 no longer allows ("this project IS
+the qualifying exam"; `CLAUDE.md`, "Modelling"), as item 4's status records.
 
 ---
 
@@ -424,7 +435,7 @@ addition of that day). What remains is the owner's: whether to split `coproduct_
 
 **Design pass of 20 November 2026 (on Opus at the owner's request; unconfirmed; needs verification on Fable and the
 owner's ruling before it is relied on).** Measured on `data/processed/graph_full_neuronal_split_binders_drugs_v5`, files
-dated 12 November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings, at commit `8eccf472`; the 7 November counts above reproduce
+dated 12 November 2026, which predate the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings, at commit `8eccf472`; the 7 November counts above reproduce
 exactly. Of the 62 "de novo" carrier `product_of` edges, about 11 raise a cofactor pool (SPR's three into
 tetrahydrobiopterin, CoQ synthesis, thioredoxin assembly, B6 phosphorylation, holo-[ACP]); about 50 are redistributions
 misread because a form is off the carrier list: all 14 folate edges (plain THF, folate and the polyglutamates are not
@@ -541,7 +552,7 @@ the compartment pH weight of `linear_response_encoder.py`, which is still uncali
 
 **Added 20 November 2026: design (on Opus at the owner's request; unconfirmed; needs verification on Fable and the
 owner's ruling before it is relied on).** Graph facts on `graph_full_neuronal_split_binders_drugs_v5`, files of 12
-November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings (Q4's H+ merge, the in-loop pH ceiling, 9.81's saturation), so they
+November 2026, which predate the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings (Q4's H+ merge, the in-loop pH ceiling, 9.81's saturation), so they
 are history once those are built. Fetching `R-HSA-425986` as the importer stands (option A) gives SLC9A6 a node, but
 `compartment_letter` sends every endosomal species to `l`, luminal H+ and Na+ are currency, and Reactome's cytosolic
 Na+ is the propagating pool `NEURON_MAM02519c`; so an NHE6 or NHE9 loss would reach the graph only through bulk
@@ -675,7 +686,7 @@ set (T-6) is a single group, and one (S-5) has no brain preparation.
 
 **Added 20 November 2026 (design pass on Opus at the owner's request; unconfirmed, needs verification on Fable and
 the owner's ruling before it is relied on).** Counts are on `graph_full_neuronal_split_binders_drugs_v5`, files of 12
-November 2026, which predate the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings. The pass proposes giving the metabolite-driven edge to the redox
+November 2026, which predate the amendment of `docs/item37_rulings_draft_2026-11-13.md` rulings. The pass proposes giving the metabolite-driven edge to the redox
 state of the carrier pools, not to succinate or 2-oxoglutarate as substrates. A succinate -> superoxide edge gives the
 wrong sign for SDH inhibition. Succinate piles up, yet reverse electron transport stops: malonate inhibits it
 (Korshunov 1997, PMID 9369223), and "Stepwise oxidation of the QH(2)/Q pool by increasing malonate concentration
@@ -703,7 +714,7 @@ Found on the way, each for its own decision:
 - no mitochondrial membrane-potential node exists, so the site IQ edge asserts the high-protonmotive-force regime.
 36 of 2,802 labelled perturbations in `evidence_full_v5` are cycle or chain genes, and no admitted drug targets one.
 Cost: about a day of code in `redox_pools.py` and `oxidative_regulation.py`, a third curated table, no encoder change,
-riding on the the amendment of `docs/item37_rulings_draft_2026-11-13.md` rebuild. Five new sources need Fable verification and BibTeX entries.
+riding on the amendment of `docs/item37_rulings_draft_2026-11-13.md` rebuild. Five new sources need Fable verification and BibTeX entries.
 The design pass (`item9_design_2026-11-20.md` in that session's scratchpad) holds the rows, the limits and nine
 questions for the owner.
 Record: `docs/records/2026-11/exploration_item9_design_2026-11-20.md`.
@@ -857,7 +868,14 @@ antipsychotic the patients are also taking.
 ## 14. A curation sweep over the drug target table, for the mechanisms a single sign cannot carry
 
 Tagged 2026-11-09, at the owner's request after bupropion's nicotinic antagonism came up: "I'm more thinking there
-will be a pass for similar missed cases later marked for manual curation". Nothing here is started.
+will be a pass for similar missed cases later marked for manual curation". Nothing here was started when it was
+tagged. *Added 27 November 2026*: the query ran on 20 November 2026 (the priority order above), and a pass on 24
+November 2026 curated the six drugs whose ChEMBL row is a plain MODULATOR (gabapentin, pregabalin, levetiracetam,
+brivaracetam, cariprazine, pentazocine) and bupropion's nicotinic antagonism:
+`docs/records/2026-11/item14_drug_target_curation_2026-11-24.md`, whose findings say which values rest on one source
+family. Its source reading ran on Fable; two write-up passes fell back to Opus and stopped, and its closing section,
+which stands where the draft above it differs, was written on Fable from the log. What it leaves to the owner is its
+section 3; none of it has a decision id, and the pass changed nothing in the repository.
 
 **The idea.** A drug's row in `drug_entry_nodes.parquet` is a target, a sign and a magnitude, taken from ChEMBL's
 mechanism rows through `ACTION_TYPE_SIGN` (`mechanistic_pathway_learning/perturbation/map_drug_targets_to_graph_nodes.py`).
@@ -888,7 +906,13 @@ compare each drug's label mechanism section against its target rows, which the p
 rule 14 (`experiments/read_label_central_action.py` fetches those sections and caches them); and check each drug whose
 ChEMBL action type is a substrate, a releasing agent or a modulator rather than an inhibitor or an agonist, which is a
 query over `data/raw/chembl/mechanisms.json`. Research, so on Fable; the rows would go to
-`configs/curated_drug_targets.csv`, which decision 9.121 C3 created for exactly this.
+`configs/curated_drug_targets.csv`, which decision 9.121 C3 created for exactly this. *Added 27 November 2026* (read
+against the code at `eec6e85`): `configs/curated_drug_targets.csv` is read only for a drug whose ChEMBL route gives no
+target (`mechanistic_pathway_learning/perturbation/map_drug_targets_to_graph_nodes.py`), so it does not reach a drug
+ChEMBL gives a target. Since 20 November 2026 such a drug's ruled removals go to `configs/drug_target_exclusions.csv`,
+its ruled additions of a target ChEMBL does not name to `configs/drug_target_additions.csv`, and the action for a
+target ChEMBL gives two actions to `configs/chembl_action_conflict_resolutions.csv`; re-signing a target ChEMBL names
+with a single action has no config route (section 2 of the item 14 record).
 
 **Known limits (do not overstate these in writing).**
 - **The sign is the model's instrument, and some of these cases need more than a sign.** A transported substrate is not
@@ -905,8 +929,9 @@ query over `data/raw/chembl/mechanisms.json`. Research, so on Fable; the rows wo
 ## 15. Literature bias in the curated sources, and ways to correct it
 
 Tagged 2026-11-18, at the owner's request: "Can you please add something to the repository that notes a need to look
-at literature bias for our curated sources and ways to correct it?" Nothing here is started, and no literature on the
-correction methods has been read; the methods named below are candidates for a Fable pass, not findings.
+at literature bias for our curated sources and ways to correct it?" When it was tagged nothing here was started and no
+literature on the correction methods had been read, so the methods named below were written as candidates for a Fable
+pass, not findings; the literature pass that has since run is the addition of 20 November 2026 at the end of this item.
 
 **The problem.** Every curated table in the project (drug targets and affinities, carrier proteins and shares, ambient
 concentrations, the per-gene expression factors, the edge evidence behind the graph) holds what someone chose to
@@ -1234,7 +1259,7 @@ on the pinned model (`human_gem_errors_2026-11-20.md` and `hgem_q5d_2026-11-20.m
 the repository), from the corrections they led to (`configs/human_gem_corrections.csv`, 82 rows under the owner's
 rulings of that day, applied where the model is read by `mechanistic_pathway_learning/graph/human_gem_corrections.py`),
 and from the owner's ruling recorded in the amendment of `docs/item37_rulings_draft_2026-11-13.md`: "it's ALWAYS fine to
-use GitHub's search API". Nothing here is started.
+use GitHub's search API". Nothing here was started when it was tagged; the sweep has since run (Status below).
 
 **The idea.** Every repair in the table surfaced while another question was being answered: deuterated ChEBI ids, two
 compartment rows filed under the wrong metabolite, NAAA's compartment, two structures, a hydroperoxide reduction
@@ -1354,7 +1379,12 @@ insomnia and somnolence among its symptoms.
 **Cost.** The first step is engineering and cheap: a count of the graph's negative-feedback cycles, beside the count
 of positive-feedback cycles the amendment already asks for before the root-finder is built. The rest waits on the
 root-finder: a Fable reading pass on how rate and mean-field models read a limit cycle, then design and the owner's
-ruling.
+ruling. *Added 27 November 2026* (read against the code at `eec6e85`): the count this first step names is coded. Count
+5 of `experiments/measure_saturation_counts.py` (`398f500`, 20 November 2026) counts the simple directed cycles of the
+signed graph by length and by the sign of their edge product, positive or negative, so the negative-feedback cycles
+come with the positive ones. What is left is the run: it needs a graph and an evidence directory, and its caller must
+set `--cycle-edges` and `--max-cycle-length`, and `--gains` and `--ceiling` for its other counts, none of which has a
+default. No run of it is recorded in the repository.
 
 **Known limits (do not overstate these in writing).**
 - Nothing is measured. How many perturbations would have no stable root is unknown until the unclamped root-finder
@@ -1447,7 +1477,8 @@ owner's ruling and is where the pairs that actually occur together would come fr
 
 Tagged 2026-11-22, from the owner's question "We essentially ignore the BBB, right?", the session's answer that the
 barrier does two load-bearing jobs as a measured number, and the owner's reply: "Oh wait. We use kp,uu,brain which
-addresses my concern", then "Add to queue". Nothing here is started and no source has been read for it. The state below
+addresses my concern", then "Add to queue". Nothing here was started when it was tagged and no source has been read for
+it (its first step is partly answered already: the addition below that step). The state below
 was read from the repository at `9ca95471` on 22 November 2026; the reasoning about what it costs is the session's own
 and is not sourced.
 
@@ -1479,6 +1510,18 @@ mechanism or transport relation to `ABCB1` or `ABCG2` in the graph, which bounds
 could re-route; and split the drugs the central-action rule turns away into those below the threshold and those with no
 measured value at all, which says how much of the filter is pharmacology and how much is missing data. Both read tables
 already in the repository and need no rebuild.
+
+*Added 27 November 2026* (read from the repository at `eec6e85`; no number here is read for any decision). The second
+half of this step is on a generated page already: `docs/generated/central_action_rule.md`, written by
+`experiments/apply_central_action_rule.py` on 12 October 2026 (`bb9895c`, before the provenance stamp) over
+`data/processed/label_review/evidence_any_atc_cap3` against `graph_full_neuronal_split_binders_drugs_v4_enzymes`, so it
+is a record of that graph and those tables, not of the current ones. Of its 924 candidate drugs, 28 fall below the
+Kp,uu,brain threshold (24 of them not already admitted) and 619 have a brain-expressed target and no measured
+Kp,uu,brain (492 not already admitted). Its per-drug table, `configs/centrally_acting_drugs.csv`, was last changed the
+same day, before the Kp,uu,brain corrections decision 9.123 holds open. The first half does not read from tables alone,
+which corrects the sentence above: no `mechanism_targets` cell of that table names ABCB1 or ABCG2 (0 of 924), and a
+transport relation to either is an edge of a graph, which the repository does not hold beyond the release graphs of
+`data/releases/v0.4`, made before the decisions that changed the graph's structure; so that count needs a graph build.
 
 **What the structural version would cost.** A barrier compartment with its own endothelial transport edges is a change
 to the graph's compartment model, of the size of item 22 and item 3, and it would need a source for every transport

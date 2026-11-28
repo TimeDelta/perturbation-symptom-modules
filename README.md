@@ -23,19 +23,22 @@ manifests by `experiments/generate_status.py`:
 <!-- /generated:release_counts -->
 
 The narrative that follows is the state of the project as it was written between 3 and 15 October 2026, kept as history;
-the dated documents it names carry the measurements, and `docs/status.md` says which of them are current. Three things
-changed after it was written: the linear-response encoder
+the dated documents it names carry the measurements, and `docs/status.md` says which of them are current. Three of the
+things that changed after it was written (the registered rules and their amendments since are in `docs/status.md` and
+`docs/amendment_history.md`): the linear-response encoder
 (`mechanistic_pathway_learning/models/linear_response_encoder.py`, 6 October 2026) is the one tested model and the
 message-passing encoder a robustness reading (decision 9.77, 22 October 2026; `tested_models` and `robustness_models`
 in `configs/registered_rules.json`); flux sampling was dropped from the confirmation on 8 October 2026
 (`docs/research_summary.md`); and the label likelihood is positive-unlabelled (decision 9.90, `label_likelihood`).
 Two rulings bear on every number in it. The measurements of the slice-pilot period are history and not evidence about
 the current graph or encoders (the owner, 27 October 2026: "ANY numbers from that time are to have the same treatment",
-decision 9.103); exactly which measurements "that time" covers is open (9.104). And the v5 graph the
-registration names was built on 5 November 2026 (`graph_full_neuronal_split_binders_drugs_v5`, 49,834 nodes and
-275,006 edges, decision 9.106), before decision 9.112's membrane-potential change is built, so it is rebuilt when
-9.112 is; the directories of that name written in October came from a build the owner had not asked for and are not
-v5 (decision 9.106, 28 October 2026).
+decision 9.103); exactly which measurements "that time" covers is open (9.104). And the v5 graph the registration
+names is `graph_full_neuronal_split_binders_drugs_v5`: a graph of that name was built on 5 November 2026 (49,834 nodes
+and 275,006 edges, decision 9.106) and rebuilt on 12 November 2026 from `graph_full_neuronal` down (49,864 nodes and
+275,194 edges, docs/data_layer_rebuild.md), both times with the registered `--membrane-potential computed_from_the_pools`; decision
+9.112's change to that layer is not yet built, and the graph is rebuilt again when it is (decision 9.106). The
+directories of that name written in October came from a build the owner had not asked for and are not v5 (decision
+9.106, 28 October 2026).
 
 Phase 1 is measured and Phases 2 and 3 have started on the monogenic slice. The slice is a pilot; the confirmatory test is the full graph with every layer (docs/preregistration.md, amendment of 7 October 2026). Implemented and tested:
 the noisy-OR pathway module head (sum or mean pooling over hard-concrete supports), soft constraint
@@ -140,7 +143,10 @@ pytest
 ## Layout
 
 ```
-docs/            experiment design, symptom crosswalk (with HPO exclusions), curated pathway modules, data sources, generated tables
+docs/            the living documents (experiment design, symptom crosswalk with HPO exclusions, curated pathway modules, data sources) and the decision log
+  generated/     pages and tables a script writes
+  records/       dated records, a folder per month
+  drafts/        text for the owner to act on
 configs/         graph build, evidence assembly, model, evaluation, baselines, ablations
 slurm/           array job for flux sampling; resumable training job for a runtime-limited cluster
 mechanistic_pathway_learning/

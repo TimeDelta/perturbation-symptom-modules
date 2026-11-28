@@ -10,8 +10,8 @@
     },
     "README.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/README.md": {
       "class": "generated",
@@ -221,8 +221,8 @@
     },
     "docs/documentation_process.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85"
     },
     "docs/generated/drug_administration_routes.md": {
       "class": "generated",
@@ -302,9 +302,9 @@
     },
     "docs/exploration_queue.md": {
       "class": "living",
-      "reviewed": "2026-11-07",
-      "as_of_commit": "aa35ab0",
-      "what": "the parked ideas: sensitivity-matrix rank, a larger CollecTRI recuration, protein electrostatics, phosphorylation as a relation, and occupancy as the drug seed magnitude"
+      "reviewed": "2026-11-27",
+      "as_of_commit": "eec6e85",
+      "what": "the parked ideas, items 1 to 27 (sensitivity-matrix rank to hypothesis mining as the objective), each with what it would change, what it would cost and its limits, the passes run on them, and their priority order of 20 November 2026"
     },
     "docs/records/2026-10/exposure_sources/benet2011_bddcs.md": {
       "class": "record",

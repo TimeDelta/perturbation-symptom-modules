@@ -91,7 +91,13 @@ last point below).
   doc again: that is what the owner's answer of 20 November 2026 allowed, for those three paths. Phase 3 holds the
   build inputs, moved to `configs/` just before a data-layer rebuild and when no job is running, because a moved file
   has a new modification time on every checkout and `experiments/check_rebuild_inputs.py` would report the builds
-  there as stale. What a planned move waits for is worked out on the day, not stored.
+  there as stale. What a planned move waits for is worked out on the day, not stored. Phase 1 was applied on 20
+  November 2026: 148 files, the references rewritten in the same commit (12f4923). One phase-2 move was made the same
+  day, `docs/generated/module_names.md`, which only the study sheet held (40f3ca8). The rest of phase 2 was applied on 27
+  November 2026, at the owner's "Yes start on the ready list": 46 files, the renames committed on their own (12b05b0)
+  and the references rewritten by the tool (7412ae6) and by hand (28e5fca) in the two commits after them. One phase-2
+  move is left planned, `docs/off_target_scoping.md`, which would change a line of the owner's rulings draft and waits
+  for the owner. Phase 3's 11 build inputs wait for the next data-layer rebuild.
 - `PYTHONPATH=. python experiments/move_documents.py --phase N` applies a phase, as a dry run until it is given
   `--apply`. It renames each file with `git mv`, rewrites the old path in code, scripts, tests, YAML configs, living
   documents, drafts and the bibliography, renames the register keys where they stand, and gives each generated page
@@ -164,7 +170,13 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   shallow clone unless given `--allow-shallow`. The `.claude/settings.json` hook runs that test file and
   `tests/test_amendment_history.py` after an edit to a Markdown file under `docs/`, to `README.md`, `CLAUDE.md`,
   `configs/documentation_registry.json` or `configs/registered_rules.json`, so a stale page is reported in the same
-  turn that made it stale.
+  turn that made it stale. Since 20 November 2026 the full suite runs once when a session or a subagent finishes, not
+  after every code edit (the owner: "can you stop it from running the full suite for every code edit and only do it
+  when each is done?"; b9c1dcb): the Stop and SubagentStop hooks of `.claude/settings.json` run
+  `.claude/hooks/run-suite-if-code-changed.sh`, which tests the checkout the hook input names, so an agent in a
+  worktree is tested in its worktree, only when that checkout's `.py` files under `mechanistic_pathway_learning/` and
+  `tests/` differ from the last passing run's, one run per checkout at a time, and wakes the session when the suite
+  fails.
 - When a generated document is regenerated, its generator writes the stamp; a generator that does not yet (most of
   the generated documents predate the stamp; `docs/status.md` counts them) is given it at its next change by calling
   `provenance_stamp` from `mechanistic_pathway_learning/documentation.py`.
@@ -179,7 +191,10 @@ state is on a machine's disk and is read there (`bash scripts/resume_jobs.sh --s
   `tests/test_study_sheet_diagrams_current.py` fails while any of them has changed since. A commit that changes a
   depicted row or file therefore checks the diagram in the doc, corrects it there if it is wrong, and re-stamps it with
   `PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <widget id>`. Each diagram shows the
-  architecture as last built or as decided, with one of each where the two differ.
+  architecture as last built or as decided, with one of each where the two differ. Since 24 November 2026 the register
+  also holds the sheet's prose passages that describe the architecture, under `passages` by block id, and an entry
+  lists the amendment items it depicts (`items`, fingerprinted by the item's text) beside its decision rows and code
+  files; a passage is checked and stamped as a diagram is (`CLAUDE.md`, Documents).
 
 ## Defects repaired, and what is left to the owner
 
