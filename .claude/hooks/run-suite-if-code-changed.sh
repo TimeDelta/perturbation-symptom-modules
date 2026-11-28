@@ -26,14 +26,15 @@
 #
 # A crash is reported by its exit status, whatever pytest printed, when the checkout still exists: python3 killed by a
 # signal (bash's status 128 + the signal's number: 139 for a segfault, 137 for SIGKILL, which is what the kernel's
-# out-of-memory killer sends), or pytest's INTERNAL_ERROR (3) or USAGE_ERROR (4), the code it also gives when a conftest
-# will not import (pytest's ExitCode enum, read in _pytest/config/__init__.py of the installed pytest 9.1.1 on 28
-# November 2026). The report names the status and the signal and gives what pytest printed: the 25 lines from the line
-# where Python's "Fatal Python error" first appears, where faulthandler's dump names the crashing frame first, else the
-# last 25 lines. That line does not start with it when a test ran before the crash, since pytest's progress dots have no
-# newline yet ("...Fatal Python error: Segmentation fault", measured on 28 November 2026).
-# Until this was added on 28 November 2026, such a run fell under the no-result rule above: a segfault or a kill woke
-# nobody, and since no pass is recorded it ran again, as silently, at every later stop.
+# out-of-memory killer sends; a status above 128 that names no signal is reported too, without one), or pytest's
+# INTERNAL_ERROR (3) or USAGE_ERROR (4), the code it also gives when a conftest will not import (pytest's ExitCode enum,
+# read in _pytest/config/__init__.py of the installed pytest 9.1.1 on 28 November 2026). The report names the status and
+# the signal and gives what pytest printed: the 25 lines from the line where Python's "Fatal Python error" first
+# appears, where faulthandler's dump names the crashing frame first, else the last 25 lines. That line does not start
+# with it when a test ran before the crash, since pytest's progress dots have no newline yet ("...Fatal Python error:
+# Segmentation fault", measured on 28 November 2026). Until this was added on 28 November 2026, such a run fell under
+# the no-result rule above: a segfault or a kill woke nobody, and since no pass is recorded it ran again, as silently,
+# at every later stop.
 #
 # CLAUDE_SUITE_HOOK_DRY_RUN=1 prints what the hook would do and runs nothing. tests/test_suite_hook.py uses it, and a
 # stub python3 on PATH, to test the hook without running the real suite.
@@ -98,12 +99,17 @@ if ! checkout_still_exists; then
 fi
 
 # A crash, by its exit status: above 128 is bash's 128 + the number of the signal that killed python3, and 3 and 4 are
-# pytest's ExitCode.INTERNAL_ERROR and ExitCode.USAGE_ERROR.
+# pytest's ExitCode.INTERNAL_ERROR and ExitCode.USAGE_ERROR. A status above 128 that names no signal (Linux's signals
+# run to 64, so 193 to 255, as sys.exit(-1) gives 255) is an abnormal end too, and is reported without a signal.
 crash_cause=""
 if [ "$pytest_exit_status" -gt 128 ]; then
     signal_number=$((pytest_exit_status - 128))
-    signal_name="$(kill -l "$signal_number" 2>/dev/null)"
-    crash_cause="python3 was killed by signal $signal_number${signal_name:+ (SIG$signal_name)}"
+    # kill -l answers a signal's name, or an empty one for 32 and 33 (measured), and fails for a number above 64
+    if signal_name="$(kill -l "$signal_number" 2>/dev/null)"; then
+        crash_cause="python3 was killed by signal $signal_number${signal_name:+ (SIG$signal_name)}"
+    else
+        crash_cause="python3 ended with a status above 128 that names no signal"
+    fi
 elif [ "$pytest_exit_status" -eq 3 ]; then
     crash_cause="pytest stopped with its internal-error code (ExitCode.INTERNAL_ERROR)"
 elif [ "$pytest_exit_status" -eq 4 ]; then

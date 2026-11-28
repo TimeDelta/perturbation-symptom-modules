@@ -196,6 +196,18 @@ def test_a_suite_killed_with_sigkill_wakes_the_session_with_the_signal(tmp_path)
     assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
 
 
+def test_a_status_above_128_that_names_no_signal_is_reported_without_a_signal(tmp_path):
+    """Linux's signals run to 64, so status 255 (what sys.exit(-1) gives) is not 128 + a signal; it is still an
+    abnormal end and is reported, but not as a kill by "signal 127", which does not exist."""
+    checkout = make_checkout(tmp_path)
+    stub_directory = stub_suite(tmp_path, 'echo "....................  [ 40%]"\nexit 255\n')
+    result = run_hook(checkout, stub_directory)
+    assert result.returncode == 2, result
+    assert "exit status 255, python3 ended with a status above 128 that names no signal" in result.stderr
+    assert "signal 127" not in result.stderr
+    assert not (checkout / ".git" / "claude_suite_last_passing_fingerprint").exists()
+
+
 def test_an_internal_error_exit_wakes_the_session_even_when_the_output_shows_no_result(tmp_path):
     """Exit status 3 is pytest's ExitCode.INTERNAL_ERROR. The stub's output holds none of the lines the no-result rule
     looks for (no INTERNALERROR line, no summary), so only the exit status makes this a report."""
