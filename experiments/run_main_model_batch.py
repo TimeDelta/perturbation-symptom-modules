@@ -172,8 +172,8 @@ CONFIGURATIONS: dict[str, list[str]] = {
     # knockout reaches the protein layer one hop later). The merged arms read the descriptor copy with the protein
     # descriptors of the genes the split resolves (renamed symbols, genes sharing one entry), so both arms carry the same
     # descriptors. Seed masking on both message-passing arms (the user, 8 October 2026); the linear-response treatment
-    # was then the user's to decide, so those arms have none (amendment item 23 of 13 October 2026 has since registered
-    # seed_masked for both encoders).
+    # was then the user's to decide, so those arms have none (amendment item 21 of 13 October 2026 has since registered
+    # seed_masked for both encoders, and item 23 of the same date made it the trainer's default).
     "b6_mechanistic_gate_time_scales_descriptors_resolved_seed_masked": SLICE_GATE_TIME_SCALES_MESSAGE_PASSING + [
         "--node-descriptors", "data/processed/node_descriptors/slice_descriptors_brain_expression_resolved.parquet", "--descriptor-treatment", "seed_masked"],
     "b6_mechanistic_gate_time_scales_descriptors_split_seed_masked": SLICE_GATE_TIME_SCALES_MESSAGE_PASSING + [

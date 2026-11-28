@@ -26,8 +26,11 @@
 # neither source has a file to fetch with curl.
 #
 # Usage: bash scripts/fetch_raw_sources.sh [--with-cellxgene]
-#   --with-cellxgene also fetches the four adult human brain atlas dissections (1.24 GB), which only the dopaminergic
-#   cell class needs (experiments/build_dopaminergic_expression.py).
+#   --with-cellxgene also fetches, from CZ CELLxGENE, the adult human brain atlas files of two cell clusters: the four
+#   dissections holding cluster 395 (1.24 GB), which the dopaminergic cell class needs
+#   (experiments/build_dopaminergic_expression.py), and, since 20 November 2026 (commit cb4f6c9), the twelve files
+#   holding cluster 400 (the Splatter supercluster file and eleven dissections, 8.39 GB), for the forebrain cholinergic
+#   classes of amendment item 37b, which no build script reads yet.
 set -uo pipefail
 repository_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repository_root"
@@ -402,7 +405,10 @@ if [ "$with_cellxgene" = "yes" ]; then
   # The ids were read on 16 November 2026 from the collection listing of api.cellxgene.cziscience.com, a host the owner
   # ruled a requested block later that day (experiments/read_public_page.py, REQUESTED_BLOCK_HOSTS); the files are
   # data files the provider publishes for download, so CLAUDE.md's exception for a pinned script download covers them.
-  # Licence: CC BY 4.0 on CELLxGENE; the Allen Institute lists the same atlas as CC BY-NC 4.0 (docs/data_sources.md).
+  # Licence: unverified for these files (docs/data_sources.md, their row, since 27 November 2026). CELLxGENE's own
+  # documentation states CC BY 4.0 for data published there (quoted in the row of the atlas's cluster aggregate); the
+  # CC BY-NC 4.0 that this comment attributed to the Allen Institute until 28 November 2026 has no recorded reading in
+  # the repository, and the licence pass is owed on Fable.
   declare -A cholinergic_versions=(
     [supercluster_splatter]="c4a41c58-06df-47a6-96cf-24c930d7de47:37d97ae58bb007a8"
     [dissection_si]="b96a3b7a-fd57-4e6b-bbbb-d7472f5fab75:36061e91bd1c0454"

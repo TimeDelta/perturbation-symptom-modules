@@ -92,9 +92,13 @@ ENTRY_NODE_TYPES: tuple[str, ...] = (DRUG_NODE_TYPE, ALLELE_NODE_TYPE)
 ALLELE_MECHANISM_EVIDENCE_PREFIX = "neomorphic allele mechanism"
 DRUG_ENTRY_FILE = "drug_entry_nodes.parquet"  # one row per mechanism edge; read by experiment_data.load_experiment_data
 DRUG_ENTRY_COLUMNS: tuple[str, ...] = ("perturbation_id", "drug_node_id", "target_node_id", "sign", "magnitude")
-# every mechanism edge's evidence source. A mechanism target is a ChEMBL mechanism row's, or a ruled addition of
-# configs/drug_target_additions.csv (map_drug_targets_to_graph_nodes, "A ruled addition"), whose rows name their ruling
-# and sources; the evidence table's seeds do not say which of the two a target came from, so the source names both
+# every mechanism edge's evidence source. A mechanism target is a ChEMBL mechanism row's, a ruled addition of
+# configs/drug_target_additions.csv (map_drug_targets_to_graph_nodes, "A ruled addition"), or a curated target of
+# configs/curated_drug_targets.csv or of the role "mechanism" rows of configs/psychiatric_drug_additions_v4_draft.csv,
+# read for a drug whose ChEMBL route gives no target and for the drugs of the curated label route
+# (evidence/curated_drug_wiring.py, decision 9.117); the rows of each table name their sources. The evidence table's
+# seeds do not say which of these a target came from, so one string serves every mechanism edge. The string names
+# only the first two (since 21 November 2026); it is left as it is because a change to it changes the graph's edges
 MECHANISM_EVIDENCE = "drug mechanism (ChEMBL or a ruled addition), moved from the perturbation's seeds"
 CARRIAGE_EVIDENCE_PREFIX = "plasma carrier of the drug"
 CLEARANCE_EVIDENCE_PREFIX = "enzyme that clears the drug"

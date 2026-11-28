@@ -6,12 +6,14 @@
 # (docs/data_layer_rebuild.md gives what each step reproduced and what it did not). Every step is skipped when its
 # output exists, so the script can be rerun after a stop. Run it from the repository root:
 #
-#   bash scripts/rebuild_data_layer.sh            # graphs, evidence tables, label selections, drug entry nodes, and the two
-#                                                   # evidence sources that record absences (trial arms, FAERS)
-#   bash scripts/rebuild_data_layer.sh slice        # then the monogenic slice tables the slice-era tests read (minutes
-#                                                   # once the shared steps below have their outputs)
+#   bash scripts/rebuild_data_layer.sh            # graphs, evidence tables, label selections, drug entry nodes, and the
+#                                                   # evidence sources that record absences (trial arms, FAERS, IMPC)
+#   bash scripts/rebuild_data_layer.sh slice        # the shared steps below, then the monogenic slice tables the
+#                                                   # slice-era tests read (the slice block takes minutes; the shared
+#                                                   # steps take hours where their outputs are missing)
 #   bash scripts/rebuild_data_layer.sh descriptors  # then the node descriptors and cell-class weights (about 3 hours
-#                                                   # of ESM-2 embeddings on 2 cores, and a 1.24 GB download)
+#                                                   # of ESM-2 embeddings on 2 cores, and the 9.63 GB of brain atlas
+#                                                   # files scripts/fetch_raw_sources.sh --with-cellxgene fetches)
 #   bash scripts/rebuild_data_layer.sh fine         # then the v5 tables on the fine symptom constructs (decision 9.58; an hour)
 #   bash scripts/rebuild_data_layer.sh brenda       # then the derived BRENDA table, from the split graph the
 #                                                   # graphs stage built (decision 9.88; minutes)
@@ -28,6 +30,13 @@
 # protein split with experiments/build_gene_protein_split.py, which also reads the UniProt proteome
 # (data/raw/uniprot/uniprot_human_reviewed.tsv.gz), the Reactome export (data/raw/reactome/current) and
 # data/raw/chembl/targets.json.
+#
+# Since 27 November 2026 the raw fetch, the first shared step, stops every stage: the HPA release decision 9.155
+# pinned names 48 single-nucleus cluster types that CELL_CLASS_OF_CLUSTER_TYPE
+# (mechanistic_pathway_learning/graph/brain_expression_descriptors.py) does not map, so experiments/check_hpa_downloads.py
+# fails, scripts/fetch_raw_sources.sh exits 1 and, under set -e, the rebuild stops there, before the base graph, whose
+# hpa_cell_class_table would raise on the same file. It runs past that step once those cluster types have a cell class
+# (owed under 9.155 (1)).
 #
 # Library versions matter for the file hashes: the tables of data/releases/v0.4 were written by pandas 2.3.3 and
 # pyarrow 25.0.1, and with those two the rebuilt tables that have a recorded hash and no fitted column match it

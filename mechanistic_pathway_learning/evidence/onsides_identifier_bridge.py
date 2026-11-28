@@ -253,7 +253,9 @@ def passes_single_target_rule(drug_targets: list[DrugTarget], max_targets: int |
 
 
 def passes_nervous_system_rule(bridge: IngredientBridge) -> bool:
-    """The ATC N proxy for central action on the union of the RxNav and SIDER codes (is_nervous_system_atc)."""
+    """The ATC N proxy for central action on bridge.atc_codes, the union of the RxNav, SIDER and curated codes
+    (is_nervous_system_atc). The curated codes are empty when the bridge fetcher calls this; they are set at load by
+    curated_drug_wiring.apply_atc_code_supplements, which recomputes nervous_system_atc (decision 9.117)."""
     return is_nervous_system_atc(bridge.atc_codes)
 
 

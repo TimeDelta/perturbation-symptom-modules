@@ -440,7 +440,10 @@ def mixed_pore_weight_millivolts(permeability: dict[str, float]) -> float:
 #
 # Also recorded by that pass and deliberately not guarded, being a stated choice rather than an accident: SCN7A (Nax)
 # takes the NALCN class through the curated reaction MAR_SODIUM_LEAK it shares with NALCN, which is consistent with
-# Noland et al. 2022 (PMC8931054) finding the Nax construct "non-selective among monovalent cations".
+# Noland et al. 2022 (PMC8931054) finding the Nax construct "non-selective among monovalent cations". Since 23 November
+# 2026 that choice is no longer the registered one: amendment item 37a (v) splits SCN7A out of MAR_SODIUM_LEAK as its
+# own population, a different pore from NALCN, with its conductance flagged. That split is not built, so on the current
+# build SCN7A still takes the NALCN class as described here.
 NOT_MIXED_PORE_GENES: frozenset[str] = frozenset({"GRINA"})
 
 MIXED_PORE_GENE_PREFIXES: tuple[tuple[str, str], ...] = (
