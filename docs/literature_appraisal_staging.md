@@ -2,8 +2,9 @@
 
 **Status: UNREVIEWED.** Nothing here has been checked by the author. No row may be
 copied into `docs/experiment_design.md`, `docs/references.bib` or any other document
-until it has been read against the cited source. Rows are written by the paced
-appraisal task described at the end of this file.
+until it has been read against the cited source. Rows were written by the paced
+appraisal task of 7 October 2026, described under "How the task was paced" below,
+which ended that day when its cap was spent.
 
 Exception, 7 October 2026, at the author's request: the bibliographic records of the sixteen appraised sources are
 in `docs/references.bib`, so that a reference manager can hold them. Only the records were copied (authors, title,
