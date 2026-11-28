@@ -69,7 +69,9 @@ corrected:
 
 Not computed here: the share of counted records without an abstract and the share that are preprints (left open as
 `[P 23]`), the text-mined literature count kept beside the search's count, and the seeded sample of 20 labelled
-development cells per stratum that the (g) pass reads after the held-out set is fixed.
+development cells per stratum that the (g) pass reads after the held-out set is fixed, which
+mechanistic_pathway_learning/evaluation/sourcing_sample.py draws from the assignment written here (built 28 November
+2026, an unreviewed draft).
 """
 from __future__ import annotations
 
