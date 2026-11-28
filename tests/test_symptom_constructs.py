@@ -255,8 +255,10 @@ def test_the_committed_fine_crosswalk_is_a_fresh_build_of_the_committed_inputs()
     too since 28 November 2026; the next test holds that without hp.obo). The page is not compared."""
     import subprocess
     root = Path(__file__).resolve().parents[1]
-    if not (root / "data/raw/hpo/hp.obo").exists() or not (root / "data/raw/sider_4.1/meddra_all_se.tsv.gz").exists():
-        pytest.skip("hp.obo and the SIDER vocabulary are not fetched")
+    required_raw_inputs = ("data/raw/hpo/hp.obo", "data/raw/sider_4.1/meddra_all_se.tsv.gz")  # HPO; SIDER's vocabulary
+    missing_raw_inputs = [path for path in required_raw_inputs if not (root / path).exists()]
+    if missing_raw_inputs:
+        pytest.skip(f"not fetched: {', '.join(missing_raw_inputs)}")
     result = subprocess.run([sys.executable, "experiments/build_fine_symptom_crosswalk.py", "--check"], cwd=root, capture_output=True, text=True, env={"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin"})
     assert result.returncode == 0, result.stdout + result.stderr
     fine = read_rows(root / "docs/symptom_crosswalk_fine.csv")
