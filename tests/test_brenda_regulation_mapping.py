@@ -12,9 +12,11 @@ import pytest
 
 from experiments.map_brenda_regulation_to_graph import human_accessions_by_ec_number
 
-UNIPROT_PATH = Path("data/raw/uniprot/uniprot_human_reviewed.tsv.gz")
-MAPPED_PAIRS_PATH = Path("configs/brenda_metabolite_enzyme_regulation.csv")
-MAPPING_SUMMARY_PATH = Path("docs/generated/brenda_regulation_mapping.json")
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+UNIPROT_PATH = REPOSITORY_ROOT / "data/raw/uniprot/uniprot_human_reviewed.tsv.gz"  # a raw download, gitignored
+# the two outputs of experiments/map_brenda_regulation_to_graph.py are committed, so their tests do not skip
+MAPPED_PAIRS_PATH = REPOSITORY_ROOT / "configs/brenda_metabolite_enzyme_regulation.csv"
+MAPPING_SUMMARY_PATH = REPOSITORY_ROOT / "docs/generated/brenda_regulation_mapping.json"
 
 
 @pytest.mark.skipif(not UNIPROT_PATH.exists(), reason="the pinned UniProt dump is not present")
@@ -25,7 +27,6 @@ def test_an_ec_class_can_name_many_human_accessions_which_is_why_the_route_is_re
     assert 0 < classes_naming_one < len(accessions_of_ec), "some classes name one accession and some name several"
 
 
-@pytest.mark.skipif(not MAPPED_PAIRS_PATH.exists(), reason="the mapped table has not been built")
 def test_the_mapped_table_carries_only_the_three_regulation_relations_with_matching_signs():
     pairs = pd.read_csv(MAPPED_PAIRS_PATH)
     assert set(pairs.relation_type) <= {"inhibits", "activates", "cofactor_of"}
@@ -35,7 +36,6 @@ def test_the_mapped_table_carries_only_the_three_regulation_relations_with_match
     assert not pairs.duplicated(subset=["base_metabolite_id", "uniprot_accession", "relation_type"]).any()
 
 
-@pytest.mark.skipif(not MAPPING_SUMMARY_PATH.exists(), reason="the mapping summary has not been built")
 def test_the_summary_records_the_records_the_ec_route_refused():
     summary = json.loads(MAPPING_SUMMARY_PATH.read_text())
     refused = summary["enzyme_resolution"]["EC class names none or several human accessions"]

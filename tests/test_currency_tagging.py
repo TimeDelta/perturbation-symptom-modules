@@ -4,6 +4,8 @@ The owner asked what else the currency mask holds back ("are there any other cur
 getting masked out?"), which found them, and then directed the glycine half ("glycine can be removed as currency as
 long as there's still a mechanism for the amount of glycine reaching a receptor to vary ... it should also be
 consistent with other NTs")."""
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -66,11 +68,10 @@ def test_a_pool_built_to_propagate_is_never_tagged_however_high_its_degree():
 
 def test_the_fix_on_the_live_node_table_releases_glycine_and_keeps_every_neuronal_pool():
     """A guard on the graph the rebuild will start from, since none of this reaches it until then."""
-    nodes_path = pd.io.common.stringify_path("data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes/nodes.parquet")
-    try:
-        nodes = pd.read_parquet(nodes_path)
-    except (FileNotFoundError, OSError):
-        pytest.skip("the v4 graph is not on disk")
+    nodes_path = Path("data/processed/graph_full_neuronal_split_binders_drugs_v4_enzymes/nodes.parquet")
+    if not nodes_path.exists():  # a file that is there but will not read fails, not skips
+        pytest.skip(f"the v4 graph is not on disk ({nodes_path})")
+    nodes = pd.read_parquet(nodes_path)
     metabolites = nodes[nodes.node_type == "metabolite"]
     fixed = retag_currency_by_name(
         list(nodes.node_id), list(nodes.display_name),
@@ -130,10 +131,10 @@ def test_the_build_tags_no_gene_on_a_graph_whose_gene_symbol_spells_calcium():
 
 def test_the_v5_graph_on_disk_reads_with_calcium_tagged_and_ca2_untagged():
     """A guard on the graph the registered models read, which still carries the tag until it is rebuilt."""
-    try:
-        nodes = pd.read_parquet("data/processed/graph_full_neuronal_split_binders_drugs_v5/nodes.parquet")
-    except (FileNotFoundError, OSError):
-        pytest.skip("the v5 graph is not on disk")
+    nodes_path = Path("data/processed/graph_full_neuronal_split_binders_drugs_v5/nodes.parquet")
+    if not nodes_path.exists():  # a file that is there but will not read fails, not skips
+        pytest.skip(f"the v5 graph is not on disk ({nodes_path})")
+    nodes = pd.read_parquet(nodes_path)
     flags = dict(zip(nodes.node_id, currency_flags(nodes)))
     assert flags["GENE:CA2"] is False or not flags["GENE:CA2"]
     calcium = nodes[(nodes.node_type == "metabolite") & (nodes.display_name.astype(str).str.strip() == "Ca2+")]
