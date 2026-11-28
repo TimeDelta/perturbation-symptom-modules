@@ -159,12 +159,15 @@ A2, C1, C2 and the locus coeruleus), not the locus coeruleus alone"; the same do
 Proposed: if the branch lands, the label moves to `note-c` as "noradrenergic (brainstem, cluster 398)" (section 2). If
 the correction is made first, on its own: `lane4-c` "noradrenergic (LC)" becomes "brainstem noradrenergic".
 
-Seen while checking, and not read in the live doc: an export of the study sheet at revision 197 (25 November 2026, in
-the session's scratch files) has, in the quantity table's "class weights w [N, Q]" row, "How much each cell type
-(excitatory neurons, astrocytes, locus coeruleus, pineal and the rest) expresses a gene, from HPA, GTEx and the Siletti
-atlas". If the live doc still says so, "locus coeruleus" has the same gap; the row also leaves out GEO GSE100472,
-the pineal class's source, which was already so before the branch. The landing session reads that row in the live
-doc before acting on this.
+The same gap is in the quantity table. Its "class weights w [N, Q]" row (table `mtp7zsmsxgy.21371`, row `.21796`,
+paragraph `mtp7zsmsxgy.25416`, read in the live doc at revision 198 on 28 November 2026 by the checker of this draft)
+says "How much each cell type (excitatory neurons, astrocytes, locus coeruleus, pineal and the rest) expresses a gene,
+from HPA, GTEx and the Siletti atlas". The branch does not make it wrong ("and the rest" covers the new classes, and
+the pituitary lineages come from HPA), but "locus coeruleus" is the cluster-398 gap, and the row also leaves out GEO
+GSE100472, the pineal class's source, which was so before the branch. Proposed: "How much each cell type (excitatory
+neurons, astrocytes, brainstem noradrenergic neurons, pineal and the rest) expresses a gene, from HPA, GTEx, GEO
+GSE100472 and the Siletti atlas". The table is registered under passage `mtp7zsmsxgy.21164` ("what each quantity
+means (lead and table .21371)"; section 7).
 
 ## 7. The registry's declarations (`configs/study_sheet_diagrams.json`), proposed and not applied
 
@@ -178,6 +181,7 @@ corrected and before it stamps the entries:
 | `098c9a09-8f0f` (decided) | `models/linear_response_encoder.py`, `experiments/build_cell_class_weights.py` | the same three; also proposed: `experiments/run_main_model.py` | as above; `run_main_model.py` line 410 decides which classes share the pool that `loop-note` calls "as built" |
 | `mtp7zsmsxgy.36327` (passage) | `models/linear_response_encoder.py`, `experiments/build_cell_class_weights.py` | the same three; also proposed: `experiments/run_main_model.py` | the passage counts the lanes and names the shared pool |
 | `236f9823-56fb` (decided) | `graph/drug_entry_nodes.py`, `configs/neomorphic_alleles.csv`, `graph/brenda_enzyme_regulation.py`, `graph/membrane_potential.py` | item `37a` in `items`; files `mechanistic_pathway_learning/graph/reactome_import.py` and `experiments/build_neuronal_graph_variant.py` | section 5: the first-catalyst choice 37a replaces (line 695) and the coded member removals |
+| `mtp7zsmsxgy.21164` (passage: the quantity table) | `models/linear_response_encoder.py`, `models/noisy_or_pathway_module_model.py` | also proposed: `mechanistic_pathway_learning/graph/siletti_cluster_classes.py`, `mechanistic_pathway_learning/graph/peripheral_cell_classes.py` | its class-weights row names cell types and their sources (section 6); not needed for the branch, which leaves the row true |
 
 The two files the branch's checker named (`siletti_cluster_classes.py`, `peripheral_cell_classes.py`) are the firm
 proposal: the branch changes them, and the guard did not flag the three entries for them only because they are not
@@ -198,6 +202,14 @@ with `experiments/run_main_model.py` kept in `c642a74c-b09e` and added to the ot
 joins `items` and the two files join `files`. The new fingerprints are written by
 `PYTHONPATH=. python experiments/check_study_sheet_diagrams.py --stamp <id>` once each entry has been checked against
 the doc.
+
+The repository's copies of the doc go stale with it. `docs/study_sheet.md`, the doc's Markdown copy (a living
+document, last exported from revision 197), holds the quantity row (line 156), the passage (line 216) and the
+captions of the figures: line 208, for `c642a74c-b09e`, reads "17 classes as experiments/build_cell_class_weights.py
+writes them; before amendment item 37", and line 212, for `098c9a09-8f0f`, "not built". The figures themselves are
+`docs/study_sheet_figures/13_propagation_channels_as_built.png`, `13b_propagation_channels_as_decided.png` and
+`04_graph_as_decided.png` (line 48, for `236f9823-56fb`). Once the doc is corrected they are refreshed by exporting it
+again, as that copy's provenance line says.
 
 ## 8. For the owner
 
