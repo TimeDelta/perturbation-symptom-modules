@@ -483,3 +483,90 @@ def test_the_draw_refuses_a_calibration_of_other_options_and_draws_by_its_own():
     assert record["perturbation_ids"] == sorted(expected)
     default = draw_held_out_set(data, [100], [calibration_record(ceiling=2.0)], "disease_cluster", DIGESTS)
     assert DRAW_OPTIONS_KEY not in default and DRAW_OPTIONS_KEY not in default["rule"]
+
+
+# ---------------------------------------------------------------- added by the check of 28 November 2026: cases the
+# tests above did not reach (M2's denominator under M1, the stop under fold_zero, the measurement's own record)
+
+
+def test_m1_with_m2_counts_the_prefix_over_every_gene_side_perturbation():
+    """Three drugs on three proteins, each encoded by one gene of cluster_F (10 genes); 90 other genes in 18 groups of
+    5; 100 gene-side perturbations. At 0.3 one target is held (one drug in three, 0.33), so cluster_F is forced (0.1)
+    and M2 adds four groups of five, to 30 of 100, exactly 0.3. Counting over the 90 candidates instead would stop at
+    three (25 of 90 is 0.278, nearer 0.3 than 30 of 90)."""
+    proteins = [f"PROTEIN:{index}" for index in range(3)]
+    genes = [f"F_{member}" for member in range(10)] + [f"s_{index}" for index in range(90)]
+    nodes = proteins + [f"GENE:{gene}" for gene in genes]
+    node_index = {name: position for position, name in enumerate(nodes)}
+    ids = [f"d{index}" for index in range(3)] + genes
+    kinds = ["drug"] * 3 + ["gene"] * len(genes)
+    seeds = [[index] for index in range(3)] + [[node_index[f"GENE:{gene}"]] for gene in genes]
+    groups = [f"drug_group_{index}" for index in range(3)] + ["cluster_F"] * 10 + [f"cluster_{index // 5}" for index in range(90)]
+    encoded = {f"GENE:F_{index}": {f"PROTEIN:{index}"} for index in range(3)}
+    for seed in range(6):
+        draw = two_sided_held_out_draw(ids, kinds, seeds, nodes, groups, seed=seed, held_out_fraction=0.3,
+                                       options=M1_WITH_M2, proteins_encoded_by_gene=encoded)
+        assert len(draw.held_out_target_ids) == 1 and draw.forced_group_ids == {"cluster_F"}
+        assert draw.forced_share_of_the_gene_side == pytest.approx(0.1) and not draw.forced_groups_pass_the_fraction
+        assert len([gene for gene in genes if gene in draw.held_out_ids]) == 30, seed
+
+
+def test_under_fold_zero_the_side_stops_at_forced_groups_that_pass_the_fraction():
+    """At 0.15 one target of five is held (20 of 100 drugs), so the cluster of 20 genes holding its gene is forced:
+    20 of 120 genes, past 0.15. Fold 0 of the grouped folds would take more: the 100 drugs and 20 single genes are
+    groups of one, which reach fold 0 once every fold holds 20. So the stop is what keeps the side at the forced set."""
+    proteins = [f"PROTEIN:{index}" for index in range(5)]
+    genes = [f"C{cluster}_{member}" for cluster in range(5) for member in range(20)] + [f"single_{index}" for index in range(20)]
+    nodes = proteins + [f"GENE:{gene}" for gene in genes]
+    node_index = {name: position for position, name in enumerate(nodes)}
+    ids = [f"d{index}" for index in range(100)] + genes
+    kinds = ["drug"] * 100 + ["gene"] * len(genes)
+    seeds = [[index % 5] for index in range(100)] + [[node_index[f"GENE:{gene}"]] for gene in genes]
+    groups = [f"drug_group_{index}" for index in range(100)] + [f"cluster_{cluster}" for cluster in range(5) for _ in range(20)]
+    groups += [f"single_{index}" for index in range(20)]
+    encoded = {f"GENE:C{cluster}_0": {f"PROTEIN:{cluster}"} for cluster in range(5)}
+    fold_zero_would_take_more = False
+    for seed in range(6):
+        draw = two_sided_held_out_draw(ids, kinds, seeds, nodes, groups, seed=seed, held_out_fraction=0.15,
+                                       options=M1_WITH_FOLD_ZERO, proteins_encoded_by_gene=encoded)
+        assert draw.forced_groups_pass_the_fraction and draw.overshoot == pytest.approx(20 / 120 - 0.15)
+        assert {gene for gene in genes if gene in draw.held_out_ids} == draw.forced_gene_side_ids, seed
+        folds = assign_grouped_folds(ids, groups, 7, seed, groups_placed_in_fold_zero=draw.forced_group_ids)
+        fold_zero_would_take_more |= any(folds[gene] == 0 for gene in genes if gene not in draw.forced_gene_side_ids)
+    assert fold_zero_would_take_more
+
+
+@pytest.mark.parametrize("flags, expected", [([], None), (["--gene-side-rule", "seeded_group_prefix"], M2),
+                                              (["--hold-out-genes-encoding-held-out-targets"], IDENTITY)])
+def test_the_measurement_records_the_options_it_draws_by(tmp_path, monkeypatch, flags, expected):
+    """main() end to end with the loader and the draw stubbed: the options reach every draw, the identity option's map
+    is read from the graph (empty here, a merged graph), and they are recorded in the output and the checkpoint inputs
+    only when one is on, which is what experiments/calibrate_leakage_ceiling.py reads them from."""
+    import json
+
+    import measure_leakage_only_adversary as measurement
+    monkeypatch.setattr(measurement, "load_experiment_data", lambda *arguments, **keywords: synthetic_data())
+    monkeypatch.setattr(measurement, "graph_file_sha256", lambda graph_directory: {"nodes.parquet": "n"})
+    monkeypatch.setattr(measurement, "sha256_of_file", lambda path: "s")
+    calls = []
+
+    def recording_one_draw(data, draw_seed, pooling_rule, num_bootstrap, reached_nodes_of_perturbation=None,
+                           reached_node_type_pairs=None, draw_options=None, proteins_encoded_by_gene=None):
+        calls.append((draw_options, proteins_encoded_by_gene))
+        return {"draw_seed": draw_seed, "usable": False}
+
+    monkeypatch.setattr(measurement, "one_draw", recording_one_draw)
+    (tmp_path / "graph").mkdir()
+    paths = ["--checkpoint-dir", str(tmp_path / "draws"), "--json-output", str(tmp_path / "out.json"),
+             "--markdown-output", str(tmp_path / "out.md")]
+    monkeypatch.setattr(sys, "argv", ["measure_leakage_only_adversary.py", "--graph-dir", str(tmp_path / "graph"),
+                                      "--evidence-dir", str(tmp_path), "--label-selection", str(tmp_path / "selection.parquet"),
+                                      "--num-draws", "2", "--pooling-rules", "base_rate_shrunk_mean", *paths, *flags])
+    measurement.main()
+    options = expected or HeldOutDrawOptions()
+    assert calls == [(options, {} if options.hold_out_genes_encoding_held_out_targets else None)] * 2
+    record = json.loads((tmp_path / "out.json").read_text())
+    inputs = json.loads((tmp_path / "draws" / measurement.CHECKPOINT_INPUTS_FILE).read_text())
+    for written in (record, inputs):
+        assert written.get(measurement.DRAW_OPTIONS_KEY) == (None if expected is None else expected.as_record())
+    assert set(inputs) == set(measurement.CHECKPOINT_INPUT_KEYS) - ({measurement.DRAW_OPTIONS_KEY} if expected is None else set())

@@ -272,3 +272,76 @@ def test_the_script_writes_every_grouping_with_its_provenance(tmp_path, monkeypa
     assert set(record["groupings"]["gene"]["rules"]) == set(RULES)
     assert set(record["groupings"]["gene"]["rules"]["m1_with_m2"]["seeds"]) == {"0", "1", "2"}
     assert record["groupings"]["gene"]["population"]["split_graph"] is True
+
+
+# ---------------------------------------------------------------- added by the check of 28 November 2026: cases the
+# tests above did not reach (a drug in a gene's group, a largest group partly on the side, a graph with entry nodes)
+
+
+def test_a_drug_sharing_a_group_with_genes_counts_towards_the_groups_on_both_sides():
+    """The hand fixture with each drug d_k joined to cluster_k, as disease_cluster_and_targets joins a drug to its target's
+    cluster. Five grouped folds: cluster_big (6) goes to fold 0 and the five clusters (5 each, drug included) to folds
+    1, 2, 3, 4 and 1, so fold 0 is cluster_big alone. The drug side is d_{i*}, so cluster_{i*} straddles under the rule
+    as it stands and under the identity option alone (g_{i*}_0 is held, g_{i*}_1..3 train); under M1 with M2 it is
+    forced whole and nothing straddles. Under M2 the side is the seed's first group alone: no straddle if it is
+    cluster_{i*}, one (cluster_{i*}) if it is cluster_big, two (cluster_{i*} and that cluster) otherwise."""
+    inputs = hand_fixture()
+    inputs = dataclasses.replace(inputs, group_ids=[f"cluster_{index}" for index in range(5)] + list(inputs.group_ids[5:]))
+    rules = diagnose(inputs, SEEDS, 0.2)["rules"]
+    for seed in SEEDS:
+        held_cluster = f"cluster_{held_target_index(seed)}"
+        assert rules["rule_as_it_stands"]["seeds"][str(seed)]["groups_with_members_on_both_sides"] == 1, seed
+        assert rules["identity_option_alone"]["seeds"][str(seed)]["groups_with_members_on_both_sides"] == 1, seed
+        assert rules["m1_with_m2"]["seeds"][str(seed)]["groups_with_members_on_both_sides"] == 0, seed
+        first_group = first_of_order([f"cluster_{index}" for index in range(5)] + ["cluster_big"], seed)
+        expected = 0 if first_group == held_cluster else 1 if first_group == "cluster_big" else 2
+        assert rules["m2_seeded_group_prefix"]["seeds"][str(seed)]["groups_with_members_on_both_sides"] == expected, seed
+
+
+def test_a_largest_group_with_one_member_on_the_gene_side_is_not_wholly_there():
+    """big_0 encodes PROTEIN:4 in place of g4_0. Under the identity option with M2 (not one of RULES, so passed in), a
+    seed holding PROTEIN:4 out holds big_0 out by identity; when M2's first group is not cluster_big, one of its six
+    members is on the gene side and it is not wholly there."""
+    inputs = hand_fixture()
+    encoded = {gene: proteins for gene, proteins in inputs.proteins_encoded_by_gene.items() if gene != "GENE:g4_0"}
+    inputs = dataclasses.replace(inputs, proteins_encoded_by_gene={**encoded, "GENE:big_0": {"PROTEIN:4"}})
+    seeds = list(range(60))
+    rule = HeldOutDrawOptions(hold_out_genes_encoding_held_out_targets=True, gene_side_rule="seeded_group_prefix")
+    numbers_of_seed = diagnose(inputs, seeds, 0.2, rules={"identity_with_m2": rule})["rules"]["identity_with_m2"]["seeds"]
+    partial = 0
+    for seed in seeds:
+        numbers = numbers_of_seed[str(seed)]
+        first_group = first_of_order([f"cluster_{index}" for index in range(5)] + ["cluster_big"], seed)
+        if first_group == "cluster_big":
+            expected_members = 6
+        else:
+            expected_members = int(held_target_index(seed) == "4")
+        assert numbers["largest_group_members_on_the_gene_side"] == expected_members, seed
+        assert numbers["largest_group_wholly_on_the_gene_side"] == (expected_members == 6), seed
+        partial += expected_members == 1
+    assert partial  # the case this test is for occurs among the seeds
+
+
+def test_the_label_free_loader_drops_entry_nodes_as_the_experiment_loader_does(tmp_path):
+    """A graph with drug entry nodes: under drug_entry "targets" the loader drops them, so node indices shift by the
+    entry node placed first."""
+    merged, _, evidence = write_fixture_tables(tmp_path)
+    nodes = pd.read_parquet(merged / "nodes.parquet")
+    entry_node = pd.DataFrame([{"node_id": "DRUG:drug_M", "node_type": "drug", "is_currency": False, "degree": 1}])
+    with_entry = tmp_path / "merged_with_entry_nodes"
+    with_entry.mkdir()
+    pd.concat([entry_node, nodes], ignore_index=True).to_parquet(with_entry / "nodes.parquet", index=False)
+    edges = pd.read_parquet(merged / "edges.parquet")
+    entry_edge = pd.DataFrame([{"source_id": "DRUG:drug_M", "target_id": "GENE:M", "relation_type": "targets", "sign": 1.0,
+                                "evidence_source": "ChEMBL mechanism"}])
+    pd.concat([edges, entry_edge], ignore_index=True).to_parquet(with_entry / "edges.parquet", index=False)
+    (with_entry / "relation_types.json").write_text((merged / "relation_types.json").read_text())
+    pd.DataFrame({"perturbation_id": ["drug_M"], "drug_node_id": ["DRUG:drug_M"], "target_node_id": ["GENE:M"],
+                  "magnitude": [1.0]}).to_parquet(with_entry / "drug_entry_nodes.parquet", index=False)
+    for group_by in sorted(GROUPING_COLUMNS):
+        inputs = load_draw_inputs(with_entry, evidence, group_by)
+        data = load_experiment_data(with_entry, evidence, group_by=group_by)
+        assert "DRUG:drug_M" not in inputs.node_ids
+        assert inputs.node_ids == list(data.node_ids)
+        assert [seed.tolist() for seed in inputs.perturbation_seeds] == [seed.tolist() for seed in data.perturbation_seeds]
+        assert inputs.group_ids == [str(group) for group in data.group_ids]
