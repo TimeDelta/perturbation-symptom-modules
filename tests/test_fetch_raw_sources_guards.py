@@ -9,6 +9,7 @@ the code the script runs rather than a copy of it.
 import hashlib
 import re
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
 
@@ -105,6 +106,7 @@ def test_a_cluster_type_the_code_does_not_map_is_named(tmp_path, region_table_pa
 def test_with_the_dopaminergic_reference_a_release_without_it_is_named(tmp_path, region_table_path):
     """--with-dopaminergic-reference (28 November 2026): a cluster-type file the base graph's readers accept but
     experiments/build_dopaminergic_expression.py cannot scale against is named at fetch time."""
+    pytest.importorskip("h5py")  # the dopaminergic step's module imports it; it is in the experiments extra
     from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE
     mapped_cluster_type_other_than_the_reference = next(
         cluster_type for cluster_type in sorted(CELL_CLASS_OF_CLUSTER_TYPE) if cluster_type != REFERENCE_CLUSTER_TYPE)
@@ -118,6 +120,7 @@ def test_with_the_dopaminergic_reference_a_release_without_it_is_named(tmp_path,
 
 
 def test_with_the_dopaminergic_reference_a_release_holding_it_reads(tmp_path, region_table_path):
+    pytest.importorskip("h5py")  # the dopaminergic step's module imports it; it is in the experiments extra
     from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE
     assert REFERENCE_CLUSTER_TYPE in CELL_CLASS_OF_CLUSTER_TYPE
     cluster_type_table_path = write_zipped_table(tmp_path / "rna_single_nuclei_cluster_type.tsv.zip", pd.DataFrame({
@@ -135,3 +138,26 @@ def test_the_script_asks_for_the_dopaminergic_reference_under_with_cellxgene_alo
     check_line = next(line for line in FETCH_SCRIPT_TEXT.splitlines() if "experiments/check_hpa_downloads.py --region-table" in line)
     assert check_line.rstrip().endswith("$hpa_check_dopaminergic_reference_flag; then")
     assert FETCH_SCRIPT_TEXT.index(flag_block) < FETCH_SCRIPT_TEXT.index(check_line)
+
+
+def test_the_check_run_as_the_fetch_script_runs_it_honours_the_flag(tmp_path, region_table_path):
+    """experiments/check_hpa_downloads.py run as scripts/fetch_raw_sources.sh runs it (PYTHONPATH=. from the root, as a
+    file), on a cluster-type file the base graph's readers accept and that lacks the reference: exit 0 without
+    --with-dopaminergic-reference, exit 1 naming the reference with it. The tests above call the function, so a main()
+    that dropped the flag, or a step module the script could not import from experiments/, would pass them."""
+    pytest.importorskip("h5py")  # the dopaminergic step's module imports it; it is in the experiments extra
+    from experiments.build_dopaminergic_expression import REFERENCE_CLUSTER_TYPE
+    mapped_cluster_type_other_than_the_reference = next(
+        cluster_type for cluster_type in sorted(CELL_CLASS_OF_CLUSTER_TYPE) if cluster_type != REFERENCE_CLUSTER_TYPE)
+    cluster_type_table_path = write_zipped_table(tmp_path / "rna_single_nuclei_cluster_type.tsv.zip", pd.DataFrame({
+        "Gene": ["ENSG01"], "Gene name": ["A"], "Cluster type": [mapped_cluster_type_other_than_the_reference], "nCPM": [3.0]}))
+    check_command = [sys.executable, "experiments/check_hpa_downloads.py", "--region-table", str(region_table_path),
+                     "--cluster-type-table", str(cluster_type_table_path)]
+    environment = {"PYTHONPATH": ".", "PATH": "/usr/bin:/bin:/usr/local/bin"}
+    without_the_flag = subprocess.run(check_command, cwd=REPOSITORY_ROOT, env=environment, capture_output=True, text=True)
+    assert without_the_flag.returncode == 0, without_the_flag.stderr
+    with_the_flag = subprocess.run(check_command + ["--with-dopaminergic-reference"], cwd=REPOSITORY_ROOT, env=environment,
+                                   capture_output=True, text=True)
+    assert with_the_flag.returncode == 1
+    assert f"UNREADABLE {cluster_type_table_path}: ValueError: " in with_the_flag.stderr
+    assert f"reference cluster type {REFERENCE_CLUSTER_TYPE!r}" in with_the_flag.stderr
